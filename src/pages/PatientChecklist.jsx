@@ -1,0 +1,229 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import {
+    LogOut,
+    Clock,
+    Sparkles,
+    Check,
+    Info,
+    Scissors,
+    AlertTriangle,
+    User
+} from 'lucide-react';
+
+export default function PatientChecklist() {
+    const navigate = useNavigate();
+    const [jeune, setJeune] = useState(false);
+    const [douche, setDouche] = useState(null);
+    const [epilation, setEpilation] = useState(null);
+    const [anesthesie, setAnesthesie] = useState(null);
+    const [bilanSanguin, setBilanSanguin] = useState(null);
+    const [allergie, setAllergie] = useState(null);
+    const [accompagnant, setAccompagnant] = useState(null);
+
+    const handleSubmit = () => {
+        navigate('/patient/success');
+    };
+
+    return (
+        <div className="patient-view">
+            {/* Header */}
+            <div className="patient-header">
+                <div className="patient-header-left">
+                    <h2>Bonjour Alain</h2>
+                    <span>J-7 • Cataracte</span>
+                </div>
+                <button style={{
+                    background: 'transparent',
+                    border: 'none',
+                    cursor: 'pointer',
+                    color: 'var(--color-gray-500)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '40px',
+                    height: '40px'
+                }}>
+                    <LogOut size={20} />
+                </button>
+            </div>
+
+            {/* Content */}
+            <div className="patient-content fade-in">
+                {/* Time Alert */}
+                <div className="alert-banner alert-banner-primary" style={{ marginBottom: 'var(--spacing-6)' }}>
+                    <Clock size={20} />
+                    <div>
+                        <div style={{ fontWeight: 'var(--font-weight-semibold)' }}>Arrivée prévue à 07:30</div>
+                        <div style={{ opacity: 0.9, fontSize: 'var(--font-size-sm)' }}>Rendez-vous à l'accueil principal. Prévoyez d'arriver 15 min avant.</div>
+                    </div>
+                </div>
+
+                {/* Étape Administrative */}
+                <div className="step-section">
+                    <div className="step-header">
+                        <span className="step-header-icon">📋</span>
+                        <div>
+                            <div className="step-header-title">Étape Administrative</div>
+                            <div className="step-header-subtitle">Dernière ligne droite ! Vérifions ensemble que tout est prêt.</div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Consultation d'anesthésie */}
+                <div className="question-card">
+                    <div className="question-title">Consultation d'anesthésie</div>
+                    <div className="toggle-group">
+                        <button
+                            className={`toggle-btn ${anesthesie === true ? 'active' : ''}`}
+                            onClick={() => setAnesthesie(true)}
+                        >
+                            Oui
+                        </button>
+                        <button
+                            className={`toggle-btn ${anesthesie === false ? 'active-danger' : ''}`}
+                            onClick={() => setAnesthesie(false)}
+                            style={anesthesie === false ? { background: 'var(--color-gray-700)', color: 'white', borderColor: 'var(--color-gray-700)' } : {}}
+                        >
+                            Non
+                        </button>
+                    </div>
+                    <div className="info-box" style={{ marginTop: 'var(--spacing-4)' }}>
+                        <Info size={16} className="info-box-icon" />
+                        <div>
+                            <div className="info-box-title">Pourquoi est-ce important ?</div>
+                            <div className="info-box-text">C'est une obligation légale de sécurité.</div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Bilan sanguin */}
+                <div className="question-card">
+                    <div className="question-title">Bilan sanguin</div>
+                    <div className="toggle-group">
+                        <button
+                            className={`toggle-btn ${bilanSanguin === true ? 'active' : ''}`}
+                            onClick={() => setBilanSanguin(true)}
+                        >
+                            Oui
+                        </button>
+                        <button
+                            className={`toggle-btn ${bilanSanguin === false ? 'active-danger' : ''}`}
+                            onClick={() => setBilanSanguin(false)}
+                            style={bilanSanguin === false ? { background: 'var(--color-gray-700)', color: 'white', borderColor: 'var(--color-gray-700)' } : {}}
+                        >
+                            Non
+                        </button>
+                    </div>
+                    <div className="info-box" style={{ marginTop: 'var(--spacing-4)' }}>
+                        <Info size={16} className="info-box-icon" />
+                        <div>
+                            <div className="info-box-title">Pourquoi est-ce important ?</div>
+                            <div className="info-box-text">Pour vérifier qu'il n'y a aucune contre-indication.</div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Préparation section */}
+                <div className="step-section" style={{ marginTop: 'var(--spacing-6)' }}>
+                    <div className="step-header">
+                        <span className="step-header-icon"><Scissors size={18} /></span>
+                        <div>
+                            <div className="step-header-title">Préparation Épilation</div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Épilation warning */}
+                <div className="question-card">
+                    <div className="alert-banner alert-banner-warning" style={{ marginBottom: 'var(--spacing-4)' }}>
+                        <AlertTriangle size={18} />
+                        <div style={{ fontSize: 'var(--font-size-sm)' }}>
+                            <strong>Important :</strong> L'épilation devra être faite à la <a href="#" style={{ color: 'var(--color-warning-600)' }}>crème dépilatoire</a> la veille de l'opération. Le rasoir est interdit.
+                        </div>
+                    </div>
+
+                    <div className="question-title">Avez-vous acheté la crème et fait un test d'allergie ?</div>
+                    <div className="toggle-group">
+                        <button
+                            className={`toggle-btn ${allergie === true ? 'active' : ''}`}
+                            onClick={() => setAllergie(true)}
+                        >
+                            Oui, c'est prêt
+                        </button>
+                        <button
+                            className={`toggle-btn ${allergie === false ? 'active-danger' : ''}`}
+                            onClick={() => setAllergie(false)}
+                            style={allergie === false ? { background: 'var(--color-gray-700)', color: 'white', borderColor: 'var(--color-gray-700)' } : {}}
+                        >
+                            Pas encore
+                        </button>
+                    </div>
+                    <div className="info-box" style={{ marginTop: 'var(--spacing-4)' }}>
+                        <Info size={16} className="info-box-icon" />
+                        <div>
+                            <div className="info-box-title">Pourquoi est-ce important ?</div>
+                            <div className="info-box-text">Tester la crème à l'avance évite les réactions allergiques de dernière minute.</div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Retour à domicile - Critical */}
+                <div className="question-card alert-card">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)', marginBottom: 'var(--spacing-4)' }}>
+                        <User size={18} style={{ color: 'var(--color-gray-600)' }} />
+                        <span className="question-title" style={{ marginBottom: 0 }}>Retour à domicile</span>
+                    </div>
+
+                    <div className="toggle-group">
+                        <button
+                            className={`toggle-btn ${accompagnant === true ? 'active' : ''}`}
+                            onClick={() => setAccompagnant(true)}
+                        >
+                            Oui, j'ai quelqu'un
+                        </button>
+                        <button
+                            className={`toggle-btn ${accompagnant === false ? 'active-danger' : ''}`}
+                            onClick={() => setAccompagnant(false)}
+                            style={accompagnant === false ? { background: 'var(--color-danger-500)', color: 'white', borderColor: 'var(--color-danger-500)' } : {}}
+                        >
+                            Non, je suis seul(e)
+                        </button>
+                    </div>
+
+                    {accompagnant === false && (
+                        <div className="alert-banner alert-banner-danger" style={{ marginTop: 'var(--spacing-4)' }}>
+                            <AlertTriangle size={18} />
+                            <div>
+                                <div className="alert-card-header" style={{ marginBottom: 0 }}>Sortie compromise</div>
+                                <div className="alert-card-message">Contactez-nous vite.</div>
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="info-box" style={{ marginTop: 'var(--spacing-4)' }}>
+                        <Info size={16} className="info-box-icon" />
+                        <div>
+                            <div className="info-box-title">Pourquoi est-ce important ?</div>
+                            <div className="info-box-text">La loi interdit formellement de rentrer seul après une anesthésie.</div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Submit Button */}
+                <button
+                    className="btn btn-primary btn-lg"
+                    style={{ width: '100%', marginTop: 'var(--spacing-6)' }}
+                    onClick={handleSubmit}
+                >
+                    Valider et Envoyer mon dossier
+                </button>
+            </div>
+
+            {/* FAB */}
+            <button className="fab">
+                <Sparkles size={24} />
+            </button>
+        </div>
+    );
+}
