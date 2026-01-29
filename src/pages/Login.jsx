@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import logo from '../assets/logo_surgilink.png';
+import favicon from '/favicon.png';
 import { Link, useNavigate } from 'react-router-dom';
 import { Sparkles, Mail, Lock, ArrowRight } from 'lucide-react';
 
@@ -8,6 +9,15 @@ export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [userType, setUserType] = useState('professional');
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        // Simulation d'un chargement premium
+        const timer = setTimeout(() => {
+            setIsLoading(false);
+        }, 1500);
+        return () => clearTimeout(timer);
+    }, []);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -20,6 +30,12 @@ export default function Login() {
 
     return (
         <div className="login-page">
+            {/* Preloader */}
+            <div className={`preloader ${!isLoading ? 'fade-out' : ''}`}>
+                <img src={favicon} alt="Loading" className="preloader-icon" />
+                <div className="preloader-text">SurgiLink</div>
+            </div>
+
             {/* Background Video */}
             <video
                 autoPlay
@@ -27,7 +43,7 @@ export default function Login() {
                 muted
                 playsInline
                 className="login-bg-video"
-                poster="https://images.unsplash.com/photo-1579684385127-1ef15d508118?q=80&w=2080&auto=format&fit=crop" // Fallback aesthetic image
+                style={{ background: '#000' }} // Solid background during load
             >
                 {/* 
                    PLACEHOLDER: Pour une vraie vidéo, déposez un fichier 'login-bg.mp4' dans le dossier 'public'.
