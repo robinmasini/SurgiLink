@@ -33,7 +33,6 @@ export default function Login() {
             {/* Preloader */}
             <div className={`preloader ${!isLoading ? 'fade-out' : ''}`}>
                 <img src={favicon} alt="Loading" className="preloader-icon" />
-                <div className="preloader-text">SurgiLink</div>
             </div>
 
             {/* Background Video */}
