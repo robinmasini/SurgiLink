@@ -12,7 +12,7 @@ export default function Header({ title, subtitle }) {
                     <Bell size={20} />
                 </button>
                 <div className="header-profile">
-                    <div className="header-avatar">Dr</div>
+                    <div className="header-avatar">CD</div>
                 </div>
             </div>
         </header>

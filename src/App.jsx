@@ -7,6 +7,9 @@ import PatientChecklist from './pages/PatientChecklist';
 import PatientSuccess from './pages/PatientSuccess';
 import PatientFeedback from './pages/PatientFeedback';
 import PatientPostOp from './pages/PatientPostOp';
+import PatientReview from './pages/PatientReview';
+import CategoryReview from './pages/CategoryReview';
+import ProtectedRoute from './components/ProtectedRoute';
 import './index.css';
 
 function App() {
@@ -16,9 +19,11 @@ function App() {
         {/* Professional Routes */}
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/patients" element={<Patients />} />
-        <Route path="/rentabilite" element={<Rentabilite />} />
+        <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="/patients" element={<ProtectedRoute><Patients /></ProtectedRoute>} />
+        <Route path="/rentabilite" element={<ProtectedRoute><Rentabilite /></ProtectedRoute>} />
+        <Route path="/patient/:id" element={<ProtectedRoute><PatientReview /></ProtectedRoute>} />
+        <Route path="/review/:category" element={<ProtectedRoute><CategoryReview /></ProtectedRoute>} />
 
         {/* Patient Routes */}
         <Route path="/patient/checklist" element={<PatientChecklist />} />

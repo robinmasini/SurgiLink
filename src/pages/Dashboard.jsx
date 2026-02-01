@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import {
@@ -7,7 +9,13 @@ import {
     Clock,
     Calendar,
     TrendingUp,
-    Activity
+    Activity,
+    X,
+    Plus,
+    User,
+    Clipboard,
+    Mail,
+    Phone
 } from 'lucide-react';
 
 const patients = [
@@ -83,7 +91,108 @@ const getDaysStyle = (daysUntil) => {
     return { color: 'var(--color-primary-500)' };
 };
 
+function AddPatientModal({ isOpen, onClose }) {
+    const [formData, setFormData] = useState({
+        name: '',
+        operation: '',
+        date: '',
+        contact: ''
+    });
+
+    if (!isOpen) return null;
+
+    const handleSave = () => {
+        if (!formData.name || !formData.operation) {
+            alert('Veuillez remplir au moins le nom et l\'intervention.');
+            return;
+        }
+        console.log('Saving patient:', formData);
+        alert(`Patient ${formData.name} enregistré avec succès !`);
+        onClose();
+        setFormData({ name: '', operation: '', date: '', contact: '' });
+    };
+
+    return (
+        <div className="modal-backdrop" onClick={onClose}>
+            <div className="liquid-glass-modal" style={{ width: '100%', maxWidth: '500px' }} onClick={e => e.stopPropagation()}>
+                <div style={{ padding: 'var(--spacing-6)', borderBottom: '1px solid rgba(0,0,0,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)' }}>
+                        <div className="card-icon card-icon-primary" style={{ width: '32px', height: '32px' }}>
+                            <Plus size={18} />
+                        </div>
+                        <h3 style={{ margin: 0 }}>Nouveau Patient</h3>
+                    </div>
+                    <button onClick={onClose} className="btn-secondary" style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--color-gray-400)' }}>
+                        <X size={24} />
+                    </button>
+                </div>
+
+                <div style={{ padding: 'var(--spacing-6)' }}>
+                    <div style={{ display: 'grid', gap: 'var(--spacing-4)' }}>
+                        <div>
+                            <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Nom Complet</label>
+                            <div style={{ position: 'relative' }}>
+                                <User size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-gray-400)' }} />
+                                <input
+                                    className="input"
+                                    placeholder="Ex: Jean Martin"
+                                    style={{ paddingLeft: '40px' }}
+                                    value={formData.name}
+                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Intervention</label>
+                            <div style={{ position: 'relative' }}>
+                                <Clipboard size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-gray-400)' }} />
+                                <input
+                                    className="input"
+                                    placeholder="Ex: Rhinoplastie"
+                                    style={{ paddingLeft: '40px' }}
+                                    value={formData.operation}
+                                    onChange={(e) => setFormData({ ...formData, operation: e.target.value })}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="grid-2">
+                            <div>
+                                <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Date</label>
+                                <input
+                                    type="date"
+                                    className="input"
+                                    value={formData.date}
+                                    onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                                />
+                            </div>
+                            <div>
+                                <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Contact</label>
+                                <input
+                                    className="input"
+                                    placeholder="06 00 00 00 00"
+                                    value={formData.contact}
+                                    onChange={(e) => setFormData({ ...formData, contact: e.target.value })}
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style={{ marginTop: 'var(--spacing-8)', display: 'flex', gap: 'var(--spacing-3)' }}>
+                        <button className="btn btn-secondary" style={{ flex: 1 }} onClick={onClose}>Annuler</button>
+                        <button className="btn btn-primary" style={{ flex: 1 }} onClick={handleSave}>Enregistrer</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
 export default function Dashboard() {
+    const navigate = useNavigate();
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
     return (
         <div style={{ display: 'flex' }}>
             <Sidebar />
@@ -124,7 +233,7 @@ export default function Dashboard() {
 
                 {/* Stats Cards */}
                 <div className="grid-4" style={{ marginBottom: 'var(--spacing-8)' }}>
-                    <div className="stat-card">
+                    <div className="stat-card" style={{ cursor: 'pointer' }} onClick={() => navigate('/review/active')}>
                         <div className="stat-card-icon" style={{ background: 'var(--color-primary-50)' }}>
                             <Users size={24} style={{ color: 'var(--color-primary-500)' }} />
                         </div>
@@ -133,7 +242,7 @@ export default function Dashboard() {
                         <div className="stat-card-meta">+3 cette semaine</div>
                     </div>
 
-                    <div className="stat-card">
+                    <div className="stat-card" style={{ cursor: 'pointer' }} onClick={() => navigate('/review/complete')}>
                         <div className="stat-card-icon" style={{ background: 'var(--color-success-50)' }}>
                             <CheckCircle size={24} style={{ color: 'var(--color-success-500)' }} />
                         </div>
@@ -142,7 +251,7 @@ export default function Dashboard() {
                         <div className="stat-card-meta">67% de conformité</div>
                     </div>
 
-                    <div className="stat-card">
+                    <div className="stat-card" style={{ cursor: 'pointer' }} onClick={() => navigate('/review/required')}>
                         <div className="stat-card-icon" style={{ background: 'var(--color-warning-50)' }}>
                             <AlertTriangle size={24} style={{ color: 'var(--color-warning-500)' }} />
                         </div>
@@ -152,7 +261,7 @@ export default function Dashboard() {
                         <div className="stat-card-meta" style={{ color: 'var(--color-danger-500)' }}>Attention requise</div>
                     </div>
 
-                    <div className="stat-card">
+                    <div className="stat-card" style={{ cursor: 'pointer' }} onClick={() => navigate('/review/weekly')}>
                         <div className="stat-card-icon" style={{ background: 'var(--color-info-50)' }}>
                             <Calendar size={24} style={{ color: 'var(--color-info-500)' }} />
                         </div>
@@ -169,10 +278,15 @@ export default function Dashboard() {
                             <h3 style={{ marginBottom: 'var(--spacing-1)' }}>Patients en suivi</h3>
                             <p style={{ fontSize: 'var(--font-size-sm)' }}>Liste des patients avec leur statut actuel</p>
                         </div>
-                        <button className="btn btn-primary">
-                            <Users size={16} />
-                            Ajouter un patient
-                        </button>
+                        <div style={{ display: 'flex', gap: 'var(--spacing-3)' }}>
+                            <button className="btn btn-secondary" onClick={() => navigate('/patients')}>
+                                Voir tout
+                            </button>
+                            <button className="btn btn-primary" onClick={() => setIsModalOpen(true)}>
+                                <Plus size={16} />
+                                Ajouter un patient
+                            </button>
+                        </div>
                     </div>
 
                     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -187,38 +301,35 @@ export default function Dashboard() {
                         </thead>
                         <tbody>
                             {patients.map((patient) => (
-                                <tr key={patient.id} style={{ borderBottom: '1px solid var(--color-gray-50)', cursor: 'pointer' }}>
+                                <tr key={patient.id} style={{ borderBottom: '1px solid var(--color-gray-50)', cursor: 'pointer' }} className="table-row-hover" onClick={() => navigate(`/patient/${patient.id}`)}>
                                     <td style={{ padding: 'var(--spacing-4)' }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)' }}>
                                             <div style={{
-                                                width: '40px',
-                                                height: '40px',
+                                                width: '32px',
+                                                height: '32px',
                                                 borderRadius: '50%',
-                                                background: 'var(--color-gray-100)',
+                                                background: 'var(--color-primary-50)',
                                                 display: 'flex',
                                                 alignItems: 'center',
                                                 justifyContent: 'center',
-                                                fontWeight: 'var(--font-weight-semibold)',
-                                                color: 'var(--color-gray-600)',
-                                                fontSize: 'var(--font-size-sm)'
+                                                fontSize: 'var(--font-size-xs)',
+                                                fontWeight: 'var(--font-weight-bold)',
+                                                color: 'var(--color-primary-600)'
                                             }}>
                                                 {patient.name.split(' ').map(n => n[0]).join('')}
                                             </div>
                                             <div>
-                                                <div style={{ fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-900)' }}>{patient.name}</div>
-                                                <div style={{ fontSize: 'var(--font-size-sm)', ...getDaysStyle(patient.daysUntil) }}>{patient.daysUntil}</div>
+                                                <div style={{ fontWeight: 'var(--font-weight-medium)' }}>{patient.name}</div>
+                                                <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)' }}>{patient.daysUntil}</div>
                                             </div>
                                         </div>
                                     </td>
-                                    <td style={{ padding: 'var(--spacing-4)', color: 'var(--color-gray-600)' }}>{patient.operation}</td>
-                                    <td style={{ padding: 'var(--spacing-4)', color: 'var(--color-gray-600)' }}>{patient.date}</td>
+                                    <td style={{ padding: 'var(--spacing-4)', fontSize: 'var(--font-size-sm)' }}>{patient.operation}</td>
+                                    <td style={{ padding: 'var(--spacing-4)', fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-600)' }}>{patient.date}</td>
                                     <td style={{ padding: 'var(--spacing-4)' }}>{getStatusBadge(patient.status)}</td>
-                                    <td style={{ padding: 'var(--spacing-4)', width: '150px' }}>
+                                    <td style={{ padding: 'var(--spacing-4)' }}>
                                         <div className="progress-bar">
-                                            <div
-                                                className={`progress-fill ${patient.progress === 100 ? 'progress-fill-success' : 'progress-fill-primary'}`}
-                                                style={{ width: `${patient.progress}%` }}
-                                            />
+                                            <div className={`progress-fill ${patient.progress === 100 ? 'progress-fill-success' : 'progress-fill-primary'}`} style={{ width: `${patient.progress}%` }}></div>
                                         </div>
                                     </td>
                                 </tr>
@@ -226,6 +337,8 @@ export default function Dashboard() {
                         </tbody>
                     </table>
                 </div>
+
+                <AddPatientModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
             </main>
         </div>
     );

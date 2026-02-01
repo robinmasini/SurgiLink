@@ -33,7 +33,7 @@ export default function Rentabilite() {
 
                 {/* Stats Cards */}
                 <div className="grid-3" style={{ marginBottom: 'var(--spacing-8)' }}>
-                    <div className="stat-card">
+                    <div className="stat-card" style={{ cursor: 'pointer' }} onClick={() => alert('Détails des appels économisés bientôt disponibles')}>
                         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 'var(--spacing-4)' }}>
                             <div className="stat-card-icon" style={{ background: 'var(--color-primary-50)' }}>
                                 <Phone size={24} style={{ color: 'var(--color-primary-500)' }} />
@@ -45,7 +45,7 @@ export default function Rentabilite() {
                         <div className="stat-card-meta">~ 20 min gagnées (11€)</div>
                     </div>
 
-                    <div className="stat-card">
+                    <div className="stat-card" style={{ cursor: 'pointer' }} onClick={() => alert('Détails des annulations évitées bientôt disponibles')}>
                         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 'var(--spacing-4)' }}>
                             <div className="stat-card-icon" style={{ background: 'var(--color-warning-50)' }}>
                                 <Ban size={24} style={{ color: 'var(--color-warning-500)' }} />

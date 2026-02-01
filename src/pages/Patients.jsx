@@ -1,6 +1,82 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
-import { Users, Search, Filter, Plus } from 'lucide-react';
+import { Users, Search, Filter, Plus, X, User, Clipboard } from 'lucide-react';
+
+function AddPatientModal({ isOpen, onClose }) {
+    const [formData, setFormData] = useState({
+        name: '',
+        operation: '',
+        date: '',
+        contact: ''
+    });
+
+    if (!isOpen) return null;
+
+    const handleSave = () => {
+        if (!formData.name || !formData.operation) {
+            alert('Veuillez remplir au moins le nom et l\'intervention.');
+            return;
+        }
+        alert(`Patient ${formData.name} enregistré avec succès !`);
+        onClose();
+        setFormData({ name: '', operation: '', date: '', contact: '' });
+    };
+
+    return (
+        <div className="modal-backdrop" onClick={onClose}>
+            <div className="liquid-glass-modal" style={{ width: '100%', maxWidth: '500px' }} onClick={e => e.stopPropagation()}>
+                <div style={{ padding: 'var(--spacing-6)', borderBottom: '1px solid rgba(0,0,0,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)' }}>
+                        <div className="card-icon card-icon-primary" style={{ width: '32px', height: '32px' }}>
+                            <Plus size={18} />
+                        </div>
+                        <h3 style={{ margin: 0 }}>Nouveau Patient</h3>
+                    </div>
+                    <button onClick={onClose} className="btn-secondary" style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--color-gray-400)' }}>
+                        <X size={24} />
+                    </button>
+                </div>
+
+                <div style={{ padding: 'var(--spacing-6)' }}>
+                    <div style={{ display: 'grid', gap: 'var(--spacing-4)' }}>
+                        <div>
+                            <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Nom Complet</label>
+                            <div style={{ position: 'relative' }}>
+                                <User size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-gray-400)' }} />
+                                <input
+                                    className="input"
+                                    placeholder="Ex: Jean Martin"
+                                    style={{ paddingLeft: '40px' }}
+                                    value={formData.name}
+                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                />
+                            </div>
+                        </div>
+                        <div>
+                            <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Intervention</label>
+                            <div style={{ position: 'relative' }}>
+                                <Clipboard size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-gray-400)' }} />
+                                <input
+                                    className="input"
+                                    placeholder="Ex: Rhinoplastie"
+                                    style={{ paddingLeft: '40px' }}
+                                    value={formData.operation}
+                                    onChange={(e) => setFormData({ ...formData, operation: e.target.value })}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    <div style={{ marginTop: 'var(--spacing-8)', display: 'flex', gap: 'var(--spacing-3)' }}>
+                        <button className="btn btn-secondary" style={{ flex: 1 }} onClick={onClose}>Annuler</button>
+                        <button className="btn btn-primary" style={{ flex: 1 }} onClick={handleSave}>Enregistrer</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
 
 const patients = [
     {
@@ -91,6 +167,15 @@ const getDaysStyle = (daysUntil) => {
 };
 
 export default function Patients() {
+    const navigate = useNavigate();
+    const [searchTerm, setSearchTerm] = useState('');
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const filteredPatients = patients.filter(p =>
+        p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        p.operation.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     return (
         <div style={{ display: 'flex' }}>
             <Sidebar />
@@ -118,13 +203,15 @@ export default function Patients() {
                             className="input"
                             placeholder="Rechercher un patient..."
                             style={{ paddingLeft: '44px' }}
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
                         />
                     </div>
-                    <button className="btn btn-secondary">
+                    <button className="btn btn-secondary" onClick={() => alert('Filtres bientôt disponibles')}>
                         <Filter size={16} />
                         Filtres
                     </button>
-                    <button className="btn btn-primary">
+                    <button className="btn btn-primary" onClick={() => setIsModalOpen(true)}>
                         <Plus size={16} />
                         Nouveau patient
                     </button>
@@ -132,8 +219,8 @@ export default function Patients() {
 
                 {/* Patients Grid */}
                 <div className="grid-3">
-                    {patients.map((patient) => (
-                        <div key={patient.id} className="card" style={{ cursor: 'pointer' }}>
+                    {filteredPatients.length > 0 ? filteredPatients.map((patient) => (
+                        <div key={patient.id} className="card" style={{ cursor: 'pointer' }} onClick={() => navigate(`/patient/${patient.id}`)}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-4)', marginBottom: 'var(--spacing-4)' }}>
                                 <div style={{
                                     width: '56px',
@@ -171,8 +258,15 @@ export default function Patients() {
                                 <div>✉️ {patient.email}</div>
                             </div>
                         </div>
-                    ))}
+                    )) : (
+                        <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: 'var(--spacing-12)', color: 'var(--color-gray-400)' }}>
+                            <Users size={48} style={{ marginBottom: 'var(--spacing-4)', opacity: 0.2 }} />
+                            <p>Aucun patient ne correspond à votre recherche.</p>
+                        </div>
+                    )}
                 </div>
+
+                <AddPatientModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
             </main>
         </div>
     );

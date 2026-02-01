@@ -1,4 +1,5 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { supabase } from '../lib/supabase';
 import logo from '../assets/logo_surgilink.png';
 import {
     LayoutDashboard,
@@ -13,11 +14,13 @@ const navItems = [
     { path: '/dashboard', label: 'Tableau de bord', icon: LayoutDashboard },
     { path: '/patients', label: 'File Active Patients', icon: Users },
     { path: '/rentabilite', label: 'Rentabilité & ROI', icon: TrendingUp },
+    { path: '/review/active', label: 'Suivi par Statut', icon: Stethoscope },
     { path: '/patient/checklist', label: 'Aperçu Patient', icon: Eye },
 ];
 
 export default function Sidebar() {
     const location = useLocation();
+    const navigate = useNavigate();
 
     return (
         <aside className="sidebar">
@@ -46,7 +49,14 @@ export default function Sidebar() {
             </nav>
 
             <div className="sidebar-footer">
-                <button className="sidebar-item" style={{ width: '100%', border: 'none', background: 'transparent' }}>
+                <button
+                    className="sidebar-item"
+                    style={{ width: '100%', border: 'none', background: 'transparent', cursor: 'pointer' }}
+                    onClick={async () => {
+                        await supabase.auth.signOut();
+                        navigate('/login');
+                    }}
+                >
                     <span className="sidebar-item-icon">
                         <LogOut size={20} />
                     </span>

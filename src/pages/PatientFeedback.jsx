@@ -24,17 +24,20 @@ export default function PatientFeedback() {
                     <h2>Bonjour Marie</h2>
                     <span>J+2 • Chirurgie Pied</span>
                 </div>
-                <button style={{
-                    background: 'transparent',
-                    border: 'none',
-                    cursor: 'pointer',
-                    color: 'var(--color-gray-500)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: '40px',
-                    height: '40px'
-                }}>
+                <button
+                    style={{
+                        background: 'transparent',
+                        border: 'none',
+                        cursor: 'pointer',
+                        color: 'var(--color-gray-500)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: '40px',
+                        height: '40px'
+                    }}
+                    onClick={() => navigate('/login')}
+                >
                     <LogOut size={20} />
                 </button>
             </div>

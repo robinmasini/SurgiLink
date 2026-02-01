@@ -1409,3 +1409,117 @@ textarea.input {
     filter: drop-shadow(0 0 0 rgba(79, 70, 229, 0));
   }
 }
+
+/* Glassmorphism & Liquid Glass Effects */
+.glass-effect {
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+}
+
+.liquid-glass-modal {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow:
+    0 25px 50px -12px rgba(0, 0, 0, 0.15),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.8);
+  border-radius: var(--radius-2xl);
+  overflow: hidden;
+  animation: modal-appear 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modal-appear {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-4);
+}
+
+/* Timeline Styles for Surgical History */
+.timeline {
+  position: relative;
+  padding-left: var(--spacing-8);
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--color-gray-100);
+  margin-left: 11px;
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: var(--spacing-8);
+}
+
+.timeline-dot {
+  position: absolute;
+  left: -var(--spacing-8);
+  width: 24px;
+  height: 24px;
+  background: var(--color-white);
+  border: 2px solid var(--color-primary-500);
+  border-radius: 50%;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.timeline-dot::after {
+  content: '';
+  width: 8px;
+  height: 8px;
+  background: var(--color-primary-500);
+  border-radius: 50%;
+}
+
+.timeline-content {
+  background: var(--color-white);
+  padding: var(--spacing-4);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-gray-100);
+}
+
+.timeline-date {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary-500);
+  text-transform: uppercase;
+  margin-bottom: var(--spacing-1);
+}
+
+.timeline-title {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-gray-900);
+  margin-bottom: var(--spacing-2);
+}

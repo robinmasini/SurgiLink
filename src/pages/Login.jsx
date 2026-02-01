@@ -3,28 +3,60 @@ import logo from '../assets/logo_surgilink.png';
 import favicon from '/favicon.png';
 import { Link, useNavigate } from 'react-router-dom';
 import { Sparkles, Mail, Lock, ArrowRight } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 export default function Login() {
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [userType, setUserType] = useState('professional');
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(true); // Preloader
+    const [isAuthenticating, setIsAuthenticating] = useState(false); // Login process
 
     useEffect(() => {
         // Simulation d'un chargement premium
         const timer = setTimeout(() => {
             setIsLoading(false);
-        }, 1500);
+        }, 800); // Snappier feel
         return () => clearTimeout(timer);
     }, []);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        if (userType === 'professional') {
-            navigate('/dashboard');
-        } else {
-            navigate('/patient/checklist');
+
+        const cleanEmail = email.trim();
+        const cleanPassword = password.trim();
+
+        if (!cleanEmail || !cleanPassword) {
+            alert('Veuillez saisir vos identifiants.');
+            return;
+        }
+
+        setIsAuthenticating(true);
+
+        try {
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email: cleanEmail,
+                password: cleanPassword,
+            });
+
+            if (error) {
+                alert(`Erreur d'authentification : ${error.message}`);
+                setIsAuthenticating(false);
+                return;
+            }
+
+            if (data?.user) {
+                if (userType === 'professional') {
+                    navigate('/dashboard');
+                } else {
+                    navigate('/patient/checklist');
+                }
+            }
+        } catch (error) {
+            console.error('Login error:', error);
+            alert('Une erreur est survenue lors de la connexion.');
+            setIsAuthenticating(false);
         }
     };
 
@@ -99,6 +131,7 @@ export default function Login() {
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 style={{ paddingLeft: '48px' }}
+                                required
                             />
                         </div>
                     </div>
@@ -122,6 +155,7 @@ export default function Login() {
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 style={{ paddingLeft: '48px' }}
+                                required
                             />
                         </div>
                     </div>
@@ -132,9 +166,13 @@ export default function Login() {
                         </a>
                     </div>
 
-                    <button type="submit" className="btn btn-primary btn-lg">
-                        Se connecter
-                        <ArrowRight size={18} />
+                    <button
+                        type="submit"
+                        className={`btn btn-primary btn-lg ${isAuthenticating ? 'loading' : ''}`}
+                        disabled={isAuthenticating}
+                    >
+                        {isAuthenticating ? 'Connexion en cours...' : 'Se connecter'}
+                        {!isAuthenticating && <ArrowRight size={18} />}
                     </button>
                 </form>
 
@@ -152,6 +190,9 @@ export default function Login() {
                             </>
                         )}
                     </p>
+                    <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+                        <span style={{ fontSize: '0.7rem', color: 'var(--color-gray-400)', opacity: 0.5 }}>v1.2 - Secure Auth Active</span>
+                    </div>
                 </div>
             </div>
         </div>
