@@ -12,6 +12,7 @@ import CategoryReview from './pages/CategoryReview';
 import ProtectedRoute from './components/ProtectedRoute';
 import './index.css';
 
+// Force deploy trigger - 2026-02-02
 function App() {
   return (
     <Router>
