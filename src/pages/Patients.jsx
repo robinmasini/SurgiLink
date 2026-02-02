@@ -2,83 +2,10 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
-import { Users, Search, Filter, Plus, X, User, Clipboard } from 'lucide-react';
+import AddPatientModal from '../components/AddPatientModal';
+import { Users, Search, Filter, Plus } from 'lucide-react';
 
-function AddPatientModal({ isOpen, onClose }) {
-    const [formData, setFormData] = useState({
-        name: '',
-        operation: '',
-        date: '',
-        contact: ''
-    });
-
-    if (!isOpen) return null;
-
-    const handleSave = () => {
-        if (!formData.name || !formData.operation) {
-            alert('Veuillez remplir au moins le nom et l\'intervention.');
-            return;
-        }
-        alert(`Patient ${formData.name} enregistré avec succès !`);
-        onClose();
-        setFormData({ name: '', operation: '', date: '', contact: '' });
-    };
-
-    return (
-        <div className="modal-backdrop" onClick={onClose}>
-            <div className="liquid-glass-modal" style={{ width: '100%', maxWidth: '500px' }} onClick={e => e.stopPropagation()}>
-                <div style={{ padding: 'var(--spacing-6)', borderBottom: '1px solid rgba(0,0,0,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)' }}>
-                        <div className="card-icon card-icon-primary" style={{ width: '32px', height: '32px' }}>
-                            <Plus size={18} />
-                        </div>
-                        <h3 style={{ margin: 0 }}>Nouveau Patient</h3>
-                    </div>
-                    <button onClick={onClose} className="btn-secondary" style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--color-gray-400)' }}>
-                        <X size={24} />
-                    </button>
-                </div>
-
-                <div style={{ padding: 'var(--spacing-6)' }}>
-                    <div style={{ display: 'grid', gap: 'var(--spacing-4)' }}>
-                        <div>
-                            <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Nom Complet</label>
-                            <div style={{ position: 'relative' }}>
-                                <User size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-gray-400)' }} />
-                                <input
-                                    className="input"
-                                    placeholder="Ex: Jean Martin"
-                                    style={{ paddingLeft: '40px' }}
-                                    value={formData.name}
-                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                />
-                            </div>
-                        </div>
-                        <div>
-                            <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Intervention</label>
-                            <div style={{ position: 'relative' }}>
-                                <Clipboard size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-gray-400)' }} />
-                                <input
-                                    className="input"
-                                    placeholder="Ex: Rhinoplastie"
-                                    style={{ paddingLeft: '40px' }}
-                                    value={formData.operation}
-                                    onChange={(e) => setFormData({ ...formData, operation: e.target.value })}
-                                />
-                            </div>
-                        </div>
-                    </div>
-                    <div style={{ marginTop: 'var(--spacing-8)', display: 'flex', gap: 'var(--spacing-3)' }}>
-                        <button className="btn btn-secondary" style={{ flex: 1 }} onClick={onClose}>Annuler</button>
-                        <button className="btn btn-primary" style={{ flex: 1 }} onClick={handleSave}>Enregistrer</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-}
-
-const patients = [
+const initialPatients = [
     {
         id: 1,
         name: 'Thomas Dupont',
@@ -170,11 +97,27 @@ export default function Patients() {
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [patientsList, setPatientsList] = useState(initialPatients);
 
-    const filteredPatients = patients.filter(p =>
+    const handlePatientAdded = (newPatient) => {
+        const formattedPatient = {
+            id: newPatient.id,
+            name: newPatient.name,
+            operation: newPatient.operation,
+            date: newPatient.date,
+            status: newPatient.status || 'pending',
+            daysUntil: newPatient.days_until || 'J-0',
+            phone: newPatient.phone,
+            email: newPatient.email
+        };
+        setPatientsList([formattedPatient, ...patientsList]);
+    };
+
+    const filteredPatients = patientsList.filter(p =>
         p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         p.operation.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
 
     return (
         <div style={{ display: 'flex' }}>
@@ -266,7 +209,11 @@ export default function Patients() {
                     )}
                 </div>
 
-                <AddPatientModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+                <AddPatientModal
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    onPatientAdded={handlePatientAdded}
+                />
             </main>
         </div>
     );
