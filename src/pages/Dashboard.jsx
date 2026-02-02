@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import AddPatientModal from '../components/AddPatientModal';
-import welcomeCard from '../assets/welcome-card.png';
 import {
     Users,
     AlertTriangle,
@@ -136,7 +135,7 @@ export default function Dashboard() {
                     </div>
 
                     <img
-                        src={welcomeCard}
+                        src="/welcome-card.png"
                         alt="Espace Opératoire"
                         className="welcome-banner-image"
                     />
