@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
+import AddPatientModal from '../components/AddPatientModal';
+import welcomeCard from '../assets/welcome-card.png';
 import {
     Users,
     AlertTriangle,
@@ -18,7 +20,8 @@ import {
     Phone
 } from 'lucide-react';
 
-const patients = [
+// Initial data preserved as default state
+const initialPatients = [
     {
         id: 1,
         name: 'Thomas Dupont',
@@ -66,132 +69,40 @@ const patients = [
     },
 ];
 
-const getStatusBadge = (status) => {
-    switch (status) {
-        case 'ready':
-            return <span className="badge badge-success">Prêt</span>;
-        case 'incomplete':
-            return <span className="badge badge-warning">Protocole incomplet</span>;
-        case 'postop':
-            return <span className="badge badge-info">Suivi post-op</span>;
-        case 'pending':
-            return <span className="badge badge-primary">En cours</span>;
-        default:
-            return null;
-    }
-};
-
-const getDaysStyle = (daysUntil) => {
-    if (daysUntil.startsWith('J+')) {
-        return { color: 'var(--color-info-500)' };
-    }
-    if (daysUntil === 'J-1') {
-        return { color: 'var(--color-success-500)' };
-    }
-    return { color: 'var(--color-primary-500)' };
-};
-
-function AddPatientModal({ isOpen, onClose }) {
-    const [formData, setFormData] = useState({
-        name: '',
-        operation: '',
-        date: '',
-        contact: ''
-    });
-
-    if (!isOpen) return null;
-
-    const handleSave = () => {
-        if (!formData.name || !formData.operation) {
-            alert('Veuillez remplir au moins le nom et l\'intervention.');
-            return;
-        }
-        console.log('Saving patient:', formData);
-        alert(`Patient ${formData.name} enregistré avec succès !`);
-        onClose();
-        setFormData({ name: '', operation: '', date: '', contact: '' });
-    };
-
-    return (
-        <div className="modal-backdrop" onClick={onClose}>
-            <div className="liquid-glass-modal" style={{ width: '100%', maxWidth: '500px' }} onClick={e => e.stopPropagation()}>
-                <div style={{ padding: 'var(--spacing-6)', borderBottom: '1px solid rgba(0,0,0,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)' }}>
-                        <div className="card-icon card-icon-primary" style={{ width: '32px', height: '32px' }}>
-                            <Plus size={18} />
-                        </div>
-                        <h3 style={{ margin: 0 }}>Nouveau Patient</h3>
-                    </div>
-                    <button onClick={onClose} className="btn-secondary" style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--color-gray-400)' }}>
-                        <X size={24} />
-                    </button>
-                </div>
-
-                <div style={{ padding: 'var(--spacing-6)' }}>
-                    <div style={{ display: 'grid', gap: 'var(--spacing-4)' }}>
-                        <div>
-                            <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Nom Complet</label>
-                            <div style={{ position: 'relative' }}>
-                                <User size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-gray-400)' }} />
-                                <input
-                                    className="input"
-                                    placeholder="Ex: Jean Martin"
-                                    style={{ paddingLeft: '40px' }}
-                                    value={formData.name}
-                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                />
-                            </div>
-                        </div>
-
-                        <div>
-                            <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Intervention</label>
-                            <div style={{ position: 'relative' }}>
-                                <Clipboard size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-gray-400)' }} />
-                                <input
-                                    className="input"
-                                    placeholder="Ex: Rhinoplastie"
-                                    style={{ paddingLeft: '40px' }}
-                                    value={formData.operation}
-                                    onChange={(e) => setFormData({ ...formData, operation: e.target.value })}
-                                />
-                            </div>
-                        </div>
-
-                        <div className="grid-2">
-                            <div>
-                                <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Date</label>
-                                <input
-                                    type="date"
-                                    className="input"
-                                    value={formData.date}
-                                    onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                                />
-                            </div>
-                            <div>
-                                <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Contact</label>
-                                <input
-                                    className="input"
-                                    placeholder="06 00 00 00 00"
-                                    value={formData.contact}
-                                    onChange={(e) => setFormData({ ...formData, contact: e.target.value })}
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div style={{ marginTop: 'var(--spacing-8)', display: 'flex', gap: 'var(--spacing-3)' }}>
-                        <button className="btn btn-secondary" style={{ flex: 1 }} onClick={onClose}>Annuler</button>
-                        <button className="btn btn-primary" style={{ flex: 1 }} onClick={handleSave}>Enregistrer</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-}
-
 export default function Dashboard() {
     const navigate = useNavigate();
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [patients, setPatients] = useState(initialPatients);
+
+    const handlePatientAdded = (newPatient) => {
+        // Map Supabase fields to the UI format if needed
+        const formattedPatient = {
+            id: newPatient.id,
+            name: newPatient.name,
+            operation: newPatient.operation,
+            date: newPatient.date,
+            status: newPatient.status || 'pending',
+            daysUntil: newPatient.days_until || 'J-0',
+            progress: newPatient.progress || 0
+        };
+        setPatients([formattedPatient, ...patients]);
+    };
+
+    const getStatusBadge = (status) => {
+        switch (status) {
+            case 'ready':
+                return <span className="badge badge-success">Prêt</span>;
+            case 'incomplete':
+                return <span className="badge badge-warning">Protocole incomplet</span>;
+            case 'postop':
+                return <span className="badge badge-info">Suivi post-op</span>;
+            case 'pending':
+                return <span className="badge badge-primary">En cours</span>;
+            default:
+                return null;
+        }
+    };
+
 
     return (
         <div style={{ display: 'flex' }}>
@@ -225,7 +136,7 @@ export default function Dashboard() {
                     </div>
 
                     <img
-                        src="/src/assets/dashboard_welcome_bg_final.png"
+                        src={welcomeCard}
                         alt="Espace Opératoire"
                         className="welcome-banner-image"
                     />
@@ -338,7 +249,11 @@ export default function Dashboard() {
                     </table>
                 </div>
 
-                <AddPatientModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+                <AddPatientModal
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    onPatientAdded={handlePatientAdded}
+                />
             </main>
         </div>
     );

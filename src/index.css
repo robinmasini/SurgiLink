@@ -1249,7 +1249,7 @@ textarea.input {
 .welcome-banner {
   background: #3B82F6;
   border-radius: var(--radius-2xl);
-  padding: var(--spacing-10);
+  padding: var(--spacing-8);
   color: var(--color-white);
   margin-bottom: var(--spacing-8);
   display: flex;
@@ -1258,7 +1258,7 @@ textarea.input {
   position: relative;
   overflow: hidden;
   box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.3);
-  min-height: 400px;
+  min-height: 240px;
 }
 
 .welcome-banner::after {
@@ -1276,7 +1276,7 @@ textarea.input {
   position: relative;
   z-index: 3;
   flex: 1;
-  max-width: 60%;
+  max-width: 50%;
 }
 
 .welcome-banner-welcome {
@@ -1302,7 +1302,7 @@ textarea.input {
 .welcome-banner-instruction {
   font-size: var(--font-size-lg);
   opacity: 0.95;
-  margin-bottom: var(--spacing-12);
+  margin-bottom: var(--spacing-6);
 }
 
 .welcome-banner-date-label {
