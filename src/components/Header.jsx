@@ -1,4 +1,5 @@
 import { Bell } from 'lucide-react';
+import practitionerAvatar from '../assets/practitioner-avatar.png';
 
 export default function Header({ title, subtitle }) {
     return (
@@ -12,7 +13,11 @@ export default function Header({ title, subtitle }) {
                     <Bell size={20} />
                 </button>
                 <div className="header-profile">
-                    <div className="header-avatar">CD</div>
+                    <img
+                        src={practitionerAvatar}
+                        alt="Profile"
+                        className="header-avatar-img"
+                    />
                 </div>
             </div>
         </header>

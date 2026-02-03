@@ -1,6 +1,7 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import logo from '../assets/logo_surgilink.png';
+import practitionerAvatar from '../assets/practitioner-avatar.png';
 import {
     LayoutDashboard,
     Stethoscope,
@@ -49,6 +50,23 @@ export default function Sidebar() {
             </nav>
 
             <div className="sidebar-footer">
+                <div className="sidebar-profile-card">
+                    <img
+                        src={practitionerAvatar}
+                        alt="Dr. Christophe Desouches"
+                        className="sidebar-profile-avatar"
+                    />
+                    <div className="sidebar-profile-info">
+                        <div className="sidebar-profile-name">DESOUCHES Christophe</div>
+                        <div className="sidebar-profile-title">Praticien</div>
+                        <div className="sidebar-profile-specialty">
+                            <span className="sidebar-profile-specialty-label">Corps de métier</span>
+                            Chirurgie Esthétique<br />
+                            Plastique reconstructrice
+                        </div>
+                    </div>
+                </div>
+
                 <button
                     className="sidebar-item"
                     style={{ width: '100%', border: 'none', background: 'transparent', cursor: 'pointer' }}
