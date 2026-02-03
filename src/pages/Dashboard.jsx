@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import AddPatientModal from '../components/AddPatientModal';
+import christopheSignature from '../assets/christophe-signature.png';
 import {
     Users,
     AlertTriangle,
@@ -116,7 +117,7 @@ export default function Dashboard() {
                 <div className="welcome-banner fade-in">
                     <div className="welcome-banner-content">
                         <div className="welcome-banner-welcome">Bienvenue,</div>
-                        <div className="welcome-banner-name">Christophe DESOUCHES</div>
+                        <img src={christopheSignature} alt="Christophe DESOUCHES" className="welcome-banner-signature" />
 
                         <div className="welcome-banner-greeting">Ravi de vous revoir !</div>
                         <div className="welcome-banner-instruction">Consultez votre Espace Praticien</div>

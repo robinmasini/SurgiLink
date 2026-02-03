@@ -1303,6 +1303,21 @@ textarea.input {
   line-height: 1.1;
 }
 
+.welcome-banner-signature {
+  height: 80px;
+  width: auto;
+  object-fit: contain;
+  margin-bottom: var(--spacing-6);
+  filter: brightness(100) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+  transition: transform var(--transition-normal), filter var(--transition-normal);
+  display: block;
+}
+
+.welcome-banner-signature:hover {
+  transform: scale(1.05) translateY(-2px);
+  filter: brightness(100) drop-shadow(0 4px 12px rgba(255, 255, 255, 0.3));
+}
+
 .welcome-banner-greeting {
   font-size: var(--font-size-lg);
   margin-bottom: var(--spacing-1);
