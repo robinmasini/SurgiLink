@@ -1258,19 +1258,25 @@ textarea.input {
 }
 
 @media (max-width: 640px) {
+  .login-page {
+    align-items: flex-end;
+    padding-bottom: 8vh;
+  }
+
   .login-card {
     margin: var(--spacing-4);
     padding: var(--spacing-6);
-    max-width: 340px;
-    background: rgba(255, 255, 255, 0.25);
+    max-width: 320px;
+    background: rgba(255, 255, 255, 0.22);
   }
 
   .login-brand-logo img {
-    width: 100px !important;
+    width: 90px !important;
+    margin-bottom: 0.5rem !important;
   }
 
   .login-brand {
-    margin-bottom: var(--spacing-6);
+    margin-bottom: var(--spacing-4);
   }
 
   .login-card .form-group {
@@ -1282,7 +1288,7 @@ textarea.input {
   }
 
   .login-bg-video {
-    object-position: center 20%;
+    object-position: center 12%;
   }
 }
 
