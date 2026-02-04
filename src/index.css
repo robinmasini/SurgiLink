@@ -1260,7 +1260,7 @@ textarea.input {
 @media (max-width: 640px) {
   .login-page {
     align-items: flex-end;
-    padding-bottom: 3vh;
+    padding-bottom: 5vh;
   }
 
   .login-card {
@@ -1288,9 +1288,7 @@ textarea.input {
   }
 
   .login-bg-video {
-    object-position: center 5%;
-    transform: scale(1.6);
-    transform-origin: top center;
+    object-position: center 0%;
   }
 }
 
