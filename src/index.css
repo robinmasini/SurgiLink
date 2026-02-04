@@ -23,15 +23,15 @@
   --color-gray-800: #1F2937;
   --color-gray-900: #111827;
 
-  /* Primary - Premium Brown */
-  --color-primary-50: #FDF8F6;
-  --color-primary-100: #F3E8E2;
-  --color-primary-200: #E7D1C4;
-  --color-primary-300: #D1B09C;
-  --color-primary-400: #B78C74;
-  --color-primary-500: #8B5E3C;
-  --color-primary-600: #724D31;
-  --color-primary-700: #5D3E28;
+  /* Primary - Lighter Premium Brown */
+  --color-primary-50: #FCFBF9;
+  --color-primary-100: #F7F3EF;
+  --color-primary-200: #EDE6DF;
+  --color-primary-300: #DECFC0;
+  --color-primary-400: #CEB8A1;
+  --color-primary-500: #B3967A;
+  --color-primary-600: #967A5D;
+  --color-primary-700: #7A614A;
 
   /* Success - Soft Green */
   --color-success-50: #ECFDF5;
@@ -221,12 +221,12 @@ a:hover {
 .btn-primary {
   background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-600));
   color: var(--color-white);
-  box-shadow: 0 2px 8px rgba(139, 94, 60, 0.25);
+  box-shadow: 0 2px 8px rgba(179, 150, 122, 0.25);
 }
 
 .btn-primary:hover:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(139, 94, 60, 0.35);
+  box-shadow: 0 4px 12px rgba(179, 150, 122, 0.35);
 }
 
 .btn-secondary {
@@ -772,7 +772,7 @@ textarea.input {
 .sidebar-item.active {
   background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-600));
   color: var(--color-white);
-  box-shadow: 0 4px 12px rgba(139, 94, 60, 0.2);
+  box-shadow: 0 4px 12px rgba(179, 150, 122, 0.2);
 }
 
 .sidebar-item-icon {
@@ -1436,12 +1436,12 @@ textarea.input {
 
   50% {
     transform: scale(1.05);
-    filter: drop-shadow(0 0 20px rgba(139, 94, 60, 0.4));
+    filter: drop-shadow(0 0 20px rgba(179, 150, 122, 0.4));
   }
 
   100% {
     transform: scale(0.95);
-    filter: drop-shadow(0 0 0 rgba(139, 94, 60, 0));
+    filter: drop-shadow(0 0 0 rgba(179, 150, 122, 0));
   }
 }
 
@@ -1544,7 +1544,7 @@ textarea.input {
   border-color: var(--color-white);
   box-shadow:
     0 12px 24px rgba(0, 0, 0, 0.15),
-    0 0 0 6px rgba(139, 94, 60, 0.15);
+    0 0 0 6px rgba(179, 150, 122, 0.15);
 }
 
 .sidebar-profile-info {

@@ -159,22 +159,9 @@ export default function Login() {
                     </button>
                 </form>
 
-                <div style={{ textAlign: 'center', marginTop: '2rem', borderTop: '1px solid var(--color-gray-100)', paddingTop: '1.5rem' }}>
-                    <p style={{ fontSize: '0.875rem', margin: 0 }}>
-                        {userType === 'professional' ? (
-                            <>
-                                Nouveau praticien ?{' '}
-                                <a href="#" style={{ fontWeight: 600, color: '#FFFFFF' }}>Demander une démo</a>
-                            </>
-                        ) : (
-                            <>
-                                Première connexion ?{' '}
-                                <a href="#" style={{ fontWeight: 600, color: 'var(--color-primary-600)' }}>Activer mon compte</a>
-                            </>
-                        )}
-                    </p>
-                    <div style={{ textAlign: 'center', marginTop: '1rem' }}>
-                        <span style={{ fontSize: '0.7rem', color: 'var(--color-gray-400)', opacity: 0.5 }}>v1.2 - Secure Auth Active</span>
+                <div style={{ textAlign: 'center', marginTop: '2rem', borderTop: '1px solid rgba(255, 255, 255, 0.1)', paddingTop: '1.5rem' }}>
+                    <div style={{ textAlign: 'center' }}>
+                        <span style={{ fontSize: '0.7rem', color: 'rgba(255, 255, 255, 0.5)', opacity: 0.5 }}>v1.2 - Secure Auth Active</span>
                     </div>
                 </div>
             </div>
