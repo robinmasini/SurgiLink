@@ -1257,39 +1257,38 @@ textarea.input {
   opacity: 0.8;
 }
 
-@media (max-width: 640px) {
-  .login-page {
-    align-items: flex-end;
-    padding-bottom: 8vh;
-  }
+.login-page {
+  align-items: flex-end;
+  padding-bottom: 5vh;
+}
 
-  .login-card {
-    margin: var(--spacing-4);
-    padding: var(--spacing-6);
-    max-width: 320px;
-    background: rgba(255, 255, 255, 0.22);
-  }
+.login-card {
+  margin: var(--spacing-4);
+  padding: var(--spacing-6);
+  max-width: 320px;
+  background: rgba(255, 255, 255, 0.22);
+}
 
-  .login-brand-logo img {
-    width: 90px !important;
-    margin-bottom: 0.5rem !important;
-  }
+.login-brand-logo img {
+  width: 90px !important;
+  margin-bottom: 0.5rem !important;
+}
 
-  .login-brand {
-    margin-bottom: var(--spacing-4);
-  }
+.login-brand {
+  margin-bottom: var(--spacing-4);
+}
 
-  .login-card .form-group {
-    margin-bottom: var(--spacing-4);
-  }
+.login-card .form-group {
+  margin-bottom: var(--spacing-4);
+}
 
-  .login-card .btn-primary {
-    padding: var(--spacing-3);
-  }
+.login-card .btn-primary {
+  padding: var(--spacing-3);
+}
 
-  .login-bg-video {
-    object-position: center 12%;
-  }
+.login-bg-video {
+  object-position: center 0%;
+}
 }
 
 /* Welcome Banner */
