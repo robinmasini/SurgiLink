@@ -43,7 +43,7 @@ export default function Sidebar() {
                             <span className="sidebar-item-icon">
                                 <Icon size={20} />
                             </span>
-                            {item.label}
+                            <span className="sidebar-item-label">{item.label}</span>
                         </Link>
                     );
                 })}
@@ -61,8 +61,10 @@ export default function Sidebar() {
                         <div className="sidebar-profile-title">Praticien</div>
                         <div className="sidebar-profile-specialty">
                             <span className="sidebar-profile-specialty-label">Corps de métier</span>
-                            Chirurgie Esthétique<br />
-                            Plastique reconstructrice
+                            <span className="sidebar-profile-specialty-text">
+                                Chirurgie Esthétique<br />
+                                Plastique reconstructrice
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -78,7 +80,7 @@ export default function Sidebar() {
                     <span className="sidebar-item-icon">
                         <LogOut size={20} />
                     </span>
-                    Déconnexion
+                    <span className="sidebar-item-label">Déconnexion</span>
                 </button>
             </div>
         </aside>
