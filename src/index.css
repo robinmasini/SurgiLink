@@ -1280,6 +1280,10 @@ textarea.input {
   .login-card .btn-primary {
     padding: var(--spacing-3);
   }
+
+  .login-bg-video {
+    object-position: center 20%;
+  }
 }
 
 /* Welcome Banner */
