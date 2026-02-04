@@ -730,6 +730,10 @@ textarea.input {
   border-right: 1px solid rgba(0, 0, 0, 0.05);
 }
 
+.sidebar-close-btn {
+  display: none;
+}
+
 .sidebar-logo {
   display: flex;
   flex-direction: column;

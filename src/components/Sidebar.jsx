@@ -30,13 +30,15 @@ export default function Sidebar() {
 
     return (
         <aside className={`sidebar ${isMobileExpanded ? 'is-mobile-expanded' : ''}`}>
-            <button
-                className="sidebar-close-btn"
-                onClick={() => setIsMobileExpanded(false)}
-                aria-label="Fermer le menu"
-            >
-                <X size={24} />
-            </button>
+            {isMobileExpanded && (
+                <button
+                    className="sidebar-close-btn"
+                    onClick={() => setIsMobileExpanded(false)}
+                    aria-label="Fermer le menu"
+                >
+                    <X size={24} />
+                </button>
+            )}
 
             <div className="sidebar-logo" onClick={toggleSidebar} style={{ cursor: 'pointer' }}>
                 <img src={logo} alt="SurgiLink" className="sidebar-logo-img" style={{ width: '120px', height: 'auto', objectFit: 'contain' }} />
