@@ -1163,12 +1163,31 @@ textarea.input {
 
   .main-content {
     margin-left: var(--sidebar-width-mobile);
-    padding: var(--spacing-6);
+    padding: var(--spacing-4);
+  }
+
+  .header {
+    margin-bottom: var(--spacing-4);
+  }
+
+  .header-left h1 {
+    font-size: var(--font-size-xl);
+  }
+
+  .header-profile {
+    padding: 1px;
+    gap: var(--spacing-1);
+  }
+
+  .header-notification {
+    width: 32px;
+    height: 32px;
   }
 
   .grid-3,
   .grid-4 {
-    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-4);
+    grid-template-columns: 1fr;
   }
 }
 
@@ -1395,7 +1414,7 @@ textarea.input {
 
 /* Welcome Banner */
 .welcome-banner {
-  background: #3B82F6;
+  background: linear-gradient(135deg, var(--color-primary-600), var(--color-primary-700));
   border-radius: var(--radius-2xl);
   padding: var(--spacing-8);
   color: var(--color-white);
@@ -1405,7 +1424,7 @@ textarea.input {
   align-items: center;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 10px 40px -10px rgba(150, 122, 93, 0.4);
   min-height: 240px;
 }
 
@@ -1435,9 +1454,9 @@ textarea.input {
 }
 
 .welcome-banner-name {
-  font-size: var(--font-size-4xl);
+  font-size: var(--font-size-3xl);
   font-weight: var(--font-weight-bold);
-  margin-bottom: var(--spacing-6);
+  margin-bottom: var(--spacing-4);
   letter-spacing: -0.02em;
   line-height: 1.1;
 }
