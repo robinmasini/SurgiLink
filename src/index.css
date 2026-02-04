@@ -1157,7 +1157,9 @@ textarea.input {
 
   .sidebar-profile-card {
     padding: 0;
+    display: flex;
     justify-content: center;
+    align-items: center;
     border: none !important;
     background: transparent !important;
     backdrop-filter: none !important;
@@ -1177,7 +1179,9 @@ textarea.input {
     border: 1px solid rgba(255, 255, 255, 0.5);
     border-radius: var(--radius-2xl);
     padding: var(--spacing-5);
-    justify-content: flex-start;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   }
 
   .sidebar-profile-avatar {
@@ -1193,7 +1197,11 @@ textarea.input {
     height: 72px;
     border-width: 3px;
     margin-bottom: var(--spacing-1);
-    align-self: flex-start;
+    align-self: center;
+  }
+
+  .sidebar-profile-info {
+    text-align: center;
   }
 
   .main-content {
