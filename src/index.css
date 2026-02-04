@@ -136,18 +136,19 @@
 
 html {
   font-size: 16px;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  font-family: var(--font-family);
+  margin: 0;
+  padding: 0;
+  font-family: 'Outfit', sans-serif;
   font-size: var(--font-size-base);
-  font-weight: var(--font-weight-normal);
   line-height: var(--line-height-normal);
-  color: var(--color-gray-800);
+  color: var(--color-gray-900);
   background-color: var(--color-background);
   min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 #root {
@@ -1070,6 +1071,7 @@ textarea.input {
     border: 1px solid rgba(255, 255, 255, 0.3);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
     transition: all var(--transition-normal);
+    z-index: 1000;
   }
 
   .sidebar.is-mobile-expanded {
@@ -1152,12 +1154,18 @@ textarea.input {
   .sidebar-profile-card {
     padding: 0;
     justify-content: center;
-    border: none;
-    background: transparent;
-    box-shadow: none;
+    border: none !important;
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
     margin: var(--spacing-4) 0;
     width: 100%;
     transform: translateY(10px);
+  }
+
+  .sidebar-profile-card::before {
+    display: none !important;
   }
 
   .sidebar.is-mobile-expanded .sidebar-profile-card {
@@ -1187,6 +1195,9 @@ textarea.input {
   .main-content {
     margin-left: 84px;
     padding: var(--spacing-4);
+    width: calc(100vw - 84px);
+    box-sizing: border-box;
+    overflow-x: hidden;
   }
 
   .header {
@@ -1468,7 +1479,8 @@ textarea.input {
   overflow: hidden;
   box-shadow: 0 10px 40px -10px rgba(150, 122, 93, 0.4);
   min-height: 200px;
-  /* Reduced min-height for mobile mockup look */
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .welcome-banner::after {
