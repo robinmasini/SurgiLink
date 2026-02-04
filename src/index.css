@@ -1167,7 +1167,8 @@ textarea.input {
     box-shadow: none !important;
     margin: var(--spacing-4) 0;
     width: 100%;
-    transform: translateY(10px);
+    transform: none;
+    /* Removed translateY to stop overflow issues */
   }
 
   .sidebar-profile-card::before {
@@ -1178,15 +1179,17 @@ textarea.input {
     background: rgba(255, 255, 255, 0.35);
     border: 1px solid rgba(255, 255, 255, 0.5);
     border-radius: var(--radius-2xl);
-    padding: var(--spacing-5);
+    padding: var(--spacing-6);
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    margin-bottom: var(--spacing-8);
+    /* Moves the content up */
   }
 
   .sidebar-profile-avatar {
-    width: 56px;
-    height: 56px;
+    width: 52px;
+    height: 52px;
     margin: 0;
     border: none;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
