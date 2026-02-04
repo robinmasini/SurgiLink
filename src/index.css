@@ -1261,6 +1261,24 @@ textarea.input {
   .login-card {
     margin: var(--spacing-4);
     padding: var(--spacing-6);
+    max-width: 340px;
+    background: rgba(255, 255, 255, 0.25);
+  }
+
+  .login-brand-logo img {
+    width: 100px !important;
+  }
+
+  .login-brand {
+    margin-bottom: var(--spacing-6);
+  }
+
+  .login-card .form-group {
+    margin-bottom: var(--spacing-4);
+  }
+
+  .login-card .btn-primary {
+    padding: var(--spacing-3);
   }
 }
 
