@@ -1259,8 +1259,9 @@ textarea.input {
 
 @media (max-width: 640px) {
   .login-page {
-    align-items: flex-end;
-    padding-bottom: 5vh;
+    align-items: center;
+    padding-bottom: 0;
+    min-height: 100dvh;
   }
 
   .login-card {
