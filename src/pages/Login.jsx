@@ -94,23 +94,6 @@ export default function Login() {
                     </div>
                 </div>
 
-                <div className="toggle-group" style={{ marginBottom: '2rem' }}>
-                    <button
-                        type="button"
-                        className={`toggle-btn ${userType === 'professional' ? 'active' : ''}`}
-                        onClick={() => setUserType('professional')}
-                    >
-                        Professionnel
-                    </button>
-                    <button
-                        type="button"
-                        className={`toggle-btn ${userType === 'patient' ? 'active' : ''}`}
-                        onClick={() => setUserType('patient')}
-                    >
-                        Patient
-                    </button>
-                </div>
-
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
                         <div style={{ position: 'relative' }}>
@@ -161,7 +144,7 @@ export default function Login() {
                     </div>
 
                     <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1.5rem' }}>
-                        <a href="#" style={{ fontSize: '0.875rem', color: 'var(--color-primary-600)', fontWeight: 500 }}>
+                        <a href="#" style={{ fontSize: '0.875rem', color: '#FFFFFF', fontWeight: 500 }}>
                             Mot de passe oublié ?
                         </a>
                     </div>
@@ -181,7 +164,7 @@ export default function Login() {
                         {userType === 'professional' ? (
                             <>
                                 Nouveau praticien ?{' '}
-                                <a href="#" style={{ fontWeight: 600, color: 'var(--color-primary-600)' }}>Demander une démo</a>
+                                <a href="#" style={{ fontWeight: 600, color: '#FFFFFF' }}>Demander une démo</a>
                             </>
                         ) : (
                             <>

@@ -1247,6 +1247,16 @@ textarea.input {
   margin-top: var(--spacing-4);
 }
 
+.login-card a {
+  transition: all var(--transition-fast);
+}
+
+.login-card a:hover {
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+  transform: translateY(-1px);
+  opacity: 0.8;
+}
+
 @media (max-width: 640px) {
   .login-card {
     margin: var(--spacing-4);
