@@ -1119,13 +1119,18 @@ textarea.input {
   }
 
   .sidebar-logo img {
-    width: 32px !important;
+    width: 48px !important;
+    height: 48px !important;
+    object-fit: cover;
+    object-position: top center;
     filter: brightness(0);
-    transition: width var(--transition-normal);
+    transition: all var(--transition-normal);
   }
 
   .sidebar.is-mobile-expanded .sidebar-logo img {
-    width: 120px !important;
+    width: 150px !important;
+    height: auto !important;
+    object-fit: contain;
   }
 
   .sidebar-item {
