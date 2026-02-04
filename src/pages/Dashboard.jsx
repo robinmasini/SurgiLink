@@ -197,7 +197,7 @@ export default function Dashboard() {
                             <h3 style={{ marginBottom: 'var(--spacing-1)' }}>Patients en suivi</h3>
                             <p style={{ fontSize: 'var(--font-size-sm)' }}>Liste des patients avec leur statut actuel</p>
                         </div>
-                        <div style={{ display: 'flex', gap: 'var(--spacing-3)' }}>
+                        <div className="card-header-actions" style={{ display: 'flex', gap: 'var(--spacing-3)' }}>
                             <button className="btn btn-secondary" onClick={() => navigate('/patients')}>
                                 Voir tout
                             </button>
