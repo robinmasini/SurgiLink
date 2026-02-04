@@ -1547,13 +1547,24 @@ textarea.input {
   }
 
   .welcome-banner-image {
-    display: none;
-    /* Hide background image on small mobile to focus on content */
+    display: block;
+    object-position: 80% center;
+    opacity: 0.6;
+  }
+
+  .welcome-banner::after {
+    background: linear-gradient(to right,
+        rgba(0, 0, 0, 0.7) 0%,
+        rgba(0, 0, 0, 0.4) 60%,
+        transparent 100%);
+    display: block;
+    z-index: 2;
   }
 
   .welcome-banner-content {
     max-width: 100%;
-    z-index: 2;
+    z-index: 3;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   }
 }
 
