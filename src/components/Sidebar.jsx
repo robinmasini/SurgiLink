@@ -8,7 +8,8 @@ import {
     Users,
     TrendingUp,
     Eye,
-    LogOut
+    LogOut,
+    X
 } from 'lucide-react';
 
 const navItems = [
@@ -22,11 +23,22 @@ const navItems = [
 export default function Sidebar() {
     const location = useLocation();
     const navigate = useNavigate();
+    const [isMobileExpanded, setIsMobileExpanded] = useState(false);
+
+    const toggleSidebar = () => setIsMobileExpanded(!isMobileExpanded);
 
     return (
-        <aside className="sidebar">
-            <div className="sidebar-logo">
-                <img src={logo} alt="SurgiLink" style={{ width: '120px', height: 'auto', objectFit: 'contain' }} />
+        <aside className={`sidebar ${isMobileExpanded ? 'is-mobile-expanded' : ''}`}>
+            <button
+                className="sidebar-close-btn"
+                onClick={() => setIsMobileExpanded(false)}
+                aria-label="Fermer le menu"
+            >
+                <X size={24} />
+            </button>
+
+            <div className="sidebar-logo" onClick={toggleSidebar} style={{ cursor: 'pointer' }}>
+                <img src={logo} alt="SurgiLink" className="sidebar-logo-img" style={{ width: '120px', height: 'auto', objectFit: 'contain' }} />
             </div>
 
             <nav className="sidebar-nav">
@@ -39,6 +51,7 @@ export default function Sidebar() {
                             key={item.label}
                             to={item.path}
                             className={`sidebar-item ${isActive ? 'active' : ''}`}
+                            onClick={() => setIsMobileExpanded(false)}
                         >
                             <span className="sidebar-item-icon">
                                 <Icon size={20} />
@@ -50,7 +63,7 @@ export default function Sidebar() {
             </nav>
 
             <div className="sidebar-footer">
-                <div className="sidebar-profile-card">
+                <div className="sidebar-profile-card" onClick={toggleSidebar} style={{ cursor: 'pointer' }}>
                     <img
                         src={practitionerAvatar}
                         alt="Dr. Christophe Desouches"
