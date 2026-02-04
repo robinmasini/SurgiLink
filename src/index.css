@@ -1120,8 +1120,7 @@ textarea.input {
 
   .sidebar-logo img {
     width: 32px !important;
-    filter: none;
-    /* Keep original color/look if needed, or brightness(0) as per theme */
+    filter: brightness(0);
     transition: width var(--transition-normal);
   }
 
@@ -1517,7 +1516,7 @@ textarea.input {
 }
 
 .welcome-banner-signature {
-  height: 80px;
+  height: 100px;
   width: auto;
   object-fit: contain;
   margin-bottom: var(--spacing-6);
@@ -1598,7 +1597,7 @@ textarea.input {
   }
 
   .welcome-banner-signature {
-    max-width: 120px !important;
+    max-width: 150px !important;
   }
 
   .welcome-banner-image {
