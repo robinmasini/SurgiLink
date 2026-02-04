@@ -1321,6 +1321,12 @@ textarea.input {
   filter: brightness(100) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
   transition: transform var(--transition-normal), filter var(--transition-normal);
   display: block;
+  cursor: pointer;
+}
+
+.welcome-banner-signature-link {
+  display: inline-block;
+  text-decoration: none;
 }
 
 .welcome-banner-signature:hover {

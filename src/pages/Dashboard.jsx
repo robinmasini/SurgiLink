@@ -118,7 +118,14 @@ export default function Dashboard() {
                 <div className="welcome-banner fade-in">
                     <div className="welcome-banner-content">
                         <div className="welcome-banner-welcome">Bienvenue,</div>
-                        <img src={christopheSignature} alt="Christophe DESOUCHES" className="welcome-banner-signature" />
+                        <a
+                            href="https://www.desouches-chirurgien-esthetique.com/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="welcome-banner-signature-link"
+                        >
+                            <img src={christopheSignature} alt="Christophe DESOUCHES" className="welcome-banner-signature" />
+                        </a>
 
                         <div className="welcome-banner-greeting">Ravi de vous revoir !</div>
                         <div className="welcome-banner-instruction">Consultez votre Espace Praticien</div>
