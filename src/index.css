@@ -1072,6 +1072,8 @@ textarea.input {
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
     transition: all var(--transition-normal);
     z-index: 1000;
+    padding-bottom: 24px;
+    /* Lift the footer elements slightly global */
   }
 
   .sidebar.is-mobile-expanded {
@@ -1188,8 +1190,8 @@ textarea.input {
   }
 
   .sidebar-profile-avatar {
-    width: 52px;
-    height: 52px;
+    width: 48px;
+    height: 48px;
     margin: 0;
     border: none;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -1648,6 +1650,25 @@ textarea.input {
     padding: var(--spacing-3) var(--spacing-2);
     font-size: var(--font-size-xs);
   }
+}
+
+/* Deadline Colors */
+.deadline-red {
+  color: #ef4444 !important;
+  /* var(--color-danger-500) */
+  font-weight: var(--font-weight-bold);
+}
+
+.deadline-orange {
+  color: #f97316 !important;
+  /* var(--color-warning-500) */
+  font-weight: var(--font-weight-bold);
+}
+
+.deadline-green {
+  color: #10b981 !important;
+  /* var(--color-success-500) */
+  font-weight: var(--font-weight-bold);
 }
 
 /* --- Preloader --- */

@@ -239,7 +239,12 @@ export default function Dashboard() {
                                             </div>
                                             <div>
                                                 <div style={{ fontWeight: 'var(--font-weight-medium)' }}>{patient.name}</div>
-                                                <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)' }}>{patient.daysUntil}</div>
+                                                <div className={
+                                                    patient.daysUntil === 'J-1' ? 'deadline-red' :
+                                                        (patient.daysUntil === 'J+1' || patient.daysUntil === 'J+2') ? 'deadline-orange' :
+                                                            (patient.daysUntil === 'J-7' || patient.daysUntil === 'J-8') ? 'deadline-green' :
+                                                                ''
+                                                } style={{ fontSize: 'var(--font-size-xs)' }}>{patient.daysUntil}</div>
                                             </div>
                                         </div>
                                     </td>
