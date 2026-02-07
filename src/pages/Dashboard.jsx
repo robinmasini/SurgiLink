@@ -21,6 +21,7 @@ import {
     Phone
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { calculateDaysUntilSurgery } from '../utils/dateUtils';
 
 export default function Dashboard() {
     const navigate = useNavigate();
@@ -43,10 +44,10 @@ export default function Dashboard() {
 
             if (error) throw error;
 
-            // Format patients
+            // Format patients with dynamic days calculation
             const formattedPatients = (data || []).map(patient => ({
                 ...patient,
-                daysUntil: patient.days_until || 'J-0',
+                daysUntil: calculateDaysUntilSurgery(patient.date),
                 date: patient.date ? new Date(patient.date).toLocaleDateString('fr-FR', {
                     day: 'numeric',
                     month: 'short',

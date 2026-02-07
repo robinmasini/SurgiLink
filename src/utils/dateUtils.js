@@ -25,6 +25,28 @@ export const calculateAge = (birthDate) => {
 };
 
 /**
+ * Calculate days until/after surgery date
+ * @param {string|Date} surgeryDate - Surgery date
+ * @returns {string} Formatted string like "J-7" or "J+3" or "J-0"
+ */
+export const calculateDaysUntilSurgery = (surgeryDate) => {
+    if (!surgeryDate) return 'J-0';
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const surgery = new Date(surgeryDate);
+    surgery.setHours(0, 0, 0, 0);
+
+    const diffTime = surgery - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays === 0) return 'J-0';
+    if (diffDays > 0) return `J-${diffDays}`;
+    return `J+${Math.abs(diffDays)}`;
+};
+
+/**
  * Format date in French locale
  * @param {string|Date} date - Date to format
  * @param {object} options - Intl.DateTimeFormat options

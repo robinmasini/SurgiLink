@@ -5,6 +5,7 @@ import Header from '../components/Header';
 import AddPatientModal from '../components/AddPatientModal';
 import { Users, Search, Filter, Plus } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { calculateDaysUntilSurgery } from '../utils/dateUtils';
 
 const getStatusBadge = (status) => {
     switch (status) {
@@ -25,7 +26,7 @@ const getDaysStyle = (daysUntil) => {
     if (daysUntil.startsWith('J+')) {
         return { color: 'var(--color-info-500)', fontWeight: 'var(--font-weight-semibold)' };
     }
-    if (daysUntil === 'J-1') {
+    if (daysUntil === 'J-1' || daysUntil === 'J-0') {
         return { color: 'var(--color-success-500)', fontWeight: 'var(--font-weight-semibold)' };
     }
     return { color: 'var(--color-primary-500)', fontWeight: 'var(--font-weight-semibold)' };
@@ -55,10 +56,10 @@ export default function Patients() {
 
             if (error) throw error;
 
-            // Format dates to French format
+            // Format dates and calculate days until surgery
             const formattedPatients = (data || []).map(patient => ({
                 ...patient,
-                daysUntil: patient.days_until || 'J-0',
+                daysUntil: calculateDaysUntilSurgery(patient.date),
                 date: patient.date ? new Date(patient.date).toLocaleDateString('fr-FR', {
                     day: 'numeric',
                     month: 'short',
