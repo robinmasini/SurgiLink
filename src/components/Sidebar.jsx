@@ -19,7 +19,6 @@ const navItems = [
     { path: '/patients', label: 'File Active Patients', icon: Users },
     { path: '/rentabilite', label: 'Rentabilité & ROI', icon: TrendingUp },
     { path: '/review/active', label: 'Suivi par Statut', icon: Stethoscope },
-    { path: '/patient/checklist', label: 'Aperçu Patient', icon: Eye },
 ];
 
 export default function Sidebar() {

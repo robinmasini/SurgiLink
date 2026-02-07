@@ -31,10 +31,10 @@ function App() {
         <Route path="/review/:category" element={<ProtectedRoute><CategoryReview /></ProtectedRoute>} />
 
         {/* Patient Routes */}
-        <Route path="/patient/checklist" element={<PatientChecklist />} />
-        <Route path="/patient/postop" element={<PatientPostOp />} />
-        <Route path="/patient/feedback" element={<PatientFeedback />} />
-        <Route path="/patient/success" element={<PatientSuccess />} />
+        <Route path="/patient/:patientId/checklist" element={<PatientChecklist />} />
+        <Route path="/patient/:patientId/postop" element={<PatientPostOp />} />
+        <Route path="/patient/:patientId/feedback" element={<PatientFeedback />} />
+        <Route path="/patient/:patientId/success" element={<PatientSuccess />} />
 
         {/* Pathway Routes - Patient-facing */}
         <Route path="/patient/pathway/j7/:patientId" element={<PatientJ7 />} />

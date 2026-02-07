@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
@@ -20,73 +20,50 @@ import {
     Mail,
     Phone
 } from 'lucide-react';
-
-// Initial data preserved as default state
-const initialPatients = [
-    {
-        id: 1,
-        name: 'Thomas Dupont',
-        operation: 'Arthroscopie Épaule',
-        date: '21 Jan 2026',
-        status: 'ready',
-        daysUntil: 'J-1',
-        progress: 100
-    },
-    {
-        id: 2,
-        name: 'Marie Laurent',
-        operation: 'Chirurgie Pied',
-        date: '22 Jan 2026',
-        status: 'postop',
-        daysUntil: 'J+2',
-        progress: 60
-    },
-    {
-        id: 3,
-        name: 'Alain Bernard',
-        operation: 'Cataracte',
-        date: '27 Jan 2026',
-        status: 'incomplete',
-        daysUntil: 'J-7',
-        progress: 40
-    },
-    {
-        id: 4,
-        name: 'Paul Martin',
-        operation: 'Ligamentoplastie Genou',
-        date: '19 Jan 2026',
-        status: 'postop',
-        daysUntil: 'J+1',
-        progress: 30
-    },
-    {
-        id: 5,
-        name: 'Sophie Petit',
-        operation: 'Rhinoplastie',
-        date: '28 Jan 2026',
-        status: 'pending',
-        daysUntil: 'J-8',
-        progress: 20
-    },
-];
+import { supabase } from '../lib/supabase';
 
 export default function Dashboard() {
     const navigate = useNavigate();
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [patients, setPatients] = useState(initialPatients);
+    const [patients, setPatients] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        loadPatients();
+    }, []);
+
+    const loadPatients = async () => {
+        setIsLoading(true);
+        try {
+            const { data, error } = await supabase
+                .from('patients')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .limit(5); // Only get 5 most recent for dashboard
+
+            if (error) throw error;
+
+            // Format patients
+            const formattedPatients = (data || []).map(patient => ({
+                ...patient,
+                daysUntil: patient.days_until || 'J-0',
+                date: patient.date ? new Date(patient.date).toLocaleDateString('fr-FR', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric'
+                }) : 'Non définie'
+            }));
+
+            setPatients(formattedPatients);
+        } catch (err) {
+            console.error('Error loading patients:', err);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     const handlePatientAdded = (newPatient) => {
-        // Map Supabase fields to the UI format if needed
-        const formattedPatient = {
-            id: newPatient.id,
-            name: newPatient.name,
-            operation: newPatient.operation,
-            date: newPatient.date,
-            status: newPatient.status || 'pending',
-            daysUntil: newPatient.days_until || 'J-0',
-            progress: newPatient.progress || 0
-        };
-        setPatients([formattedPatient, ...patients]);
+        loadPatients(); // Reload patients
     };
 
     const getStatusBadge = (status) => {

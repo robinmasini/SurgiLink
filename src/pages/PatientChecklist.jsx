@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
     LogOut,
     Clock,
@@ -10,9 +10,13 @@ import {
     AlertTriangle,
     User
 } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 export default function PatientChecklist() {
     const navigate = useNavigate();
+    const { patientId } = useParams();
+    const [patient, setPatient] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
     const [jeune, setJeune] = useState(false);
     const [douche, setDouche] = useState(null);
     const [epilation, setEpilation] = useState(null);
@@ -21,17 +25,66 @@ export default function PatientChecklist() {
     const [allergie, setAllergie] = useState(null);
     const [accompagnant, setAccompagnant] = useState(null);
 
+    // Load patient data
+    useEffect(() => {
+        const loadPatient = async () => {
+            setIsLoading(true);
+            try {
+                const { data, error } = await supabase
+                    .from('patients')
+                    .select('*')
+                    .eq('id', patientId)
+                    .single();
+
+                if (error) throw error;
+                setPatient(data);
+            } catch (err) {
+                console.error('Error loading patient:', err);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        if (patientId) {
+            loadPatient();
+        }
+    }, [patientId]);
+
     const handleSubmit = () => {
-        navigate('/patient/success');
+        navigate(`/patient/${patientId}/success`);
     };
+
+    if (isLoading) {
+        return (
+            <div className="patient-view" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+                <div style={{ textAlign: 'center' }}>
+                    <div className="spinner" style={{ margin: '0 auto var(--spacing-4)' }}></div>
+                    <p>Chargement...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (!patient) {
+        return (
+            <div className="patient-view" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+                <div style={{ textAlign: 'center', color: 'var(--color-gray-500)' }}>
+                    <p>Patient introuvable</p>
+                    <button className="btn btn-primary" onClick={() => navigate('/patients')}>Retour à la liste</button>
+                </div>
+            </div>
+        );
+    }
+
+    const firstName = patient.name.split(' ')[0];
 
     return (
         <div className="patient-view">
             {/* Header */}
             <div className="patient-header">
                 <div className="patient-header-left">
-                    <h2>Bonjour Alain</h2>
-                    <span>J-7 • Cataracte</span>
+                    <h2>Bonjour {firstName}</h2>
+                    <span>{patient.days_until || 'J-0'} • {patient.operation}</span>
                 </div>
                 <button
                     style={{
