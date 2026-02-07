@@ -52,7 +52,7 @@ export default function Sidebar() {
 
             <div className="sidebar-logo" onClick={toggleSidebar} style={{ cursor: 'pointer' }}>
                 {isMobile ? (
-                    <LogoIcon width="50px" className="sidebar-logo-img" />
+                    <LogoIcon width="35px" className="sidebar-logo-img" />
                 ) : (
                     <LogoPremium width="120px" className="sidebar-logo-img" />
                 )}

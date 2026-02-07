@@ -1221,7 +1221,7 @@ textarea.input {
 
   .sidebar-logo svg,
   .sidebar-logo img {
-    max-width: 50px !important;
+    max-width: 35px !important;
     height: auto !important;
     transition: all var(--transition-normal);
   }
