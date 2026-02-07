@@ -24,10 +24,12 @@ export default function PatientReview() {
     const [medicalHistory, setMedicalHistory] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isAddingHistory, setIsAddingHistory] = useState(false);
+    const [historyCategory, setHistoryCategory] = useState('intervention'); // 'intervention' or 'sms'
     const [newHistoryEntry, setNewHistoryEntry] = useState({
         date: '',
         title: '',
-        description: ''
+        description: '',
+        category: 'intervention'
     });
 
     useEffect(() => {
@@ -81,7 +83,8 @@ export default function PatientReview() {
                     patient_id: id,
                     date: newHistoryEntry.date,
                     title: newHistoryEntry.title,
-                    description: newHistoryEntry.description
+                    description: newHistoryEntry.description,
+                    category: historyCategory
                 }])
                 .select();
 
@@ -90,7 +93,7 @@ export default function PatientReview() {
             // Add to local state
             setMedicalHistory([data[0], ...medicalHistory]);
             setIsAddingHistory(false);
-            setNewHistoryEntry({ date: '', title: '', description: '' });
+            setNewHistoryEntry({ date: '', title: '', description: '', category: historyCategory });
         } catch (err) {
             console.error('Error adding history entry:', err);
             alert(`Erreur: ${err.message}`);
@@ -292,15 +295,59 @@ export default function PatientReview() {
                         </div>
                         <div>
                             <h3 style={{ marginBottom: '4px' }}>Historique de Traçabilité</h3>
-                            <p style={{ fontSize: 'var(--font-size-sm)' }}>Registre des interventions et consultations précédentes</p>
+                            <p style={{ fontSize: 'var(--font-size-sm)' }}>Registre des interventions et suivi SMS</p>
                         </div>
+                    </div>
+
+                    {/* Category Tabs */}
+                    <div style={{
+                        display: 'flex',
+                        gap: 'var(--spacing-2)',
+                        marginBottom: 'var(--spacing-6)',
+                        borderBottom: '2px solid var(--color-gray-100)'
+                    }}>
+                        <button
+                            onClick={() => setHistoryCategory('intervention')}
+                            style={{
+                                padding: 'var(--spacing-3) var(--spacing-4)',
+                                background: 'transparent',
+                                border: 'none',
+                                borderBottom: historyCategory === 'intervention' ? '2px solid var(--color-primary-500)' : '2px solid transparent',
+                                color: historyCategory === 'intervention' ? 'var(--color-primary-600)' : 'var(--color-gray-500)',
+                                fontWeight: historyCategory === 'intervention' ? 'var(--font-weight-semibold)' : 'var(--font-weight-medium)',
+                                cursor: 'pointer',
+                                marginBottom: '-2px',
+                                transition: 'all 0.2s'
+                            }}
+                        >
+                            Interventions
+                        </button>
+                        <button
+                            onClick={() => setHistoryCategory('sms')}
+                            style={{
+                                padding: 'var(--spacing-3) var(--spacing-4)',
+                                background: 'transparent',
+                                border: 'none',
+                                borderBottom: historyCategory === 'sms' ? '2px solid var(--color-primary-500)' : '2px solid transparent',
+                                color: historyCategory === 'sms' ? 'var(--color-primary-600)' : 'var(--color-gray-500)',
+                                fontWeight: historyCategory === 'sms' ? 'var(--font-weight-semibold)' : 'var(--font-weight-medium)',
+                                cursor: 'pointer',
+                                marginBottom: '-2px',
+                                transition: 'all 0.2s'
+                            }}
+                        >
+                            Suivi SMS
+                        </button>
+                    </div>
+
+                    {/* Add Entry Button */}
+                    <div style={{ marginBottom: 'var(--spacing-4)' }}>
                         <button
                             className="btn btn-primary btn-sm"
                             onClick={() => setIsAddingHistory(!isAddingHistory)}
-                            style={{ marginLeft: 'auto' }}
                         >
                             <Plus size={16} />
-                            Ajouter une entrée
+                            Ajouter une {historyCategory === 'intervention' ? 'intervention' : 'communication SMS'}
                         </button>
                     </div>
 
@@ -358,54 +405,59 @@ export default function PatientReview() {
                     )}
 
                     <div className="timeline">
-                        {medicalHistory.length > 0 ? medicalHistory.map((item) => (
-                            <div key={item.id} className="timeline-item">
-                                <div className="timeline-dot"></div>
-                                <div className="timeline-content glass-effect" style={{ position: 'relative' }}>
-                                    <button
-                                        onClick={() => handleDeleteHistoryEntry(item.id)}
-                                        style={{
-                                            position: 'absolute',
-                                            top: 'var(--spacing-3)',
-                                            right: 'var(--spacing-3)',
-                                            background: 'transparent',
-                                            border: 'none',
-                                            cursor: 'pointer',
-                                            color: 'var(--color-gray-400)',
-                                            padding: '4px',
-                                            borderRadius: '4px',
-                                            transition: 'all 0.2s'
-                                        }}
-                                        onMouseEnter={(e) => {
-                                            e.target.style.background = 'var(--color-danger-50)';
-                                            e.target.style.color = 'var(--color-danger-600)';
-                                        }}
-                                        onMouseLeave={(e) => {
-                                            e.target.style.background = 'transparent';
-                                            e.target.style.color = 'var(--color-gray-400)';
-                                        }}
-                                        title="Supprimer cette entrée"
-                                    >
-                                        <X size={16} />
-                                    </button>
-                                    <div className="timeline-date">{formatDateFR(item.date)}</div>
-                                    <div className="timeline-title">{item.title}</div>
-                                    <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-600)' }}>{item.description}</div>
+                        {medicalHistory.filter(item => item.category === historyCategory).length > 0 ?
+                            medicalHistory.filter(item => item.category === historyCategory).map((item) => (
+                                <div key={item.id} className="timeline-item">
+                                    <div className="timeline-dot"></div>
+                                    <div className="timeline-content glass-effect" style={{ position: 'relative' }}>
+                                        <button
+                                            onClick={() => handleDeleteHistoryEntry(item.id)}
+                                            style={{
+                                                position: 'absolute',
+                                                top: 'var(--spacing-3)',
+                                                right: 'var(--spacing-3)',
+                                                background: 'transparent',
+                                                border: 'none',
+                                                cursor: 'pointer',
+                                                color: 'var(--color-gray-400)',
+                                                padding: '4px',
+                                                borderRadius: '4px',
+                                                transition: 'all 0.2s'
+                                            }}
+                                            onMouseEnter={(e) => {
+                                                e.target.style.background = 'var(--color-danger-50)';
+                                                e.target.style.color = 'var(--color-danger-600)';
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                e.target.style.background = 'transparent';
+                                                e.target.style.color = 'var(--color-gray-400)';
+                                            }}
+                                            title="Supprimer cette entrée"
+                                        >
+                                            <X size={16} />
+                                        </button>
+                                        <div className="timeline-date">{formatDateFR(item.date)}</div>
+                                        <div className="timeline-title">{item.title}</div>
+                                        <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-600)' }}>{item.description}</div>
+                                    </div>
                                 </div>
-                            </div>
-                        )) : (
-                            <div style={{ textAlign: 'center', padding: 'var(--spacing-8)', color: 'var(--color-gray-400)' }}>
-                                <History size={48} style={{ marginBottom: 'var(--spacing-4)', opacity: 0.2 }} />
-                                <p style={{ marginBottom: 'var(--spacing-4)' }}>Aucune entrée d'historique pour le moment.</p>
-                                <button
-                                    className="btn btn-primary"
-                                    onClick={() => setIsAddingHistory(true)}
-                                >
-                                    <Plus size={16} />
-                                    Ajouter la première entrée
-                                </button>
-                            </div>
-                        )}
+                            )) : (
+                                <div style={{ textAlign: 'center', padding: 'var(--spacing-8)', color: 'var(--color-gray-400)' }}>
+                                    <History size={48} style={{ marginBottom: 'var(--spacing-4)', opacity: 0.2 }} />
+                                    <p style={{ marginBottom: 'var(--spacing-4)' }}>
+                                        {historyCategory === 'intervention'
+                                            ? 'Aucune intervention enregistrée pour le moment.'
+                                            : 'Aucun SMS envoyé pour le moment.'}
+                                    </p>
+                                    <button
+                                        className="btn btn-primary"
+                                        onClick={() => setIsAddingHistory(true)}
+                                    >
+                                        <Plus size={16} />
+                                        Ajouter {historyCategory === 'intervention' ? 'une intervention' : 'un SMS'}
+                                    </button>
+                                </div>
+                            )}
                     </div>
                 </div>
             </main>
