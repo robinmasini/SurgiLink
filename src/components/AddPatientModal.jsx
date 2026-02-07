@@ -7,6 +7,7 @@ export default function AddPatientModal({ isOpen, onClose, onPatientAdded }) {
         name: '',
         operation: '',
         date: '',
+        birthDate: '',
         phone: '',
         email: ''
     });
@@ -29,6 +30,7 @@ export default function AddPatientModal({ isOpen, onClose, onPatientAdded }) {
                         name: formData.name,
                         operation: formData.operation,
                         date: formData.date || new Date().toISOString().split('T')[0],
+                        birth_date: formData.birthDate || null,
                         phone: formData.phone,
                         email: formData.email,
                         status: 'pending',
@@ -47,7 +49,7 @@ export default function AddPatientModal({ isOpen, onClose, onPatientAdded }) {
                 alert(`Patient ${formData.name} enregistré avec succès !`);
                 if (onPatientAdded) onPatientAdded(data[0]);
                 onClose();
-                setFormData({ name: '', operation: '', date: '', phone: '', email: '' });
+                setFormData({ name: '', operation: '', date: '', birthDate: '', phone: '', email: '' });
             }
         } catch (err) {
             console.error('Unexpected error:', err);
@@ -102,9 +104,19 @@ export default function AddPatientModal({ isOpen, onClose, onPatientAdded }) {
                             </div>
                         </div>
 
+                        <div>
+                            <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Date de Naissance</label>
+                            <input
+                                type="date"
+                                className="input"
+                                value={formData.birthDate}
+                                onChange={(e) => setFormData({ ...formData, birthDate: e.target.value })}
+                            />
+                        </div>
+
                         <div className="grid-2">
                             <div>
-                                <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Date</label>
+                                <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Date d'intervention</label>
                                 <input
                                     type="date"
                                     className="input"
