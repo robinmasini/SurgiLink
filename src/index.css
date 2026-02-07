@@ -1216,20 +1216,20 @@ textarea.input {
     width: 100%;
     display: flex;
     justify-content: center;
+    align-items: center;
   }
 
+  .sidebar-logo svg,
   .sidebar-logo img {
-    width: 48px !important;
-    height: 48px !important;
-    object-fit: cover;
-    object-position: top center;
+    max-width: 50px !important;
+    height: auto !important;
     transition: all var(--transition-normal);
   }
 
+  .sidebar.is-mobile-expanded .sidebar-logo svg,
   .sidebar.is-mobile-expanded .sidebar-logo img {
-    width: 150px !important;
+    max-width: 120px !important;
     height: auto !important;
-    object-fit: contain;
   }
 
   .sidebar-item {
