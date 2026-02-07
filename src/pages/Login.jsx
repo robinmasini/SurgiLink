@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import Logo from '../components/Logo';
+import LogoWhite from '../components/LogoWhite';
 import favicon from '/favicon.png';
 import { Link, useNavigate } from 'react-router-dom';
 import { Sparkles, Mail, Lock, ArrowRight } from 'lucide-react';
@@ -90,7 +90,7 @@ export default function Login() {
             <div className="login-card">
                 <div className="login-brand">
                     <div className="login-brand-logo">
-                        <Logo width="140px" />
+                        <LogoWhite width="140px" />
                     </div>
                 </div>
 

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import Logo from './Logo';
+import LogoPremium from './LogoPremium';
 import practitionerAvatar from '../assets/practitioner-avatar.png';
 import {
     LayoutDashboard,
@@ -41,7 +41,7 @@ export default function Sidebar() {
             )}
 
             <div className="sidebar-logo" onClick={toggleSidebar} style={{ cursor: 'pointer' }}>
-                <Logo width="120px" className="sidebar-logo-img" />
+                <LogoPremium width="120px" className="sidebar-logo-img" />
             </div>
 
             <nav className="sidebar-nav">
