@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import logo from '../assets/logo_surgilink.png';
+import Logo from '../components/Logo';
 import favicon from '/favicon.png';
 import { Link, useNavigate } from 'react-router-dom';
 import { Sparkles, Mail, Lock, ArrowRight } from 'lucide-react';
@@ -90,7 +90,7 @@ export default function Login() {
             <div className="login-card">
                 <div className="login-brand">
                     <div className="login-brand-logo">
-                        <img src={logo} alt="SurgiLink" style={{ width: '140px', height: 'auto', objectFit: 'contain', marginBottom: '1rem' }} />
+                        <Logo width="140px" />
                     </div>
                 </div>
 

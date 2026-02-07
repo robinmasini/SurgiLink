@@ -9,6 +9,10 @@ import PatientFeedback from './pages/PatientFeedback';
 import PatientPostOp from './pages/PatientPostOp';
 import PatientReview from './pages/PatientReview';
 import CategoryReview from './pages/CategoryReview';
+import PatientJ7 from './pages/PatientJ7';
+import PatientJ2 from './pages/PatientJ2';
+import PatientJ1 from './pages/PatientJ1';
+import PatientPathwayTracker from './components/PatientPathwayTracker';
 import ProtectedRoute from './components/ProtectedRoute';
 import './index.css';
 
@@ -31,6 +35,14 @@ function App() {
         <Route path="/patient/postop" element={<PatientPostOp />} />
         <Route path="/patient/feedback" element={<PatientFeedback />} />
         <Route path="/patient/success" element={<PatientSuccess />} />
+
+        {/* Pathway Routes - Patient-facing */}
+        <Route path="/patient/pathway/j7/:patientId" element={<PatientJ7 />} />
+        <Route path="/patient/pathway/j2/:patientId" element={<PatientJ2 />} />
+        <Route path="/patient/pathway/j1/:patientId" element={<PatientJ1 />} />
+
+        {/* Pathway Routes - Staff-facing */}
+        <Route path="/staff/pathway/:patientId" element={<ProtectedRoute><PatientPathwayTracker /></ProtectedRoute>} />
       </Routes>
     </Router>
   );

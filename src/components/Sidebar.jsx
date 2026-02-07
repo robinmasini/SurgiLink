@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import logo from '../assets/logo_surgilink.png';
+import Logo from './Logo';
 import practitionerAvatar from '../assets/practitioner-avatar.png';
 import {
     LayoutDashboard,
@@ -41,7 +41,7 @@ export default function Sidebar() {
             )}
 
             <div className="sidebar-logo" onClick={toggleSidebar} style={{ cursor: 'pointer' }}>
-                <img src={logo} alt="SurgiLink" className="sidebar-logo-img" style={{ width: '120px', height: 'auto', objectFit: 'contain' }} />
+                <Logo width="120px" className="sidebar-logo-img" />
             </div>
 
             <nav className="sidebar-nav">
@@ -66,7 +66,7 @@ export default function Sidebar() {
             </nav>
 
             <div className="sidebar-footer">
-                <div className="sidebar-profile-card" onClick={toggleSidebar} style={{ cursor: 'pointer' }}>
+                <div className="sidebar-profile-card">
                     <img
                         src={practitionerAvatar}
                         alt="Dr. Christophe Desouches"
