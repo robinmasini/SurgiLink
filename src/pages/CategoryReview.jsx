@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -11,14 +11,7 @@ import {
     Search,
     Filter
 } from 'lucide-react';
-
-const patients = [
-    { id: 1, name: 'Thomas Dupont', operation: 'Arthroscopie Épaule', date: '21 Jan 2026', status: 'ready', daysUntil: 'J-1', progress: 100, category: 'active' },
-    { id: 2, name: 'Marie Laurent', operation: 'Chirurgie Pied', date: '22 Jan 2026', status: 'postop', daysUntil: 'J+2', progress: 60, category: 'active' },
-    { id: 3, name: 'Alain Bernard', operation: 'Cataracte', date: '27 Jan 2026', status: 'incomplete', daysUntil: 'J-7', progress: 40, category: 'required' },
-    { id: 4, name: 'Paul Martin', operation: 'Ligamentoplastie Genou', date: '19 Jan 2026', status: 'postop', daysUntil: 'J+1', progress: 30, category: 'active' },
-    { id: 5, name: 'Sophie Petit', operation: 'Rhinoplastie', date: '28 Jan 2026', status: 'pending', daysUntil: 'J-8', progress: 20, category: 'active' },
-];
+import { supabase } from '../lib/supabase';
 
 const categoryConfigs = {
     'active': { title: 'Patients Actifs', icon: <Users size={24} />, color: 'var(--color-primary-500)', bg: 'var(--color-primary-50)' },
@@ -31,9 +24,32 @@ export default function CategoryReview() {
     const { category } = useParams();
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
+    const [patients, setPatients] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
     const config = categoryConfigs[category] || categoryConfigs['active'];
 
-    // Filtering logic (simulated)
+    useEffect(() => {
+        const loadPatients = async () => {
+            setIsLoading(true);
+            try {
+                const { data, error } = await supabase
+                    .from('patients')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+                setPatients(data || []);
+            } catch (err) {
+                console.error('Error loading patients:', err);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        loadPatients();
+    }, []);
+
+    // Filtering logic
     const filteredPatients = patients.filter(p => {
         const matchesCategory = (() => {
             if (category === 'complete') return p.progress === 100;

@@ -118,6 +118,27 @@ export default function PatientReview() {
         }
     };
 
+    const handleDeletePatient = async () => {
+        if (!confirm(`Êtes-vous sûr de vouloir supprimer le patient ${patient.name} ? Cette action est irréversible.`)) {
+            return;
+        }
+
+        try {
+            const { error } = await supabase
+                .from('patients')
+                .delete()
+                .eq('id', id);
+
+            if (error) throw error;
+
+            alert('Patient supprimé avec succès');
+            navigate('/patients');
+        } catch (err) {
+            console.error('Error deleting patient:', err);
+            alert(`Erreur: ${err.message}`);
+        }
+    };
+
     if (isLoading) {
         return (
             <div style={{ display: 'flex' }}>
@@ -158,6 +179,15 @@ export default function PatientReview() {
                         title={`Revue Patient : ${patient.name}`}
                         subtitle="Historique complet et suivi clinique"
                     />
+                    <button
+                        onClick={handleDeletePatient}
+                        className="btn btn-danger btn-sm"
+                        style={{ marginLeft: 'auto' }}
+                        title="Supprimer ce patient"
+                    >
+                        <X size={16} />
+                        Supprimer
+                    </button>
                 </div>
 
                 <div className="grid-3" style={{ marginBottom: 'var(--spacing-8)' }}>
