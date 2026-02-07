@@ -4,7 +4,7 @@ export default function LogoIcon({ width = "40px", className = "" }) {
         <svg
             width={width}
             height="auto"
-            viewBox="0 0 727 745"
+            viewBox="180 0 370 580"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
             className={className}
