@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -11,49 +12,65 @@ import {
     Activity,
     ShieldCheck
 } from 'lucide-react';
-
-const patientsData = {
-    1: {
-        id: 1,
-        name: 'Thomas Dupont',
-        age: 42,
-        operation: 'Arthroscopie Épaule',
-        date: '21 Jan 2026',
-        status: 'ready',
-        progress: 100,
-        history: [
-            { date: '15 Mai 2024', title: 'Consultation Initiale', description: 'Douleurs persistantes épaule droite.' },
-            { date: '02 Juin 2024', title: 'IRM Épaule', description: 'Déchirure partielle du labrum confirmée.' },
-            { date: '10 Jan 2026', title: 'Bilan Pré-opératoire', description: 'Validation anesthésie et examens biologiques.' }
-        ]
-    },
-    2: {
-        id: 2,
-        name: 'Marie Laurent',
-        age: 35,
-        operation: 'Chirurgie Pied',
-        date: '22 Jan 2026',
-        status: 'postop',
-        progress: 60,
-        history: [
-            { date: '10 Nov 2025', title: 'Consultation Hallux Valgus', description: 'Gêne importante à la marche.' },
-            { date: '15 Jan 2026', title: 'Radio de contrôle', description: 'Alignement osseux pré-opératoire.' }
-        ]
-    }
-    // Fallback data for other IDs
-};
+import { supabase } from '../lib/supabase';
 
 export default function PatientReview() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const patient = patientsData[id] || {
-        id: id,
-        name: 'Patient Inconnu',
-        age: '--',
-        operation: 'Non spécifié',
-        date: '--',
-        history: []
-    };
+    const [patient, setPatient] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const loadPatient = async () => {
+            setIsLoading(true);
+            try {
+                const { data, error } = await supabase
+                    .from('patients')
+                    .select('*')
+                    .eq('id', id)
+                    .single();
+
+                if (error) throw error;
+                setPatient(data);
+            } catch (err) {
+                console.error('Error loading patient:', err);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        if (id) {
+            loadPatient();
+        }
+    }, [id]);
+
+    if (isLoading) {
+        return (
+            <div style={{ display: 'flex' }}>
+                <Sidebar />
+                <main className="main-content" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+                    <div style={{ textAlign: 'center' }}>
+                        <div className="spinner" style={{ margin: '0 auto var(--spacing-4)' }}></div>
+                        <p>Chargement...</p>
+                    </div>
+                </main>
+            </div>
+        );
+    }
+
+    if (!patient) {
+        return (
+            <div style={{ display: 'flex' }}>
+                <Sidebar />
+                <main className="main-content" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+                    <div style={{ textAlign: 'center', color: 'var(--color-gray-500)' }}>
+                        <p style={{ marginBottom: 'var(--spacing-4)' }}>Patient introuvable</p>
+                        <button className="btn btn-primary" onClick={() => navigate('/patients')}>Retour à la liste</button>
+                    </div>
+                </main>
+            </div>
+        );
+    }
 
     return (
         <div style={{ display: 'flex' }}>
@@ -84,12 +101,26 @@ export default function PatientReview() {
                                 <div style={{ fontWeight: 'var(--font-weight-semibold)' }}>{patient.name}</div>
                             </div>
                             <div>
-                                <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', textTransform: 'uppercase' }}>Âge</div>
-                                <div style={{ fontWeight: 'var(--font-weight-semibold)' }}>{patient.age} ans</div>
+                                <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', textTransform: 'uppercase' }}>Téléphone</div>
+                                <div style={{ fontWeight: 'var(--font-weight-semibold)' }}>{patient.phone || 'Non renseigné'}</div>
+                            </div>
+                            <div>
+                                <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', textTransform: 'uppercase' }}>Email</div>
+                                <div style={{ fontWeight: 'var(--font-weight-semibold)' }}>{patient.email || 'Non renseigné'}</div>
                             </div>
                             <div>
                                 <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', textTransform: 'uppercase' }}>Intervention Prévue</div>
                                 <div style={{ fontWeight: 'var(--font-weight-semibold)' }}>{patient.operation}</div>
+                            </div>
+                            <div>
+                                <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', textTransform: 'uppercase' }}>Date</div>
+                                <div style={{ fontWeight: 'var(--font-weight-semibold)' }}>
+                                    {patient.date ? new Date(patient.date).toLocaleDateString('fr-FR', {
+                                        day: 'numeric',
+                                        month: 'long',
+                                        year: 'numeric'
+                                    }) : 'Non définie'}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -104,10 +135,10 @@ export default function PatientReview() {
                         </div>
                         <div style={{ textAlign: 'center', padding: 'var(--spacing-4)' }}>
                             <div style={{ fontSize: 'var(--font-size-4xl)', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-primary-500)' }}>
-                                {patient.progress}%
+                                {patient.progress || 0}%
                             </div>
                             <div className="progress-bar" style={{ margin: 'var(--spacing-4) 0' }}>
-                                <div className="progress-fill progress-fill-primary" style={{ width: `${patient.progress}%` }}></div>
+                                <div className="progress-fill progress-fill-primary" style={{ width: `${patient.progress || 0}%` }}></div>
                             </div>
                             <div className="badge badge-success">Conformité validée</div>
                         </div>
@@ -151,20 +182,10 @@ export default function PatientReview() {
                     </div>
 
                     <div className="timeline">
-                        {patient.history.length > 0 ? patient.history.map((item, index) => (
-                            <div key={index} className="timeline-item">
-                                <div className="timeline-dot"></div>
-                                <div className="timeline-content glass-effect">
-                                    <div className="timeline-date">{item.date}</div>
-                                    <div className="timeline-title">{item.title}</div>
-                                    <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-600)' }}>{item.description}</div>
-                                </div>
-                            </div>
-                        )) : (
-                            <div style={{ textAlign: 'center', padding: 'var(--spacing-8)', color: 'var(--color-gray-400)' }}>
-                                Aucun historique de traçabilité disponible pour ce patient.
-                            </div>
-                        )}
+                        <div style={{ textAlign: 'center', padding: 'var(--spacing-8)', color: 'var(--color-gray-400)' }}>
+                            <History size={48} style={{ marginBottom: 'var(--spacing-4)', opacity: 0.2 }} />
+                            <p>L'historique de traçabilité sera disponible prochainement.</p>
+                        </div>
                     </div>
                 </div>
             </main>
