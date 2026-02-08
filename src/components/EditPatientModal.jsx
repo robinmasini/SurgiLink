@@ -89,7 +89,18 @@ export default function EditPatientModal({ isOpen, onClose, patient, onPatientUp
 
     return (
         <div className="modal-backdrop" onClick={onClose}>
-            <div className="liquid-glass-modal" style={{ width: '100%', maxWidth: '500px' }} onClick={e => e.stopPropagation()}>
+            <div
+                className="liquid-glass-modal"
+                style={{
+                    width: '100%',
+                    maxWidth: '550px',
+                    maxHeight: '90vh',
+                    overflow: 'hidden',
+                    display: 'flex',
+                    flexDirection: 'column'
+                }}
+                onClick={e => e.stopPropagation()}
+            >
                 <div style={{ padding: 'var(--spacing-6)', borderBottom: '1px solid rgba(0,0,0,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)' }}>
                         <div className="card-icon card-icon-primary" style={{ width: '32px', height: '32px' }}>
@@ -102,7 +113,11 @@ export default function EditPatientModal({ isOpen, onClose, patient, onPatientUp
                     </button>
                 </div>
 
-                <div style={{ padding: 'var(--spacing-6)' }}>
+                <div style={{
+                    padding: 'var(--spacing-6)',
+                    overflowY: 'auto',
+                    flex: 1
+                }}>
                     <div style={{ display: 'grid', gap: 'var(--spacing-4)' }}>
                         <div>
                             <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Nom Complet</label>
@@ -184,18 +199,18 @@ export default function EditPatientModal({ isOpen, onClose, patient, onPatientUp
 
                         {/* Clinic Information */}
                         <div style={{
-                            marginTop: 'var(--spacing-6)',
-                            paddingTop: 'var(--spacing-6)',
+                            marginTop: 'var(--spacing-5)',
+                            paddingTop: 'var(--spacing-5)',
                             borderTop: '1px solid var(--color-gray-200)'
                         }}>
                             <h4 style={{
                                 fontSize: 'var(--font-size-sm)',
                                 fontWeight: 'var(--font-weight-semibold)',
                                 color: 'var(--color-gray-700)',
-                                marginBottom: 'var(--spacing-4)'
+                                marginBottom: 'var(--spacing-3)'
                             }}>Informations Clinique</h4>
 
-                            <div style={{ display: 'grid', gap: 'var(--spacing-4)' }}>
+                            <div style={{ display: 'grid', gap: 'var(--spacing-3)' }}>
                                 <div>
                                     <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Nom de la Clinique</label>
                                     <div style={{ position: 'relative' }}>
@@ -227,7 +242,7 @@ export default function EditPatientModal({ isOpen, onClose, patient, onPatientUp
                         </div>
                     </div>
 
-                    <div style={{ marginTop: 'var(--spacing-8)', display: 'flex', gap: 'var(--spacing-3)' }}>
+                    <div style={{ marginTop: 'var(--spacing-6)', display: 'flex', gap: 'var(--spacing-3)' }}>
                         <button className="btn btn-secondary" style={{ flex: 1 }} onClick={onClose} disabled={isSaving}>Annuler</button>
                         <button className="btn btn-primary" style={{ flex: 1 }} onClick={handleSave} disabled={isSaving}>
                             {isSaving ? 'Enregistrement...' : 'Enregistrer'}
