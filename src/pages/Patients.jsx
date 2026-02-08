@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import AddPatientModal from '../components/AddPatientModal';
-import { Users, Search, Filter, Plus } from 'lucide-react';
+import EditPatientModal from '../components/EditPatientModal';
+import { Users, Search, Filter, Plus, Edit2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { calculateDaysUntilSurgery } from '../utils/dateUtils';
 
@@ -36,6 +37,8 @@ export default function Patients() {
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [selectedPatient, setSelectedPatient] = useState(null);
     const [patientsList, setPatientsList] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -79,6 +82,17 @@ export default function Patients() {
     const handlePatientAdded = (newPatient) => {
         // Reload patients to get the freshest data
         loadPatients();
+    };
+
+    const handlePatientUpdated = (updatedPatient) => {
+        // Reload patients to get the freshest data
+        loadPatients();
+    };
+
+    const handleEditClick = (e, patient) => {
+        e.stopPropagation(); // Prevent navigation to patient details
+        setSelectedPatient(patient);
+        setIsEditModalOpen(true);
     };
 
     const filteredPatients = patientsList.filter(p =>
@@ -153,7 +167,25 @@ export default function Patients() {
                 {!isLoading && !error && (
                     <div className="grid-3">
                         {filteredPatients.length > 0 ? filteredPatients.map((patient) => (
-                            <div key={patient.id} className="card" style={{ cursor: 'pointer' }} onClick={() => navigate(`/patient/${patient.id}`)}>
+                            <div key={patient.id} className="card" style={{ cursor: 'pointer', position: 'relative' }} onClick={() => navigate(`/patient/${patient.id}`)}>
+                                <button
+                                    onClick={(e) => handleEditClick(e, patient)}
+                                    className="btn btn-secondary"
+                                    style={{
+                                        position: 'absolute',
+                                        top: 'var(--spacing-3)',
+                                        right: 'var(--spacing-3)',
+                                        padding: 'var(--spacing-2)',
+                                        minWidth: 'auto',
+                                        border: '1px solid var(--color-gray-200)',
+                                        background: 'white',
+                                        zIndex: 1
+                                    }}
+                                    title="Modifier le patient"
+                                >
+                                    <Edit2 size={16} />
+                                </button>
+
                                 <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-4)', marginBottom: 'var(--spacing-4)' }}>
                                     <div style={{
                                         width: '56px',
@@ -212,6 +244,16 @@ export default function Patients() {
                     isOpen={isModalOpen}
                     onClose={() => setIsModalOpen(false)}
                     onPatientAdded={handlePatientAdded}
+                />
+
+                <EditPatientModal
+                    isOpen={isEditModalOpen}
+                    onClose={() => {
+                        setIsEditModalOpen(false);
+                        setSelectedPatient(null);
+                    }}
+                    patient={selectedPatient}
+                    onPatientUpdated={handlePatientUpdated}
                 />
             </main>
         </div>
