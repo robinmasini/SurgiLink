@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
+import EditPatientModal from '../components/EditPatientModal';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
     Calendar,
@@ -12,7 +13,8 @@ import {
     Activity,
     ShieldCheck,
     Plus,
-    X
+    X,
+    Edit2
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { calculateAge, formatDateFR } from '../utils/dateUtils';
@@ -24,6 +26,7 @@ export default function PatientReview() {
     const [medicalHistory, setMedicalHistory] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isAddingHistory, setIsAddingHistory] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [historyCategory, setHistoryCategory] = useState('intervention'); // 'intervention' or 'sms'
     const [newHistoryEntry, setNewHistoryEntry] = useState({
         date: '',
@@ -142,6 +145,22 @@ export default function PatientReview() {
         }
     };
 
+    const handlePatientUpdated = async () => {
+        // Reload patient data after update
+        try {
+            const { data: patientData, error: patientError } = await supabase
+                .from('patients')
+                .select('*')
+                .eq('id', id)
+                .single();
+
+            if (patientError) throw patientError;
+            setPatient(patientData);
+        } catch (err) {
+            console.error('Error reloading patient:', err);
+        }
+    };
+
     if (isLoading) {
         return (
             <div style={{ display: 'flex' }}>
@@ -183,9 +202,17 @@ export default function PatientReview() {
                         subtitle="Historique complet et suivi clinique"
                     />
                     <button
+                        onClick={() => setIsEditModalOpen(true)}
+                        className="btn btn-primary btn-sm"
+                        style={{ marginLeft: 'auto' }}
+                        title="Modifier les informations du patient"
+                    >
+                        <Edit2 size={16} />
+                        Modifier
+                    </button>
+                    <button
                         onClick={handleDeletePatient}
                         className="btn btn-danger btn-sm"
-                        style={{ marginLeft: 'auto' }}
                         title="Supprimer ce patient"
                     >
                         <X size={16} />
@@ -461,6 +488,13 @@ export default function PatientReview() {
                     </div>
                 </div>
             </main>
+
+            <EditPatientModal
+                isOpen={isEditModalOpen}
+                onClose={() => setIsEditModalOpen(false)}
+                patient={patient}
+                onPatientUpdated={handlePatientUpdated}
+            />
         </div>
     );
 }
