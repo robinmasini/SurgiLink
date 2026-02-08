@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import EditPatientModal from '../components/EditPatientModal';
+import ClinicAppointmentCard from '../components/ClinicAppointmentCard';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
     Calendar,
@@ -289,29 +290,14 @@ export default function PatientReview() {
                         </div>
                     </div>
 
-                    {/* Next Steps Card */}
-                    <div className="card glass-effect">
-                        <div className="card-header">
-                            <div className="card-icon card-icon-warning">
-                                <Clock size={20} />
-                            </div>
-                            <h3>Prochaines Étapes</h3>
-                        </div>
-                        <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 'var(--spacing-3)' }}>
-                            <li style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)', fontSize: 'var(--font-size-sm)' }}>
-                                <ShieldCheck size={16} color="var(--color-success-500)" />
-                                Questionnaire pré-opératoire
-                            </li>
-                            <li style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)', fontSize: 'var(--font-size-sm)' }}>
-                                <ShieldCheck size={16} color="var(--color-success-500)" />
-                                Consultation anesthésie
-                            </li>
-                            <li style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)', fontSize: 'var(--font-size-sm)', opacity: 0.5 }}>
-                                <div style={{ width: 16, height: 16, borderRadius: '50%', border: '2px solid var(--color-gray-300)' }}></div>
-                                Admission clinique (J-0)
-                            </li>
-                        </ul>
-                    </div>
+                    {/* Clinic Appointment Card */}
+                    <ClinicAppointmentCard
+                        patientId={id}
+                        clinicName={patient.clinic_name}
+                        clinicImageUrl={patient.clinic_image_url}
+                        appointmentDatetime={patient.appointment_datetime}
+                        onUpdate={handlePatientUpdated}
+                    />
                 </div>
 
                 {/* Surgical History / Traceability */}

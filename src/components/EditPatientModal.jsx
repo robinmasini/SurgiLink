@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Edit2, X, User, Clipboard, Mail, Phone } from 'lucide-react';
+import { Edit2, X, User, Clipboard, Mail, Phone, MapPin, Calendar } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 export default function EditPatientModal({ isOpen, onClose, patient, onPatientUpdated }) {
@@ -9,7 +9,9 @@ export default function EditPatientModal({ isOpen, onClose, patient, onPatientUp
         date: '',
         birthDate: '',
         phone: '',
-        email: ''
+        email: '',
+        clinicName: '',
+        appointmentDatetime: ''
     });
     const [isSaving, setIsSaving] = useState(false);
 
@@ -37,7 +39,9 @@ export default function EditPatientModal({ isOpen, onClose, patient, onPatientUp
                 date: operationDate || '',
                 birthDate: patient.birth_date || '',
                 phone: patient.phone || '',
-                email: patient.email || ''
+                email: patient.email || '',
+                clinicName: patient.clinic_name || '',
+                appointmentDatetime: patient.appointment_datetime ? new Date(patient.appointment_datetime).toISOString().slice(0, 16) : ''
             });
         }
     }, [patient]);
@@ -60,7 +64,9 @@ export default function EditPatientModal({ isOpen, onClose, patient, onPatientUp
                     date: formData.date || null,
                     birth_date: formData.birthDate || null,
                     phone: formData.phone,
-                    email: formData.email
+                    email: formData.email,
+                    clinic_name: formData.clinicName || null,
+                    appointment_datetime: formData.appointmentDatetime || null
                 })
                 .eq('id', patient.id)
                 .select();
@@ -173,6 +179,50 @@ export default function EditPatientModal({ isOpen, onClose, patient, onPatientUp
                                     value={formData.email}
                                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                 />
+                            </div>
+                        </div>
+
+                        {/* Clinic Information */}
+                        <div style={{
+                            marginTop: 'var(--spacing-6)',
+                            paddingTop: 'var(--spacing-6)',
+                            borderTop: '1px solid var(--color-gray-200)'
+                        }}>
+                            <h4 style={{
+                                fontSize: 'var(--font-size-sm)',
+                                fontWeight: 'var(--font-weight-semibold)',
+                                color: 'var(--color-gray-700)',
+                                marginBottom: 'var(--spacing-4)'
+                            }}>Informations Clinique</h4>
+
+                            <div style={{ display: 'grid', gap: 'var(--spacing-4)' }}>
+                                <div>
+                                    <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Nom de la Clinique</label>
+                                    <div style={{ position: 'relative' }}>
+                                        <MapPin size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-gray-400)' }} />
+                                        <input
+                                            className="input"
+                                            placeholder="Ex: Clinique de Vitrolles"
+                                            style={{ paddingLeft: '40px' }}
+                                            value={formData.clinicName}
+                                            onChange={(e) => setFormData({ ...formData, clinicName: e.target.value })}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Date et Heure du Rendez-vous</label>
+                                    <div style={{ position: 'relative' }}>
+                                        <Calendar size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-gray-400)', zIndex: 1 }} />
+                                        <input
+                                            type="datetime-local"
+                                            className="input"
+                                            style={{ paddingLeft: '40px' }}
+                                            value={formData.appointmentDatetime}
+                                            onChange={(e) => setFormData({ ...formData, appointmentDatetime: e.target.value })}
+                                        />
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
