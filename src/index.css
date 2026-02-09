@@ -1273,11 +1273,9 @@ textarea.input {
   }
 
   .sidebar.is-mobile-expanded .sidebar-item {
-    flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     padding: var(--spacing-3) var(--spacing-4);
-    text-align: center;
   }
 
   .sidebar-item-label,
