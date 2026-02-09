@@ -1625,7 +1625,7 @@ textarea.input {
   }
 
   .login-brand {
-    margin-bottom: var(--spacing-4);
+    margin-bottom: var(--spacing-8);
   }
 
   .login-card .form-group {
@@ -1634,6 +1634,8 @@ textarea.input {
 
   .login-card .btn-primary {
     padding: var(--spacing-3);
+    background: linear-gradient(135deg, var(--color-gray-600), var(--color-gray-700));
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   }
 
   .login-bg-video {
