@@ -1,5 +1,5 @@
 import { MapPin, Calendar, Clock } from 'lucide-react';
-import clinicImage from '../assets/clinic.jpg';
+import clinicImage from '../assets/clinic.png';
 
 export default function ClinicAppointmentCard({
     clinicName,
