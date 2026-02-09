@@ -292,12 +292,10 @@ export default function PatientReview() {
 
                     {/* Clinic Appointment Card */}
                     <ClinicAppointmentCard
-                        patientId={id}
                         clinicName={patient.clinic_name}
-                        clinicImageUrl={patient.clinic_image_url}
                         appointmentDatetime={patient.appointment_datetime}
-                        onUpdate={handlePatientUpdated}
                     />
+
                 </div>
 
                 {/* Surgical History / Traceability */}

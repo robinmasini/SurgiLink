@@ -99,15 +99,14 @@ export default function Sidebar() {
                 </div>
 
                 <button
-                    className="sidebar-item"
-                    style={{ width: '100%', border: 'none', background: 'transparent', cursor: 'pointer' }}
+                    className="sidebar-logout-btn"
                     onClick={async () => {
                         await supabase.auth.signOut();
                         navigate('/login');
                     }}
                 >
                     <span className="sidebar-item-icon">
-                        <LogOut size={20} />
+                        <LogOut size={18} />
                     </span>
                     <span className="sidebar-item-label">Déconnexion</span>
                 </button>
