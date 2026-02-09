@@ -1278,6 +1278,13 @@ textarea.input {
     padding: var(--spacing-3) var(--spacing-4);
   }
 
+  .sidebar.is-mobile-expanded .sidebar-item.active {
+    margin-left: calc(-1 * var(--spacing-6));
+    margin-right: calc(-1 * var(--spacing-6));
+    padding-left: calc(var(--spacing-4) + var(--spacing-6));
+    padding-right: calc(var(--spacing-4) + var(--spacing-6));
+  }
+
   .sidebar-item-label,
   .sidebar-profile-info {
     display: none;
