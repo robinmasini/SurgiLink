@@ -58,7 +58,7 @@ export default function ClinicAppointmentCard({
                     <div className="card-icon card-icon-primary">
                         <MapPin size={20} />
                     </div>
-                    <h3>Rendez-vous Clinique</h3>
+                    <h3>Clinique de Vitrolles</h3>
                 </div>
 
                 {/* Clinic Name */}
