@@ -1273,7 +1273,7 @@ textarea.input {
   }
 
   .sidebar.is-mobile-expanded .sidebar-item {
-    justify-content: flex-start;
+    justify-content: center;
     padding: var(--spacing-3) var(--spacing-4);
   }
 
@@ -1298,10 +1298,9 @@ textarea.input {
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
     box-shadow: none !important;
-    margin: var(--spacing-4) 0;
+    margin: var(--spacing-2) 0;
     width: 100%;
     transform: none;
-    /* Removed translateY to stop overflow issues */
   }
 
   .sidebar-profile-card::before {
@@ -1311,13 +1310,12 @@ textarea.input {
   .sidebar.is-mobile-expanded .sidebar-profile-card {
     background: rgba(255, 255, 255, 0.35);
     border: 1px solid rgba(255, 255, 255, 0.5);
-    border-radius: var(--radius-2xl);
-    padding: var(--spacing-6);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-3);
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin-bottom: var(--spacing-8);
-    /* Moves the content up */
+    margin-bottom: var(--spacing-3);
   }
 
   .sidebar-profile-avatar {
@@ -1329,16 +1327,16 @@ textarea.input {
   }
 
   .sidebar.is-mobile-expanded .sidebar-profile-avatar {
-    width: 72px;
-    height: 72px;
-    border-width: 3px;
+    width: 56px;
+    height: 56px;
+    border-width: 2px;
     margin-bottom: var(--spacing-1);
     align-self: center;
   }
 
   .sidebar-profile-info {
     text-align: center;
-    margin-top: var(--spacing-2);
+    margin-top: var(--spacing-1);
   }
 
   .sidebar-footer {
@@ -1348,6 +1346,7 @@ textarea.input {
     align-items: center !important;
     border-top: none !important;
     margin-top: auto;
+    padding-top: var(--spacing-2);
   }
 
   .main-content {
