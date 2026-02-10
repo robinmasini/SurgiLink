@@ -1,15 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { LogOut, Clock, Sparkles, Scissors } from 'lucide-react';
+import { LogOut, Clock, Sparkles, Scissors, AlertCircle } from 'lucide-react';
 import { pathwayConfig } from '../config/pathway.config';
 import { saveResponse, getResponses, markScreenCompleted, calculateRiskFlags } from '../services/pathwayService';
 import { scheduleStateBasedReminders } from '../services/reminderService';
 import QuestionRenderer from '../components/pathway/QuestionRenderer';
 import AlertBanner from '../components/pathway/AlertBanner';
+import { usePatientId } from '../hooks/usePatientId';
 
 export default function PatientJ7() {
     const navigate = useNavigate();
-    const { patientId } = useParams();
+    const { patientId: resolvedPatientId, loading: loadingPatientId, error: patientIdError, isTokenMode } = usePatientId();
     const [responses, setResponses] = useState({});
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -18,8 +19,10 @@ export default function PatientJ7() {
     const config = pathwayConfig.J7;
 
     useEffect(() => {
-        loadResponses();
-    }, [patientId]);
+        if (resolvedPatientId) {
+            loadResponses();
+        }
+    }, [resolvedPatientId]);
 
     useEffect(() => {
         // Calculate risk flags whenever responses change
@@ -28,9 +31,9 @@ export default function PatientJ7() {
     }, [responses]);
 
     const loadResponses = async () => {
-        if (!patientId) return;
+        if (!resolvedPatientId) return;
         setLoading(true);
-        const data = await getResponses(parseInt(patientId), 'J7');
+        const data = await getResponses(parseInt(resolvedPatientId), 'J7');
         setResponses(data);
         setLoading(false);
     };
@@ -66,25 +69,55 @@ export default function PatientJ7() {
         setResponses(prev => ({ ...prev, [itemId]: value }));
 
         // Save to database
-        if (patientId) {
-            await saveResponse(parseInt(patientId), 'J7', itemId, value, false);
+        if (resolvedPatientId) {
+            await saveResponse(parseInt(resolvedPatientId), 'J7', itemId, value, false);
         }
     };
 
     const handleSubmit = async () => {
         setSaving(true);
 
-        if (patientId) {
+        if (resolvedPatientId) {
             // Mark screen as completed
-            await markScreenCompleted(parseInt(patientId), 'J7');
+            await markScreenCompleted(parseInt(resolvedPatientId), 'J7');
 
             // Schedule state-based reminders for incomplete items
-            await scheduleStateBasedReminders(parseInt(patientId), 'J7');
+            await scheduleStateBasedReminders(parseInt(resolvedPatientId), 'J7');
         }
 
         setSaving(false);
-        navigate('/patient/success');
+
+        // Navigate back to portal if in token mode, otherwise to success page
+        if (isTokenMode) {
+            const params = new URLSearchParams(window.location.search);
+            const token = window.location.pathname.split('/')[2];
+            navigate(`/patient-portal/${token}`);
+        } else {
+            navigate('/patient/success');
+        }
     };
+
+    // Loading patient ID
+    if (loadingPatientId) {
+        return (
+            <div className="patient-view" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+                <div>Chargement...</div>
+            </div>
+        );
+    }
+
+    // Error loading patient ID
+    if (patientIdError) {
+        return (
+            <div className="patient-view" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+                <div className="card" style={{ maxWidth: '500px', textAlign: 'center', padding: 'var(--spacing-6)' }}>
+                    <AlertCircle size={64} style={{ margin: '0 auto var(--spacing-4)', color: 'var(--color-danger-500)' }} />
+                    <h2 style={{ marginBottom: 'var(--spacing-2)' }}>Accès non autorisé</h2>
+                    <p style={{ color: 'var(--color-gray-600)' }}>{patientIdError}</p>
+                </div>
+            </div>
+        );
+    }
 
     if (loading) {
         return (

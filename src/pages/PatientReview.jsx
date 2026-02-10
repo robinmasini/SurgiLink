@@ -15,10 +15,14 @@ import {
     ShieldCheck,
     Plus,
     X,
-    Edit2
+    Edit2,
+    Link as LinkIcon,
+    Copy,
+    Check
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { calculateAge, formatDateFR } from '../utils/dateUtils';
+import { generatePatientToken } from '../services/tokenService';
 
 export default function PatientReview() {
     const { id } = useParams();
@@ -35,6 +39,10 @@ export default function PatientReview() {
         description: '',
         category: 'intervention'
     });
+    const [showLinkModal, setShowLinkModal] = useState(false);
+    const [generatedLink, setGeneratedLink] = useState('');
+    const [linkCopied, setLinkCopied] = useState(false);
+    const [generatingLink, setGeneratingLink] = useState(false);
 
     useEffect(() => {
         const loadPatientData = async () => {
@@ -162,6 +170,31 @@ export default function PatientReview() {
         }
     };
 
+    const handleGeneratePatientLink = async () => {
+        setGeneratingLink(true);
+        try {
+            const result = await generatePatientToken(id);
+            if (result.success) {
+                const link = `${window.location.origin}/patient-portal/${result.token}`;
+                setGeneratedLink(link);
+                setShowLinkModal(true);
+            } else {
+                alert(`Erreur lors de la génération du lien: ${result.error}`);
+            }
+        } catch (err) {
+            console.error('Error generating patient link:', err);
+            alert('Erreur lors de la génération du lien');
+        } finally {
+            setGeneratingLink(false);
+        }
+    };
+
+    const handleCopyLink = () => {
+        navigator.clipboard.writeText(generatedLink);
+        setLinkCopied(true);
+        setTimeout(() => setLinkCopied(false), 2000);
+    };
+
     if (isLoading) {
         return (
             <div style={{ display: 'flex' }}>
@@ -203,9 +236,18 @@ export default function PatientReview() {
                         subtitle="Historique complet et suivi clinique"
                     />
                     <button
+                        onClick={handleGeneratePatientLink}
+                        className="btn btn-success btn-sm"
+                        style={{ marginLeft: 'auto' }}
+                        title="Générer un lien d'accès patient"
+                        disabled={generatingLink}
+                    >
+                        <LinkIcon size={16} />
+                        {generatingLink ? 'Génération...' : 'Lien Patient'}
+                    </button>
+                    <button
                         onClick={() => setIsEditModalOpen(true)}
                         className="btn btn-primary btn-sm"
-                        style={{ marginLeft: 'auto' }}
                         title="Modifier les informations du patient"
                     >
                         <Edit2 size={16} />
@@ -479,6 +521,71 @@ export default function PatientReview() {
                 patient={patient}
                 onPatientUpdated={handlePatientUpdated}
             />
+
+            {/* Patient Link Modal */}
+            {showLinkModal && (
+                <div className="modal-overlay" onClick={() => setShowLinkModal(false)}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '600px' }}>
+                        <div style={{ marginBottom: 'var(--spacing-6)' }}>
+                            <h2 style={{ marginBottom: 'var(--spacing-2)' }}>Lien de Suivi Patient</h2>
+                            <p style={{ color: 'var(--color-gray-600)', fontSize: 'var(--font-size-sm)' }}>
+                                Envoyez ce lien au patient pour qu'il accède à son portail personnel.
+                            </p>
+                        </div>
+
+                        <div style={{
+                            background: 'var(--color-gray-50)',
+                            padding: 'var(--spacing-4)',
+                            borderRadius: 'var(--border-radius-lg)',
+                            border: '1px solid var(--color-gray-200)',
+                            marginBottom: 'var(--spacing-4)',
+                            wordBreak: 'break-all'
+                        }}>
+                            <code style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-700)' }}>
+                                {generatedLink}
+                            </code>
+                        </div>
+
+                        <div style={{ display: 'flex', gap: 'var(--spacing-3)' }}>
+                            <button
+                                className="btn btn-primary"
+                                onClick={handleCopyLink}
+                                style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--spacing-2)' }}
+                            >
+                                {linkCopied ? (
+                                    <>
+                                        <Check size={18} />
+                                        Copié !
+                                    </>
+                                ) : (
+                                    <>
+                                        <Copy size={18} />
+                                        Copier le lien
+                                    </>
+                                )}
+                            </button>
+                            <button
+                                className="btn btn-secondary"
+                                onClick={() => setShowLinkModal(false)}
+                            >
+                                Fermer
+                            </button>
+                        </div>
+
+                        <div style={{
+                            marginTop: 'var(--spacing-4)',
+                            padding: 'var(--spacing-3)',
+                            background: 'var(--color-info-50)',
+                            borderLeft: '4px solid var(--color-info-500)',
+                            borderRadius: 'var(--border-radius-md)'
+                        }}>
+                            <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-700)' }}>
+                                <strong>Note :</strong> Ce lien permet au patient de consulter ses informations, de remplir ses questionnaires et de suivre son parcours ambulatoire.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

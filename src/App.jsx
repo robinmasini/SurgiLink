@@ -13,6 +13,7 @@ import PatientJ7 from './pages/PatientJ7';
 import PatientJ2 from './pages/PatientJ2';
 import PatientJ1 from './pages/PatientJ1';
 import PatientPathwayTracker from './components/PatientPathwayTracker';
+import PatientPortal from './pages/PatientPortal';
 import ProtectedRoute from './components/ProtectedRoute';
 import './index.css';
 
@@ -43,6 +44,12 @@ function App() {
 
         {/* Pathway Routes - Staff-facing */}
         <Route path="/staff/pathway/:patientId" element={<ProtectedRoute><PatientPathwayTracker /></ProtectedRoute>} />
+
+        {/* Patient Portal Routes - Token-based access (no authentication required) */}
+        <Route path="/patient-portal/:token" element={<PatientPortal />} />
+        <Route path="/patient-portal/:token/j7" element={<PatientJ7 />} />
+        <Route path="/patient-portal/:token/j2" element={<PatientJ2 />} />
+        <Route path="/patient-portal/:token/j1" element={<PatientJ1 />} />
       </Routes>
     </Router>
   );
