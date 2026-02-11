@@ -289,21 +289,6 @@ export default function PatientReview() {
                     </button>
 
                     <div style={{ marginLeft: 'auto', display: 'flex', gap: 'var(--spacing-3)' }}>
-                        <div style={{
-                            background: riskStatus === 'CRITIQUE' ? 'var(--color-danger-50)' : riskStatus === 'VIGILANCE' ? 'var(--color-warning-50)' : 'var(--color-success-50)',
-                            color: riskStatus === 'CRITIQUE' ? 'var(--color-danger-600)' : riskStatus === 'VIGILANCE' ? 'var(--color-warning-600)' : 'var(--color-success-600)',
-                            padding: 'var(--spacing-2) var(--spacing-6)',
-                            borderRadius: 'var(--border-radius-md)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 'var(--spacing-3)',
-                            fontWeight: 'var(--font-weight-bold)',
-                            fontSize: 'var(--font-size-md)',
-                            border: `1px solid ${riskStatus === 'CRITIQUE' ? 'var(--color-danger-200)' : riskStatus === 'VIGILANCE' ? 'var(--color-warning-200)' : 'var(--color-success-200)'}`
-                        }}>
-                            <AlertCircle size={18} />
-                            Score : {riskStatus}
-                        </div>
                     </div>
                 </div>
 
@@ -312,7 +297,29 @@ export default function PatientReview() {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-8)' }}>
 
                         {/* 1. Patient Card */}
-                        <div className="card glass-effect" style={{ padding: 'var(--spacing-8)' }}>
+                        <div className="card glass-effect" style={{ padding: 'var(--spacing-8)', position: 'relative' }}>
+                            <div style={{ position: 'absolute', top: 'var(--spacing-6)', right: 'var(--spacing-8)' }}>
+                                <div style={{
+                                    background: riskStatus === 'CRITIQUE' ? 'var(--color-danger-50)' : riskStatus === 'VIGILANCE' ? 'var(--color-warning-50)' : 'var(--color-success-50)',
+                                    color: riskStatus === 'CRITIQUE' ? 'var(--color-danger-600)' : riskStatus === 'VIGILANCE' ? 'var(--color-warning-600)' : 'var(--color-success-600)',
+                                    padding: '8px 20px',
+                                    borderRadius: '100px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 'var(--spacing-2)',
+                                    fontWeight: 'var(--font-weight-bold)',
+                                    fontSize: 'var(--font-size-sm)',
+                                    border: `1px solid ${riskStatus === 'CRITIQUE' ? 'var(--color-danger-100)' : riskStatus === 'VIGILANCE' ? 'var(--color-warning-100)' : 'var(--color-success-100)'}`
+                                }}>
+                                    <div style={{
+                                        width: '8px',
+                                        height: '8px',
+                                        borderRadius: '50%',
+                                        background: 'currentColor'
+                                    }}></div>
+                                    Score : {riskStatus}
+                                </div>
+                            </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-6)', position: 'relative' }}>
                                 <div style={{
                                     width: '80px',
