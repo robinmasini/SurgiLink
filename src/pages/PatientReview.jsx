@@ -27,6 +27,7 @@ import {
 import { supabase } from '../lib/supabase';
 import { calculateAge, formatDateFR } from '../utils/dateUtils';
 import { getPatientPathwayStatus, getResponses, calculateRiskFlags } from '../services/pathwayService';
+import { getDocuments, uploadDocument, deleteDocument } from '../services/documentService';
 import LogoPremium from '../components/LogoPremium';
 
 export default function PatientReview() {
@@ -116,6 +117,10 @@ export default function PatientReview() {
                 // J+2 placeholder
                 setPatient(prev => ({ ...prev, displayProgress: progress }));
 
+                // Load documents
+                const docData = await getDocuments(id);
+                setDocuments(docData);
+
             } catch (err) {
                 console.error('Error loading patient:', err);
             } finally {
@@ -158,19 +163,31 @@ export default function PatientReview() {
         }
     };
 
-    const handleFileUpload = (files) => {
-        const newDocs = Array.from(files).map(file => ({
-            id: Math.random().toString(36).substr(2, 9),
-            name: file.name,
-            size: (file.size / 1024).toFixed(1) + ' KB',
-            type: file.type,
-            date: new Date().toLocaleDateString('fr-FR')
-        }));
-        setDocuments(prev => [...prev, ...newDocs]);
+    const handleFileUpload = async (files) => {
+        setIsLoading(true);
+        try {
+            for (const file of Array.from(files)) {
+                const { success, data, error } = await uploadDocument(id, file);
+                if (success) {
+                    setDocuments(prev => [data, ...prev]);
+                } else {
+                    alert(`Erreur lors de l'envoi de ${file.name}: ${error}`);
+                }
+            }
+        } finally {
+            setIsLoading(false);
+        }
     };
 
-    const removeDocument = (docId) => {
-        setDocuments(prev => prev.filter(d => d.id !== docId));
+    const removeDocument = async (docId, storagePath) => {
+        if (!confirm('Supprimer ce document ?')) return;
+
+        const { success, error } = await deleteDocument(docId, storagePath);
+        if (success) {
+            setDocuments(prev => prev.filter(d => d.id !== docId));
+        } else {
+            alert(`Erreur lors de la suppression: ${error}`);
+        }
     };
 
     const onDragOver = (e) => {
@@ -462,10 +479,10 @@ export default function PatientReview() {
                                             </div>
                                             <div style={{ flex: 1 }}>
                                                 <div style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-medium)' }}>{doc.name}</div>
-                                                <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-400)' }}>{doc.size} • {doc.date}</div>
+                                                <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-400)' }}>{doc.size} • {new Date(doc.created_at || new Date()).toLocaleDateString('fr-FR')}</div>
                                             </div>
                                             <button
-                                                onClick={(e) => { e.stopPropagation(); removeDocument(doc.id); }}
+                                                onClick={(e) => { e.stopPropagation(); removeDocument(doc.id, doc.storage_path); }}
                                                 style={{
                                                     background: 'transparent',
                                                     border: 'none',
