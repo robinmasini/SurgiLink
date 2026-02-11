@@ -50,6 +50,7 @@ function App() {
         <Route path="/patient-portal/:token/j7" element={<PatientJ7 />} />
         <Route path="/patient-portal/:token/j2" element={<PatientJ2 />} />
         <Route path="/patient-portal/:token/j1" element={<PatientJ1 />} />
+        <Route path="/patient-portal/:token/success" element={<PatientSuccess />} />
       </Routes>
     </Router>
   );

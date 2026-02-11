@@ -10,14 +10,14 @@ export default function PatientSuccess() {
 
             <h1 className="success-title">Bien reçu !</h1>
 
-            <p className="success-message">
-                Vos informations ont été transmises à l'équipe médicale.
-                Nous vous contacterons si nécessaire.
+            <p className="success-message" style={{ marginBottom: 'var(--spacing-8)' }}>
+                Vos informations ont été transmises avec succès à l'équipe médicale.
+                Vous pouvez maintenant fermer cette fenêtre.
             </p>
 
-            <Link to="/patient/checklist" className="btn btn-secondary">
-                Retour à l'accueil
-            </Link>
+            <div style={{ color: 'var(--color-gray-400)', fontSize: 'var(--font-size-sm)' }}>
+                SurgiLink • Votre partenaire santé
+            </div>
         </div>
     );
 }

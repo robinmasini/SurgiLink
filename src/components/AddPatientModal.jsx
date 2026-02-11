@@ -9,7 +9,10 @@ export default function AddPatientModal({ isOpen, onClose, onPatientAdded }) {
         date: '',
         birthDate: '',
         phone: '',
-        email: ''
+        email: '',
+        surgeonName: 'Christophe DESOUCHES',
+        surgeryTime: '07:30',
+        stayType: 'Ambulatoire'
     });
     const [isSaving, setIsSaving] = useState(false);
 
@@ -33,6 +36,9 @@ export default function AddPatientModal({ isOpen, onClose, onPatientAdded }) {
                         birth_date: formData.birthDate || null,
                         phone: formData.phone,
                         email: formData.email,
+                        surgeon_name: formData.surgeonName,
+                        surgery_time: formData.surgeryTime,
+                        stay_type: formData.stayType,
                         status: 'pending',
                         progress: 0,
                         days_until: 'J-0' // Default
@@ -49,7 +55,17 @@ export default function AddPatientModal({ isOpen, onClose, onPatientAdded }) {
                 alert(`Patient ${formData.name} enregistré avec succès !`);
                 if (onPatientAdded) onPatientAdded(data[0]);
                 onClose();
-                setFormData({ name: '', operation: '', date: '', birthDate: '', phone: '', email: '' });
+                setFormData({
+                    name: '',
+                    operation: '',
+                    date: '',
+                    birthDate: '',
+                    phone: '',
+                    email: '',
+                    surgeonName: 'Christophe DESOUCHES',
+                    surgeryTime: '07:30',
+                    stayType: 'Ambulatoire'
+                });
             }
         } catch (err) {
             console.error('Unexpected error:', err);
@@ -104,6 +120,29 @@ export default function AddPatientModal({ isOpen, onClose, onPatientAdded }) {
                             </div>
                         </div>
 
+                        <div className="grid-2">
+                            <div>
+                                <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Chirurgien</label>
+                                <input
+                                    className="input"
+                                    placeholder="Nom du médecin"
+                                    value={formData.surgeonName}
+                                    onChange={(e) => setFormData({ ...formData, surgeonName: e.target.value })}
+                                />
+                            </div>
+                            <div>
+                                <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Type de séjour</label>
+                                <select
+                                    className="input"
+                                    value={formData.stayType}
+                                    onChange={(e) => setFormData({ ...formData, stayType: e.target.value })}
+                                >
+                                    <option value="Ambulatoire">Ambulatoire</option>
+                                    <option value="Hospitalisation">Hospitalisation</option>
+                                </select>
+                            </div>
+                        </div>
+
                         <div>
                             <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Date de Naissance</label>
                             <input
@@ -114,7 +153,7 @@ export default function AddPatientModal({ isOpen, onClose, onPatientAdded }) {
                             />
                         </div>
 
-                        <div className="grid-2">
+                        <div className="grid-3">
                             <div>
                                 <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Date d'intervention</label>
                                 <input
@@ -122,6 +161,15 @@ export default function AddPatientModal({ isOpen, onClose, onPatientAdded }) {
                                     className="input"
                                     value={formData.date}
                                     onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                                />
+                            </div>
+                            <div>
+                                <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Heure</label>
+                                <input
+                                    type="time"
+                                    className="input"
+                                    value={formData.surgeryTime}
+                                    onChange={(e) => setFormData({ ...formData, surgeryTime: e.target.value })}
                                 />
                             </div>
                             <div>

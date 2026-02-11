@@ -31,31 +31,69 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
         switch (item.type) {
             case 'yes_no':
                 return (
-                    <div className="toggle-group">
+                    <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: '1fr 1fr',
+                        gap: 'var(--spacing-4)',
+                        marginTop: 'var(--spacing-4)'
+                    }}>
                         <button
-                            className={`toggle-btn ${value === true ? 'active' : ''}`}
+                            className={`btn btn-lg ${value === true ? 'btn-primary' : 'btn-secondary'}`}
                             onClick={() => handleChange(true)}
+                            style={{
+                                height: '80px',
+                                fontSize: 'var(--font-size-xl)',
+                                fontWeight: 'var(--font-weight-bold)',
+                                borderRadius: 'var(--border-radius-xl)',
+                                border: value === true ? '2px solid var(--color-primary-600)' : '2px solid var(--color-gray-200)',
+                                boxShadow: value === true ? '0 10px 15px -3px rgba(var(--color-primary-rgb), 0.3)' : 'none',
+                                transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
+                            }}
                         >
-                            Oui
+                            OUI
                         </button>
                         <button
-                            className={`toggle-btn ${value === false ? 'active-danger' : ''}`}
+                            className={`btn btn-lg ${value === false ? 'btn-danger' : 'btn-secondary'}`}
                             onClick={() => handleChange(false)}
-                            style={value === false ? { background: 'var(--color-gray-700)', color: 'white', borderColor: 'var(--color-gray-700)' } : {}}
+                            style={{
+                                height: '80px',
+                                fontSize: 'var(--font-size-xl)',
+                                fontWeight: 'var(--font-weight-bold)',
+                                borderRadius: 'var(--border-radius-xl)',
+                                border: value === false ? '2px solid var(--color-danger-600)' : '2px solid var(--color-gray-200)',
+                                background: value === false ? 'var(--color-danger-500)' : 'white',
+                                color: value === false ? 'white' : 'var(--color-gray-700)',
+                                boxShadow: value === false ? '0 10px 15px -3px rgba(var(--color-danger-rgb), 0.3)' : 'none',
+                                transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
+                            }}
                         >
-                            Non
+                            NON
                         </button>
                     </div>
                 );
 
             case 'tri_state':
                 return (
-                    <div className="toggle-group">
+                    <div style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 'var(--spacing-3)',
+                        marginTop: 'var(--spacing-4)'
+                    }}>
                         {item.options.map(option => (
                             <button
                                 key={option.value}
-                                className={`toggle-btn ${value === option.value ? 'active' : ''}`}
+                                className={`btn btn-lg ${value === option.value ? 'btn-primary' : 'btn-secondary'}`}
                                 onClick={() => handleChange(option.value)}
+                                style={{
+                                    height: '70px',
+                                    fontSize: 'var(--font-size-lg)',
+                                    fontWeight: 'var(--font-weight-semibold)',
+                                    borderRadius: 'var(--border-radius-xl)',
+                                    border: value === option.value ? '2px solid var(--color-primary-600)' : '2px solid var(--color-gray-200)',
+                                    justifyContent: 'center',
+                                    transition: 'all 0.2s'
+                                }}
                             >
                                 {option.label}
                             </button>
@@ -273,7 +311,15 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
     };
 
     return (
-        <div className="question-card">
+        <div className="question-card" style={{
+            padding: 'var(--spacing-6)',
+            borderRadius: 'var(--border-radius-2xl)',
+            border: '2px solid var(--color-gray-100)',
+            marginBottom: 'var(--spacing-6)',
+            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+            background: 'rgba(255, 255, 255, 0.8)',
+            backdropFilter: 'blur(10px)'
+        }}>
             {/* Warning Banner (if any) */}
             {item.warning_banner && (
                 <div className={`alert-banner alert-banner-${item.warning_banner.type}`} style={{ marginBottom: 'var(--spacing-4)' }}>
@@ -295,7 +341,12 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
             )}
 
             {/* Question Title */}
-            <div className="question-title">{item.label}</div>
+            <div className="question-title" style={{
+                fontSize: 'var(--font-size-xl)',
+                fontWeight: 'var(--font-weight-bold)',
+                color: 'var(--color-gray-900)',
+                lineHeight: '1.4'
+            }}>{item.label}</div>
 
             {/* Input */}
             {renderInput()}

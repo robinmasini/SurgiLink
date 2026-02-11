@@ -89,9 +89,7 @@ export default function PatientJ7() {
 
         // Navigate back to portal if in token mode, otherwise to success page
         if (isTokenMode) {
-            const params = new URLSearchParams(window.location.search);
-            const token = window.location.pathname.split('/')[2];
-            navigate(`/patient-portal/${token}`);
+            navigate(`/patient-portal/${token}/success`); // Assuming a success page exists or we'll create one
         } else {
             navigate('/patient/success');
         }
@@ -130,27 +128,9 @@ export default function PatientJ7() {
     return (
         <div className="patient-view">
             {/* Header */}
-            <div className="patient-header">
-                <div className="patient-header-left">
-                    <h2>Bonjour Patient</h2>
-                    <span>J-7 • Intervention programmée</span>
-                </div>
-                <button
-                    style={{
-                        background: 'transparent',
-                        border: 'none',
-                        cursor: 'pointer',
-                        color: 'var(--color-gray-500)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: '40px',
-                        height: '40px'
-                    }}
-                    onClick={() => navigate('/login')}
-                >
-                    <LogOut size={20} />
-                </button>
+            <div className="patient-header" style={{ padding: 'var(--spacing-6) var(--spacing-4)', textAlign: 'center', display: 'block' }}>
+                <h2 style={{ fontSize: 'var(--font-size-2xl)', marginBottom: 'var(--spacing-1)' }}>Dossier Médical</h2>
+                <div style={{ color: 'var(--color-primary-600)', fontWeight: 'var(--font-weight-semibold)' }}>J-7 • Préparation</div>
             </div>
 
             {/* Content */}
@@ -162,26 +142,6 @@ export default function PatientJ7() {
                     message="Rendez-vous à l'accueil principal. Prévoyez d'arriver 15 min avant. À apporter : pièce d'identité + documents."
                 />
 
-                {/* Risk Alerts */}
-                {riskFlags.hard.length > 0 && (
-                    <div style={{ marginTop: 'var(--spacing-4)' }}>
-                        <AlertBanner
-                            type="danger"
-                            title="⚠️ Attention requise"
-                            message={`${riskFlags.hard.length} point(s) critique(s) nécessitent une action immédiate : ${riskFlags.hard.map(f => f.label).join(', ')}`}
-                        />
-                    </div>
-                )}
-
-                {riskFlags.soft.length > 0 && (
-                    <div style={{ marginTop: 'var(--spacing-4)' }}>
-                        <AlertBanner
-                            type="warning"
-                            title="À vérifier"
-                            message={`${riskFlags.soft.length} point(s) à compléter ou vérifier.`}
-                        />
-                    </div>
-                )}
 
                 {/* Sections */}
                 {config.sections.map((section) => (

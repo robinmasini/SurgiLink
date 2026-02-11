@@ -11,7 +11,10 @@ export default function EditPatientModal({ isOpen, onClose, patient, onPatientUp
         phone: '',
         email: '',
         clinicName: '',
-        appointmentDatetime: ''
+        appointmentDatetime: '',
+        surgeonName: '',
+        surgeryTime: '',
+        stayType: ''
     });
     const [isSaving, setIsSaving] = useState(false);
 
@@ -41,7 +44,10 @@ export default function EditPatientModal({ isOpen, onClose, patient, onPatientUp
                 phone: patient.phone || '',
                 email: patient.email || '',
                 clinicName: patient.clinic_name || '',
-                appointmentDatetime: patient.appointment_datetime ? new Date(patient.appointment_datetime).toISOString().slice(0, 16) : ''
+                appointmentDatetime: patient.appointment_datetime ? new Date(patient.appointment_datetime).toISOString().slice(0, 16) : '',
+                surgeonName: patient.surgeon_name || 'Christophe DESOUCHES',
+                surgeryTime: patient.surgery_time || '07:30',
+                stayType: patient.stay_type || 'Ambulatoire'
             });
         }
     }, [patient]);
@@ -66,7 +72,10 @@ export default function EditPatientModal({ isOpen, onClose, patient, onPatientUp
                     phone: formData.phone,
                     email: formData.email,
                     clinic_name: formData.clinicName || null,
-                    appointment_datetime: formData.appointmentDatetime || null
+                    appointment_datetime: formData.appointmentDatetime || null,
+                    surgeon_name: formData.surgeonName,
+                    surgery_time: formData.surgeryTime,
+                    stay_type: formData.stayType
                 })
                 .eq('id', patient.id)
                 .select();
@@ -147,6 +156,29 @@ export default function EditPatientModal({ isOpen, onClose, patient, onPatientUp
                             </div>
                         </div>
 
+                        <div className="grid-2">
+                            <div>
+                                <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Chirurgien</label>
+                                <input
+                                    className="input"
+                                    placeholder="Nom du médecin"
+                                    value={formData.surgeonName}
+                                    onChange={(e) => setFormData({ ...formData, surgeonName: e.target.value })}
+                                />
+                            </div>
+                            <div>
+                                <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Type de séjour</label>
+                                <select
+                                    className="input"
+                                    value={formData.stayType}
+                                    onChange={(e) => setFormData({ ...formData, stayType: e.target.value })}
+                                >
+                                    <option value="Ambulatoire">Ambulatoire</option>
+                                    <option value="Hospitalisation">Hospitalisation</option>
+                                </select>
+                            </div>
+                        </div>
+
                         <div>
                             <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Date de Naissance</label>
                             <input
@@ -157,7 +189,7 @@ export default function EditPatientModal({ isOpen, onClose, patient, onPatientUp
                             />
                         </div>
 
-                        <div className="grid-2">
+                        <div className="grid-3">
                             <div>
                                 <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Date d'intervention</label>
                                 <input
@@ -165,6 +197,15 @@ export default function EditPatientModal({ isOpen, onClose, patient, onPatientUp
                                     className="input"
                                     value={formData.date}
                                     onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                                />
+                            </div>
+                            <div>
+                                <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Heure</label>
+                                <input
+                                    type="time"
+                                    className="input"
+                                    value={formData.surgeryTime}
+                                    onChange={(e) => setFormData({ ...formData, surgeryTime: e.target.value })}
                                 />
                             </div>
                             <div>

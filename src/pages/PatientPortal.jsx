@@ -15,6 +15,7 @@ import {
     Home
 } from 'lucide-react';
 import ClinicAppointmentCard from '../components/ClinicAppointmentCard';
+import PatientTraceability from '../components/PatientTraceability';
 
 export default function PatientPortal() {
     const { token } = useParams();
@@ -130,222 +131,77 @@ export default function PatientPortal() {
                     </div>
                 </div>
 
-                {/* Navigation Tabs */}
-                <div className="card glass-effect" style={{ marginBottom: 'var(--spacing-4)', padding: 'var(--spacing-2)' }}>
-                    <div style={{ display: 'flex', gap: 'var(--spacing-2)' }}>
-                        <button
-                            onClick={() => setActiveTab('info')}
-                            className={`btn ${activeTab === 'info' ? 'btn-primary' : 'btn-secondary'}`}
-                            style={{ flex: 1 }}
-                        >
-                            <User size={18} />
-                            Mes Informations
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('questionnaires')}
-                            className={`btn ${activeTab === 'questionnaires' ? 'btn-primary' : 'btn-secondary'}`}
-                            style={{ flex: 1 }}
-                        >
-                            <FileText size={18} />
-                            Questionnaires
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('tracker')}
-                            className={`btn ${activeTab === 'tracker' ? 'btn-primary' : 'btn-secondary'}`}
-                            style={{ flex: 1 }}
-                        >
-                            <TrendingUp size={18} />
-                            Mon Suivi
-                        </button>
+                {/* Simplified Header Info */}
+                <div className="card glass-effect" style={{ marginBottom: 'var(--spacing-6)', padding: 'var(--spacing-6)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-4)' }}>
+                        <div style={{
+                            width: '64px',
+                            height: '64px',
+                            borderRadius: '50%',
+                            background: 'var(--color-primary-100)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: 'var(--color-primary-600)',
+                            fontSize: 'var(--font-size-2xl)',
+                            fontWeight: 'var(--font-weight-bold)'
+                        }}>
+                            {patient?.name?.split(' ').map(n => n[0]).join('')}
+                        </div>
+                        <div>
+                            <h2 style={{ fontSize: 'var(--font-size-2xl)', marginBottom: 'var(--spacing-1)' }}>{patient?.name}</h2>
+                            <p style={{ color: 'var(--color-gray-600)' }}>{patient?.operation} • {patient?.date ? formatDateFR(patient.date) : ''}</p>
+                        </div>
                     </div>
                 </div>
 
-                {/* Tab Content */}
-                {activeTab === 'info' && (
-                    <div className="fade-in">
-                        <div className="grid-3" style={{ marginBottom: 'var(--spacing-6)' }}>
-                            {/* Patient Info Card */}
-                            <div className="card glass-effect">
-                                <div className="card-header">
-                                    <div className="card-icon card-icon-primary">
-                                        <User size={20} />
-                                    </div>
-                                    <h3>Informations Générales</h3>
-                                </div>
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-4)' }}>
-                                    <div>
-                                        <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', textTransform: 'uppercase' }}>Nom Complet</div>
-                                        <div style={{ fontWeight: 'var(--font-weight-semibold)' }}>{patient.name}</div>
-                                    </div>
-                                    <div>
-                                        <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', textTransform: 'uppercase' }}>Date de Naissance</div>
-                                        <div style={{ fontWeight: 'var(--font-weight-semibold)' }}>
-                                            {patient.birth_date ? (
-                                                <>
-                                                    {formatDateFR(patient.birth_date)}
-                                                    {calculateAge(patient.birth_date) && (
-                                                        <span style={{ color: 'var(--color-gray-500)', marginLeft: 'var(--spacing-2)' }}>
-                                                            ({calculateAge(patient.birth_date)} ans)
-                                                        </span>
-                                                    )}
-                                                </>
-                                            ) : 'Non renseignée'}
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', textTransform: 'uppercase' }}>Intervention Prévue</div>
-                                        <div style={{ fontWeight: 'var(--font-weight-semibold)' }}>{patient.operation}</div>
-                                    </div>
-                                    <div>
-                                        <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', textTransform: 'uppercase' }}>Date d'intervention</div>
-                                        <div style={{ fontWeight: 'var(--font-weight-semibold)' }}>
-                                            {patient.date ? formatDateFR(patient.date) : 'Non définie'}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                {/* Single View Content */}
+                <div className="fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-6)' }}>
+                    <ClinicAppointmentCard
+                        clinicName={patient.clinic_name}
+                        appointmentDatetime={patient.appointment_datetime}
+                    />
 
-                            {/* Status Card */}
-                            <div className="card glass-effect">
-                                <div className="card-header">
-                                    <div className="card-icon card-icon-success">
-                                        <Activity size={20} />
-                                    </div>
-                                    <h3>État du Protocole</h3>
-                                </div>
-                                <div style={{ textAlign: 'center', padding: 'var(--spacing-4)' }}>
-                                    <div style={{ fontSize: 'var(--font-size-4xl)', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-primary-500)' }}>
-                                        {patient.progress || 0}%
-                                    </div>
-                                    <div className="progress-bar" style={{ margin: 'var(--spacing-4) 0' }}>
-                                        <div className="progress-fill progress-fill-primary" style={{ width: `${patient.progress || 0}%` }}></div>
-                                    </div>
-                                    <div className="badge badge-success">Conformité validée</div>
-                                </div>
-                            </div>
-
-                            {/* Clinic Appointment Card */}
-                            <ClinicAppointmentCard
-                                clinicName={patient.clinic_name}
-                                appointmentDatetime={patient.appointment_datetime}
-                            />
-                        </div>
-
-                        {/* Medical History */}
-                        {medicalHistory.length > 0 && (
-                            <div className="card glass-effect">
-                                <div className="card-header">
-                                    <div className="card-icon card-icon-primary" style={{ background: 'var(--color-purple-50)', color: 'var(--color-purple-600)' }}>
-                                        <Calendar size={20} />
-                                    </div>
-                                    <h3>Historique Médical</h3>
-                                </div>
-                                <div className="timeline">
-                                    {medicalHistory.slice(0, 5).map((item) => (
-                                        <div key={item.id} className="timeline-item">
-                                            <div className="timeline-dot"></div>
-                                            <div className="timeline-content glass-effect">
-                                                <div className="timeline-date">{formatDateFR(item.date)}</div>
-                                                <div className="timeline-title">{item.title}</div>
-                                                <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-600)' }}>{item.description}</div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                )}
-
-                {activeTab === 'questionnaires' && (
-                    <div className="card glass-effect fade-in">
+                    <div className="card glass-effect">
                         <div className="card-header">
                             <div className="card-icon card-icon-primary">
                                 <FileText size={20} />
                             </div>
-                            <h3>Mes Questionnaires</h3>
+                            <h3>Actions Requises</h3>
                         </div>
-                        <p style={{ color: 'var(--color-gray-600)', marginBottom: 'var(--spacing-6)' }}>
-                            Complétez les questionnaires pour optimiser votre prise en charge.
-                        </p>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-4)' }}>
                             <Link
                                 to={`/patient-portal/${token}/j7`}
                                 className="card glass-effect"
-                                style={{ textDecoration: 'none', display: 'block', transition: 'transform 0.2s', cursor: 'pointer' }}
-                                onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
-                                onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                                style={{ textDecoration: 'none', display: 'block', transition: 'transform 0.2s', cursor: 'pointer', border: '1px solid var(--color-primary-100)' }}
                             >
                                 <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-4)' }}>
-                                    <div style={{ fontSize: 'var(--font-size-4xl)' }}>📋</div>
+                                    <div style={{ fontSize: '32px' }}>📋</div>
                                     <div style={{ flex: 1 }}>
-                                        <h4 style={{ marginBottom: 'var(--spacing-1)' }}>J-7 : Préparation</h4>
-                                        <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-600)' }}>
-                                            Checklist avant votre intervention
-                                        </p>
+                                        <h4 style={{ marginBottom: '4px' }}>Questionnaire J-7</h4>
+                                        <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-600)' }}>À remplir 7 jours avant votre intervention</p>
                                     </div>
-                                    <div className="badge badge-info">À compléter</div>
+                                    <div className="badge badge-primary">Ouvrir</div>
                                 </div>
                             </Link>
 
                             <Link
                                 to={`/patient-portal/${token}/j2`}
                                 className="card glass-effect"
-                                style={{ textDecoration: 'none', display: 'block', transition: 'transform 0.2s', cursor: 'pointer' }}
-                                onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
-                                onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                                style={{ textDecoration: 'none', display: 'block', transition: 'transform 0.2s', cursor: 'pointer', border: '1px solid var(--color-primary-100)' }}
                             >
                                 <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-4)' }}>
-                                    <div style={{ fontSize: 'var(--font-size-4xl)' }}>📄</div>
+                                    <div style={{ fontSize: '32px' }}>📄</div>
                                     <div style={{ flex: 1 }}>
-                                        <h4 style={{ marginBottom: 'var(--spacing-1)' }}>J-2 : Consignes</h4>
-                                        <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-600)' }}>
-                                            Dernières instructions préopératoires
-                                        </p>
+                                        <h4 style={{ marginBottom: '4px' }}>Questionnaire J-2</h4>
+                                        <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-600)' }}>Dernières consignes préopératoires</p>
                                     </div>
-                                    <div className="badge badge-info">À compléter</div>
+                                    <div className="badge badge-primary">Ouvrir</div>
                                 </div>
                             </Link>
-
-                            <div
-                                className="card glass-effect"
-                                style={{ opacity: 0.6, cursor: 'not-allowed' }}
-                            >
-                                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-4)' }}>
-                                    <div style={{ fontSize: 'var(--font-size-4xl)' }}>✅</div>
-                                    <div style={{ flex: 1 }}>
-                                        <h4 style={{ marginBottom: 'var(--spacing-1)' }}>J+1 : Suivi Post-op</h4>
-                                        <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-600)' }}>
-                                            Rempli par notre équipe lors de l'appel
-                                        </p>
-                                    </div>
-                                    <div className="badge badge-secondary">Équipe médicale uniquement</div>
-                                </div>
-                            </div>
                         </div>
                     </div>
-                )}
-
-                {activeTab === 'tracker' && (
-                    <div className="card glass-effect fade-in">
-                        <div className="card-header">
-                            <div className="card-icon card-icon-primary">
-                                <TrendingUp size={20} />
-                            </div>
-                            <h3>Mon Suivi d'Opération</h3>
-                        </div>
-                        <p style={{ color: 'var(--color-gray-600)', marginBottom: 'var(--spacing-6)' }}>
-                            Suivez votre parcours ambulatoire étape par étape.
-                        </p>
-                        {/* TODO: Integrate PatientPathwayTracker in read-only mode */}
-                        <div style={{ textAlign: 'center', padding: 'var(--spacing-8)' }}>
-                            <TrendingUp size={64} style={{ margin: '0 auto var(--spacing-4)', color: 'var(--color-primary-300)' }} />
-                            <p style={{ color: 'var(--color-gray-500)' }}>
-                                Votre suivi d'opération sera disponible ici prochainement.
-                            </p>
-                        </div>
-                    </div>
-                )}
+                </div>
             </div>
         </div>
     );

@@ -16,13 +16,18 @@ import {
     Plus,
     X,
     Edit2,
-    Link as LinkIcon,
-    Copy,
-    Check
+    FileText,
+    TrendingUp,
+    AlertCircle,
+    Zap,
+    Download,
+    UploadCloud,
+    Trash2
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { calculateAge, formatDateFR } from '../utils/dateUtils';
-import { generatePatientToken } from '../services/tokenService';
+import { getPatientPathwayStatus, getResponses, calculateRiskFlags } from '../services/pathwayService';
+import LogoPremium from '../components/LogoPremium';
 
 export default function PatientReview() {
     const { id } = useParams();
@@ -32,17 +37,20 @@ export default function PatientReview() {
     const [isLoading, setIsLoading] = useState(true);
     const [isAddingHistory, setIsAddingHistory] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-    const [historyCategory, setHistoryCategory] = useState('intervention'); // 'intervention' or 'sms'
+    const [clinicalResponses, setClinicalResponses] = useState({
+        J7: {},
+        J2: {},
+        J1: {}
+    });
+    const [riskStatus, setRiskStatus] = useState('SAIN'); // SAIN, VIGILANCE, CRITIQUE
+    const [activeTab, setActiveTab] = useState('overview'); // Not used but kept for logic if needed
+    const [historyCategory, setHistoryCategory] = useState('all'); // 'all', 'intervention', 'sms'
     const [newHistoryEntry, setNewHistoryEntry] = useState({
-        date: '',
+        date: new Date().toISOString().split('T')[0],
         title: '',
         description: '',
         category: 'intervention'
     });
-    const [showLinkModal, setShowLinkModal] = useState(false);
-    const [generatedLink, setGeneratedLink] = useState('');
-    const [linkCopied, setLinkCopied] = useState(false);
-    const [generatingLink, setGeneratingLink] = useState(false);
 
     useEffect(() => {
         const loadPatientData = async () => {
@@ -70,6 +78,41 @@ export default function PatientReview() {
                 } else {
                     setMedicalHistory(historyData || []);
                 }
+                // Load clinical responses
+                const [responsesJ7, responsesJ2, responsesJ1] = await Promise.all([
+                    getResponses(id, 'J7'),
+                    getResponses(id, 'J2'),
+                    getResponses(id, 'J1')
+                ]);
+
+                setClinicalResponses({
+                    J7: responsesJ7,
+                    J2: responsesJ2,
+                    J1: responsesJ1
+                });
+
+                // Calculate risk status
+                const [riskJ7, riskJ2, riskJ1] = await Promise.all([
+                    calculateRiskFlags(id, 'J7'),
+                    calculateRiskFlags(id, 'J2'),
+                    calculateRiskFlags(id, 'J1')
+                ]);
+
+                const hasHardRisk = riskJ7.hard.length > 0 || riskJ2.hard.length > 0 || riskJ1.hard.length > 0;
+                const hasSoftRisk = riskJ7.soft.length > 0 || riskJ2.soft.length > 0 || riskJ1.soft.length > 0;
+
+                if (hasHardRisk) setRiskStatus('CRITIQUE');
+                else if (hasSoftRisk) setRiskStatus('VIGILANCE');
+                else setRiskStatus('SAIN');
+
+                // Calculate display progress
+                let progress = 0;
+                if (Object.keys(responsesJ7).length > 0) progress += 25;
+                if (Object.keys(responsesJ2).length > 0) progress += 25;
+                if (Object.keys(responsesJ1).length > 0) progress += 25;
+                // J+2 placeholder
+                setPatient(prev => ({ ...prev, displayProgress: progress }));
+
             } catch (err) {
                 console.error('Error loading patient:', err);
             } finally {
@@ -170,30 +213,6 @@ export default function PatientReview() {
         }
     };
 
-    const handleGeneratePatientLink = async () => {
-        setGeneratingLink(true);
-        try {
-            const result = await generatePatientToken(id);
-            if (result.success) {
-                const link = `${window.location.origin}/patient-portal/${result.token}`;
-                setGeneratedLink(link);
-                setShowLinkModal(true);
-            } else {
-                alert(`Erreur lors de la génération du lien: ${result.error}`);
-            }
-        } catch (err) {
-            console.error('Error generating patient link:', err);
-            alert('Erreur lors de la génération du lien');
-        } finally {
-            setGeneratingLink(false);
-        }
-    };
-
-    const handleCopyLink = () => {
-        navigator.clipboard.writeText(generatedLink);
-        setLinkCopied(true);
-        setTimeout(() => setLinkCopied(false), 2000);
-    };
 
     if (isLoading) {
         return (
@@ -227,290 +246,320 @@ export default function PatientReview() {
         <div style={{ display: 'flex' }}>
             <Sidebar />
             <main className="main-content">
+                {/* Header Actions */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-4)', marginBottom: 'var(--spacing-6)' }}>
-                    <button onClick={() => navigate(-1)} className="btn btn-secondary btn-sm" style={{ padding: '8px' }}>
+                    <button onClick={() => navigate(-1)} className="btn btn-secondary btn-sm" style={{ padding: '8px', border: 'none', background: 'transparent' }}>
                         <ChevronLeft size={20} />
+                        <span style={{ marginLeft: 'var(--spacing-2)' }}>Retour</span>
                     </button>
-                    <Header
-                        title={`Revue Patient : ${patient.name}`}
-                        subtitle="Historique complet et suivi clinique"
-                    />
-                    <button
-                        onClick={handleGeneratePatientLink}
-                        className="btn btn-success btn-sm"
-                        style={{ marginLeft: 'auto' }}
-                        title="Générer un lien d'accès patient"
-                        disabled={generatingLink}
-                    >
-                        <LinkIcon size={16} />
-                        {generatingLink ? 'Génération...' : 'Lien Patient'}
-                    </button>
-                    <button
-                        onClick={() => setIsEditModalOpen(true)}
-                        className="btn btn-primary btn-sm"
-                        title="Modifier les informations du patient"
-                    >
-                        <Edit2 size={16} />
-                        Modifier
-                    </button>
-                    <button
-                        onClick={handleDeletePatient}
-                        className="btn btn-danger btn-sm"
-                        title="Supprimer ce patient"
-                    >
-                        <X size={16} />
-                        Supprimer
-                    </button>
+
+                    <div style={{ marginLeft: 'auto', display: 'flex', gap: 'var(--spacing-3)' }}>
+                        <div style={{
+                            background: riskStatus === 'CRITIQUE' ? 'var(--color-danger-50)' : riskStatus === 'VIGILANCE' ? 'var(--color-warning-50)' : 'var(--color-success-50)',
+                            color: riskStatus === 'CRITIQUE' ? 'var(--color-danger-600)' : riskStatus === 'VIGILANCE' ? 'var(--color-warning-600)' : 'var(--color-success-600)',
+                            padding: 'var(--spacing-2) var(--spacing-6)',
+                            borderRadius: 'var(--border-radius-md)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 'var(--spacing-3)',
+                            fontWeight: 'var(--font-weight-bold)',
+                            fontSize: 'var(--font-size-md)',
+                            border: `1px solid ${riskStatus === 'CRITIQUE' ? 'var(--color-danger-200)' : riskStatus === 'VIGILANCE' ? 'var(--color-warning-200)' : 'var(--color-success-200)'}`
+                        }}>
+                            <AlertCircle size={18} />
+                            Score : {riskStatus}
+                        </div>
+                    </div>
                 </div>
 
-                <div className="grid-3" style={{ marginBottom: 'var(--spacing-8)' }}>
-                    {/* Patient Info Card */}
-                    <div className="card glass-effect">
-                        <div className="card-header">
-                            <div className="card-icon card-icon-primary">
-                                <User size={20} />
-                            </div>
-                            <h3>Informations Générales</h3>
-                        </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-4)' }}>
-                            <div>
-                                <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', textTransform: 'uppercase' }}>Nom Complet</div>
-                                <div style={{ fontWeight: 'var(--font-weight-semibold)' }}>{patient.name}</div>
-                            </div>
-                            <div>
-                                <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', textTransform: 'uppercase' }}>Date de Naissance</div>
-                                <div style={{ fontWeight: 'var(--font-weight-semibold)' }}>
-                                    {patient.birth_date ? (
-                                        <>
-                                            {formatDateFR(patient.birth_date)}
-                                            {calculateAge(patient.birth_date) && (
-                                                <span style={{ color: 'var(--color-gray-500)', marginLeft: 'var(--spacing-2)' }}>
-                                                    ({calculateAge(patient.birth_date)} ans)
-                                                </span>
-                                            )}
-                                        </>
-                                    ) : 'Non renseignée'}
+                <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 2fr) 1fr', gap: 'var(--spacing-8)' }}>
+                    {/* Left Column: Data */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-8)' }}>
+
+                        {/* 1. Patient Card */}
+                        <div className="card glass-effect" style={{ padding: 'var(--spacing-8)' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-6)', position: 'relative' }}>
+                                <div style={{
+                                    width: '80px',
+                                    height: '80px',
+                                    borderRadius: '50%',
+                                    background: 'var(--color-primary-100)',
+                                    color: 'var(--color-primary-600)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontSize: 'var(--font-size-3xl)',
+                                    fontWeight: 'var(--font-weight-black)'
+                                }}>
+                                    {patient.name?.split(' ').map(n => n[0]).join('')}
                                 </div>
-                            </div>
-                            <div>
-                                <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', textTransform: 'uppercase' }}>Téléphone</div>
-                                <div style={{ fontWeight: 'var(--font-weight-semibold)' }}>{patient.phone || 'Non renseigné'}</div>
-                            </div>
-                            <div>
-                                <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', textTransform: 'uppercase' }}>Email</div>
-                                <div style={{ fontWeight: 'var(--font-weight-semibold)' }}>{patient.email || 'Non renseigné'}</div>
-                            </div>
-                            <div>
-                                <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', textTransform: 'uppercase' }}>Intervention Prévue</div>
-                                <div style={{ fontWeight: 'var(--font-weight-semibold)' }}>{patient.operation}</div>
-                            </div>
-                            <div>
-                                <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', textTransform: 'uppercase' }}>Date d'intervention</div>
-                                <div style={{ fontWeight: 'var(--font-weight-semibold)' }}>
-                                    {patient.date ? formatDateFR(patient.date) : 'Non définie'}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Status Card */}
-                    <div className="card glass-effect">
-                        <div className="card-header">
-                            <div className="card-icon card-icon-success">
-                                <Activity size={20} />
-                            </div>
-                            <h3>État du Protocole</h3>
-                        </div>
-                        <div style={{ textAlign: 'center', padding: 'var(--spacing-4)' }}>
-                            <div style={{ fontSize: 'var(--font-size-4xl)', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-primary-500)' }}>
-                                {patient.progress || 0}%
-                            </div>
-                            <div className="progress-bar" style={{ margin: 'var(--spacing-4) 0' }}>
-                                <div className="progress-fill progress-fill-primary" style={{ width: `${patient.progress || 0}%` }}></div>
-                            </div>
-                            <div className="badge badge-success">Conformité validée</div>
-                        </div>
-                    </div>
-
-                    {/* Clinic Appointment Card */}
-                    <ClinicAppointmentCard
-                        clinicName={patient.clinic_name}
-                        appointmentDatetime={patient.appointment_datetime}
-                    />
-
-                </div>
-
-                {/* Surgical History / Traceability */}
-                <div className="card">
-                    <div className="card-header" style={{ marginBottom: 'var(--spacing-6)' }}>
-                        <div className="card-icon card-icon-primary" style={{ background: 'var(--color-purple-50)', color: 'var(--color-purple-600)' }}>
-                            <History size={20} />
-                        </div>
-                        <div>
-                            <h3 style={{ marginBottom: '4px' }}>Historique de Traçabilité</h3>
-                            <p style={{ fontSize: 'var(--font-size-sm)' }}>Registre des interventions et suivi SMS</p>
-                        </div>
-                    </div>
-
-                    {/* Category Tabs */}
-                    <div style={{
-                        display: 'flex',
-                        gap: 'var(--spacing-2)',
-                        marginBottom: 'var(--spacing-6)',
-                        borderBottom: '2px solid var(--color-gray-100)'
-                    }}>
-                        <button
-                            onClick={() => setHistoryCategory('intervention')}
-                            style={{
-                                padding: 'var(--spacing-3) var(--spacing-4)',
-                                background: 'transparent',
-                                border: 'none',
-                                borderBottom: historyCategory === 'intervention' ? '2px solid var(--color-primary-500)' : '2px solid transparent',
-                                color: historyCategory === 'intervention' ? 'var(--color-primary-600)' : 'var(--color-gray-500)',
-                                fontWeight: historyCategory === 'intervention' ? 'var(--font-weight-semibold)' : 'var(--font-weight-medium)',
-                                cursor: 'pointer',
-                                marginBottom: '-2px',
-                                transition: 'all 0.2s'
-                            }}
-                        >
-                            Interventions
-                        </button>
-                        <button
-                            onClick={() => setHistoryCategory('sms')}
-                            style={{
-                                padding: 'var(--spacing-3) var(--spacing-4)',
-                                background: 'transparent',
-                                border: 'none',
-                                borderBottom: historyCategory === 'sms' ? '2px solid var(--color-primary-500)' : '2px solid transparent',
-                                color: historyCategory === 'sms' ? 'var(--color-primary-600)' : 'var(--color-gray-500)',
-                                fontWeight: historyCategory === 'sms' ? 'var(--font-weight-semibold)' : 'var(--font-weight-medium)',
-                                cursor: 'pointer',
-                                marginBottom: '-2px',
-                                transition: 'all 0.2s'
-                            }}
-                        >
-                            Suivi SMS
-                        </button>
-                    </div>
-
-                    {/* Add Entry Button */}
-                    <div style={{ marginBottom: 'var(--spacing-4)' }}>
-                        <button
-                            className="btn btn-primary btn-sm"
-                            onClick={() => setIsAddingHistory(!isAddingHistory)}
-                        >
-                            <Plus size={16} />
-                            Ajouter une {historyCategory === 'intervention' ? 'intervention' : 'communication SMS'}
-                        </button>
-                    </div>
-
-                    {/* Add History Entry Modal/Form */}
-                    {isAddingHistory && (
-                        <div className="card" style={{ marginBottom: 'var(--spacing-6)', background: 'var(--color-primary-50)', border: '1px solid var(--color-primary-200)' }}>
-                            <div style={{ display: 'grid', gap: 'var(--spacing-4)' }}>
-                                <div>
-                                    <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Date</label>
-                                    <input
-                                        type="date"
-                                        className="input"
-                                        value={newHistoryEntry.date}
-                                        onChange={(e) => setNewHistoryEntry({ ...newHistoryEntry, date: e.target.value })}
-                                    />
-                                </div>
-                                <div>
-                                    <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Titre</label>
-                                    <input
-                                        className="input"
-                                        placeholder="Ex: Consultation pré-opératoire"
-                                        value={newHistoryEntry.title}
-                                        onChange={(e) => setNewHistoryEntry({ ...newHistoryEntry, title: e.target.value })}
-                                    />
-                                </div>
-                                <div>
-                                    <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Description</label>
-                                    <textarea
-                                        className="input"
-                                        rows={3}
-                                        placeholder="Détails de l'entrée..."
-                                        value={newHistoryEntry.description}
-                                        onChange={(e) => setNewHistoryEntry({ ...newHistoryEntry, description: e.target.value })}
-                                    />
-                                </div>
-                                <div style={{ display: 'flex', gap: 'var(--spacing-3)', justifyContent: 'flex-end' }}>
-                                    <button
-                                        className="btn btn-secondary"
-                                        onClick={() => {
-                                            setIsAddingHistory(false);
-                                            setNewHistoryEntry({ date: '', title: '', description: '' });
-                                        }}
-                                    >
-                                        Annuler
-                                    </button>
-                                    <button
-                                        className="btn btn-primary"
-                                        onClick={handleAddHistoryEntry}
-                                    >
-                                        Enregistrer
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    <div className="timeline">
-                        {medicalHistory.filter(item => item.category === historyCategory).length > 0 ?
-                            medicalHistory.filter(item => item.category === historyCategory).map((item) => (
-                                <div key={item.id} className="timeline-item">
-                                    <div className="timeline-dot"></div>
-                                    <div className="timeline-content glass-effect" style={{ position: 'relative' }}>
-                                        <button
-                                            onClick={() => handleDeleteHistoryEntry(item.id)}
-                                            style={{
-                                                position: 'absolute',
-                                                top: 'var(--spacing-3)',
-                                                right: 'var(--spacing-3)',
-                                                background: 'transparent',
-                                                border: 'none',
-                                                cursor: 'pointer',
-                                                color: 'var(--color-gray-400)',
-                                                padding: '4px',
-                                                borderRadius: '4px',
-                                                transition: 'all 0.2s'
-                                            }}
-                                            onMouseEnter={(e) => {
-                                                e.target.style.background = 'var(--color-danger-50)';
-                                                e.target.style.color = 'var(--color-danger-600)';
-                                            }}
-                                            onMouseLeave={(e) => {
-                                                e.target.style.background = 'transparent';
-                                                e.target.style.color = 'var(--color-gray-400)';
-                                            }}
-                                            title="Supprimer cette entrée"
-                                        >
-                                            <X size={16} />
+                                <div style={{ flex: 1 }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)', marginBottom: 'var(--spacing-2)' }}>
+                                        <h2 style={{ fontSize: 'var(--font-size-3xl)', margin: 0, fontWeight: 'var(--font-weight-black)' }}>{patient.name}</h2>
+                                        <button onClick={() => setIsEditModalOpen(true)} style={{ background: 'transparent', border: 'none', color: 'var(--color-gray-400)', cursor: 'pointer' }}>
+                                            <Edit2 size={18} />
                                         </button>
-                                        <div className="timeline-date">{formatDateFR(item.date)}</div>
-                                        <div className="timeline-title">{item.title}</div>
-                                        <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-600)' }}>{item.description}</div>
+                                    </div>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-4)', color: 'var(--color-gray-500)', fontSize: 'var(--font-size-md)' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-1)' }}>
+                                            <Calendar size={16} />
+                                            Né(e) le {patient.birth_date ? formatDateFR(patient.birth_date) : 'N/A'}
+                                        </div>
+                                    </div>
+                                    <div style={{ display: 'flex', gap: 'var(--spacing-2)', marginTop: 'var(--spacing-4)' }}>
+                                        <span className="badge badge-secondary" style={{ background: 'var(--color-gray-100)', color: 'var(--color-gray-700)', padding: '6px 16px' }}>{patient.stay_type || 'Ambulatoire'}</span>
+                                        <span className="badge badge-primary" style={{ background: 'var(--color-primary-50)', color: 'var(--color-primary-600)', padding: '6px 16px' }}>{patient.operation}</span>
+                                        <span className="badge badge-secondary" style={{ background: 'var(--color-purple-50)', color: 'var(--color-purple-600)', padding: '6px 16px', display: 'flex', alignItems: 'center', gap: 'var(--spacing-1)' }}>
+                                            <Clock size={14} />
+                                            {patient.surgery_time || '07:30'}
+                                        </span>
                                     </div>
                                 </div>
-                            )) : (
-                                <div style={{ textAlign: 'center', padding: 'var(--spacing-8)', color: 'var(--color-gray-400)' }}>
-                                    <History size={48} style={{ marginBottom: 'var(--spacing-4)', opacity: 0.2 }} />
-                                    <p style={{ marginBottom: 'var(--spacing-4)' }}>
-                                        {historyCategory === 'intervention'
-                                            ? 'Aucune intervention enregistrée pour le moment.'
-                                            : 'Aucun SMS envoyé pour le moment.'}
-                                    </p>
-                                    <button
-                                        className="btn btn-primary"
-                                        onClick={() => setIsAddingHistory(true)}
-                                    >
-                                        <Plus size={16} />
-                                        Ajouter {historyCategory === 'intervention' ? 'une intervention' : 'un SMS'}
-                                    </button>
+                            </div>
+                        </div>
+
+                        {/* 2. Documents Section */}
+                        <div className="card glass-effect" style={{ padding: 'var(--spacing-8)' }}>
+                            <div className="card-header" style={{ marginBottom: 'var(--spacing-6)' }}>
+                                <div className="card-icon card-icon-primary" style={{ background: 'var(--color-primary-50)', color: 'var(--color-primary-600)' }}>
+                                    <FileText size={20} />
                                 </div>
+                                <h3>Ordonnance du cabinet</h3>
+                            </div>
+
+                            <div style={{
+                                border: '2px dashed var(--color-gray-200)',
+                                borderRadius: 'var(--border-radius-xl)',
+                                padding: 'var(--spacing-10)',
+                                textAlign: 'center',
+                                position: 'relative',
+                                background: 'rgba(255, 255, 255, 0.4)',
+                                cursor: 'pointer'
+                            }}>
+                                <UploadCloud size={48} style={{ color: 'var(--color-gray-300)', marginBottom: 'var(--spacing-4)' }} />
+                                <div style={{ fontSize: 'var(--font-size-lg)', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-gray-900)' }}>Glissez-déposez les documents ici</div>
+                                <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-400)', marginTop: '4px' }}>(Ordonnances, Arrêt de travail, Consignes...)</div>
+                                <p style={{ marginTop: 'var(--spacing-6)', color: 'var(--color-gray-400)', fontSize: 'var(--font-size-sm)' }}>Aucun document disponible.</p>
+                            </div>
+
+                            <div style={{
+                                marginTop: 'var(--spacing-6)',
+                                padding: 'var(--spacing-4)',
+                                background: 'var(--color-primary-50)',
+                                borderRadius: 'var(--border-radius-md)',
+                                color: 'var(--color-primary-700)',
+                                fontSize: 'var(--font-size-sm)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 'var(--spacing-3)'
+                            }}>
+                                <AlertCircle size={18} />
+                                <span>Un SMS contenant le lien sécurisé sera envoyé automatiquement au patient <b>20 minutes</b> après le dépôt du document.</span>
+                            </div>
+                        </div>
+
+                        {/* 3. Clinical Data Area */}
+                        <div className="card glass-effect" style={{ padding: 'var(--spacing-8)' }}>
+                            <div className="card-header" style={{ marginBottom: 'var(--spacing-8)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-4)' }}>
+                                    <div className="card-icon card-icon-primary" style={{ background: 'var(--color-primary-50)', color: 'var(--color-primary-600)', padding: '0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        <svg viewBox="0 0 727 745" width="24" height="24" fill="currentColor">
+                                            <path d="M406.946 1.41211L412.116 2.74513V238.69H524.567L525.86 245.356L317.761 561.282L316.469 324.004H201.433L200.141 320.005L406.946 1.41211ZM381.096 102.722L257.012 292.011L401.776 294.677L344.905 326.67L347.49 462.639L471.573 273.349L324.224 270.683L381.096 241.357V102.722Z" />
+                                        </svg>
+                                    </div>
+                                    <h3>Données Cliniques</h3>
+                                </div>
+                                <button className="btn btn-secondary btn-xs" style={{ color: 'var(--color-orange-600)', background: 'var(--color-orange-50)', border: 'none', padding: '6px 12px' }}>
+                                    <Edit2 size={14} style={{ marginRight: '6px' }} />
+                                    Corriger
+                                </button>
+                            </div>
+
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-8)' }}>
+                                {/* J-7 & J-2 Section */}
+                                <div>
+                                    <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-gray-400)', textTransform: 'uppercase', marginBottom: 'var(--spacing-4)', letterSpacing: '0.05em' }}>
+                                        Bilan Pré-opératoire (J-7 & J-2)
+                                    </div>
+                                    <div className="grid-3" style={{ gap: 'var(--spacing-4)' }}>
+                                        {[
+                                            { id: 'anesthesia_consultation', label: 'consult_anesth' },
+                                            { id: 'blood_work', label: 'bilan_cardio' }, // Mapped to cardio label in screenshot
+                                            { id: 'companion_confirmed', label: 'accompagnant' },
+                                            { id: 'hair_removal_cream', label: 'test_creme' },
+                                            { id: 'fasting_understood', label: 'jeune_ok' },
+                                            { id: 'shower_planned', label: 'douche_ok' },
+                                            { id: 'no_razor', label: 'epilation_method' }
+                                        ].map(item => (
+                                            <div key={item.id} className="card" style={{ padding: 'var(--spacing-4)', background: 'rgba(255,255,255,0.4)', border: '1px solid var(--color-gray-100)' }}>
+                                                <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', marginBottom: '4px' }}>{item.label}</div>
+                                                <div style={{ fontWeight: 'var(--font-weight-semibold)', color: clinicalResponses.J7[item.id] !== undefined || clinicalResponses.J2[item.id] !== undefined ? 'var(--color-primary-600)' : 'var(--color-gray-300)', fontStyle: clinicalResponses.J7[item.id] === undefined && clinicalResponses.J2[item.id] === undefined ? 'italic' : 'normal' }}>
+                                                    {clinicalResponses.J7[item.id] === true || clinicalResponses.J2[item.id] === true ? 'OUI' :
+                                                        clinicalResponses.J7[item.id] === false || clinicalResponses.J2[item.id] === false ? 'NON' : 'Non renseigné'}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* J+1 Section */}
+                                <div>
+                                    <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-gray-400)', textTransform: 'uppercase', marginBottom: 'var(--spacing-4)', letterSpacing: '0.05em' }}>
+                                        Suivi Post-opératoire (J+1)
+                                    </div>
+                                    <div className="grid-3" style={{ gap: 'var(--spacing-4)' }}>
+                                        {[
+                                            { id: 'has_pain', label: 'douleur' },
+                                            { id: 'fever_infection', label: 'fievre' },
+                                            { id: 'bleeding', label: 'pansement_tache' },
+                                            { id: 'ponv_check', label: 'nausees' },
+                                            { id: 'urine_ok', label: 'urine_ok' },
+                                            { id: 'pain_medication', label: 'medocs_pris' },
+                                            { id: 'urgency', label: 'urgence_vitale' }
+                                        ].map(item => (
+                                            <div key={item.id} className="card" style={{ padding: 'var(--spacing-4)', background: 'rgba(255,255,255,0.4)', border: '1px solid var(--color-gray-100)' }}>
+                                                <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', marginBottom: '4px' }}>{item.label}</div>
+                                                <div style={{ fontWeight: 'var(--font-weight-semibold)', color: clinicalResponses.J1[item.id] !== undefined ? 'var(--color-primary-600)' : 'var(--color-gray-300)', fontStyle: clinicalResponses.J1[item.id] === undefined ? 'italic' : 'normal' }}>
+                                                    {clinicalResponses.J1[item.id] === true ? 'OUI' : clinicalResponses.J1[item.id] === false ? 'NON' : 'Non renseigné'}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Satisfaction Section */}
+                                <div>
+                                    <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-gray-400)', textTransform: 'uppercase', marginBottom: 'var(--spacing-4)', letterSpacing: '0.05em' }}>
+                                        Satisfaction (J+2)
+                                    </div>
+                                    <div className="grid-2" style={{ gap: 'var(--spacing-4)' }}>
+                                        <div className="card" style={{ padding: 'var(--spacing-4)', background: 'rgba(255,255,255,0.4)', border: '1px solid var(--color-gray-100)' }}>
+                                            <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', marginBottom: '4px' }}>nps</div>
+                                            <div style={{ fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-gray-300)', fontStyle: 'italic' }}>Non renseigné</div>
+                                        </div>
+                                        <div className="card" style={{ padding: 'var(--spacing-4)', background: 'rgba(255,255,255,0.4)', border: '1px solid var(--color-gray-100)' }}>
+                                            <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', marginBottom: '4px' }}>commentaire</div>
+                                            <div style={{ fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-gray-300)', fontStyle: 'italic' }}>Non renseigné</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* 4. Protocol Progress */}
+                        <div className="card glass-effect" style={{ padding: 'var(--spacing-8)' }}>
+                            <div className="card-header" style={{ marginBottom: 'var(--spacing-6)' }}>
+                                <div className="card-icon card-icon-success">
+                                    <Activity size={20} />
+                                </div>
+                                <h3>État du Protocole</h3>
+                            </div>
+                            <div style={{ textAlign: 'center' }}>
+                                <div style={{ fontSize: 'var(--font-size-4xl)', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-primary-500)', marginBottom: 'var(--spacing-2)' }}>
+                                    {patient.displayProgress || patient.progress || 0}%
+                                </div>
+                                <div className="progress-bar" style={{ height: '12px', background: 'var(--color-gray-100)', borderRadius: '6px', overflow: 'hidden', marginBottom: 'var(--spacing-4)' }}>
+                                    <div className="progress-fill progress-fill-primary" style={{ width: `${patient.displayProgress || patient.progress || 0}%`, height: '100%', transition: 'width 0.5s ease' }}></div>
+                                </div>
+                                <div className="badge badge-success" style={{ padding: '8px 20px', borderRadius: '20px' }}>Protocole en cours d'exécution</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Right Column: History */}
+                    <div className="card glass-effect" style={{ height: 'fit-content', padding: 'var(--spacing-8)', position: 'sticky', top: 'var(--spacing-8)' }}>
+                        <div className="card-header" style={{ marginBottom: 'var(--spacing-8)' }}>
+                            <div className="card-icon card-icon-primary" style={{ background: 'var(--color-purple-50)', color: 'var(--color-purple-600)' }}>
+                                <History size={20} />
+                            </div>
+                            <h3>Historique</h3>
+                        </div>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-4)', marginBottom: 'var(--spacing-8)' }}>
+                            <button
+                                className="btn btn-primary btn-sm"
+                                style={{ justifyContent: 'center', width: '100%', borderRadius: 'var(--border-radius-lg)' }}
+                                onClick={() => setIsAddingHistory(true)}
+                            >
+                                <Plus size={16} />
+                                Ajouter un événement
+                            </button>
+                        </div>
+
+                        {/* History Entry Form */}
+                        {isAddingHistory && (
+                            <div className="card" style={{ marginBottom: 'var(--spacing-8)', background: 'rgba(255,255,255,0.8)', border: '1px solid var(--color-primary-100)', padding: 'var(--spacing-6)' }}>
+                                <div style={{ display: 'grid', gap: 'var(--spacing-4)' }}>
+                                    <div>
+                                        <label style={{ display: 'block', fontSize: '10px', fontWeight: 'bold', color: 'var(--color-gray-400)', textTransform: 'uppercase', marginBottom: '4px' }}>Catégorie</label>
+                                        <div style={{ display: 'flex', gap: '2px', background: 'var(--color-gray-50)', padding: '2px', borderRadius: '6px' }}>
+                                            <button onClick={() => setHistoryCategory('intervention')} style={{ flex: 1, padding: '6px', border: 'none', borderRadius: '4px', background: historyCategory === 'intervention' || historyCategory === 'all' ? 'white' : 'transparent', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer', boxShadow: historyCategory === 'intervention' || historyCategory === 'all' ? '0 1px 2px rgba(0,0,0,0.1)' : 'none' }}>Intervention</button>
+                                            <button onClick={() => setHistoryCategory('sms')} style={{ flex: 1, padding: '6px', border: 'none', borderRadius: '4px', background: historyCategory === 'sms' ? 'white' : 'transparent', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer', boxShadow: historyCategory === 'sms' ? '0 1px 2px rgba(0,0,0,0.1)' : 'none' }}>SMS</button>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label style={{ display: 'block', fontSize: '10px', fontWeight: 'bold', color: 'var(--color-gray-400)', textTransform: 'uppercase', marginBottom: '4px' }}>Date</label>
+                                        <input type="date" className="input" style={{ fontSize: '13px', padding: '8px' }} value={newHistoryEntry.date} onChange={(e) => setNewHistoryEntry({ ...newHistoryEntry, date: e.target.value })} />
+                                    </div>
+                                    <div>
+                                        <label style={{ display: 'block', fontSize: '10px', fontWeight: 'bold', color: 'var(--color-gray-400)', textTransform: 'uppercase', marginBottom: '4px' }}>Titre</label>
+                                        <input className="input" style={{ fontSize: '13px', padding: '8px' }} placeholder="Titre..." value={newHistoryEntry.title} onChange={(e) => setNewHistoryEntry({ ...newHistoryEntry, title: e.target.value })} />
+                                    </div>
+                                    <div>
+                                        <label style={{ display: 'block', fontSize: '10px', fontWeight: 'bold', color: 'var(--color-gray-400)', textTransform: 'uppercase', marginBottom: '4px' }}>Détails</label>
+                                        <textarea className="input" style={{ fontSize: '13px', padding: '8px' }} rows={2} placeholder="Description..." value={newHistoryEntry.description} onChange={(e) => setNewHistoryEntry({ ...newHistoryEntry, description: e.target.value })} />
+                                    </div>
+                                    <div style={{ display: 'flex', gap: 'var(--spacing-2)' }}>
+                                        <button className="btn btn-secondary btn-sm" style={{ flex: 1 }} onClick={() => setIsAddingHistory(false)}>Annuler</button>
+                                        <button className="btn btn-primary btn-sm" style={{ flex: 1 }} onClick={handleAddHistoryEntry}>Enregistrer</button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="timeline" style={{ position: 'relative' }}>
+                            <div style={{ position: 'absolute', left: '7px', top: 0, bottom: 0, width: '2px', background: 'var(--color-gray-100)' }}></div>
+                            {medicalHistory.length > 0 ? (
+                                medicalHistory.map((item) => (
+                                    <div key={item.id} className="timeline-item" style={{ paddingLeft: 'var(--spacing-8)', paddingBottom: 'var(--spacing-8)', position: 'relative' }}>
+                                        <div style={{
+                                            position: 'absolute',
+                                            left: 0,
+                                            top: '4px',
+                                            width: '16px',
+                                            height: '16px',
+                                            borderRadius: '50%',
+                                            background: item.category === 'sms' ? 'var(--color-secondary-500)' : 'var(--color-primary-500)',
+                                            border: '3px solid white',
+                                            boxShadow: '0 0 0 1px var(--color-gray-100)',
+                                            zIndex: 1
+                                        }}></div>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)' }}>
+                                                <span style={{ fontWeight: 'var(--font-weight-black)', fontSize: 'var(--font-size-md)' }}>{item.title}</span>
+                                                {item.category === 'sms' && <span className="badge" style={{ fontSize: '8px', background: 'var(--color-gray-100)', letterSpacing: '0.05em' }}>SYSTEME</span>}
+                                            </div>
+                                            <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-400)', display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)' }}>
+                                                {formatDateFR(item.date)} • {item.category === 'sms' ? 'SMS envoyé' : 'Intervention'}
+                                            </div>
+                                            {item.description && (
+                                                <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-600)', marginTop: '4px', background: 'var(--color-gray-50)', padding: 'var(--spacing-3)', borderRadius: 'var(--border-radius-md)' }}>
+                                                    {item.description}
+                                                </div>
+                                            )}
+                                        </div>
+                                        <button
+                                            onClick={() => handleDeleteHistoryEntry(item.id)}
+                                            style={{ position: 'absolute', top: 0, right: 0, background: 'transparent', border: 'none', color: 'var(--color-gray-200)', cursor: 'pointer' }}
+                                        >
+                                            <Trash2 size={14} />
+                                        </button>
+                                    </div>
+                                ))
+                            ) : (
+                                <p style={{ textAlign: 'center', color: 'var(--color-gray-400)', padding: 'var(--spacing-8)' }}>Aucun événement.</p>
                             )}
+                        </div>
                     </div>
                 </div>
             </main>
@@ -522,70 +571,6 @@ export default function PatientReview() {
                 onPatientUpdated={handlePatientUpdated}
             />
 
-            {/* Patient Link Modal */}
-            {showLinkModal && (
-                <div className="modal-overlay" onClick={() => setShowLinkModal(false)}>
-                    <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '600px' }}>
-                        <div style={{ marginBottom: 'var(--spacing-6)' }}>
-                            <h2 style={{ marginBottom: 'var(--spacing-2)' }}>Lien de Suivi Patient</h2>
-                            <p style={{ color: 'var(--color-gray-600)', fontSize: 'var(--font-size-sm)' }}>
-                                Envoyez ce lien au patient pour qu'il accède à son portail personnel.
-                            </p>
-                        </div>
-
-                        <div style={{
-                            background: 'var(--color-gray-50)',
-                            padding: 'var(--spacing-4)',
-                            borderRadius: 'var(--border-radius-lg)',
-                            border: '1px solid var(--color-gray-200)',
-                            marginBottom: 'var(--spacing-4)',
-                            wordBreak: 'break-all'
-                        }}>
-                            <code style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-700)' }}>
-                                {generatedLink}
-                            </code>
-                        </div>
-
-                        <div style={{ display: 'flex', gap: 'var(--spacing-3)' }}>
-                            <button
-                                className="btn btn-primary"
-                                onClick={handleCopyLink}
-                                style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--spacing-2)' }}
-                            >
-                                {linkCopied ? (
-                                    <>
-                                        <Check size={18} />
-                                        Copié !
-                                    </>
-                                ) : (
-                                    <>
-                                        <Copy size={18} />
-                                        Copier le lien
-                                    </>
-                                )}
-                            </button>
-                            <button
-                                className="btn btn-secondary"
-                                onClick={() => setShowLinkModal(false)}
-                            >
-                                Fermer
-                            </button>
-                        </div>
-
-                        <div style={{
-                            marginTop: 'var(--spacing-4)',
-                            padding: 'var(--spacing-3)',
-                            background: 'var(--color-info-50)',
-                            borderLeft: '4px solid var(--color-info-500)',
-                            borderRadius: 'var(--border-radius-md)'
-                        }}>
-                            <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-700)' }}>
-                                <strong>Note :</strong> Ce lien permet au patient de consulter ses informations, de remplir ses questionnaires et de suivre son parcours ambulatoire.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
     );
 }

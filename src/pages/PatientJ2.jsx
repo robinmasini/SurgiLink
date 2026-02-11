@@ -80,8 +80,7 @@ export default function PatientJ2() {
         setSaving(false);
 
         if (isTokenMode) {
-            const token = window.location.pathname.split('/')[2];
-            navigate(`/patient-portal/${token}`);
+            navigate(`/patient-portal/${token}/success`);
         } else {
             navigate('/patient/success');
         }
@@ -118,27 +117,9 @@ export default function PatientJ2() {
     return (
         <div className="patient-view">
             {/* Header */}
-            <div className="patient-header">
-                <div className="patient-header-left">
-                    <h2>Bonjour Patient</h2>
-                    <span>J-2 • Consignes Préopératoires</span>
-                </div>
-                <button
-                    style={{
-                        background: 'transparent',
-                        border: 'none',
-                        cursor: 'pointer',
-                        color: 'var(--color-gray-500)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: '40px',
-                        height: '40px'
-                    }}
-                    onClick={() => navigate('/login')}
-                >
-                    <LogOut size={20} />
-                </button>
+            <div className="patient-header" style={{ padding: 'var(--spacing-6) var(--spacing-4)', textAlign: 'center', display: 'block' }}>
+                <h2 style={{ fontSize: 'var(--font-size-2xl)', marginBottom: 'var(--spacing-1)' }}>Dossier Médical</h2>
+                <div style={{ color: 'var(--color-primary-600)', fontWeight: 'var(--font-weight-semibold)' }}>J-2 • Consignes</div>
             </div>
 
             {/* Content */}
@@ -151,23 +132,6 @@ export default function PatientJ2() {
                     <p style={{ color: 'var(--color-gray-600)' }}>{config.subtitle}</p>
                 </div>
 
-                {/* Risk Alerts */}
-                {riskFlags.hard.length > 0 && (
-                    <AlertBanner
-                        type="danger"
-                        title="⚠️ Attention requise"
-                        message={`Points critiques : ${riskFlags.hard.map(f => f.label).join(', ')}`}
-                    />
-                )}
-
-                {riskFlags.soft.length > 0 && (
-                    <div style={{ marginTop: 'var(--spacing-4)' }}>
-                        <AlertBanner
-                            type="warning"
-                            message={`${riskFlags.soft.length} point(s) à vérifier avant validation.`}
-                        />
-                    </div>
-                )}
 
                 {/* Sections */}
                 {config.sections.map((section) => (
