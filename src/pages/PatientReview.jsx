@@ -51,6 +51,9 @@ export default function PatientReview() {
         description: '',
         category: 'intervention'
     });
+    const [documents, setDocuments] = useState([]);
+    const [isDragging, setIsDragging] = useState(false);
+    const fileInputRef = { current: null }; // Will be assigned by ref prop
 
     useEffect(() => {
         const loadPatientData = async () => {
@@ -152,6 +155,38 @@ export default function PatientReview() {
         } catch (err) {
             console.error('Error adding history entry:', err);
             alert(`Erreur: ${err.message}`);
+        }
+    };
+
+    const handleFileUpload = (files) => {
+        const newDocs = Array.from(files).map(file => ({
+            id: Math.random().toString(36).substr(2, 9),
+            name: file.name,
+            size: (file.size / 1024).toFixed(1) + ' KB',
+            type: file.type,
+            date: new Date().toLocaleDateString('fr-FR')
+        }));
+        setDocuments(prev => [...prev, ...newDocs]);
+    };
+
+    const removeDocument = (docId) => {
+        setDocuments(prev => prev.filter(d => d.id !== docId));
+    };
+
+    const onDragOver = (e) => {
+        e.preventDefault();
+        setIsDragging(true);
+    };
+
+    const onDragLeave = () => {
+        setIsDragging(false);
+    };
+
+    const onDrop = (e) => {
+        e.preventDefault();
+        setIsDragging(false);
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            handleFileUpload(e.dataTransfer.files);
         }
     };
 
@@ -306,13 +341,33 @@ export default function PatientReview() {
                                             Né(e) le {patient.birth_date ? formatDateFR(patient.birth_date) : 'N/A'}
                                         </div>
                                     </div>
-                                    <div style={{ display: 'flex', gap: 'var(--spacing-2)', marginTop: 'var(--spacing-4)' }}>
+                                    <div style={{ display: 'flex', gap: 'var(--spacing-2)', marginTop: 'var(--spacing-4)', flexWrap: 'wrap' }}>
                                         <span className="badge badge-secondary" style={{ background: 'var(--color-gray-100)', color: 'var(--color-gray-700)', padding: '6px 16px' }}>{patient.stay_type || 'Ambulatoire'}</span>
                                         <span className="badge badge-primary" style={{ background: 'var(--color-primary-50)', color: 'var(--color-primary-600)', padding: '6px 16px' }}>{patient.operation}</span>
                                         <span className="badge badge-secondary" style={{ background: 'var(--color-purple-50)', color: 'var(--color-purple-600)', padding: '6px 16px', display: 'flex', alignItems: 'center', gap: 'var(--spacing-1)' }}>
                                             <Clock size={14} />
                                             {patient.surgery_time || '07:30'}
                                         </span>
+                                    </div>
+
+                                    {/* Detailed Info Grid */}
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 'var(--spacing-6)', marginTop: 'var(--spacing-6)', paddingTop: 'var(--spacing-6)', borderTop: '1px solid var(--color-gray-100)' }}>
+                                        <div>
+                                            <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', textTransform: 'uppercase', marginBottom: '4px' }}>Chirurgien</div>
+                                            <div style={{ fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-gray-900)' }}>{patient.surgeon_name || 'Dr. Christophe DESOUCHES'}</div>
+                                        </div>
+                                        <div>
+                                            <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', textTransform: 'uppercase', marginBottom: '4px' }}>Date d'intervention</div>
+                                            <div style={{ fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-gray-900)' }}>{patient.date ? formatDateFR(patient.date) : 'Non définie'}</div>
+                                        </div>
+                                        <div>
+                                            <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', textTransform: 'uppercase', marginBottom: '4px' }}>Téléphone</div>
+                                            <div style={{ fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-gray-900)' }}>{patient.phone || 'Non renseigné'}</div>
+                                        </div>
+                                        <div>
+                                            <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', textTransform: 'uppercase', marginBottom: '4px' }}>Email</div>
+                                            <div style={{ fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-gray-900)' }}>{patient.email || 'Non renseigné'}</div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -327,20 +382,84 @@ export default function PatientReview() {
                                 <h3>Ordonnance du cabinet</h3>
                             </div>
 
-                            <div style={{
-                                border: '2px dashed var(--color-gray-200)',
-                                borderRadius: 'var(--border-radius-xl)',
-                                padding: 'var(--spacing-10)',
-                                textAlign: 'center',
-                                position: 'relative',
-                                background: 'rgba(255, 255, 255, 0.4)',
-                                cursor: 'pointer'
-                            }}>
-                                <UploadCloud size={48} style={{ color: 'var(--color-gray-300)', marginBottom: 'var(--spacing-4)' }} />
-                                <div style={{ fontSize: 'var(--font-size-lg)', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-gray-900)' }}>Glissez-déposez les documents ici</div>
+                            <input
+                                type="file"
+                                ref={(el) => (fileInputRef.current = el)}
+                                style={{ display: 'none' }}
+                                multiple
+                                onChange={(e) => handleFileUpload(e.target.files)}
+                            />
+
+                            <div
+                                className={`upload-zone ${isDragging ? 'dragging' : ''}`}
+                                onDragOver={onDragOver}
+                                onDragLeave={onDragLeave}
+                                onDrop={onDrop}
+                                onClick={() => fileInputRef.current.click()}
+                                style={{
+                                    border: isDragging ? '2px dashed var(--color-primary-500)' : '2px dashed var(--color-gray-200)',
+                                    background: isDragging ? 'var(--color-primary-50)' : 'rgba(255, 255, 255, 0.4)',
+                                    borderRadius: 'var(--border-radius-xl)',
+                                    padding: 'var(--spacing-10)',
+                                    textAlign: 'center',
+                                    position: 'relative',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.2s ease'
+                                }}
+                            >
+                                <UploadCloud size={48} style={{ color: isDragging ? 'var(--color-primary-400)' : 'var(--color-gray-300)', marginBottom: 'var(--spacing-4)' }} />
+                                <div style={{ fontSize: 'var(--font-size-lg)', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-gray-900)' }}>
+                                    {isDragging ? 'Déposez les fichiers ici' : 'Glissez-déposez les documents ici'}
+                                </div>
                                 <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-400)', marginTop: '4px' }}>(Ordonnances, Arrêt de travail, Consignes...)</div>
-                                <p style={{ marginTop: 'var(--spacing-6)', color: 'var(--color-gray-400)', fontSize: 'var(--font-size-sm)' }}>Aucun document disponible.</p>
+                                {documents.length === 0 && <p style={{ marginTop: 'var(--spacing-6)', color: 'var(--color-gray-400)', fontSize: 'var(--font-size-sm)' }}>Aucun document disponible.</p>}
                             </div>
+
+                            {documents.length > 0 && (
+                                <div style={{ display: 'grid', gap: '12px', marginTop: 'var(--spacing-6)' }}>
+                                    {documents.map(doc => (
+                                        <div key={doc.id} className="glass-effect" style={{
+                                            padding: '12px 16px',
+                                            borderRadius: '12px',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '12px',
+                                            border: '1px solid rgba(0,0,0,0.03)'
+                                        }}>
+                                            <div style={{
+                                                width: '36px',
+                                                height: '36px',
+                                                borderRadius: '8px',
+                                                background: 'var(--color-primary-100)',
+                                                color: 'var(--color-primary-600)',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center'
+                                            }}>
+                                                <FileText size={18} />
+                                            </div>
+                                            <div style={{ flex: 1 }}>
+                                                <div style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-medium)' }}>{doc.name}</div>
+                                                <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-400)' }}>{doc.size} • {doc.date}</div>
+                                            </div>
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); removeDocument(doc.id); }}
+                                                style={{
+                                                    background: 'transparent',
+                                                    border: 'none',
+                                                    color: 'var(--color-gray-400)',
+                                                    cursor: 'pointer',
+                                                    padding: '8px',
+                                                    borderRadius: '50%'
+                                                }}
+                                                className="btn-hover-danger"
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
 
                             <div style={{
                                 marginTop: 'var(--spacing-6)',
