@@ -342,9 +342,20 @@ export default function PatientReview() {
                                         </div>
                                     </div>
                                     <div style={{ display: 'flex', gap: 'var(--spacing-2)', marginTop: 'var(--spacing-4)', flexWrap: 'wrap' }}>
-                                        <span className="badge badge-secondary" style={{ background: 'var(--color-gray-100)', color: 'var(--color-gray-700)', padding: '6px 16px' }}>{patient.stay_type || 'Ambulatoire'}</span>
-                                        <span className="badge badge-primary" style={{ background: 'var(--color-primary-50)', color: 'var(--color-primary-600)', padding: '6px 16px' }}>{patient.operation}</span>
-                                        <span className="badge badge-secondary" style={{ background: 'var(--color-purple-50)', color: 'var(--color-purple-600)', padding: '6px 16px', display: 'flex', alignItems: 'center', gap: 'var(--spacing-1)' }}>
+                                        <span className="badge" style={{ background: 'var(--color-gray-100)', color: 'var(--color-gray-700)', padding: '6px 16px' }}>{patient.stay_type || 'Ambulatoire'}</span>
+                                        <span className="badge" style={{ background: 'var(--color-primary-50)', color: 'var(--color-primary-600)', padding: '6px 16px' }}>{patient.operation}</span>
+                                        <span className="badge" style={{
+                                            background: '#F5F1EE',
+                                            color: '#8B7355',
+                                            padding: '6px 16px',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: 'var(--spacing-2)',
+                                            border: '1px solid #EADDCD'
+                                        }}>
+                                            <Calendar size={14} />
+                                            {patient.date ? formatDateFR(patient.date) : 'Date non définie'}
+                                            <span style={{ opacity: 0.3, margin: '0 2px' }}>|</span>
                                             <Clock size={14} />
                                             {patient.surgery_time || '07:30'}
                                         </span>
@@ -357,8 +368,12 @@ export default function PatientReview() {
                                             <div style={{ fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-gray-900)' }}>{patient.surgeon_name || 'Dr. Christophe DESOUCHES'}</div>
                                         </div>
                                         <div>
-                                            <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', textTransform: 'uppercase', marginBottom: '4px' }}>Date d'intervention</div>
-                                            <div style={{ fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-gray-900)' }}>{patient.date ? formatDateFR(patient.date) : 'Non définie'}</div>
+                                            <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', textTransform: 'uppercase', marginBottom: '4px' }}>Date & Heure Intervention</div>
+                                            <div style={{ fontWeight: 'var(--font-weight-semibold)', color: '#8B7355', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                {patient.date ? formatDateFR(patient.date) : 'Non définie'}
+                                                <span style={{ color: 'var(--color-gray-300)' }}>à</span>
+                                                {patient.surgery_time || '07:30'}
+                                            </div>
                                         </div>
                                         <div>
                                             <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', textTransform: 'uppercase', marginBottom: '4px' }}>Téléphone</div>
