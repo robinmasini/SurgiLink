@@ -60,80 +60,80 @@ export default function PatientReview() {
     const [isDragging, setIsDragging] = useState(false);
     const fileInputRef = { current: null }; // Will be assigned by ref prop
 
-    useEffect(() => {
-        const loadPatientData = async () => {
-            setIsLoading(true);
-            try {
-                // Load patient
-                const { data: patientData, error: patientError } = await supabase
-                    .from('patients')
-                    .select('*')
-                    .eq('id', id)
-                    .single();
+    const loadPatientData = async () => {
+        setIsLoading(true);
+        try {
+            // Load patient
+            const { data: patientData, error: patientError } = await supabase
+                .from('patients')
+                .select('*')
+                .eq('id', id)
+                .single();
 
-                if (patientError) throw patientError;
-                setPatient(patientData);
+            if (patientError) throw patientError;
+            setPatient(patientData);
 
-                // Load medical history
-                const { data: historyData, error: historyError } = await supabase
-                    .from('medical_history')
-                    .select('*')
-                    .eq('patient_id', id)
-                    .order('date', { ascending: false });
+            // Load medical history
+            const { data: historyData, error: historyError } = await supabase
+                .from('medical_history')
+                .select('*')
+                .eq('patient_id', id)
+                .order('date', { ascending: false });
 
-                if (historyError && historyError.code !== 'PGRST116') { // Ignore "not found" error
-                    console.error('Error loading history:', historyError);
-                } else {
-                    setMedicalHistory(historyData || []);
-                }
-                // Load clinical responses
-                const [responsesJ7, responsesJ2, responsesJ1, responsesSatisfaction] = await Promise.all([
-                    getResponses(id, 'J7'),
-                    getResponses(id, 'J2'),
-                    getResponses(id, 'J1'),
-                    getResponses(id, 'J2_Satisfaction')
-                ]);
-
-                setClinicalResponses({
-                    J7: responsesJ7,
-                    J2: responsesJ2,
-                    J1: responsesJ1,
-                    J2_Satisfaction: responsesSatisfaction
-                });
-
-                // Calculate risk status
-                const [riskJ7, riskJ2, riskJ1] = await Promise.all([
-                    calculateRiskFlags(id, 'J7'),
-                    calculateRiskFlags(id, 'J2'),
-                    calculateRiskFlags(id, 'J1')
-                ]);
-
-                const hasHardRisk = riskJ7.hard.length > 0 || riskJ2.hard.length > 0 || riskJ1.hard.length > 0;
-                const hasSoftRisk = riskJ7.soft.length > 0 || riskJ2.soft.length > 0 || riskJ1.soft.length > 0;
-
-                if (hasHardRisk) setRiskStatus('CRITIQUE');
-                else if (hasSoftRisk) setRiskStatus('VIGILANCE');
-                else setRiskStatus('SAIN');
-
-                // Calculate display progress
-                let progress = 0;
-                if (Object.keys(responsesJ7).length > 0) progress += 25;
-                if (Object.keys(responsesJ2).length > 0) progress += 25;
-                if (Object.keys(responsesJ1).length > 0) progress += 25;
-                // J+2 placeholder
-                setPatient(prev => ({ ...prev, displayProgress: progress }));
-
-                // Load documents
-                const docData = await getDocuments(id);
-                setDocuments(docData);
-
-            } catch (err) {
-                console.error('Error loading patient:', err);
-            } finally {
-                setIsLoading(false);
+            if (historyError && historyError.code !== 'PGRST116') { // Ignore "not found" error
+                console.error('Error loading history:', historyError);
+            } else {
+                setMedicalHistory(historyData || []);
             }
-        };
+            // Load clinical responses
+            const [responsesJ7, responsesJ2, responsesJ1, responsesSatisfaction] = await Promise.all([
+                getResponses(id, 'J7'),
+                getResponses(id, 'J2'),
+                getResponses(id, 'J1'),
+                getResponses(id, 'J2_Satisfaction')
+            ]);
 
+            setClinicalResponses({
+                J7: responsesJ7,
+                J2: responsesJ2,
+                J1: responsesJ1,
+                J2_Satisfaction: responsesSatisfaction
+            });
+
+            // Calculate risk status
+            const [riskJ7, riskJ2, riskJ1] = await Promise.all([
+                calculateRiskFlags(id, 'J7'),
+                calculateRiskFlags(id, 'J2'),
+                calculateRiskFlags(id, 'J1')
+            ]);
+
+            const hasHardRisk = riskJ7.hard.length > 0 || riskJ2.hard.length > 0 || riskJ1.hard.length > 0;
+            const hasSoftRisk = riskJ7.soft.length > 0 || riskJ2.soft.length > 0 || riskJ1.soft.length > 0;
+
+            if (hasHardRisk) setRiskStatus('CRITIQUE');
+            else if (hasSoftRisk) setRiskStatus('VIGILANCE');
+            else setRiskStatus('SAIN');
+
+            // Calculate display progress
+            let progress = 0;
+            if (Object.keys(responsesJ7).length > 0) progress += 25;
+            if (Object.keys(responsesJ2).length > 0) progress += 25;
+            if (Object.keys(responsesJ1).length > 0) progress += 25;
+            // J+2 placeholder
+            setPatient(prev => ({ ...prev, displayProgress: progress }));
+
+            // Load documents
+            const docData = await getDocuments(id);
+            setDocuments(docData);
+
+        } catch (err) {
+            console.error('Error loading patient:', err);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
         if (id) {
             loadPatientData();
         }
@@ -779,6 +779,7 @@ export default function PatientReview() {
                 onClose={() => setIsPreviewModalOpen(false)}
                 patient={patient}
                 onResponseSaved={handleModalResponseSaved}
+                onStatusChange={loadPatientData}
             />
 
         </div>

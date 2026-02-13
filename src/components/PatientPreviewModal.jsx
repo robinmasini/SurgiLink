@@ -1,11 +1,12 @@
 import { formatDateFR } from '../utils/dateUtils';
-import { saveResponse } from '../services/pathwayService';
+import { saveResponse, markScreenCompleted } from '../services/pathwayService';
 
-export default function PatientPreviewModal({ isOpen, onClose, patient, onResponseSaved }) {
+export default function PatientPreviewModal({ isOpen, onClose, patient, onResponseSaved, onStatusChange }) {
     const [activeTab, setActiveTab] = useState('J7');
     const [responses, setResponses] = useState({});
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(null); // Track which item is saving
+    const [validating, setValidating] = useState(false);
 
     useEffect(() => {
         if (isOpen && patient?.id) {
@@ -45,6 +46,24 @@ export default function PatientPreviewModal({ isOpen, onClose, patient, onRespon
             setResponses(oldResponses);
         } finally {
             setSaving(null);
+        }
+    };
+
+    const handleValider = async () => {
+        setValidating(true);
+        try {
+            const res = await markScreenCompleted(patient.id, activeTab);
+            if (res.success) {
+                if (onStatusChange) onStatusChange();
+                alert(`Questionnaire ${activeTab} validé avec succès !`);
+                onClose();
+            } else {
+                alert("Erreur lors de la validation du questionnaire.");
+            }
+        } catch (error) {
+            console.error('Error validating screen:', error);
+        } finally {
+            setValidating(false);
         }
     };
 
@@ -376,6 +395,50 @@ export default function PatientPreviewModal({ isOpen, onClose, patient, onRespon
                             }}>
                                 <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-500)', margin: 0 }}>
                                     Les modifications sont enregistrées automatiquement
+                                </p>
+                            </div>
+
+                            {/* Validation Button */}
+                            <div style={{ marginTop: 'var(--spacing-8)', marginBottom: 'var(--spacing-12)' }}>
+                                <button
+                                    onClick={handleValider}
+                                    disabled={validating}
+                                    style={{
+                                        width: '100%',
+                                        padding: 'var(--spacing-4)',
+                                        borderRadius: '12px',
+                                        background: 'var(--color-primary-600)',
+                                        color: 'white',
+                                        border: 'none',
+                                        fontWeight: '600',
+                                        cursor: 'pointer',
+                                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        gap: 'var(--spacing-2)',
+                                        transition: 'all 0.2s',
+                                        opacity: validating ? 0.7 : 1
+                                    }}
+                                >
+                                    {validating ? (
+                                        <>
+                                            <Loader className="animate-spin" size={18} />
+                                            Validation en cours...
+                                        </>
+                                    ) : (
+                                        <>
+                                            Valider le questionnaire {activeTab}
+                                        </>
+                                    )}
+                                </button>
+                                <p style={{
+                                    fontSize: 'var(--font-size-xs)',
+                                    color: 'var(--color-gray-400)',
+                                    textAlign: 'center',
+                                    marginTop: 'var(--spacing-3)'
+                                }}>
+                                    En validant, vous confirmez que les informations sont exactes et complètes.
                                 </p>
                             </div>
                         </div>
