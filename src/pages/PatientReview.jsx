@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import EditPatientModal from '../components/EditPatientModal';
+import PatientPreviewModal from '../components/PatientPreviewModal';
 import ClinicAppointmentCard from '../components/ClinicAppointmentCard';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
@@ -22,7 +23,8 @@ import {
     Zap,
     Download,
     UploadCloud,
-    Trash2
+    Trash2,
+    Eye
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { calculateAge, formatDateFR } from '../utils/dateUtils';
@@ -38,6 +40,7 @@ export default function PatientReview() {
     const [isLoading, setIsLoading] = useState(true);
     const [isAddingHistory, setIsAddingHistory] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
     const [clinicalResponses, setClinicalResponses] = useState({
         J7: {},
         J2: {},
@@ -306,6 +309,22 @@ export default function PatientReview() {
                     </button>
 
                     <div style={{ marginLeft: 'auto', display: 'flex', gap: 'var(--spacing-3)' }}>
+                        <button
+                            onClick={() => setIsPreviewModalOpen(true)}
+                            className="btn btn-secondary btn-sm"
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 'var(--spacing-2)',
+                                background: 'var(--color-primary-50)',
+                                color: 'var(--color-primary-600)',
+                                border: '1px solid var(--color-primary-100)',
+                                fontWeight: '600'
+                            }}
+                        >
+                            <Eye size={18} />
+                            Vue Patient
+                        </button>
                     </div>
                 </div>
 
@@ -727,6 +746,12 @@ export default function PatientReview() {
                 onClose={() => setIsEditModalOpen(false)}
                 patient={patient}
                 onPatientUpdated={handlePatientUpdated}
+            />
+
+            <PatientPreviewModal
+                isOpen={isPreviewModalOpen}
+                onClose={() => setIsPreviewModalOpen(false)}
+                patient={patient}
             />
 
         </div>
