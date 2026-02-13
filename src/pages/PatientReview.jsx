@@ -272,6 +272,16 @@ export default function PatientReview() {
     };
 
 
+    const handleModalResponseSaved = (screen, itemId, value) => {
+        setClinicalResponses(prev => ({
+            ...prev,
+            [screen]: {
+                ...prev[screen],
+                [itemId]: value
+            }
+        }));
+    };
+
     if (isLoading) {
         return (
             <div style={{ display: 'flex' }}>
@@ -768,6 +778,7 @@ export default function PatientReview() {
                 isOpen={isPreviewModalOpen}
                 onClose={() => setIsPreviewModalOpen(false)}
                 patient={patient}
+                onResponseSaved={handleModalResponseSaved}
             />
 
         </div>

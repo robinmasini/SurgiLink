@@ -1,15 +1,11 @@
-import { useState, useEffect } from 'react';
-import { X, Clipboard, Clock, Activity, Loader, Info, Scissors, User, Phone, Mail } from 'lucide-react';
-import { pathwayConfig } from '../config/pathway.config';
-import { getResponses } from '../services/pathwayService';
-import QuestionRenderer from './pathway/QuestionRenderer';
-import AlertBanner from './pathway/AlertBanner';
 import { formatDateFR } from '../utils/dateUtils';
+import { saveResponse } from '../services/pathwayService';
 
-export default function PatientPreviewModal({ isOpen, onClose, patient }) {
+export default function PatientPreviewModal({ isOpen, onClose, patient, onResponseSaved }) {
     const [activeTab, setActiveTab] = useState('J7');
     const [responses, setResponses] = useState({});
     const [loading, setLoading] = useState(false);
+    const [saving, setSaving] = useState(null); // Track which item is saving
 
     useEffect(() => {
         if (isOpen && patient?.id) {
@@ -26,6 +22,29 @@ export default function PatientPreviewModal({ isOpen, onClose, patient }) {
             console.error('Error loading responses:', error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleResponseChange = async (itemId, value) => {
+        // Optimistic update
+        const oldResponses = { ...responses };
+        setResponses(prev => ({ ...prev, [itemId]: value }));
+        setSaving(itemId);
+
+        try {
+            const res = await saveResponse(patient.id, activeTab, itemId, value);
+            if (res.success) {
+                if (onResponseSaved) onResponseSaved(activeTab, itemId, value);
+            } else {
+                // Rollback if error
+                setResponses(oldResponses);
+                alert("Erreur lors de l'enregistrement de la réponse.");
+            }
+        } catch (error) {
+            console.error('Error saving response:', error);
+            setResponses(oldResponses);
+        } finally {
+            setSaving(null);
         }
     };
 
@@ -220,41 +239,67 @@ export default function PatientPreviewModal({ isOpen, onClose, patient }) {
                                             <div style={{ display: 'flex', gap: 'var(--spacing-2)' }}>
                                                 {item.type === 'yes_no' && (
                                                     <>
-                                                        <div style={{
-                                                            padding: '8px 16px',
-                                                            borderRadius: '8px',
-                                                            fontSize: 'var(--font-size-xs)',
-                                                            background: responses[item.id] === true ? 'var(--color-primary-500)' : 'var(--color-gray-50)',
-                                                            color: responses[item.id] === true ? 'white' : 'var(--color-gray-400)',
-                                                            border: 'none',
-                                                            flex: 1,
-                                                            textAlign: 'center'
-                                                        }}>OUI</div>
-                                                        <div style={{
-                                                            padding: '8px 16px',
-                                                            borderRadius: '8px',
-                                                            fontSize: 'var(--font-size-xs)',
-                                                            background: responses[item.id] === false ? 'var(--color-danger-500)' : 'var(--color-gray-50)',
-                                                            color: responses[item.id] === false ? 'white' : 'var(--color-gray-400)',
-                                                            border: 'none',
-                                                            flex: 1,
-                                                            textAlign: 'center'
-                                                        }}>NON</div>
+                                                        <button
+                                                            onClick={() => handleResponseChange(item.id, true)}
+                                                            disabled={saving === item.id}
+                                                            style={{
+                                                                padding: '8px 16px',
+                                                                borderRadius: '8px',
+                                                                fontSize: 'var(--font-size-xs)',
+                                                                background: responses[item.id] === true ? 'var(--color-primary-500)' : 'var(--color-gray-50)',
+                                                                color: responses[item.id] === true ? 'white' : 'var(--color-gray-400)',
+                                                                border: 'none',
+                                                                flex: 1,
+                                                                textAlign: 'center',
+                                                                cursor: 'pointer',
+                                                                fontWeight: responses[item.id] === true ? '600' : '400',
+                                                                transition: 'all 0.2s',
+                                                                opacity: saving === item.id ? 0.7 : 1
+                                                            }}
+                                                        >OUI</button>
+                                                        <button
+                                                            onClick={() => handleResponseChange(item.id, false)}
+                                                            disabled={saving === item.id}
+                                                            style={{
+                                                                padding: '8px 16px',
+                                                                borderRadius: '8px',
+                                                                fontSize: 'var(--font-size-xs)',
+                                                                background: responses[item.id] === false ? 'var(--color-danger-500)' : 'var(--color-gray-50)',
+                                                                color: responses[item.id] === false ? 'white' : 'var(--color-gray-400)',
+                                                                border: 'none',
+                                                                flex: 1,
+                                                                textAlign: 'center',
+                                                                cursor: 'pointer',
+                                                                fontWeight: responses[item.id] === false ? '600' : '400',
+                                                                transition: 'all 0.2s',
+                                                                opacity: saving === item.id ? 0.7 : 1
+                                                            }}
+                                                        >NON</button>
                                                     </>
                                                 )}
                                                 {item.type === 'text' && (
-                                                    <div style={{
-                                                        padding: '12px',
-                                                        borderRadius: '8px',
-                                                        background: 'var(--color-gray-50)',
-                                                        color: responses[item.id] ? 'var(--color-gray-800)' : 'var(--color-gray-300)',
-                                                        fontSize: 'var(--font-size-sm)',
-                                                        flex: 1,
-                                                        minHeight: '40px',
-                                                        whiteSpace: 'pre-wrap'
-                                                    }}>
-                                                        {responses[item.id] || 'Non renseigné'}
-                                                    </div>
+                                                    <textarea
+                                                        value={responses[item.id] || ''}
+                                                        onChange={(e) => setResponses(prev => ({ ...prev, [item.id]: e.target.value }))}
+                                                        onBlur={(e) => handleResponseChange(item.id, e.target.value)}
+                                                        placeholder="Saisir une réponse..."
+                                                        style={{
+                                                            padding: '12px',
+                                                            borderRadius: '8px',
+                                                            background: 'var(--color-gray-50)',
+                                                            color: 'var(--color-gray-800)',
+                                                            fontSize: 'var(--font-size-sm)',
+                                                            flex: 1,
+                                                            minHeight: '80px',
+                                                            border: '1px solid transparent',
+                                                            outline: 'none',
+                                                            resize: 'none',
+                                                            width: '100%',
+                                                            fontFamily: 'inherit',
+                                                            transition: 'border-color 0.2s',
+                                                            borderColor: saving === item.id ? 'var(--color-primary-300)' : 'transparent'
+                                                        }}
+                                                    />
                                                 )}
                                                 {item.type === 'slider_0_10' && (
                                                     <div style={{ flex: 1 }}>
@@ -264,25 +309,49 @@ export default function PatientPreviewModal({ isOpen, onClose, patient }) {
                                                             <span style={{ fontSize: '10px', color: 'var(--color-gray-400)' }}>10</span>
                                                         </div>
                                                         <div style={{
-                                                            height: '8px',
-                                                            background: 'var(--color-gray-100)',
-                                                            borderRadius: '4px',
-                                                            position: 'relative'
+                                                            height: '24px',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            position: 'relative',
+                                                            cursor: 'pointer'
+                                                        }} onClick={(e) => {
+                                                            const rect = e.currentTarget.getBoundingClientRect();
+                                                            const x = e.clientX - rect.left;
+                                                            const val = Math.round((x / rect.width) * 10);
+                                                            handleResponseChange(item.id, Math.max(0, Math.min(10, val)));
                                                         }}>
-                                                            {responses[item.id] !== undefined && (
+                                                            <div style={{
+                                                                height: '8px',
+                                                                background: 'var(--color-gray-100)',
+                                                                borderRadius: '4px',
+                                                                width: '100%',
+                                                                position: 'relative'
+                                                            }}>
                                                                 <div style={{
                                                                     position: 'absolute',
-                                                                    left: `${responses[item.id] * 10}%`,
-                                                                    top: '50%',
-                                                                    transform: 'translate(-50%, -50%)',
-                                                                    width: '18px',
-                                                                    height: '18px',
-                                                                    borderRadius: '50%',
-                                                                    background: 'var(--color-primary-500)',
-                                                                    border: '3px solid white',
-                                                                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                                                                    left: 0,
+                                                                    top: 0,
+                                                                    bottom: 0,
+                                                                    width: responses[item.id] !== undefined ? `${responses[item.id] * 10}%` : 0,
+                                                                    background: 'var(--color-primary-200)',
+                                                                    borderRadius: '4px'
                                                                 }} />
-                                                            )}
+                                                                {responses[item.id] !== undefined && (
+                                                                    <div style={{
+                                                                        position: 'absolute',
+                                                                        left: `${responses[item.id] * 10}%`,
+                                                                        top: '50%',
+                                                                        transform: 'translate(-50%, -50%)',
+                                                                        width: '20px',
+                                                                        height: '20px',
+                                                                        borderRadius: '50%',
+                                                                        background: 'var(--color-primary-500)',
+                                                                        border: '3px solid white',
+                                                                        boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                                                                        zIndex: 2
+                                                                    }} />
+                                                                )}
+                                                            </div>
                                                         </div>
                                                         <div style={{ textAlign: 'center', marginTop: '8px', fontSize: 'var(--font-size-sm)', fontWeight: '600', color: 'var(--color-primary-600)' }}>
                                                             {responses[item.id] !== undefined ? `${responses[item.id]} / 10` : 'Non renseigné'}
@@ -306,7 +375,7 @@ export default function PatientPreviewModal({ isOpen, onClose, patient }) {
                                 textAlign: 'center'
                             }}>
                                 <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-500)', margin: 0 }}>
-                                    Mode aperçu lécture seule
+                                    Les modifications sont enregistrées automatiquement
                                 </p>
                             </div>
                         </div>
