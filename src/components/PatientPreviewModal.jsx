@@ -56,6 +56,7 @@ export default function PatientPreviewModal({ isOpen, onClose, patient }) {
             case 'hygiene': return <Activity size={18} />;
             case 'medical': return <Activity size={18} />;
             case 'safety': return <Activity size={18} />;
+            case 'feedback': return <Activity size={18} />;
             default: return <Clipboard size={18} />;
         }
     };
@@ -133,6 +134,9 @@ export default function PatientPreviewModal({ isOpen, onClose, patient }) {
                     <div style={getTabStyle('J1')} onClick={() => setActiveTab('J1')}>
                         J+1 Suivi
                     </div>
+                    <div style={getTabStyle('J2_Satisfaction')} onClick={() => setActiveTab('J2_Satisfaction')}>
+                        J+2 Avis
+                    </div>
                 </div>
 
                 {/* Content Area */}
@@ -160,12 +164,15 @@ export default function PatientPreviewModal({ isOpen, onClose, patient }) {
                             }}>
                                 <h3 style={{ fontSize: 'var(--font-size-xl)', marginBottom: 'var(--spacing-1)' }}>Dossier Médical</h3>
                                 <div style={{ color: 'var(--color-primary-600)', fontWeight: '600' }}>
-                                    {activeTab === 'J7' ? 'J-7 • Préparation' : activeTab === 'J2' ? 'J-2 • Consignes' : 'J+1 • Suivi'}
+                                    {activeTab === 'J7' ? 'J-7 • Préparation' :
+                                        activeTab === 'J2' ? 'J-2 • Consignes' :
+                                            activeTab === 'J1' ? 'J+1 • Suivi' :
+                                                'J+2 • Satisfaction'}
                                 </div>
                             </div>
 
                             {/* Time Alert (Specific to J7/J2 logic if needed) */}
-                            {activeTab !== 'J1' && (
+                            {['J7', 'J2'].includes(activeTab) && (
                                 <AlertBanner
                                     type="info"
                                     title={`Arrivée prévue à ${patient?.surgery_time || '07:30'}`}
@@ -243,9 +250,43 @@ export default function PatientPreviewModal({ isOpen, onClose, patient }) {
                                                         color: responses[item.id] ? 'var(--color-gray-800)' : 'var(--color-gray-300)',
                                                         fontSize: 'var(--font-size-sm)',
                                                         flex: 1,
-                                                        minHeight: '40px'
+                                                        minHeight: '40px',
+                                                        whiteSpace: 'pre-wrap'
                                                     }}>
                                                         {responses[item.id] || 'Non renseigné'}
+                                                    </div>
+                                                )}
+                                                {item.type === 'slider_0_10' && (
+                                                    <div style={{ flex: 1 }}>
+                                                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                                                            <span style={{ fontSize: '10px', color: 'var(--color-gray-400)' }}>0</span>
+                                                            <span style={{ fontSize: '10px', color: 'var(--color-gray-400)' }}>5</span>
+                                                            <span style={{ fontSize: '10px', color: 'var(--color-gray-400)' }}>10</span>
+                                                        </div>
+                                                        <div style={{
+                                                            height: '8px',
+                                                            background: 'var(--color-gray-100)',
+                                                            borderRadius: '4px',
+                                                            position: 'relative'
+                                                        }}>
+                                                            {responses[item.id] !== undefined && (
+                                                                <div style={{
+                                                                    position: 'absolute',
+                                                                    left: `${responses[item.id] * 10}%`,
+                                                                    top: '50%',
+                                                                    transform: 'translate(-50%, -50%)',
+                                                                    width: '18px',
+                                                                    height: '18px',
+                                                                    borderRadius: '50%',
+                                                                    background: 'var(--color-primary-500)',
+                                                                    border: '3px solid white',
+                                                                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                                                                }} />
+                                                            )}
+                                                        </div>
+                                                        <div style={{ textAlign: 'center', marginTop: '8px', fontSize: 'var(--font-size-sm)', fontWeight: '600', color: 'var(--color-primary-600)' }}>
+                                                            {responses[item.id] !== undefined ? `${responses[item.id]} / 10` : 'Non renseigné'}
+                                                        </div>
                                                     </div>
                                                 )}
                                                 {/* Add more types if needed, like tri_state or multi_check if they are used in J1/J2/J7 */}

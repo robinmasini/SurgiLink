@@ -44,7 +44,8 @@ export default function PatientReview() {
     const [clinicalResponses, setClinicalResponses] = useState({
         J7: {},
         J2: {},
-        J1: {}
+        J1: {},
+        J2_Satisfaction: {}
     });
     const [riskStatus, setRiskStatus] = useState('SAIN'); // SAIN, VIGILANCE, CRITIQUE
     const [activeTab, setActiveTab] = useState('overview'); // Not used but kept for logic if needed
@@ -86,16 +87,18 @@ export default function PatientReview() {
                     setMedicalHistory(historyData || []);
                 }
                 // Load clinical responses
-                const [responsesJ7, responsesJ2, responsesJ1] = await Promise.all([
+                const [responsesJ7, responsesJ2, responsesJ1, responsesSatisfaction] = await Promise.all([
                     getResponses(id, 'J7'),
                     getResponses(id, 'J2'),
-                    getResponses(id, 'J1')
+                    getResponses(id, 'J1'),
+                    getResponses(id, 'J2_Satisfaction')
                 ]);
 
                 setClinicalResponses({
                     J7: responsesJ7,
                     J2: responsesJ2,
-                    J1: responsesJ1
+                    J1: responsesJ1,
+                    J2_Satisfaction: responsesSatisfaction
                 });
 
                 // Calculate risk status
@@ -561,7 +564,7 @@ export default function PatientReview() {
                                     <div className="grid-3" style={{ gap: 'var(--spacing-4)' }}>
                                         {[
                                             { id: 'anesthesia_consultation', label: 'consult_anesth' },
-                                            { id: 'blood_work', label: 'bilan_cardio' }, // Mapped to cardio label in screenshot
+                                            { id: 'blood_work', label: 'bilan_cardio' },
                                             { id: 'companion_confirmed', label: 'accompagnant' },
                                             { id: 'hair_removal_cream', label: 'test_creme' },
                                             { id: 'fasting_understood', label: 'jeune_ok' },
@@ -570,7 +573,7 @@ export default function PatientReview() {
                                         ].map(item => (
                                             <div key={item.id} className="card" style={{ padding: 'var(--spacing-4)', background: 'rgba(255,255,255,0.4)', border: '1px solid var(--color-gray-100)' }}>
                                                 <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', marginBottom: '4px' }}>{item.label}</div>
-                                                <div style={{ fontWeight: 'var(--font-weight-semibold)', color: clinicalResponses.J7[item.id] !== undefined || clinicalResponses.J2[item.id] !== undefined ? 'var(--color-primary-600)' : 'var(--color-gray-300)', fontStyle: clinicalResponses.J7[item.id] === undefined && clinicalResponses.J2[item.id] === undefined ? 'italic' : 'normal' }}>
+                                                <div style={{ fontWeight: 'var(--font-weight-semibold)', color: (clinicalResponses.J7[item.id] !== undefined || clinicalResponses.J2[item.id] !== undefined) ? 'var(--color-primary-600)' : 'var(--color-gray-300)', fontStyle: (clinicalResponses.J7[item.id] === undefined && clinicalResponses.J2[item.id] === undefined) ? 'italic' : 'normal' }}>
                                                     {clinicalResponses.J7[item.id] === true || clinicalResponses.J2[item.id] === true ? 'OUI' :
                                                         clinicalResponses.J7[item.id] === false || clinicalResponses.J2[item.id] === false ? 'NON' : 'Non renseigné'}
                                                 </div>
@@ -612,11 +615,24 @@ export default function PatientReview() {
                                     <div className="grid-2" style={{ gap: 'var(--spacing-4)' }}>
                                         <div className="card" style={{ padding: 'var(--spacing-4)', background: 'rgba(255,255,255,0.4)', border: '1px solid var(--color-gray-100)' }}>
                                             <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', marginBottom: '4px' }}>nps</div>
-                                            <div style={{ fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-gray-300)', fontStyle: 'italic' }}>Non renseigné</div>
+                                            <div style={{
+                                                fontWeight: 'var(--font-weight-semibold)',
+                                                color: clinicalResponses.J2_Satisfaction?.nps !== undefined ? 'var(--color-primary-600)' : 'var(--color-gray-300)',
+                                                fontStyle: clinicalResponses.J2_Satisfaction?.nps === undefined ? 'italic' : 'normal'
+                                            }}>
+                                                {clinicalResponses.J2_Satisfaction?.nps !== undefined ? `${clinicalResponses.J2_Satisfaction.nps}/10` : 'Non renseigné'}
+                                            </div>
                                         </div>
                                         <div className="card" style={{ padding: 'var(--spacing-4)', background: 'rgba(255,255,255,0.4)', border: '1px solid var(--color-gray-100)' }}>
                                             <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', marginBottom: '4px' }}>commentaire</div>
-                                            <div style={{ fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-gray-300)', fontStyle: 'italic' }}>Non renseigné</div>
+                                            <div style={{
+                                                fontWeight: 'var(--font-weight-semibold)',
+                                                color: clinicalResponses.J2_Satisfaction?.commentaire ? 'var(--color-primary-600)' : 'var(--color-gray-300)',
+                                                fontStyle: !clinicalResponses.J2_Satisfaction?.commentaire ? 'italic' : 'normal',
+                                                fontSize: 'var(--font-size-sm)'
+                                            }}>
+                                                {clinicalResponses.J2_Satisfaction?.commentaire || 'Non renseigné'}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
