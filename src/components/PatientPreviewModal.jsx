@@ -1,5 +1,10 @@
+import { useState, useEffect } from 'react';
+import { X, Clipboard, Clock, Activity, Loader, Info, Scissors, User, Phone, Mail } from 'lucide-react';
+import { pathwayConfig } from '../config/pathway.config';
+import { getResponses, saveResponse, markScreenCompleted } from '../services/pathwayService';
+import QuestionRenderer from './pathway/QuestionRenderer';
+import AlertBanner from './pathway/AlertBanner';
 import { formatDateFR } from '../utils/dateUtils';
-import { saveResponse, markScreenCompleted } from '../services/pathwayService';
 
 export default function PatientPreviewModal({ isOpen, onClose, patient, onResponseSaved, onStatusChange }) {
     const [activeTab, setActiveTab] = useState('J7');
