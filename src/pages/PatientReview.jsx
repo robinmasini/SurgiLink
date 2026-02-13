@@ -120,7 +120,10 @@ export default function PatientReview() {
             if (Object.keys(responsesJ2).length > 0) progress += 25;
             if (Object.keys(responsesJ1).length > 0) progress += 25;
             // J+2 placeholder
-            setPatient(prev => ({ ...prev, displayProgress: progress }));
+            setPatient({
+                ...patientData,
+                displayProgress: progress
+            });
 
             // Load documents
             const docData = await getDocuments(id);
@@ -382,7 +385,7 @@ export default function PatientReview() {
                                     fontSize: 'var(--font-size-3xl)',
                                     fontWeight: 'var(--font-weight-black)'
                                 }}>
-                                    {patient.name?.split(' ').map(n => n[0]).join('')}
+                                    {patient.name?.split(' ').map(n => n?.[0]).join('') || '?'}
                                 </div>
                                 <div style={{ flex: 1 }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)', marginBottom: 'var(--spacing-2)' }}>

@@ -5,10 +5,12 @@ import { pathwayConfig } from '../config/pathway.config';
 import { saveResponse, getResponses, markScreenCompleted } from '../services/pathwayService';
 import QuestionRenderer from '../components/pathway/QuestionRenderer';
 import AlertBanner from '../components/pathway/AlertBanner';
+import { usePatientId } from '../hooks/usePatientId';
 
 export default function PatientJ1() {
     const navigate = useNavigate();
-    const { patientId } = useParams();
+    const { token } = useParams();
+    const { patientId: resolvedPatientId, loading: loadingPatientId, error: patientIdError, isTokenMode } = usePatientId();
     const [responses, setResponses] = useState({});
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -17,17 +19,19 @@ export default function PatientJ1() {
     const config = pathwayConfig.J1;
 
     useEffect(() => {
-        loadResponses();
-    }, [patientId]);
+        if (resolvedPatientId) {
+            loadResponses();
+        }
+    }, [resolvedPatientId]);
 
     useEffect(() => {
         calculateAlerts();
     }, [responses]);
 
     const loadResponses = async () => {
-        if (!patientId) return;
+        if (!resolvedPatientId) return;
         setLoading(true);
-        const data = await getResponses(parseInt(patientId), 'J1');
+        const data = await getResponses(parseInt(resolvedPatientId), 'J1');
         setResponses(data);
         setLoading(false);
     };
@@ -69,20 +73,25 @@ export default function PatientJ1() {
     const handleChange = async (itemId, value) => {
         setResponses(prev => ({ ...prev, [itemId]: value }));
 
-        if (patientId) {
-            await saveResponse(parseInt(patientId), 'J1', itemId, value, false);
+        if (resolvedPatientId) {
+            await saveResponse(parseInt(resolvedPatientId), 'J1', itemId, value, false);
         }
     };
 
     const handleSubmit = async () => {
         setSaving(true);
 
-        if (patientId) {
-            await markScreenCompleted(parseInt(patientId), 'J1');
+        if (resolvedPatientId) {
+            await markScreenCompleted(parseInt(resolvedPatientId), 'J1');
         }
 
         setSaving(false);
-        navigate('/patient/success');
+
+        if (isTokenMode) {
+            navigate(`/patient-portal/${token}/success`);
+        } else {
+            navigate('/patient/success');
+        }
     };
 
     if (loading) {

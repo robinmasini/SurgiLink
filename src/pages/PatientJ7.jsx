@@ -10,6 +10,7 @@ import { usePatientId } from '../hooks/usePatientId';
 
 export default function PatientJ7() {
     const navigate = useNavigate();
+    const { token } = useParams();
     const { patientId: resolvedPatientId, loading: loadingPatientId, error: patientIdError, isTokenMode } = usePatientId();
     const [responses, setResponses] = useState({});
     const [loading, setLoading] = useState(true);

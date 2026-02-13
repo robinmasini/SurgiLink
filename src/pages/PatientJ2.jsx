@@ -10,6 +10,7 @@ import { usePatientId } from '../hooks/usePatientId';
 
 export default function PatientJ2() {
     const navigate = useNavigate();
+    const { token } = useParams();
     const { patientId: resolvedPatientId, loading: loadingPatientId, error: patientIdError, isTokenMode } = usePatientId();
     const [responses, setResponses] = useState({});
     const [loading, setLoading] = useState(true);
@@ -20,7 +21,7 @@ export default function PatientJ2() {
 
     useEffect(() => {
         loadResponses();
-    }, [patientId]);
+    }, [resolvedPatientId]);
 
     useEffect(() => {
         const flags = calculateRiskFlagsSync();
