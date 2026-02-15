@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import EditPatientModal from '../components/EditPatientModal';
@@ -50,7 +50,7 @@ export default function PatientReview() {
     const [activeTab, setActiveTab] = useState('overview'); // Not used but kept for logic if needed
     const [documents, setDocuments] = useState([]);
     const [isDragging, setIsDragging] = useState(false);
-    const fileInputRef = { current: null }; // Will be assigned by ref prop
+    const fileInputRef = useRef(null);
 
     const loadPatientData = async () => {
         setIsLoading(true);
@@ -118,7 +118,7 @@ export default function PatientReview() {
             });
 
             // Load documents
-            const docData = await getDocuments(id);
+            const docData = await getDocuments(parseInt(id));
             setDocuments(docData);
 
         } catch (err) {
@@ -139,7 +139,7 @@ export default function PatientReview() {
         setIsLoading(true);
         try {
             for (const file of Array.from(files)) {
-                const { success, data, error } = await uploadDocument(id, file);
+                const { success, data, error } = await uploadDocument(parseInt(id), file);
                 if (success) {
                     setDocuments(prev => [data, ...prev]);
                 } else {
