@@ -38,7 +38,6 @@ export default function PatientReview() {
     const [patient, setPatient] = useState(null);
     const [medicalHistory, setMedicalHistory] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [isAddingHistory, setIsAddingHistory] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
     const [clinicalResponses, setClinicalResponses] = useState({
@@ -49,13 +48,6 @@ export default function PatientReview() {
     });
     const [riskStatus, setRiskStatus] = useState('SAIN'); // SAIN, VIGILANCE, CRITIQUE
     const [activeTab, setActiveTab] = useState('overview'); // Not used but kept for logic if needed
-    const [historyCategory, setHistoryCategory] = useState('all'); // 'all', 'intervention', 'sms'
-    const [newHistoryEntry, setNewHistoryEntry] = useState({
-        date: new Date().toISOString().split('T')[0],
-        title: '',
-        description: '',
-        category: 'intervention'
-    });
     const [documents, setDocuments] = useState([]);
     const [isDragging, setIsDragging] = useState(false);
     const fileInputRef = { current: null }; // Will be assigned by ref prop
@@ -142,35 +134,6 @@ export default function PatientReview() {
         }
     }, [id]);
 
-    const handleAddHistoryEntry = async () => {
-        if (!newHistoryEntry.date || !newHistoryEntry.title) {
-            alert('Veuillez remplir au moins la date et le titre.');
-            return;
-        }
-
-        try {
-            const { data, error } = await supabase
-                .from('medical_history')
-                .insert([{
-                    patient_id: id,
-                    date: newHistoryEntry.date,
-                    title: newHistoryEntry.title,
-                    description: newHistoryEntry.description,
-                    category: historyCategory
-                }])
-                .select();
-
-            if (error) throw error;
-
-            // Add to local state
-            setMedicalHistory([data[0], ...medicalHistory]);
-            setIsAddingHistory(false);
-            setNewHistoryEntry({ date: '', title: '', description: '', category: historyCategory });
-        } catch (err) {
-            console.error('Error adding history entry:', err);
-            alert(`Erreur: ${err.message}`);
-        }
-    };
 
     const handleFileUpload = async (files) => {
         setIsLoading(true);
@@ -216,26 +179,6 @@ export default function PatientReview() {
         }
     };
 
-    const handleDeleteHistoryEntry = async (historyId) => {
-        if (!confirm('Êtes-vous sûr de vouloir supprimer cette entrée ?')) {
-            return;
-        }
-
-        try {
-            const { error } = await supabase
-                .from('medical_history')
-                .delete()
-                .eq('id', historyId);
-
-            if (error) throw error;
-
-            // Remove from local state
-            setMedicalHistory(medicalHistory.filter(item => item.id !== historyId));
-        } catch (err) {
-            console.error('Error deleting history entry:', err);
-            alert(`Erreur: ${err.message}`);
-        }
-    };
 
     const handleDeletePatient = async () => {
         if (!confirm(`Êtes-vous sûr de vouloir supprimer le patient ${patient.name} ? Cette action est irréversible.`)) {
@@ -372,23 +315,24 @@ export default function PatientReview() {
                                     Score : {riskStatus}
                                 </div>
                             </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-6)', position: 'relative' }}>
-                                <div style={{
-                                    width: '80px',
-                                    height: '80px',
-                                    borderRadius: '50%',
-                                    background: 'var(--color-primary-100)',
-                                    color: 'var(--color-primary-600)',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    fontSize: 'var(--font-size-3xl)',
-                                    fontWeight: 'var(--font-weight-black)'
-                                }}>
-                                    {patient.name?.split(' ').map(n => n?.[0]).join('') || '?'}
-                                </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-6)', position: 'relative' }}>
                                 <div style={{ flex: 1 }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)', marginBottom: 'var(--spacing-2)' }}>
+                                        <div style={{
+                                            width: '48px',
+                                            height: '48px',
+                                            borderRadius: '50%',
+                                            background: 'var(--color-primary-100)',
+                                            color: 'var(--color-primary-600)',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            fontSize: 'var(--font-size-lg)',
+                                            fontWeight: 'var(--font-weight-black)',
+                                            flexShrink: 0
+                                        }}>
+                                            {patient.name?.split(' ').map(n => n?.[0]).join('') || '?'}
+                                        </div>
                                         <h2 style={{ fontSize: 'var(--font-size-3xl)', margin: 0, fontWeight: 'var(--font-weight-black)' }}>{patient.name}</h2>
                                         <button onClick={() => setIsEditModalOpen(true)} style={{ background: 'transparent', border: 'none', color: 'var(--color-gray-400)', cursor: 'pointer' }}>
                                             <Edit2 size={18} />
@@ -681,52 +625,11 @@ export default function PatientReview() {
                             <h3>Historique</h3>
                         </div>
 
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-4)', marginBottom: 'var(--spacing-8)' }}>
-                            <button
-                                className="btn btn-primary btn-sm"
-                                style={{ justifyContent: 'center', width: '100%', borderRadius: 'var(--border-radius-lg)' }}
-                                onClick={() => setIsAddingHistory(true)}
-                            >
-                                <Plus size={16} />
-                                Ajouter un événement
-                            </button>
-                        </div>
-
-                        {/* History Entry Form */}
-                        {isAddingHistory && (
-                            <div className="card" style={{ marginBottom: 'var(--spacing-8)', background: 'rgba(255,255,255,0.8)', border: '1px solid var(--color-primary-100)', padding: 'var(--spacing-6)' }}>
-                                <div style={{ display: 'grid', gap: 'var(--spacing-4)' }}>
-                                    <div>
-                                        <label style={{ display: 'block', fontSize: '10px', fontWeight: 'bold', color: 'var(--color-gray-400)', textTransform: 'uppercase', marginBottom: '4px' }}>Catégorie</label>
-                                        <div style={{ display: 'flex', gap: '2px', background: 'var(--color-gray-50)', padding: '2px', borderRadius: '6px' }}>
-                                            <button onClick={() => setHistoryCategory('intervention')} style={{ flex: 1, padding: '6px', border: 'none', borderRadius: '4px', background: historyCategory === 'intervention' || historyCategory === 'all' ? 'white' : 'transparent', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer', boxShadow: historyCategory === 'intervention' || historyCategory === 'all' ? '0 1px 2px rgba(0,0,0,0.1)' : 'none' }}>Intervention</button>
-                                            <button onClick={() => setHistoryCategory('sms')} style={{ flex: 1, padding: '6px', border: 'none', borderRadius: '4px', background: historyCategory === 'sms' ? 'white' : 'transparent', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer', boxShadow: historyCategory === 'sms' ? '0 1px 2px rgba(0,0,0,0.1)' : 'none' }}>SMS</button>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label style={{ display: 'block', fontSize: '10px', fontWeight: 'bold', color: 'var(--color-gray-400)', textTransform: 'uppercase', marginBottom: '4px' }}>Date</label>
-                                        <input type="date" className="input" style={{ fontSize: '13px', padding: '8px' }} value={newHistoryEntry.date} onChange={(e) => setNewHistoryEntry({ ...newHistoryEntry, date: e.target.value })} />
-                                    </div>
-                                    <div>
-                                        <label style={{ display: 'block', fontSize: '10px', fontWeight: 'bold', color: 'var(--color-gray-400)', textTransform: 'uppercase', marginBottom: '4px' }}>Titre</label>
-                                        <input className="input" style={{ fontSize: '13px', padding: '8px' }} placeholder="Titre..." value={newHistoryEntry.title} onChange={(e) => setNewHistoryEntry({ ...newHistoryEntry, title: e.target.value })} />
-                                    </div>
-                                    <div>
-                                        <label style={{ display: 'block', fontSize: '10px', fontWeight: 'bold', color: 'var(--color-gray-400)', textTransform: 'uppercase', marginBottom: '4px' }}>Détails</label>
-                                        <textarea className="input" style={{ fontSize: '13px', padding: '8px' }} rows={2} placeholder="Description..." value={newHistoryEntry.description} onChange={(e) => setNewHistoryEntry({ ...newHistoryEntry, description: e.target.value })} />
-                                    </div>
-                                    <div style={{ display: 'flex', gap: 'var(--spacing-2)' }}>
-                                        <button className="btn btn-secondary btn-sm" style={{ flex: 1 }} onClick={() => setIsAddingHistory(false)}>Annuler</button>
-                                        <button className="btn btn-primary btn-sm" style={{ flex: 1 }} onClick={handleAddHistoryEntry}>Enregistrer</button>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
 
                         <div className="timeline" style={{ position: 'relative' }}>
                             <div style={{ position: 'absolute', left: '7px', top: 0, bottom: 0, width: '2px', background: 'var(--color-gray-100)' }}></div>
-                            {medicalHistory.length > 0 ? (
-                                medicalHistory.map((item) => (
+                            {medicalHistory.filter(item => item.category === 'sms').length > 0 ? (
+                                medicalHistory.filter(item => item.category === 'sms').map((item) => (
                                     <div key={item.id} className="timeline-item" style={{ paddingLeft: 'var(--spacing-8)', paddingBottom: 'var(--spacing-8)', position: 'relative' }}>
                                         <div style={{
                                             position: 'absolute',
@@ -754,12 +657,6 @@ export default function PatientReview() {
                                                 </div>
                                             )}
                                         </div>
-                                        <button
-                                            onClick={() => handleDeleteHistoryEntry(item.id)}
-                                            style={{ position: 'absolute', top: 0, right: 0, background: 'transparent', border: 'none', color: 'var(--color-gray-200)', cursor: 'pointer' }}
-                                        >
-                                            <Trash2 size={14} />
-                                        </button>
                                     </div>
                                 ))
                             ) : (
