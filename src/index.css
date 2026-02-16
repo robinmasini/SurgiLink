@@ -1688,7 +1688,7 @@ textarea.input {
 }
 
 .welcome-banner-welcome {
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-2xl);
   font-weight: var(--font-weight-medium);
   opacity: 0.95;
   margin-bottom: var(--spacing-4);
