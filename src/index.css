@@ -1649,7 +1649,7 @@ textarea.input {
   border-radius: var(--radius-2xl);
   padding: var(--spacing-4);
   color: var(--color-white);
-  margin-bottom: var(--spacing-8);
+  margin-bottom: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
