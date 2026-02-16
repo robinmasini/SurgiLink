@@ -1824,19 +1824,18 @@ textarea.input {
   .welcome-banner-date-value {
     font-size: var(--font-size-2xl);
   }
-}
 
-.card-header-actions {
-  flex-direction: row !important;
-  width: 100%;
-  gap: var(--spacing-2);
-}
+  .card-header-actions {
+    flex-direction: row !important;
+    width: 100%;
+    gap: var(--spacing-2);
+  }
 
-.card-header-actions .btn {
-  flex: 1;
-  padding: var(--spacing-3) var(--spacing-2);
-  font-size: var(--font-size-xs);
-}
+  .card-header-actions .btn {
+    flex: 1;
+    padding: var(--spacing-3) var(--spacing-2);
+    font-size: var(--font-size-xs);
+  }
 }
 
 /* Deadline Colors */
