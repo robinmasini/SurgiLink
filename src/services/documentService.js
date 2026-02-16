@@ -117,13 +117,13 @@ export async function downloadDocument(storagePath, fileName) {
 
         if (error) throw error;
 
-        // On mobile, just open in new tab (download attribute is not well supported)
+        // On mobile, redirect to the file (more reliable than window.open)
         // On desktop, try to force download
         const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
         if (isMobile) {
-            // Open in new tab on mobile
-            window.open(data.signedUrl, '_blank');
+            // Redirect to file on mobile (avoids popup blockers)
+            window.location.href = data.signedUrl;
         } else {
             // Try to download on desktop
             const link = document.createElement('a');
