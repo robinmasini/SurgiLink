@@ -92,79 +92,83 @@ export default function Dashboard() {
                     subtitle="Vue d'ensemble de vos patients et indicateurs clés"
                 />
 
-                {/* Welcome Banner */}
-                <div className="welcome-banner fade-in">
-                    <div className="welcome-banner-content">
-                        <div className="welcome-banner-welcome">Bienvenue,</div>
-                        <a
-                            href="https://www.desouches-chirurgien-esthetique.com/"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="welcome-banner-signature-link"
-                        >
-                            <img src={christopheSignature} alt="Christophe DESOUCHES" className="welcome-banner-signature" />
-                        </a>
 
-                        <div className="welcome-banner-greeting">Ravi de vous revoir !</div>
-                        <div className="welcome-banner-instruction">Consultez votre Espace Praticien</div>
+                {/* Dashboard Top Section: Banner + Stats */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-6)', marginBottom: 'var(--spacing-8)' }}>
+                    {/* Welcome Banner */}
+                    <div className="welcome-banner fade-in">
+                        <div className="welcome-banner-content">
+                            <div className="welcome-banner-welcome">Bienvenue,</div>
+                            <a
+                                href="https://www.desouches-chirurgien-esthetique.com/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="welcome-banner-signature-link"
+                            >
+                                <img src={christopheSignature} alt="Christophe DESOUCHES" className="welcome-banner-signature" />
+                            </a>
 
-                        <div style={{ marginTop: '3rem' }}>
-                            <div className="welcome-banner-date-label">Date d'aujourd'hui</div>
-                            <div className="welcome-banner-date-value">
-                                {new Date().toLocaleDateString('fr-FR', {
-                                    weekday: 'long',
-                                    day: 'numeric',
-                                    month: 'long',
-                                    year: 'numeric'
-                                }).replace(/^\w/, (c) => c.toUpperCase())}
+                            <div className="welcome-banner-greeting">Ravi de vous revoir !</div>
+                            <div className="welcome-banner-instruction">Consultez votre Espace Praticien</div>
+
+                            <div style={{ marginTop: '1.5rem' }}>
+                                <div className="welcome-banner-date-label">Date d'aujourd'hui</div>
+                                <div className="welcome-banner-date-value">
+                                    {new Date().toLocaleDateString('fr-FR', {
+                                        weekday: 'long',
+                                        day: 'numeric',
+                                        month: 'long',
+                                        year: 'numeric'
+                                    }).replace(/^\w/, (c) => c.toUpperCase())}
+                                </div>
                             </div>
                         </div>
+
+                        <img
+                            src={welcomeCardV2}
+                            alt="Espace Opératoire"
+                            className="welcome-banner-image"
+                        />
                     </div>
 
-                    <img
-                        src={welcomeCardV2}
-                        alt="Espace Opératoire"
-                        className="welcome-banner-image"
-                    />
-                </div>
-
-                {/* Stats Cards */}
-                <div className="grid-4" style={{ marginBottom: 'var(--spacing-8)' }}>
-                    <div className="stat-card" style={{ cursor: 'pointer' }} onClick={() => navigate('/review/active')}>
-                        <div className="stat-card-icon" style={{ background: 'var(--color-primary-50)' }}>
-                            <Users size={24} style={{ color: 'var(--color-primary-500)' }} />
+                    {/* Stats Cards Grid */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-4)' }}>
+                        <div className="stat-card" style={{ cursor: 'pointer' }} onClick={() => navigate('/review/active')}>
+                            <div className="stat-card-icon" style={{ background: 'var(--color-primary-50)' }}>
+                                <Users size={24} style={{ color: 'var(--color-primary-500)' }} />
+                            </div>
+                            <div className="stat-card-value">12</div>
+                            <div className="stat-card-label">Patients actifs</div>
+                            <div className="stat-card-meta">+3 cette semaine</div>
                         </div>
-                        <div className="stat-card-value">12</div>
-                        <div className="stat-card-label">Patients actifs</div>
-                        <div className="stat-card-meta">+3 cette semaine</div>
-                    </div>
 
-                    <div className="stat-card" style={{ cursor: 'pointer' }} onClick={() => navigate('/review/complete')}>
-                        <div className="stat-card-icon" style={{ background: 'var(--color-success-50)' }}>
-                            <CheckCircle size={24} style={{ color: 'var(--color-success-500)' }} />
+                        <div className="stat-card" style={{ cursor: 'pointer' }} onClick={() => navigate('/review/complete')}>
+                            <div className="stat-card-icon" style={{ background: 'var(--color-success-50)' }}>
+                                <CheckCircle size={24} style={{ color: 'var(--color-success-500)' }} />
+                            </div>
+                            <div className="stat-card-value">8</div>
+                            <div className="stat-card-label">Protocoles complets</div>
+                            <div className="stat-card-meta">67% de conformité</div>
                         </div>
-                        <div className="stat-card-value">8</div>
-                        <div className="stat-card-label">Protocoles complets</div>
-                        <div className="stat-card-meta">67% de conformité</div>
-                    </div>
 
-                    <div className="stat-card" style={{ cursor: 'pointer' }} onClick={() => navigate('/review/required')}>
-                        <div className="stat-card-icon" style={{ background: 'var(--color-warning-50)' }}>
-                            <AlertTriangle size={24} style={{ color: 'var(--color-warning-500)' }} />
+                        <div className="stat-card" style={{ cursor: 'pointer' }} onClick={() => navigate('/review/required')}>
+                            <div className="stat-card-icon" style={{ background: 'var(--color-warning-50)' }}>
+                                <AlertTriangle size={24} style={{ color: 'var(--color-warning-500)' }} />
+                            </div>
+                            <span className="badge badge-danger stat-card-badge">Priorité</span>
+                            <div className="stat-card-value">3</div>
+                            <div className="stat-card-label">Actions requises</div>
+                            <div className="stat-card-meta" style={{ color: 'var(--color-danger-500)' }}>Attention requise</div>
                         </div>
-                        <span className="badge badge-danger stat-card-badge">Priorité</span>
-                        <div className="stat-card-value">3</div>
-                        <div className="stat-card-label">Actions requises</div>
-                        <div className="stat-card-meta" style={{ color: 'var(--color-danger-500)' }}>Attention requise</div>
-                    </div>
 
-                    <div className="stat-card" style={{ cursor: 'pointer' }} onClick={() => navigate('/review/weekly')}>
-                        <div className="stat-card-icon" style={{ background: 'var(--color-info-50)' }}>
-                            <Calendar size={24} style={{ color: 'var(--color-info-500)' }} />
+                        <div className="stat-card" style={{ cursor: 'pointer' }} onClick={() => navigate('/review/weekly')}>
+                            <div className="stat-card-icon" style={{ background: 'var(--color-info-50)' }}>
+                                <Calendar size={24} style={{ color: 'var(--color-info-500)' }} />
+                            </div>
+                            <div className="stat-card-value">5</div>
+                            <div className="stat-card-label">Interventions cette semaine</div>
+                            <div className="stat-card-meta">Prochain: Demain</div>
                         </div>
-                        <div className="stat-card-value">5</div>
-                        <div className="stat-card-label">Interventions cette semaine</div>
-                        <div className="stat-card-meta">Prochain: Demain</div>
                     </div>
                 </div>
 
