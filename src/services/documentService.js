@@ -117,23 +117,25 @@ export async function downloadDocument(storagePath, fileName) {
 
         if (error) throw error;
 
-        // On mobile, redirect to the file (more reliable than window.open)
-        // On desktop, try to force download
-        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        // Fetch the file and create a blob for download (works on mobile)
+        const response = await fetch(data.signedUrl);
+        if (!response.ok) throw new Error('Failed to fetch file');
 
-        if (isMobile) {
-            // Redirect to file on mobile (avoids popup blockers)
-            window.location.href = data.signedUrl;
-        } else {
-            // Try to download on desktop
-            const link = document.createElement('a');
-            link.href = data.signedUrl;
-            link.download = fileName;
-            link.target = '_blank';
-            document.body.appendChild(link);
-            link.click();
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.click();
+
+        // Cleanup
+        setTimeout(() => {
             document.body.removeChild(link);
-        }
+            URL.revokeObjectURL(url);
+        }, 100);
 
         return { success: true };
     } catch (error) {
