@@ -98,20 +98,27 @@ export default function Dashboard() {
                     {/* Welcome Banner */}
                     <div className="welcome-banner fade-in">
                         <div className="welcome-banner-content">
-                            <div className="welcome-banner-welcome">Bienvenue,</div>
-                            <a
-                                href="https://www.desouches-chirurgien-esthetique.com/"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="welcome-banner-signature-link"
-                            >
-                                <img src={christopheSignature} alt="Christophe DESOUCHES" className="welcome-banner-signature" />
-                            </a>
+                            {/* Top Section */}
+                            <div>
+                                <div className="welcome-banner-welcome">Bienvenue,</div>
+                            </div>
 
-                            <div className="welcome-banner-greeting">Ravi de vous revoir !</div>
-                            <div className="welcome-banner-instruction">Consultez votre Espace Praticien</div>
+                            {/* Middle Section */}
+                            <div>
+                                <a
+                                    href="https://www.desouches-chirurgien-esthetique.com/"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="welcome-banner-signature-link"
+                                >
+                                    <img src={christopheSignature} alt="Christophe DESOUCHES" className="welcome-banner-signature" />
+                                </a>
+                                <div className="welcome-banner-greeting">Ravi de vous revoir !</div>
+                                <div className="welcome-banner-instruction">Consultez votre Espace Praticien</div>
+                            </div>
 
-                            <div style={{ marginTop: '1.5rem' }}>
+                            {/* Bottom Section - Date */}
+                            <div>
                                 <div className="welcome-banner-date-label">Date d'aujourd'hui</div>
                                 <div className="welcome-banner-date-value">
                                     {new Date().toLocaleDateString('fr-FR', {
