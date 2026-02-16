@@ -117,14 +117,23 @@ export async function downloadDocument(storagePath, fileName) {
 
         if (error) throw error;
 
-        // Create a link to download the file
-        const link = document.createElement('a');
-        link.href = data.signedUrl;
-        link.download = fileName;
-        link.target = '_blank';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        // On mobile, just open in new tab (download attribute is not well supported)
+        // On desktop, try to force download
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+        if (isMobile) {
+            // Open in new tab on mobile
+            window.open(data.signedUrl, '_blank');
+        } else {
+            // Try to download on desktop
+            const link = document.createElement('a');
+            link.href = data.signedUrl;
+            link.download = fileName;
+            link.target = '_blank';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
 
         return { success: true };
     } catch (error) {
