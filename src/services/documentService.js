@@ -103,28 +103,28 @@ export async function deleteDocument(documentId, storagePath) {
     }
 }
 /**
- * Download a document from storage
+ * Download a document from storage using a signed URL
  * @param {string} storagePath - Storage path
  * @param {string} fileName - File name for download
  * @returns {Promise<Object>} - { success, error }
  */
 export async function downloadDocument(storagePath, fileName) {
     try {
+        // Get a signed URL that's valid for 60 seconds
         const { data, error } = await supabase.storage
             .from(BUCKET_NAME)
-            .download(storagePath);
+            .createSignedUrl(storagePath, 60);
 
         if (error) throw error;
 
         // Create a link to download the file
-        const url = URL.createObjectURL(data);
         const link = document.createElement('a');
-        link.href = url;
+        link.href = data.signedUrl;
         link.download = fileName;
+        link.target = '_blank';
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-        URL.revokeObjectURL(url);
 
         return { success: true };
     } catch (error) {
