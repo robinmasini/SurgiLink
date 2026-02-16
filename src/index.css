@@ -1647,7 +1647,7 @@ textarea.input {
 .welcome-banner {
   background: linear-gradient(135deg, var(--color-primary-600), var(--color-primary-700));
   border-radius: var(--radius-2xl);
-  padding: var(--spacing-5);
+  padding: var(--spacing-4);
   color: var(--color-white);
   margin-bottom: var(--spacing-8);
   display: flex;
@@ -1680,10 +1680,10 @@ textarea.input {
 }
 
 .welcome-banner-welcome {
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-xs);
   font-weight: var(--font-weight-medium);
   opacity: 0.95;
-  margin-bottom: var(--spacing-2);
+  margin-bottom: var(--spacing-1);
 }
 
 .welcome-banner-name {
@@ -1695,10 +1695,10 @@ textarea.input {
 }
 
 .welcome-banner-signature {
-  height: 100px;
+  height: 60px;
   width: auto;
   object-fit: contain;
-  margin-bottom: var(--spacing-6);
+  margin-bottom: var(--spacing-2);
   filter: brightness(100) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
   transition: transform var(--transition-normal), filter var(--transition-normal);
   display: block;
@@ -1716,24 +1716,24 @@ textarea.input {
 }
 
 .welcome-banner-greeting {
-  font-size: var(--font-size-lg);
-  margin-bottom: var(--spacing-1);
+  font-size: var(--font-size-base);
+  margin-bottom: 0;
 }
 
 .welcome-banner-instruction {
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-xs);
   opacity: 0.95;
-  margin-bottom: var(--spacing-6);
+  margin-bottom: var(--spacing-3);
 }
 
 .welcome-banner-date-label {
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-xs);
   opacity: 0.9;
-  margin-bottom: var(--spacing-2);
+  margin-bottom: var(--spacing-1);
 }
 
 .welcome-banner-date-value {
-  font-size: var(--font-size-2xl);
+  font-size: var(--font-size-lg);
   font-weight: var(--font-weight-bold);
 }
 
