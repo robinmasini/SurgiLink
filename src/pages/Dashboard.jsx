@@ -4,7 +4,7 @@ import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import AddPatientModal from '../components/AddPatientModal';
 import christopheSignature from '../assets/christophe-signature.png';
-import welcomeCardV2 from '../assets/welcome-card-v2.png';
+import welcomeCardV3 from '../assets/welcome-card-v3.png';
 import {
     Users,
     AlertTriangle,
@@ -125,7 +125,7 @@ export default function Dashboard() {
                         </div>
 
                         <img
-                            src={welcomeCardV2}
+                            src={welcomeCardV3}
                             alt="Espace Opératoire"
                             className="welcome-banner-image"
                         />
