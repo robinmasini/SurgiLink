@@ -1769,10 +1769,12 @@ textarea.input {
     padding: var(--spacing-5);
     min-height: auto;
     gap: var(--spacing-4);
+    margin-bottom: var(--spacing-8);
   }
 
   .welcome-banner-welcome {
     font-size: var(--font-size-sm);
+    margin-bottom: var(--spacing-2);
   }
 
   .welcome-banner-greeting {
@@ -1786,6 +1788,8 @@ textarea.input {
 
   .welcome-banner-signature {
     max-width: 150px !important;
+    height: 100px;
+    margin-bottom: var(--spacing-6);
   }
 
   .welcome-banner-image {
@@ -1807,19 +1811,32 @@ textarea.input {
     max-width: 100%;
     z-index: 3;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    display: block;
+    justify-content: initial;
+    height: auto;
   }
 
-  .card-header-actions {
-    flex-direction: row !important;
-    width: 100%;
-    gap: var(--spacing-2);
+  .welcome-banner-date-label {
+    font-size: var(--font-size-base);
+    margin-bottom: var(--spacing-2);
   }
 
-  .card-header-actions .btn {
-    flex: 1;
-    padding: var(--spacing-3) var(--spacing-2);
-    font-size: var(--font-size-xs);
+  .welcome-banner-date-value {
+    font-size: var(--font-size-2xl);
   }
+}
+
+.card-header-actions {
+  flex-direction: row !important;
+  width: 100%;
+  gap: var(--spacing-2);
+}
+
+.card-header-actions .btn {
+  flex: 1;
+  padding: var(--spacing-3) var(--spacing-2);
+  font-size: var(--font-size-xs);
+}
 }
 
 /* Deadline Colors */
