@@ -1680,7 +1680,7 @@ textarea.input {
 }
 
 .welcome-banner-welcome {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-lg);
   font-weight: var(--font-weight-medium);
   opacity: 0.95;
   margin-bottom: var(--spacing-2);
@@ -1695,10 +1695,10 @@ textarea.input {
 }
 
 .welcome-banner-signature {
-  height: 80px;
+  height: 100px;
   width: auto;
   object-fit: contain;
-  margin-bottom: var(--spacing-4);
+  margin-bottom: var(--spacing-6);
   filter: brightness(100) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
   transition: transform var(--transition-normal), filter var(--transition-normal);
   display: block;
@@ -1716,14 +1716,14 @@ textarea.input {
 }
 
 .welcome-banner-greeting {
-  font-size: var(--font-size-xl);
+  font-size: var(--font-size-lg);
   margin-bottom: var(--spacing-1);
 }
 
 .welcome-banner-instruction {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-lg);
   opacity: 0.95;
-  margin-bottom: var(--spacing-4);
+  margin-bottom: var(--spacing-6);
 }
 
 .welcome-banner-date-label {
@@ -1733,7 +1733,7 @@ textarea.input {
 }
 
 .welcome-banner-date-value {
-  font-size: var(--font-size-xl);
+  font-size: var(--font-size-2xl);
   font-weight: var(--font-weight-bold);
 }
 
