@@ -29,7 +29,7 @@ import {
 import { supabase } from '../lib/supabase';
 import { calculateAge, formatDateFR } from '../utils/dateUtils';
 import { getPatientPathwayStatus, getResponses, calculateRiskFlags } from '../services/pathwayService';
-import { getDocuments, uploadDocument, deleteDocument } from '../services/documentService';
+import { getDocuments, uploadDocument, deleteDocument, downloadDocument } from '../services/documentService';
 import LogoPremium from '../components/LogoPremium';
 
 export default function PatientReview() {
@@ -165,8 +165,10 @@ export default function PatientReview() {
     };
 
     const handleDownloadDocument = async (storagePath, fileName) => {
+        console.log('Attempting download:', storagePath, fileName);
         const { success, error } = await downloadDocument(storagePath, fileName);
         if (!success) {
+            console.error('Download failed:', error);
             alert(`Erreur lors du téléchargement: ${error}`);
         }
     };
