@@ -102,3 +102,33 @@ export async function deleteDocument(documentId, storagePath) {
         return { success: false, error: error.message };
     }
 }
+/**
+ * Download a document from storage
+ * @param {string} storagePath - Storage path
+ * @param {string} fileName - File name for download
+ * @returns {Promise<Object>} - { success, error }
+ */
+export async function downloadDocument(storagePath, fileName) {
+    try {
+        const { data, error } = await supabase.storage
+            .from(BUCKET_NAME)
+            .download(storagePath);
+
+        if (error) throw error;
+
+        // Create a link to download the file
+        const url = URL.createObjectURL(data);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+
+        return { success: true };
+    } catch (error) {
+        console.error('Error downloading document:', error);
+        return { success: false, error: error.message };
+    }
+}

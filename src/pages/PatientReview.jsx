@@ -164,6 +164,13 @@ export default function PatientReview() {
         }
     };
 
+    const handleDownloadDocument = async (storagePath, fileName) => {
+        const { success, error } = await downloadDocument(storagePath, fileName);
+        if (!success) {
+            alert(`Erreur lors du téléchargement: ${error}`);
+        }
+    };
+
     const onDragOver = (e) => {
         e.preventDefault();
         setIsDragging(true);
@@ -479,20 +486,43 @@ export default function PatientReview() {
                                                 <div style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-medium)' }}>{doc.name}</div>
                                                 <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-400)' }}>{doc.size} • {new Date(doc.created_at || new Date()).toLocaleDateString('fr-FR')}</div>
                                             </div>
-                                            <button
-                                                onClick={(e) => { e.stopPropagation(); removeDocument(doc.id, doc.storage_path); }}
-                                                style={{
-                                                    background: 'transparent',
-                                                    border: 'none',
-                                                    color: 'var(--color-gray-400)',
-                                                    cursor: 'pointer',
-                                                    padding: '8px',
-                                                    borderRadius: '50%'
-                                                }}
-                                                className="btn-hover-danger"
-                                            >
-                                                <Trash2 size={16} />
-                                            </button>
+                                            <div style={{ display: 'flex', gap: '4px' }}>
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); handleDownloadDocument(doc.storage_path, doc.name); }}
+                                                    style={{
+                                                        background: 'transparent',
+                                                        border: 'none',
+                                                        color: 'var(--color-primary-500)',
+                                                        cursor: 'pointer',
+                                                        padding: '8px',
+                                                        borderRadius: '50%',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center'
+                                                    }}
+                                                    title="Télécharger"
+                                                >
+                                                    <Download size={18} />
+                                                </button>
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); removeDocument(doc.id, doc.storage_path); }}
+                                                    style={{
+                                                        background: 'transparent',
+                                                        border: 'none',
+                                                        color: 'var(--color-gray-400)',
+                                                        cursor: 'pointer',
+                                                        padding: '8px',
+                                                        borderRadius: '50%',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center'
+                                                    }}
+                                                    className="btn-hover-danger"
+                                                    title="Supprimer"
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
+                                            </div>
                                         </div>
                                     ))}
                                 </div>
