@@ -50,6 +50,7 @@ export default function PatientReview() {
     const [activeTab, setActiveTab] = useState('overview'); // Not used but kept for logic if needed
     const [documents, setDocuments] = useState([]);
     const [isDragging, setIsDragging] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
     const fileInputRef = useRef(null);
 
     const loadPatientData = async () => {
@@ -136,18 +137,19 @@ export default function PatientReview() {
 
 
     const handleFileUpload = async (files) => {
-        setIsLoading(true);
+        setIsUploading(true);
         try {
             for (const file of Array.from(files)) {
                 const { success, data, error } = await uploadDocument(parseInt(id), file);
                 if (success) {
                     setDocuments(prev => [data, ...prev]);
                 } else {
-                    alert(`Erreur lors de l'envoi de ${file.name}: ${error}`);
+                    console.error(`Upload error for ${file.name}:`, error);
+                    alert(`Erreur lors de l'envoi de ${file.name}.\n\nDétail: ${error}\n\nNote: Vérifiez que le bucket 'patient-documents' est bien créé dans Supabase.`);
                 }
             }
         } finally {
-            setIsLoading(false);
+            setIsUploading(false);
         }
     };
 
@@ -430,7 +432,24 @@ export default function PatientReview() {
                                     {isDragging ? 'Déposez les fichiers ici' : 'Glissez-déposez les documents ici'}
                                 </div>
                                 <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-400)', marginTop: '4px' }}>(Ordonnances, Arrêt de travail, Consignes...)</div>
-                                {documents.length === 0 && <p style={{ marginTop: 'var(--spacing-6)', color: 'var(--color-gray-400)', fontSize: 'var(--font-size-sm)' }}>Aucun document disponible.</p>}
+                                {documents.length === 0 && !isUploading && <p style={{ marginTop: 'var(--spacing-6)', color: 'var(--color-gray-400)', fontSize: 'var(--font-size-sm)' }}>Aucun document disponible.</p>}
+
+                                {isUploading && (
+                                    <div style={{
+                                        position: 'absolute',
+                                        inset: 0,
+                                        background: 'rgba(255,255,255,0.8)',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        borderRadius: 'var(--border-radius-xl)',
+                                        zIndex: 10
+                                    }}>
+                                        <div className="spinner" style={{ borderTopColor: 'var(--color-primary-500)' }}></div>
+                                        <div style={{ marginTop: 'var(--spacing-4)', fontWeight: 'bold', color: 'var(--color-primary-600)' }}>Téléchargement en cours...</div>
+                                    </div>
+                                )}
                             </div>
 
                             {documents.length > 0 && (

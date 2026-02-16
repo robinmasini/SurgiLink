@@ -44,8 +44,11 @@ export async function uploadDocument(patientId, file) {
 
         return { success: true, data };
     } catch (error) {
-        console.error('Error uploading document:', error);
-        return { success: false, error: error.message };
+        console.error('CRITICAL: Error uploading document to storage:', error);
+        return {
+            success: false,
+            error: error.message || 'Erreur inconnue lors du transfert vers le stockage en ligne'
+        };
     }
 }
 
