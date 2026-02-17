@@ -98,13 +98,13 @@ export default function Dashboard() {
                     {/* Welcome Banner */}
                     <div className="welcome-banner fade-in">
                         <div className="welcome-banner-content">
-                            {/* Top Section */}
+                            {/* Top Section - Empty for spacing */}
                             <div>
-                                <div className="welcome-banner-welcome">Bienvenue,</div>
                             </div>
 
                             {/* Middle Section */}
                             <div>
+                                <div className="welcome-banner-welcome">Bonjour,</div>
                                 <a
                                     href="https://www.desouches-chirurgien-esthetique.com/"
                                     target="_blank"
