@@ -7,13 +7,13 @@ import AlertBanner from './pathway/AlertBanner';
 
 // All 7 SMS steps in order
 const ALL_TABS = [
-    { key: 'J7', label: 'J-7', sublabel: 'Préparation' },
-    { key: 'J3', label: 'J-3', sublabel: 'Épilation' },
-    { key: 'J2', label: 'J-2', sublabel: 'Consignes' },
-    { key: 'J1_PreOp', label: 'J-1', sublabel: 'Veille' },
-    { key: 'J0', label: 'J-0', sublabel: 'Jour J' },
-    { key: 'J1', label: 'J+1', sublabel: 'Suivi' },
-    { key: 'J2_Satisfaction', label: 'J+2', sublabel: 'Avis' },
+    { key: 'J7', label: 'J-7', sublabel: 'Préparation', color: null },
+    { key: 'J3', label: 'J-3', sublabel: 'Épilation', color: 'orange' },
+    { key: 'J2', label: 'J-2', sublabel: 'Consignes', color: 'red' },
+    { key: 'J1_PreOp', label: 'J-1', sublabel: 'Veille', color: 'red' },
+    { key: 'J0', label: 'J-0', sublabel: 'Jour J', color: 'red' },
+    { key: 'J1', label: 'J+1', sublabel: 'Suivi', color: 'red' },
+    { key: 'J2_Satisfaction', label: 'J+2', sublabel: 'Avis', color: 'orange' },
 ];
 
 export default function PatientPreviewModal({ isOpen, onClose, patient, onResponseSaved, onStatusChange }) {
@@ -206,6 +206,11 @@ export default function PatientPreviewModal({ isOpen, onClose, patient, onRespon
                         const p = tabProgress[tab.key];
                         const isComplete = p && p.total > 0 && p.answered === p.total;
                         const isActive = activeTab === tab.key;
+                        const tabColor = tab.color === 'red'
+                            ? '#dc2626'
+                            : tab.color === 'orange'
+                                ? '#ea580c'
+                                : 'var(--color-primary-600)';
                         return (
                             <div
                                 key={tab.key}
@@ -213,8 +218,8 @@ export default function PatientPreviewModal({ isOpen, onClose, patient, onRespon
                                 style={{
                                     padding: '10px 16px',
                                     cursor: 'pointer',
-                                    borderBottom: isActive ? '2px solid var(--color-primary-500)' : '2px solid transparent',
-                                    color: isActive ? 'var(--color-primary-600)' : 'var(--color-gray-500)',
+                                    borderBottom: isActive ? `2px solid ${tabColor}` : '2px solid transparent',
+                                    color: isActive ? tabColor : tab.color ? tabColor : 'var(--color-gray-500)',
                                     fontWeight: isActive ? '600' : '400',
                                     transition: 'all 0.2s',
                                     fontSize: 'var(--font-size-sm)',
