@@ -323,7 +323,7 @@ export default function PatientReview() {
                                         borderRadius: '50%',
                                         background: 'currentColor'
                                     }}></div>
-                                    Score : {riskStatus}
+                                    Facteur de risques : {riskStatus}
                                 </div>
                             </div>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-6)', position: 'relative' }}>
