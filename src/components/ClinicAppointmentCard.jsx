@@ -3,7 +3,9 @@ import clinicImage from '../assets/clinic.png';
 
 export default function ClinicAppointmentCard({
     clinicName,
-    appointmentDatetime
+    appointmentDatetime,
+    operationType,
+    operationCategory
 }) {
     // Format date and time
     const formatAppointmentDate = (datetime) => {
@@ -79,6 +81,42 @@ export default function ClinicAppointmentCard({
                         {clinicName || 'Non renseigné'}
                     </div>
                 </div>
+
+                {/* Operation Type */}
+                {(operationCategory || operationType) && (
+                    <div style={{ display: 'flex', gap: 'var(--spacing-2)', flexWrap: 'wrap', marginBottom: 'var(--spacing-4)' }}>
+                        {operationCategory && (
+                            <span style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                padding: '4px 10px',
+                                borderRadius: '20px',
+                                fontSize: 'var(--font-size-xs)',
+                                fontWeight: '600',
+                                background: 'var(--color-primary-50)',
+                                color: 'var(--color-primary-700)',
+                                border: '1px solid var(--color-primary-200)'
+                            }}>
+                                {operationCategory}
+                            </span>
+                        )}
+                        {operationType && (
+                            <span style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                padding: '4px 10px',
+                                borderRadius: '20px',
+                                fontSize: 'var(--font-size-xs)',
+                                fontWeight: '600',
+                                background: 'var(--color-gray-50)',
+                                color: 'var(--color-gray-700)',
+                                border: '1px solid var(--color-gray-200)'
+                            }}>
+                                {operationType}
+                            </span>
+                        )}
+                    </div>
+                )}
 
                 {/* Appointment Date & Time */}
                 {appointmentDatetime && (

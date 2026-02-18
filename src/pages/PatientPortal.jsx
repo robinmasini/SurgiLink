@@ -160,6 +160,8 @@ export default function PatientPortal() {
                     <ClinicAppointmentCard
                         clinicName={patient.clinic_name}
                         appointmentDatetime={patient.appointment_datetime}
+                        operationType={patient.operation}
+                        operationCategory={patient.operation_category || 'Ambulatoire'}
                     />
 
                     <div className="card glass-effect">
