@@ -108,7 +108,7 @@ export async function getCompletionStatus(patientId, screen) {
  * @returns {Promise<Object>} - { J7: {...}, J2: {...}, J1: {...} }
  */
 export async function getPatientPathwayStatus(patientId) {
-    const screens = ['J7', 'J2', 'J1', 'J2_Satisfaction'];
+    const screens = ['J7', 'J3', 'J2', 'J1_PreOp', 'J0', 'J1', 'J2_Satisfaction'];
     const status = {};
 
     for (const screen of screens) {
