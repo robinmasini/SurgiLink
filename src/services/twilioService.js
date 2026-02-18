@@ -1,23 +1,17 @@
 import { supabase } from '../lib/supabase';
 import { smsTemplates, interpolateTemplate } from '../config/smsTemplates';
-import twilio from 'twilio';
 
 /**
  * Twilio SMS Service
- * Handles SMS sending via Twilio API with retry logic and logging
+ * Handles SMS sending via Twilio REST API with retry logic and logging
+ * Browser-compatible version (uses fetch instead of node-twilio)
  */
 
-const TWILIO_ACCOUNT_SID = import.meta.env.TWILIO_ACCOUNT_SID;
-const TWILIO_AUTH_TOKEN = import.meta.env.TWILIO_AUTH_TOKEN;
-const TWILIO_PHONE_NUMBER = import.meta.env.TWILIO_PHONE_NUMBER;
-const SANDBOX_MODE = import.meta.env.TWILIO_SANDBOX_MODE === 'true';
+const TWILIO_ACCOUNT_SID = import.meta.env.VITE_TWILIO_ACCOUNT_SID || import.meta.env.TWILIO_ACCOUNT_SID;
+const TWILIO_AUTH_TOKEN = import.meta.env.VITE_TWILIO_AUTH_TOKEN || import.meta.env.TWILIO_AUTH_TOKEN;
+const TWILIO_PHONE_NUMBER = import.meta.env.VITE_TWILIO_PHONE_NUMBER || import.meta.env.TWILIO_PHONE_NUMBER;
+const SANDBOX_MODE = (import.meta.env.VITE_TWILIO_SANDBOX_MODE === 'true') || (import.meta.env.TWILIO_SANDBOX_MODE === 'true');
 const DEFAULT_SENDER = import.meta.env.VITE_SMS_DEFAULT_SENDER || 'SurgiLink';
-
-// Initialize Twilio client
-let twilioClient = null;
-if (TWILIO_ACCOUNT_SID && TWILIO_AUTH_TOKEN) {
-    twilioClient = twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
-}
 
 /**
  * Send an SMS via Twilio
@@ -84,34 +78,51 @@ export async function sendSMS(templateKey, to, variables, metadata = {}) {
         }
 
         // Real mode: send via Twilio
-        if (!twilioClient) {
-            throw new Error('Twilio client not initialized. Check your environment variables.');
+        if (!TWILIO_ACCOUNT_SID || !TWILIO_AUTH_TOKEN) {
+            throw new Error('Twilio credentials not configured. Check your environment variables.');
         }
 
         if (!TWILIO_PHONE_NUMBER) {
             throw new Error('Twilio phone number not configured');
         }
 
-        // Send SMS using Twilio
-        const twilioMessage = await twilioClient.messages.create({
-            body: message,
-            from: TWILIO_PHONE_NUMBER,
-            to: to
-        });
+        // Send SMS using Twilio REST API
+        const formData = new URLSearchParams();
+        formData.append('Body', message);
+        formData.append('From', TWILIO_PHONE_NUMBER);
+        formData.append('To', to);
+
+        const response = await fetch(
+            `https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json`,
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Authorization': 'Basic ' + btoa(`${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}`)
+                },
+                body: formData
+            }
+        );
+
+        const twilioData = await response.json();
+
+        if (!response.ok) {
+            throw new Error(twilioData.message || 'Twilio API error');
+        }
 
         // Log success
         await supabase.from('sms_logs').insert({
             ...logEntry,
             status: 'sent',
             sent_at: new Date().toISOString(),
-            provider_message_id: twilioMessage.sid
+            provider_message_id: twilioData.sid
         });
 
-        console.log(`✅ SMS sent successfully via Twilio: ${twilioMessage.sid}`);
+        console.log(`✅ SMS sent successfully via Twilio: ${twilioData.sid}`);
 
         return {
             success: true,
-            messageId: twilioMessage.sid
+            messageId: twilioData.sid
         };
     } catch (error) {
         console.error('SMS send error:', error);
