@@ -10,8 +10,7 @@ import {
     Users,
     TrendingUp,
     Eye,
-    LogOut,
-    X
+    LogOut
 } from 'lucide-react';
 
 const navItems = [
@@ -24,7 +23,6 @@ const navItems = [
 export default function Sidebar() {
     const location = useLocation();
     const navigate = useNavigate();
-    const [isMobileExpanded, setIsMobileExpanded] = useState(false);
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
     useEffect(() => {
@@ -35,22 +33,10 @@ export default function Sidebar() {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    const toggleSidebar = () => setIsMobileExpanded(!isMobileExpanded);
-
     return (
-        <aside className={`sidebar ${isMobileExpanded ? 'is-mobile-expanded' : ''}`}>
-            {isMobileExpanded && (
-                <button
-                    className="sidebar-close-btn"
-                    onClick={() => setIsMobileExpanded(false)}
-                    aria-label="Fermer le menu"
-                >
-                    <X size={24} />
-                </button>
-            )}
-
-            <div className="sidebar-logo" onClick={toggleSidebar} style={{ cursor: 'pointer' }}>
-                {isMobile && !isMobileExpanded ? (
+        <aside className="sidebar">
+            <div className="sidebar-logo">
+                {isMobile ? (
                     <LogoIcon width="35px" className="sidebar-logo-img" />
                 ) : (
                     <LogoPremium width="120px" className="sidebar-logo-img" />
@@ -67,7 +53,6 @@ export default function Sidebar() {
                             key={item.label}
                             to={item.path}
                             className={`sidebar-item ${isActive ? 'active' : ''}`}
-                            onClick={() => setIsMobileExpanded(false)}
                         >
                             <span className="sidebar-item-icon">
                                 <Icon size={20} />

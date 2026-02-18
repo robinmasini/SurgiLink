@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { Send, Clock, CheckCircle, AlertCircle, XCircle, Loader } from 'lucide-react';
 import { getPatientPathwayStatus, getIncompleteItemsWithReminders } from '../services/pathwayService';
 import { sendManualReminder } from '../services/reminderService';
-import { getSMSHistory, canSendReminder } from '../services/cmComService';
+import { getSMSHistory, canSendReminder } from '../services/twilioService';
 import AlertBanner from './pathway/AlertBanner';
 
 /**

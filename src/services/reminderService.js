@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabase';
-import { sendSMS, canSendReminder } from './cmComService';
+import { sendSMS, canSendReminder } from './twilioService';
 import { getIncompleteItemsWithReminders } from './pathwayService';
 
 /**
