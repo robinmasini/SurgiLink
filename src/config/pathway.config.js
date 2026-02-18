@@ -1,8 +1,9 @@
 // Ambulatory Pathway Configuration
-// Config-driven question system for J-7, J-2, and J+1 screens
+// Config-driven question system for all 7 SMS steps
+// Questions redistributed from original J7 and J2 screens across the full 7-day protocol
 
 export const pathwayConfig = {
-    // J-7: Preparation Checklist
+    // J-7: Administrative checks (anesthesia, blood work, companion)
     J7: {
         title: "Checklist Préparation",
         subtitle: "J-7 avant votre intervention",
@@ -44,6 +45,41 @@ export const pathwayConfig = {
                 ]
             },
             {
+                id: "companion",
+                icon: "👤",
+                title: "Retour à domicile",
+                subtitle: null,
+                items: [
+                    {
+                        id: "companion_confirmed",
+                        type: "yes_no",
+                        label: "Votre accompagnant est-il bien confirmé pour votre retour à domicile ?",
+                        why: "La loi interdit formellement de rentrer seul après une anesthésie.",
+                        action: "Organisez-vous dès maintenant avec un proche.",
+                        required: true,
+                        risk_flag_rule: { type: "hard", condition: "no" },
+                        alert_if_no: {
+                            type: "danger",
+                            header: "Sortie compromise",
+                            message: "Contactez-nous vite."
+                        },
+                        reminder_policy: {
+                            auto_reminder_delay_hours: 48,
+                            max_reminders: 3,
+                            sms_template_key: "j7_companion_missing"
+                        }
+                    }
+                ]
+            }
+        ]
+    },
+
+    // J-3: Epilation prep + recent infection check
+    J3: {
+        title: "Préparation Épilation",
+        subtitle: "J-3 avant votre intervention",
+        sections: [
+            {
                 id: "preparation",
                 icon: "✂️",
                 title: "Préparation Épilation",
@@ -77,38 +113,11 @@ export const pathwayConfig = {
                         risk_flag_rule: { type: "hard", condition: "yes" }
                     }
                 ]
-            },
-            {
-                id: "companion",
-                icon: "👤",
-                title: "Retour à domicile",
-                subtitle: null,
-                items: [
-                    {
-                        id: "companion_confirmed",
-                        type: "yes_no",
-                        label: "Votre accompagnant est-il bien confirmé pour votre retour à domicile ?",
-                        why: "La loi interdit formellement de rentrer seul après une anesthésie.",
-                        action: "Organisez-vous dès maintenant avec un proche.",
-                        required: true,
-                        risk_flag_rule: { type: "hard", condition: "no" },
-                        alert_if_no: {
-                            type: "danger",
-                            header: "Sortie compromise",
-                            message: "Contactez-nous vite."
-                        },
-                        reminder_policy: {
-                            auto_reminder_delay_hours: 48,
-                            max_reminders: 3,
-                            sms_template_key: "j7_companion_missing"
-                        }
-                    }
-                ]
             }
         ]
     },
 
-    // J-2: Pre-op Instructions
+    // J-2: Documents, fasting, understanding
     J2: {
         title: "Consignes Préopératoires",
         subtitle: "J-2 avant votre intervention",
@@ -127,15 +136,6 @@ export const pathwayConfig = {
                         action: "Préparez-les dans un sac aujourd'hui.",
                         required: true,
                         risk_flag_rule: { type: "soft", condition: "no" }
-                    },
-                    {
-                        id: "companion_final_check",
-                        type: "yes_no",
-                        label: "Accompagnant confirmé (dernière vérification)",
-                        why: "Indispensable pour votre sortie.",
-                        action: "Reconfirmez avec la personne.",
-                        required: true,
-                        risk_flag_rule: { type: "hard", condition: "no" }
                     }
                 ]
             },
@@ -160,6 +160,30 @@ export const pathwayConfig = {
                     }
                 ]
             },
+            {
+                id: "understanding",
+                icon: "✅",
+                title: "Compréhension",
+                subtitle: null,
+                items: [
+                    {
+                        id: "day_j_instructions",
+                        type: "yes_no",
+                        label: "Consignes du jour J notées (heure, lieu, choses à apporter)",
+                        why: "Pour éviter le stress de dernière minute.",
+                        action: "Notez tout dans votre téléphone ou sur papier.",
+                        required: true
+                    }
+                ]
+            }
+        ]
+    },
+
+    // J-1: Hygiene, treatments, no razor
+    J1_PreOp: {
+        title: "Veille de l'Intervention",
+        subtitle: "J-1 - Dernières préparations",
+        sections: [
             {
                 id: "hygiene",
                 icon: "🚿",
@@ -199,31 +223,40 @@ export const pathwayConfig = {
                         action: "Relisez les consignes de l'anesthésiste.",
                         required: true,
                         risk_flag_rule: { type: "soft", condition: "no" }
+                    }
+                ]
+            }
+        ]
+    },
+
+    // J-0: Final companion check + infection since J-2
+    J0: {
+        title: "Jour de l'Intervention",
+        subtitle: "J-0 - Dernières vérifications",
+        sections: [
+            {
+                id: "documents_final",
+                icon: "📄",
+                title: "Vérification Finale",
+                subtitle: null,
+                items: [
+                    {
+                        id: "companion_final_check",
+                        type: "yes_no",
+                        label: "Accompagnant confirmé (dernière vérification)",
+                        why: "Indispensable pour votre sortie.",
+                        action: "Reconfirmez avec la personne.",
+                        required: true,
+                        risk_flag_rule: { type: "hard", condition: "no" }
                     },
                     {
                         id: "recent_infection_j2",
                         type: "yes_no",
-                        label: "Apparition de signes infectieux depuis J-7 ?",
+                        label: "Apparition de signes infectieux depuis J-2 ?",
                         why: "Pourrait nécessiter un report.",
                         action: "Si oui, contactez-nous immédiatement.",
                         required: true,
                         risk_flag_rule: { type: "hard", condition: "yes" }
-                    }
-                ]
-            },
-            {
-                id: "understanding",
-                icon: "✅",
-                title: "Compréhension",
-                subtitle: null,
-                items: [
-                    {
-                        id: "day_j_instructions",
-                        type: "yes_no",
-                        label: "Consignes du jour J notées (heure, lieu, choses à apporter)",
-                        why: "Pour éviter le stress de dernière minute.",
-                        action: "Notez tout dans votre téléphone ou sur papier.",
-                        required: true
                     }
                 ]
             }
@@ -353,7 +386,7 @@ export const pathwayConfig = {
 
 /**
  * Get all items from a screen configuration
- * @param {string} screen - J7, J2, J1 or J2_Satisfaction
+ * @param {string} screen - J7, J3, J2, J1_PreOp, J0, J1 or J2_Satisfaction
  * @returns {Array} - Flat array of all items
  */
 export function getScreenItems(screen) {
@@ -365,7 +398,7 @@ export function getScreenItems(screen) {
 
 /**
  * Get a specific item configuration
- * @param {string} screen - J7, J2, J1 or J2_Satisfaction
+ * @param {string} screen - J7, J3, J2, J1_PreOp, J0, J1 or J2_Satisfaction
  * @param {string} itemId - Item ID
  * @returns {Object|null} - Item config or null
  */
@@ -376,7 +409,7 @@ export function getItemConfig(screen, itemId) {
 
 /**
  * Check if an item requires a reminder
- * @param {string} screen - J7, J2, J1 or J2_Satisfaction
+ * @param {string} screen - Screen key
  * @param {string} itemId - Item ID
  * @returns {boolean}
  */
@@ -387,7 +420,7 @@ export function itemHasReminderPolicy(screen, itemId) {
 
 /**
  * Get risk flags from responses
- * @param {string} screen - J7, J2, J1 or J2_Satisfaction
+ * @param {string} screen - Screen key
  * @param {Object} responses - { itemId: value }
  * @returns {Object} - { soft: [], hard: [] }
  */

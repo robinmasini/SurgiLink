@@ -10,7 +10,10 @@ import PatientPostOp from './pages/PatientPostOp';
 import PatientReview from './pages/PatientReview';
 import CategoryReview from './pages/CategoryReview';
 import PatientJ7 from './pages/PatientJ7';
+import PatientJ3 from './pages/PatientJ3';
 import PatientJ2 from './pages/PatientJ2';
+import PatientJ1PreOp from './pages/PatientJ1PreOp';
+import PatientJ0 from './pages/PatientJ0';
 import PatientJ1 from './pages/PatientJ1';
 import PatientPathwayTracker from './components/PatientPathwayTracker';
 import PatientPortal from './pages/PatientPortal';
@@ -39,7 +42,10 @@ function App() {
 
         {/* Pathway Routes - Patient-facing */}
         <Route path="/patient/pathway/j7/:patientId" element={<PatientJ7 />} />
+        <Route path="/patient/pathway/j3/:patientId" element={<PatientJ3 />} />
         <Route path="/patient/pathway/j2/:patientId" element={<PatientJ2 />} />
+        <Route path="/patient/pathway/j1-preop/:patientId" element={<PatientJ1PreOp />} />
+        <Route path="/patient/pathway/j0/:patientId" element={<PatientJ0 />} />
         <Route path="/patient/pathway/j1/:patientId" element={<PatientJ1 />} />
 
         {/* Pathway Routes - Staff-facing */}
@@ -48,7 +54,10 @@ function App() {
         {/* Patient Portal Routes - Token-based access (no authentication required) */}
         <Route path="/patient-portal/:token" element={<PatientPortal />} />
         <Route path="/patient-portal/:token/j7" element={<PatientJ7 />} />
+        <Route path="/patient-portal/:token/j3" element={<PatientJ3 />} />
         <Route path="/patient-portal/:token/j2" element={<PatientJ2 />} />
+        <Route path="/patient-portal/:token/j1-preop" element={<PatientJ1PreOp />} />
+        <Route path="/patient-portal/:token/j0" element={<PatientJ0 />} />
         <Route path="/patient-portal/:token/j1" element={<PatientJ1 />} />
         <Route path="/patient-portal/:token/success" element={<PatientSuccess />} />
       </Routes>

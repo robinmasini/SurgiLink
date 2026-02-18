@@ -167,40 +167,54 @@ export default function PatientPortal() {
                             <div className="card-icon card-icon-primary">
                                 <FileText size={20} />
                             </div>
-                            <h3>Actions Requises</h3>
+                            <h3>Votre Parcours de Soins</h3>
                         </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-4)' }}>
-                            <Link
-                                to={`/patient-portal/${token}/j7`}
-                                className="card glass-effect"
-                                style={{ textDecoration: 'none', display: 'block', transition: 'transform 0.2s', cursor: 'pointer', border: '1px solid var(--color-primary-100)' }}
-                            >
-                                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-4)' }}>
-                                    <div style={{ fontSize: '32px' }}>📋</div>
-                                    <div style={{ flex: 1 }}>
-                                        <h4 style={{ marginBottom: '4px' }}>Questionnaire J-7</h4>
-                                        <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-600)' }}>À remplir 7 jours avant votre intervention</p>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-3)' }}>
+                            {[
+                                { to: `j7`, emoji: '📋', label: 'Questionnaire J-7', desc: 'Préparation administrative (anesthésie, accompagnant)' },
+                                { to: `j3`, emoji: '✂️', label: 'Questionnaire J-3', desc: 'Préparation épilation et vérification infections' },
+                                { to: `j2`, emoji: '📄', label: 'Questionnaire J-2', desc: 'Documents, jeûne et consignes du jour J' },
+                                { to: `j1-preop`, emoji: '🚿', label: 'Questionnaire J-1', desc: 'Hygiène, traitements et préparation de la veille' },
+                                { to: `j0`, emoji: '🏥', label: 'Questionnaire J-0', desc: 'Vérifications finales le jour de l\'intervention' },
+                                { to: `j1`, emoji: '🌡️', label: 'Suivi J+1', desc: 'Bilan post-opératoire du lendemain' },
+                                { to: `j2-sat`, emoji: '⭐', label: 'Satisfaction J+2', desc: 'Votre avis sur votre prise en charge', disabled: true },
+                            ].map(step => (
+                                step.disabled ? (
+                                    <div
+                                        key={step.to}
+                                        className="card glass-effect"
+                                        style={{ textDecoration: 'none', display: 'block', border: '1px solid var(--color-gray-100)', opacity: 0.5, cursor: 'default' }}
+                                    >
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-4)' }}>
+                                            <div style={{ fontSize: '32px' }}>{step.emoji}</div>
+                                            <div style={{ flex: 1 }}>
+                                                <h4 style={{ marginBottom: '4px' }}>{step.label}</h4>
+                                                <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-600)' }}>{step.desc}</p>
+                                            </div>
+                                            <div className="badge" style={{ background: 'var(--color-gray-200)', color: 'var(--color-gray-500)' }}>Bientôt</div>
+                                        </div>
                                     </div>
-                                    <div className="badge badge-primary">Ouvrir</div>
-                                </div>
-                            </Link>
-
-                            <Link
-                                to={`/patient-portal/${token}/j2`}
-                                className="card glass-effect"
-                                style={{ textDecoration: 'none', display: 'block', transition: 'transform 0.2s', cursor: 'pointer', border: '1px solid var(--color-primary-100)' }}
-                            >
-                                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-4)' }}>
-                                    <div style={{ fontSize: '32px' }}>📄</div>
-                                    <div style={{ flex: 1 }}>
-                                        <h4 style={{ marginBottom: '4px' }}>Questionnaire J-2</h4>
-                                        <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-600)' }}>Dernières consignes préopératoires</p>
-                                    </div>
-                                    <div className="badge badge-primary">Ouvrir</div>
-                                </div>
-                            </Link>
+                                ) : (
+                                    <Link
+                                        key={step.to}
+                                        to={`/patient-portal/${token}/${step.to}`}
+                                        className="card glass-effect"
+                                        style={{ textDecoration: 'none', display: 'block', transition: 'transform 0.2s', cursor: 'pointer', border: '1px solid var(--color-primary-100)' }}
+                                    >
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-4)' }}>
+                                            <div style={{ fontSize: '32px' }}>{step.emoji}</div>
+                                            <div style={{ flex: 1 }}>
+                                                <h4 style={{ marginBottom: '4px' }}>{step.label}</h4>
+                                                <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-600)' }}>{step.desc}</p>
+                                            </div>
+                                            <div className="badge badge-primary">Ouvrir</div>
+                                        </div>
+                                    </Link>
+                                )
+                            ))}
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>

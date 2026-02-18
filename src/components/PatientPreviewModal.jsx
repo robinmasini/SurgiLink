@@ -1,23 +1,42 @@
 import { useState, useEffect } from 'react';
-import { X, Clipboard, Clock, Activity, Loader, Info, Scissors, User, Phone, Mail } from 'lucide-react';
-import { pathwayConfig } from '../config/pathway.config';
+import { X, Clipboard, Clock, Activity, Loader, Scissors, User } from 'lucide-react';
+import { pathwayConfig, getScreenItems } from '../config/pathway.config';
 import { getResponses, saveResponse, markScreenCompleted } from '../services/pathwayService';
 import QuestionRenderer from './pathway/QuestionRenderer';
 import AlertBanner from './pathway/AlertBanner';
-import { formatDateFR } from '../utils/dateUtils';
+
+// All 7 SMS steps in order
+const ALL_TABS = [
+    { key: 'J7', label: 'J-7', sublabel: 'Préparation' },
+    { key: 'J3', label: 'J-3', sublabel: 'Épilation' },
+    { key: 'J2', label: 'J-2', sublabel: 'Consignes' },
+    { key: 'J1_PreOp', label: 'J-1', sublabel: 'Veille' },
+    { key: 'J0', label: 'J-0', sublabel: 'Jour J' },
+    { key: 'J1', label: 'J+1', sublabel: 'Suivi' },
+    { key: 'J2_Satisfaction', label: 'J+2', sublabel: 'Avis' },
+];
 
 export default function PatientPreviewModal({ isOpen, onClose, patient, onResponseSaved, onStatusChange }) {
     const [activeTab, setActiveTab] = useState('J7');
     const [responses, setResponses] = useState({});
     const [loading, setLoading] = useState(false);
-    const [saving, setSaving] = useState(null); // Track which item is saving
+    const [saving, setSaving] = useState(null);
     const [validating, setValidating] = useState(false);
+    // Per-tab completion: { J7: { answered, total }, ... }
+    const [tabProgress, setTabProgress] = useState({});
 
     useEffect(() => {
         if (isOpen && patient?.id) {
             loadResponses();
         }
     }, [isOpen, patient?.id, activeTab]);
+
+    // Load progress for all tabs when modal opens
+    useEffect(() => {
+        if (isOpen && patient?.id) {
+            loadAllProgress();
+        }
+    }, [isOpen, patient?.id]);
 
     const loadResponses = async () => {
         setLoading(true);
@@ -31,8 +50,25 @@ export default function PatientPreviewModal({ isOpen, onClose, patient, onRespon
         }
     };
 
+    const loadAllProgress = async () => {
+        const progress = {};
+        for (const tab of ALL_TABS) {
+            try {
+                const data = await getResponses(patient.id, tab.key);
+                const items = getScreenItems(tab.key).filter(i => i.required !== false);
+                const answered = items.filter(i => {
+                    const v = data[i.id];
+                    return v !== undefined && v !== null && v !== '';
+                }).length;
+                progress[tab.key] = { answered, total: items.length };
+            } catch {
+                progress[tab.key] = { answered: 0, total: getScreenItems(tab.key).filter(i => i.required !== false).length };
+            }
+        }
+        setTabProgress(progress);
+    };
+
     const handleResponseChange = async (itemId, value) => {
-        // Optimistic update
         const oldResponses = { ...responses };
         setResponses(prev => ({ ...prev, [itemId]: value }));
         setSaving(itemId);
@@ -41,8 +77,17 @@ export default function PatientPreviewModal({ isOpen, onClose, patient, onRespon
             const res = await saveResponse(patient.id, activeTab, itemId, value);
             if (res.success) {
                 if (onResponseSaved) onResponseSaved(activeTab, itemId, value);
+                // Update progress for current tab
+                setTabProgress(prev => {
+                    const items = getScreenItems(activeTab).filter(i => i.required !== false);
+                    const newResponses = { ...responses, [itemId]: value };
+                    const answered = items.filter(i => {
+                        const v = newResponses[i.id];
+                        return v !== undefined && v !== null && v !== '';
+                    }).length;
+                    return { ...prev, [activeTab]: { answered, total: items.length } };
+                });
             } else {
-                // Rollback if error
                 setResponses(oldResponses);
                 alert("Erreur lors de l'enregistrement de la réponse.");
             }
@@ -75,19 +120,8 @@ export default function PatientPreviewModal({ isOpen, onClose, patient, onRespon
     if (!isOpen) return null;
 
     const config = pathwayConfig[activeTab];
-
-    const getTabStyle = (tab) => ({
-        padding: '12px 24px',
-        cursor: 'pointer',
-        borderBottom: activeTab === tab ? '2px solid var(--color-primary-500)' : '2px solid transparent',
-        color: activeTab === tab ? 'var(--color-primary-600)' : 'var(--color-gray-500)',
-        fontWeight: activeTab === tab ? '600' : '400',
-        transition: 'all 0.2s',
-        fontSize: 'var(--font-size-sm)',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '8px'
-    });
+    const progress = tabProgress[activeTab] || { answered: 0, total: 0 };
+    const progressPct = progress.total > 0 ? Math.round((progress.answered / progress.total) * 100) : 0;
 
     const getIcon = (sectionId) => {
         switch (sectionId) {
@@ -107,10 +141,7 @@ export default function PatientPreviewModal({ isOpen, onClose, patient, onRespon
     return (
         <div style={{
             position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
+            top: 0, left: 0, right: 0, bottom: 0,
             background: 'rgba(0, 0, 0, 0.4)',
             backdropFilter: 'blur(4px)',
             display: 'flex',
@@ -122,18 +153,18 @@ export default function PatientPreviewModal({ isOpen, onClose, patient, onRespon
             <div style={{
                 background: 'white',
                 width: '100%',
-                maxWidth: '800px',
+                maxWidth: '860px',
                 height: '90vh',
                 borderRadius: 'var(--border-radius-2xl)',
                 display: 'flex',
                 flexDirection: 'column',
                 overflow: 'hidden',
-                boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
+                boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)'
             }} onClick={e => e.stopPropagation()}>
 
                 {/* Header */}
                 <div style={{
-                    padding: 'var(--spacing-6)',
+                    padding: 'var(--spacing-5) var(--spacing-6)',
                     borderBottom: '1px solid var(--color-gray-100)',
                     display: 'flex',
                     alignItems: 'center',
@@ -141,7 +172,9 @@ export default function PatientPreviewModal({ isOpen, onClose, patient, onRespon
                     background: 'var(--color-white)'
                 }}>
                     <div>
-                        <h2 style={{ fontSize: 'var(--font-size-xl)', fontWeight: '700', margin: 0 }}>Aperçu Patient : {patient?.name}</h2>
+                        <h2 style={{ fontSize: 'var(--font-size-xl)', fontWeight: '700', margin: 0 }}>
+                            Aperçu Patient : {patient?.name}
+                        </h2>
                         <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-500)', margin: '4px 0 0 0' }}>
                             Visualisez ce que le patient voit sur son portail
                         </p>
@@ -161,24 +194,100 @@ export default function PatientPreviewModal({ isOpen, onClose, patient, onRespon
                     </button>
                 </div>
 
-                {/* Tabs */}
+                {/* Tabs — scrollable horizontally for 7 tabs */}
                 <div style={{
                     display: 'flex',
                     background: 'var(--color-gray-50)',
-                    padding: '0 var(--spacing-6)',
-                    borderBottom: '1px solid var(--color-gray-100)'
+                    borderBottom: '1px solid var(--color-gray-100)',
+                    overflowX: 'auto',
+                    flexShrink: 0
                 }}>
-                    <div style={getTabStyle('J7')} onClick={() => setActiveTab('J7')}>
-                        J-7 Préparation
+                    {ALL_TABS.map(tab => {
+                        const p = tabProgress[tab.key];
+                        const isComplete = p && p.total > 0 && p.answered === p.total;
+                        const isActive = activeTab === tab.key;
+                        return (
+                            <div
+                                key={tab.key}
+                                onClick={() => setActiveTab(tab.key)}
+                                style={{
+                                    padding: '10px 16px',
+                                    cursor: 'pointer',
+                                    borderBottom: isActive ? '2px solid var(--color-primary-500)' : '2px solid transparent',
+                                    color: isActive ? 'var(--color-primary-600)' : 'var(--color-gray-500)',
+                                    fontWeight: isActive ? '600' : '400',
+                                    transition: 'all 0.2s',
+                                    fontSize: 'var(--font-size-sm)',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    gap: '2px',
+                                    whiteSpace: 'nowrap',
+                                    minWidth: '72px',
+                                    flexShrink: 0
+                                }}
+                            >
+                                <span style={{ fontWeight: '700', fontSize: '13px' }}>{tab.label}</span>
+                                <span style={{ fontSize: '10px', opacity: 0.7 }}>{tab.sublabel}</span>
+                                {/* Mini progress dot */}
+                                {p && p.total > 0 && (
+                                    <div style={{
+                                        width: '6px',
+                                        height: '6px',
+                                        borderRadius: '50%',
+                                        background: isComplete
+                                            ? 'var(--color-success-500)'
+                                            : p.answered > 0
+                                                ? 'var(--color-warning-500)'
+                                                : 'var(--color-gray-300)',
+                                        marginTop: '2px'
+                                    }} />
+                                )}
+                            </div>
+                        );
+                    })}
+                </div>
+
+                {/* Per-tab progress bar */}
+                <div style={{
+                    padding: '10px var(--spacing-6) 8px',
+                    background: 'white',
+                    borderBottom: '1px solid var(--color-gray-100)',
+                    flexShrink: 0
+                }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                        <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', fontWeight: '500' }}>
+                            Protocole {ALL_TABS.find(t => t.key === activeTab)?.label}
+                        </span>
+                        <span style={{
+                            fontSize: 'var(--font-size-xs)',
+                            fontWeight: '700',
+                            color: progressPct === 100
+                                ? 'var(--color-success-600)'
+                                : progressPct > 0
+                                    ? 'var(--color-warning-600)'
+                                    : 'var(--color-gray-400)'
+                        }}>
+                            {progress.answered}/{progress.total} questions · {progressPct}%
+                        </span>
                     </div>
-                    <div style={getTabStyle('J2')} onClick={() => setActiveTab('J2')}>
-                        J-2 Consignes
-                    </div>
-                    <div style={getTabStyle('J1')} onClick={() => setActiveTab('J1')}>
-                        J+1 Suivi
-                    </div>
-                    <div style={getTabStyle('J2_Satisfaction')} onClick={() => setActiveTab('J2_Satisfaction')}>
-                        J+2 Avis
+                    <div style={{
+                        height: '6px',
+                        background: 'var(--color-gray-100)',
+                        borderRadius: '3px',
+                        overflow: 'hidden'
+                    }}>
+                        <div style={{
+                            height: '100%',
+                            width: `${progressPct}%`,
+                            background: progressPct === 100
+                                ? 'var(--color-success-500)'
+                                : progressPct > 0
+                                    ? 'var(--color-warning-500)'
+                                    : 'transparent',
+                            borderRadius: '3px',
+                            transition: 'width 0.4s ease'
+                        }} />
                     </div>
                 </div>
 
@@ -207,15 +316,12 @@ export default function PatientPreviewModal({ isOpen, onClose, patient, onRespon
                             }}>
                                 <h3 style={{ fontSize: 'var(--font-size-xl)', marginBottom: 'var(--spacing-1)' }}>Dossier Médical</h3>
                                 <div style={{ color: 'var(--color-primary-600)', fontWeight: '600' }}>
-                                    {activeTab === 'J7' ? 'J-7 • Préparation' :
-                                        activeTab === 'J2' ? 'J-2 • Consignes' :
-                                            activeTab === 'J1' ? 'J+1 • Suivi' :
-                                                'J+2 • Satisfaction'}
+                                    {ALL_TABS.find(t => t.key === activeTab)?.label} • {ALL_TABS.find(t => t.key === activeTab)?.sublabel}
                                 </div>
                             </div>
 
-                            {/* Time Alert (Specific to J7/J2 logic if needed) */}
-                            {['J7', 'J2'].includes(activeTab) && (
+                            {/* Time Alert for pre-op steps */}
+                            {['J7', 'J3', 'J2', 'J1_PreOp', 'J0'].includes(activeTab) && (
                                 <AlertBanner
                                     type="info"
                                     title={`Arrivée prévue à ${patient?.surgery_time || '07:30'}`}
@@ -353,9 +459,7 @@ export default function PatientPreviewModal({ isOpen, onClose, patient, onRespon
                                                             }}>
                                                                 <div style={{
                                                                     position: 'absolute',
-                                                                    left: 0,
-                                                                    top: 0,
-                                                                    bottom: 0,
+                                                                    left: 0, top: 0, bottom: 0,
                                                                     width: responses[item.id] !== undefined ? `${responses[item.id] * 10}%` : 0,
                                                                     background: 'var(--color-primary-200)',
                                                                     borderRadius: '4px'
@@ -382,14 +486,13 @@ export default function PatientPreviewModal({ isOpen, onClose, patient, onRespon
                                                         </div>
                                                     </div>
                                                 )}
-                                                {/* Add more types if needed, like tri_state or multi_check if they are used in J1/J2/J7 */}
                                             </div>
                                         </div>
                                     ))}
                                 </div>
                             ))}
 
-                            {/* Info Box Footer Mock */}
+                            {/* Info Box Footer */}
                             <div style={{
                                 marginTop: 'var(--spacing-10)',
                                 padding: 'var(--spacing-6)',
@@ -417,7 +520,7 @@ export default function PatientPreviewModal({ isOpen, onClose, patient, onRespon
                                         border: 'none',
                                         fontWeight: '600',
                                         cursor: 'pointer',
-                                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                                        boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)',
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
@@ -432,9 +535,7 @@ export default function PatientPreviewModal({ isOpen, onClose, patient, onRespon
                                             Validation en cours...
                                         </>
                                     ) : (
-                                        <>
-                                            Valider le questionnaire {activeTab}
-                                        </>
+                                        <>Valider le questionnaire {ALL_TABS.find(t => t.key === activeTab)?.label}</>
                                     )}
                                 </button>
                                 <p style={{
