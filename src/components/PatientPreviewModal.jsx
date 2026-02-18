@@ -5,7 +5,7 @@ import { getResponses, saveResponse, markScreenCompleted } from '../services/pat
 import QuestionRenderer from './pathway/QuestionRenderer';
 import AlertBanner from './pathway/AlertBanner';
 
-// All 7 SMS steps in order
+// All 7 SMS steps in order with their specific alert color coding
 const ALL_TABS = [
     { key: 'J7', label: 'J-7', sublabel: 'Préparation', color: null },
     { key: 'J3', label: 'J-3', sublabel: 'Épilation', color: 'orange' },
