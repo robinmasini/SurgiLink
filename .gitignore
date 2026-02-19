@@ -26,3 +26,5 @@ dist-ssr
 # Bmad
 _bmad/
 _bmad-output/
+.vercel
+.env*.local

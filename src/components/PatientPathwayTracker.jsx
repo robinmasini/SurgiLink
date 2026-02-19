@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { Send, Clock, CheckCircle, AlertCircle, XCircle, Loader } from 'lucide-react';
 import { getPatientPathwayStatus, getIncompleteItemsWithReminders } from '../services/pathwayService';
 import { sendManualReminder } from '../services/reminderService';
-import { getSMSHistory, canSendReminder } from '../services/twilioService';
+import { getSMSHistory, canSendReminder } from '../services/d7networksService';
 import AlertBanner from './pathway/AlertBanner';
 
 /**
@@ -17,11 +17,11 @@ export default function PatientPathwayTracker() {
     const [loading, setLoading] = useState(true);
     const [sending, setSending] = useState(null);
 
-    // Mock patient data (in real app, fetch from Supabase)
+    // Mock patient data for testing with Robin MASINI
     const patient = {
         id: parseInt(patientId),
-        name: 'Patient Test',
-        phone: '+33612345678',
+        name: 'Robin MASINI',
+        phone: '+33621457812', // Placeholder, user will provide real one if needed or edit in DB
         date: '2026-02-14',
         arrival_time: '07:30'
     };

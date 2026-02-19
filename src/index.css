@@ -1801,6 +1801,17 @@ textarea.input {
   object-fit: cover;
   object-position: center center;
   z-index: 1;
+  animation: welcome-image-zoom 20s infinite alternate ease-in-out;
+}
+
+@keyframes welcome-image-zoom {
+  0% {
+    transform: scale(1);
+  }
+
+  100% {
+    transform: scale(1.1);
+  }
 }
 
 @media (max-width: 1024px) {
