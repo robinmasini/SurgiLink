@@ -178,7 +178,11 @@ CREATE POLICY "Users can insert reminders" ON public.reminder_queue FOR INSERT T
 CREATE POLICY "Users can update their own reminders" ON public.reminder_queue FOR UPDATE TO authenticated USING (auth.uid() = user_id);
 
 -- Patient Review Tokens
-CREATE POLICY "Staff can manage tokens for their patients" ON public.patient_review_tokens FOR ALL TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Staff can manage tokens for their patients" ON public.patient_review_tokens FOR ALL TO authenticated USING (
+    EXISTS (SELECT 1 FROM public.patients WHERE patients.id = patient_review_tokens.patient_id AND patients.user_id = auth.uid())
+) WITH CHECK (
+    EXISTS (SELECT 1 FROM public.patients WHERE patients.id = patient_review_tokens.patient_id AND patients.user_id = auth.uid())
+);
 CREATE POLICY "Portal: Anon can verify tokens" ON public.patient_review_tokens FOR SELECT TO anon USING (is_active = true AND (expires_at IS NULL OR expires_at > NOW()));
 CREATE POLICY "Portal: Anon can update access time" ON public.patient_review_tokens FOR UPDATE TO anon USING (is_active = true AND (expires_at IS NULL OR expires_at > NOW())) WITH CHECK (is_active = true AND (expires_at IS NULL OR expires_at > NOW()));
 
