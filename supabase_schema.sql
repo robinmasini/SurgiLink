@@ -113,6 +113,21 @@ CREATE TABLE IF NOT EXISTS public.reminder_queue (
 -- Enable RLS
 ALTER TABLE public.reminder_queue ENABLE ROW LEVEL SECURITY;
 
+-- 7. Patient Review Tokens Table
+CREATE TABLE IF NOT EXISTS public.patient_review_tokens (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    patient_id BIGINT REFERENCES public.patients(id) ON DELETE CASCADE,
+    token TEXT UNIQUE NOT NULL,
+    expires_at TIMESTAMPTZ,
+    is_active BOOLEAN DEFAULT true,
+    last_accessed_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    user_id UUID REFERENCES auth.users(id) DEFAULT auth.uid()
+);
+
+-- Enable RLS
+ALTER TABLE public.patient_review_tokens ENABLE ROW LEVEL SECURITY;
+
 -- ============================================
 -- POLICIES
 -- ============================================
@@ -121,22 +136,36 @@ ALTER TABLE public.reminder_queue ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view their own patients" ON public.patients FOR SELECT TO authenticated USING (auth.uid() = user_id);
 CREATE POLICY "Users can insert clinical data" ON public.patients FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
 CREATE POLICY "Users can update their own patients" ON public.patients FOR UPDATE TO authenticated USING (auth.uid() = user_id);
+CREATE POLICY "Portal: Patients can view own data via token" ON public.patients FOR SELECT TO anon USING (
+    EXISTS (SELECT 1 FROM public.patient_review_tokens WHERE patient_id = patients.id AND is_active = true AND (expires_at IS NULL OR expires_at > NOW()))
+);
 
 -- Medical History
 CREATE POLICY "Users can view their patients' history" ON public.medical_history FOR SELECT TO authenticated USING (auth.uid() = user_id);
 CREATE POLICY "Users can insert history" ON public.medical_history FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
 CREATE POLICY "Users can update their patients' history" ON public.medical_history FOR UPDATE TO authenticated USING (auth.uid() = user_id);
 CREATE POLICY "Users can delete their patients' history" ON public.medical_history FOR DELETE TO authenticated USING (auth.uid() = user_id);
+CREATE POLICY "Portal: Patients can view history via token" ON public.medical_history FOR SELECT TO anon USING (
+    EXISTS (SELECT 1 FROM public.patient_review_tokens WHERE patient_id = medical_history.patient_id AND is_active = true AND (expires_at IS NULL OR expires_at > NOW()))
+);
 
 -- Documents
 CREATE POLICY "Users can view their own patient documents" ON public.patient_documents FOR SELECT TO authenticated USING (auth.uid() = user_id);
 CREATE POLICY "Users can insert patient documents" ON public.patient_documents FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
 CREATE POLICY "Users can delete their own patient documents" ON public.patient_documents FOR DELETE TO authenticated USING (auth.uid() = user_id);
+CREATE POLICY "Portal: Patients can view documents via token" ON public.patient_documents FOR SELECT TO anon USING (
+    EXISTS (SELECT 1 FROM public.patient_review_tokens WHERE patient_id = patient_documents.patient_id AND is_active = true AND (expires_at IS NULL OR expires_at > NOW()))
+);
 
 -- Pathway Responses
 CREATE POLICY "Users can view their own pathway responses" ON public.pathway_responses FOR SELECT TO authenticated USING (auth.uid() = user_id);
 CREATE POLICY "Users can insert their own pathway responses" ON public.pathway_responses FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
 CREATE POLICY "Users can update their own pathway responses" ON public.pathway_responses FOR UPDATE TO authenticated USING (auth.uid() = user_id);
+CREATE POLICY "Portal: Patients can manage responses via token" ON public.pathway_responses FOR ALL TO anon USING (
+    EXISTS (SELECT 1 FROM public.patient_review_tokens WHERE patient_id = pathway_responses.patient_id AND is_active = true AND (expires_at IS NULL OR expires_at > NOW()))
+) WITH CHECK (
+    EXISTS (SELECT 1 FROM public.patient_review_tokens WHERE patient_id = pathway_responses.patient_id AND is_active = true AND (expires_at IS NULL OR expires_at > NOW()))
+);
 
 -- SMS Logs
 CREATE POLICY "Users can view their own sms logs" ON public.sms_logs FOR SELECT TO authenticated USING (auth.uid() = user_id);
@@ -147,6 +176,11 @@ CREATE POLICY "Users can update their own sms logs" ON public.sms_logs FOR UPDAT
 CREATE POLICY "Users can view their own reminders" ON public.reminder_queue FOR SELECT TO authenticated USING (auth.uid() = user_id);
 CREATE POLICY "Users can insert reminders" ON public.reminder_queue FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
 CREATE POLICY "Users can update their own reminders" ON public.reminder_queue FOR UPDATE TO authenticated USING (auth.uid() = user_id);
+
+-- Patient Review Tokens
+CREATE POLICY "Staff can manage tokens for their patients" ON public.patient_review_tokens FOR ALL TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Portal: Anon can verify tokens" ON public.patient_review_tokens FOR SELECT TO anon USING (is_active = true AND (expires_at IS NULL OR expires_at > NOW()));
+CREATE POLICY "Portal: Anon can update access time" ON public.patient_review_tokens FOR UPDATE TO anon USING (is_active = true AND (expires_at IS NULL OR expires_at > NOW())) WITH CHECK (is_active = true AND (expires_at IS NULL OR expires_at > NOW()));
 
 -- ============================================
 -- INDEXES

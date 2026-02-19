@@ -13,7 +13,6 @@ import {
     ChevronLeft,
     Clock,
     Activity,
-    ShieldCheck,
     Plus,
     X,
     Edit2,
@@ -30,7 +29,9 @@ import { supabase } from '../lib/supabase';
 import { calculateAge, formatDateFR } from '../utils/dateUtils';
 import { getPatientPathwayStatus, getResponses, calculateRiskFlags } from '../services/pathwayService';
 import { getDocuments, uploadDocument, deleteDocument, downloadDocument } from '../services/documentService';
+import { generatePatientToken, getPatientTokens, revokeToken } from '../services/tokenService';
 import LogoPremium from '../components/LogoPremium';
+import { Link as LinkIcon, Copy, RefreshCw, ShieldCheck } from 'lucide-react';
 
 export default function PatientReview() {
     const { id } = useParams();
@@ -51,6 +52,8 @@ export default function PatientReview() {
     const [documents, setDocuments] = useState([]);
     const [isDragging, setIsDragging] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
+    const [tokenData, setTokenData] = useState(null);
+    const [isGeneratingToken, setIsGeneratingToken] = useState(false);
     const fileInputRef = useRef(null);
 
     const loadPatientData = async () => {
@@ -129,9 +132,45 @@ export default function PatientReview() {
         }
     };
 
+    const loadTokenData = async () => {
+        if (!id) return;
+        const tokens = await getPatientTokens(id);
+        const activeToken = tokens.find(t => t.is_active);
+        setTokenData(activeToken || null);
+    };
+
+    const handleGenerateToken = async () => {
+        setIsGeneratingToken(true);
+        try {
+            // Revoke old tokens if any
+            if (tokenData) {
+                await revokeToken(tokenData.id);
+            }
+            const res = await generatePatientToken(id);
+            if (res.success) {
+                setTokenData({
+                    id: res.tokenId,
+                    token: res.token,
+                    expires_at: res.expiresAt,
+                    is_active: true
+                });
+            } else {
+                alert(`Erreur: ${res.error}`);
+            }
+        } finally {
+            setIsGeneratingToken(false);
+        }
+    };
+
+    const copyToClipboard = (text) => {
+        navigator.clipboard.writeText(text);
+        alert('Lien copié dans le presse-papier !');
+    };
+
     useEffect(() => {
         if (id) {
             loadPatientData();
+            loadTokenData();
         }
     }, [id]);
 
@@ -667,52 +706,119 @@ export default function PatientReview() {
                         </div>
                     </div>
 
-                    {/* Right Column: History */}
-                    <div className="card glass-effect" style={{ height: 'fit-content', padding: 'var(--spacing-8)', position: 'sticky', top: 'var(--spacing-8)' }}>
-                        <div className="card-header" style={{ marginBottom: 'var(--spacing-8)' }}>
-                            <div className="card-icon card-icon-primary" style={{ background: 'var(--color-purple-50)', color: 'var(--color-purple-600)' }}>
-                                <History size={20} />
+                    {/* Right Column: history & Secure Link */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-8)' }}>
+                        {/* Secure Link Card */}
+                        <div className="card glass-effect" style={{ padding: 'var(--spacing-8)', border: '1px solid var(--color-primary-100)' }}>
+                            <div className="card-header" style={{ marginBottom: 'var(--spacing-6)' }}>
+                                <div className="card-icon card-icon-primary" style={{ background: 'var(--color-primary-50)', color: 'var(--color-primary-600)' }}>
+                                    <ShieldCheck size={20} />
+                                </div>
+                                <h3>Accès Patient Sécurisé</h3>
                             </div>
-                            <h3>Historique</h3>
+
+                            <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-500)', marginBottom: 'var(--spacing-6)' }}>
+                                Générez un lien unique pour permettre au patient d'accéder à son portail sans mot de passe.
+                            </p>
+
+                            {tokenData ? (
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-4)' }}>
+                                    <div style={{
+                                        background: 'var(--color-gray-50)',
+                                        padding: 'var(--spacing-4)',
+                                        borderRadius: 'var(--border-radius-lg)',
+                                        border: '1px dashed var(--color-gray-200)',
+                                        wordBreak: 'break-all',
+                                        fontSize: 'var(--font-size-xs)',
+                                        color: 'var(--color-primary-700)',
+                                        fontFamily: 'monospace',
+                                        position: 'relative'
+                                    }}>
+                                        {`${window.location.origin}/patient-portal/${tokenData.token}`}
+                                    </div>
+                                    <div style={{ display: 'flex', gap: 'var(--spacing-2)' }}>
+                                        <button
+                                            onClick={() => copyToClipboard(`${window.location.origin}/patient-portal/${tokenData.token}`)}
+                                            className="btn btn-primary btn-sm"
+                                            style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--spacing-2)' }}
+                                        >
+                                            <Copy size={16} />
+                                            Copier le lien
+                                        </button>
+                                        <button
+                                            onClick={handleGenerateToken}
+                                            disabled={isGeneratingToken}
+                                            className="btn btn-secondary btn-sm"
+                                            title="Régénérer le lien"
+                                            style={{ padding: '8px' }}
+                                        >
+                                            <RefreshCw size={16} className={isGeneratingToken ? 'animate-spin' : ''} />
+                                        </button>
+                                    </div>
+                                    <div style={{ fontSize: '10px', color: 'var(--color-gray-400)', textAlign: 'center' }}>
+                                        Lien actif • Créé le {new Date(tokenData.created_at || Date.now()).toLocaleDateString('fr-FR')}
+                                    </div>
+                                </div>
+                            ) : (
+                                <button
+                                    onClick={handleGenerateToken}
+                                    disabled={isGeneratingToken}
+                                    className="btn btn-primary"
+                                    style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--spacing-2)' }}
+                                >
+                                    {isGeneratingToken ? <RefreshCw size={18} className="animate-spin" /> : <LinkIcon size={18} />}
+                                    Générer un lien d'accès
+                                </button>
+                            )}
                         </div>
 
+                        {/* History Card */}
+                        <div className="card glass-effect" style={{ height: 'fit-content', padding: 'var(--spacing-8)' }}>
+                            <div className="card-header" style={{ marginBottom: 'var(--spacing-8)' }}>
+                                <div className="card-icon card-icon-primary" style={{ background: 'var(--color-purple-50)', color: 'var(--color-purple-600)' }}>
+                                    <History size={20} />
+                                </div>
+                                <h3>Historique</h3>
+                            </div>
 
-                        <div className="timeline" style={{ position: 'relative' }}>
-                            <div style={{ position: 'absolute', left: '7px', top: 0, bottom: 0, width: '2px', background: 'var(--color-gray-100)' }}></div>
-                            {medicalHistory.filter(item => item.category === 'sms').length > 0 ? (
-                                medicalHistory.filter(item => item.category === 'sms').map((item) => (
-                                    <div key={item.id} className="timeline-item" style={{ paddingLeft: 'var(--spacing-8)', paddingBottom: 'var(--spacing-8)', position: 'relative' }}>
-                                        <div style={{
-                                            position: 'absolute',
-                                            left: 0,
-                                            top: '4px',
-                                            width: '16px',
-                                            height: '16px',
-                                            borderRadius: '50%',
-                                            background: item.category === 'sms' ? 'var(--color-secondary-500)' : 'var(--color-primary-500)',
-                                            border: '3px solid white',
-                                            boxShadow: '0 0 0 1px var(--color-gray-100)',
-                                            zIndex: 1
-                                        }}></div>
-                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)' }}>
-                                                <span style={{ fontWeight: 'var(--font-weight-black)', fontSize: 'var(--font-size-md)' }}>{item.title}</span>
-                                                {item.category === 'sms' && <span className="badge" style={{ fontSize: '8px', background: 'var(--color-gray-100)', letterSpacing: '0.05em' }}>SYSTEME</span>}
-                                            </div>
-                                            <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-400)', display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)' }}>
-                                                {formatDateFR(item.date)} • {item.category === 'sms' ? 'SMS envoyé' : 'Intervention'}
-                                            </div>
-                                            {item.description && (
-                                                <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-600)', marginTop: '4px', background: 'var(--color-gray-50)', padding: 'var(--spacing-3)', borderRadius: 'var(--border-radius-md)' }}>
-                                                    {item.description}
+
+                            <div className="timeline" style={{ position: 'relative' }}>
+                                <div style={{ position: 'absolute', left: '7px', top: 0, bottom: 0, width: '2px', background: 'var(--color-gray-100)' }}></div>
+                                {medicalHistory.filter(item => item.category === 'sms').length > 0 ? (
+                                    medicalHistory.filter(item => item.category === 'sms').map((item) => (
+                                        <div key={item.id} className="timeline-item" style={{ paddingLeft: 'var(--spacing-8)', paddingBottom: 'var(--spacing-8)', position: 'relative' }}>
+                                            <div style={{
+                                                position: 'absolute',
+                                                left: 0,
+                                                top: '4px',
+                                                width: '16px',
+                                                height: '16px',
+                                                borderRadius: '50%',
+                                                background: item.category === 'sms' ? 'var(--color-secondary-500)' : 'var(--color-primary-500)',
+                                                border: '3px solid white',
+                                                boxShadow: '0 0 0 1px var(--color-gray-100)',
+                                                zIndex: 1
+                                            }}></div>
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)' }}>
+                                                    <span style={{ fontWeight: 'var(--font-weight-black)', fontSize: 'var(--font-size-md)' }}>{item.title}</span>
+                                                    {item.category === 'sms' && <span className="badge" style={{ fontSize: '8px', background: 'var(--color-gray-100)', letterSpacing: '0.05em' }}>SYSTEME</span>}
                                                 </div>
-                                            )}
+                                                <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-400)', display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)' }}>
+                                                    {formatDateFR(item.date)} • {item.category === 'sms' ? 'SMS envoyé' : 'Intervention'}
+                                                </div>
+                                                {item.description && (
+                                                    <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-600)', marginTop: '4px', background: 'var(--color-gray-50)', padding: 'var(--spacing-3)', borderRadius: 'var(--border-radius-md)' }}>
+                                                        {item.description}
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
-                                    </div>
-                                ))
-                            ) : (
-                                <p style={{ textAlign: 'center', color: 'var(--color-gray-400)', padding: 'var(--spacing-8)' }}>Aucun événement.</p>
-                            )}
+                                    ))
+                                ) : (
+                                    <p style={{ textAlign: 'center', color: 'var(--color-gray-400)', padding: 'var(--spacing-8)' }}>Aucun événement.</p>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>

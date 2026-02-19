@@ -4,7 +4,9 @@ import { Send, Clock, CheckCircle, AlertCircle, XCircle, Loader } from 'lucide-r
 import { getPatientPathwayStatus, getIncompleteItemsWithReminders } from '../services/pathwayService';
 import { sendManualReminder } from '../services/reminderService';
 import { getSMSHistory, canSendReminder } from '../services/d7networksService';
+import { getPatientTokens, generatePatientToken } from '../services/tokenService';
 import AlertBanner from './pathway/AlertBanner';
+import { ExternalLink, Copy, ShieldCheck } from 'lucide-react';
 
 /**
  * PatientPathwayTracker - Staff interface for tracking pathway completion and sending reminders
@@ -16,6 +18,7 @@ export default function PatientPathwayTracker() {
     const [smsHistory, setSmsHistory] = useState([]);
     const [loading, setLoading] = useState(true);
     const [sending, setSending] = useState(null);
+    const [token, setToken] = useState(null);
 
     // Mock patient data for testing with Robin MASINI
     const patient = {
@@ -51,7 +54,28 @@ export default function PatientPathwayTracker() {
         const history = await getSMSHistory(parseInt(patientId));
         setSmsHistory(history);
 
+        // Load Token
+        const tokens = await getPatientTokens(parseInt(patientId));
+        const activeToken = tokens.find(t => t.is_active);
+        if (activeToken) {
+            setToken(activeToken.token);
+        }
+
         setLoading(false);
+    };
+
+    const handleGenerateToken = async () => {
+        const res = await generatePatientToken(parseInt(patientId));
+        if (res.success) {
+            setToken(res.token);
+            alert('Lien d’accès généré !');
+        }
+    };
+
+    const copyToClipboard = () => {
+        const url = `${window.location.origin}/patient-portal/${token}`;
+        navigator.clipboard.writeText(url);
+        alert('Lien copié dans le presse-papier !');
     };
 
     const handleSendReminder = async (screen, itemId, templateKey) => {
@@ -115,6 +139,40 @@ export default function PatientPathwayTracker() {
                 <p style={{ color: 'var(--color-gray-600)' }}>
                     Patient: {patient.name} • Intervention: {patient.date}
                 </p>
+
+                <div style={{ display: 'flex', gap: 'var(--spacing-3)', marginTop: 'var(--spacing-4)' }}>
+                    {token ? (
+                        <>
+                            <a
+                                href={`/patient-portal/${token}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="btn btn-secondary btn-sm"
+                                style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)' }}
+                            >
+                                <ExternalLink size={16} />
+                                Voir le Portail Patient
+                            </a>
+                            <button
+                                onClick={copyToClipboard}
+                                className="btn btn-secondary btn-sm"
+                                style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)' }}
+                            >
+                                <Copy size={16} />
+                                Copier le lien
+                            </button>
+                        </>
+                    ) : (
+                        <button
+                            onClick={handleGenerateToken}
+                            className="btn btn-secondary btn-sm"
+                            style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)' }}
+                        >
+                            <ShieldCheck size={16} />
+                            Générer un lien d'accès
+                        </button>
+                    )}
+                </div>
             </div>
 
             {/* Global Status */}
