@@ -30,7 +30,18 @@ export async function sendSMS(templateKey, to, variables, metadata = {}) {
                 'Authorization': `Bearer ${D7_API_TOKEN}`
             },
             body: JSON.stringify({
-                messages: [{ destinations: [formattedPhone], content: message, source: D7_SENDER_ID }]
+                messages: [
+                    {
+                        channel: 'sms',
+                        recipients: [formattedPhone],
+                        content: message,
+                        msg_type: 'text',
+                        data_coding: 'text'
+                    }
+                ],
+                message_globals: {
+                    originator: D7_SENDER_ID
+                }
             })
         });
 
