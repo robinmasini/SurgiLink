@@ -162,9 +162,9 @@ CREATE POLICY "Users can view their own pathway responses" ON public.pathway_res
 CREATE POLICY "Users can insert their own pathway responses" ON public.pathway_responses FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
 CREATE POLICY "Users can update their own pathway responses" ON public.pathway_responses FOR UPDATE TO authenticated USING (auth.uid() = user_id);
 CREATE POLICY "Portal: Patients can manage responses via token" ON public.pathway_responses FOR ALL TO anon USING (
-    EXISTS (SELECT 1 FROM public.patient_review_tokens WHERE patient_id = pathway_responses.patient_id AND is_active = true AND (expires_at IS NULL OR expires_at > NOW()))
+    patient_id IN (SELECT patient_id FROM public.patient_review_tokens WHERE is_active = true AND (expires_at IS NULL OR expires_at > NOW()))
 ) WITH CHECK (
-    EXISTS (SELECT 1 FROM public.patient_review_tokens WHERE patient_id = pathway_responses.patient_id AND is_active = true AND (expires_at IS NULL OR expires_at > NOW()))
+    patient_id IN (SELECT patient_id FROM public.patient_review_tokens WHERE is_active = true AND (expires_at IS NULL OR expires_at > NOW()))
 );
 
 -- SMS Logs
