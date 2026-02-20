@@ -189,60 +189,45 @@ export default function Patients() {
                 {!isLoading && !error && (
                     <div className="grid-3">
                         {filteredPatients.length > 0 ? filteredPatients.map((patient) => (
-                            <div key={patient.id} className="card" style={{ cursor: 'pointer', position: 'relative' }} onClick={() => navigate(`/patient/${patient.id}`)}>
-                                <button
-                                    onClick={(e) => handleEditClick(e, patient)}
-                                    className="btn btn-secondary"
-                                    style={{
-                                        position: 'absolute',
-                                        top: 'var(--spacing-3)',
-                                        right: 'var(--spacing-3)',
-                                        padding: 'var(--spacing-2)',
-                                        minWidth: 'auto',
-                                        border: '1px solid var(--color-gray-200)',
-                                        background: 'white',
-                                        zIndex: 1
-                                    }}
-                                    title="Modifier le patient"
-                                >
-                                    <Edit2 size={16} />
-                                </button>
-                                <button
-                                    onClick={(e) => handleDeletePatient(e, patient.id, patient.name)}
-                                    className="btn btn-secondary btn-hover-danger"
-                                    style={{
-                                        position: 'absolute',
-                                        top: 'var(--spacing-3)',
-                                        right: 'calc(var(--spacing-3) + 40px)',
-                                        padding: 'var(--spacing-2)',
-                                        minWidth: 'auto',
-                                        border: '1px solid var(--color-gray-200)',
-                                        background: 'white',
-                                        zIndex: 1
-                                    }}
-                                    title="Supprimer le patient"
-                                >
-                                    <Trash2 size={16} />
-                                </button>
-
-                                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-4)', marginBottom: 'var(--spacing-4)' }}>
+                            <div
+                                key={patient.id}
+                                className="card glass-effect animate-scale"
+                                style={{
+                                    cursor: 'pointer',
+                                    padding: 'var(--spacing-5)',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    transition: 'all 0.3s ease',
+                                    height: '100%'
+                                }}
+                                onClick={() => navigate(`/patient/${patient.id}`)}
+                            >
+                                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--spacing-4)', marginBottom: 'var(--spacing-4)' }}>
                                     <div style={{
-                                        width: '56px',
-                                        height: '56px',
+                                        width: '48px',
+                                        height: '48px',
                                         borderRadius: '50%',
                                         background: 'linear-gradient(135deg, var(--color-primary-100), var(--color-primary-200))',
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
-                                        fontWeight: 'var(--font-weight-semibold)',
+                                        fontWeight: 'var(--font-weight-black)',
                                         color: 'var(--color-primary-600)',
-                                        fontSize: 'var(--font-size-lg)'
+                                        fontSize: 'var(--font-size-md)',
+                                        flexShrink: 0
                                     }}>
                                         {patient.name.split(' ').map(n => n[0]).join('')}
                                     </div>
-                                    <div style={{ flex: 1 }}>
-                                        <h4 style={{ marginBottom: 'var(--spacing-1)' }}>{patient.name}</h4>
-                                        <span style={{ ...getDaysStyle(patient.daysUntil), fontSize: 'var(--font-size-sm)' }}>{patient.daysUntil} • {patient.operation}</span>
+                                    <div style={{ flex: 1, minWidth: 0 }}>
+                                        <h4 style={{
+                                            marginBottom: 'var(--spacing-1)',
+                                            fontSize: 'var(--font-size-lg)',
+                                            fontWeight: 'var(--font-weight-black)',
+                                            whiteSpace: 'nowrap',
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis'
+                                        }}>{patient.name}</h4>
+                                        <div style={{ ...getDaysStyle(patient.daysUntil), fontSize: 'var(--font-size-xs)' }}>{patient.daysUntil} • {patient.operation}</div>
                                     </div>
                                 </div>
 
@@ -251,15 +236,48 @@ export default function Patients() {
                                 </div>
 
                                 <div style={{
-                                    padding: 'var(--spacing-3)',
+                                    padding: 'var(--spacing-4)',
                                     background: 'var(--color-gray-50)',
                                     borderRadius: 'var(--radius-lg)',
                                     fontSize: 'var(--font-size-sm)',
-                                    color: 'var(--color-gray-600)'
+                                    color: 'var(--color-gray-600)',
+                                    flex: 1,
+                                    marginBottom: 'var(--spacing-4)'
                                 }}>
-                                    <div style={{ marginBottom: 'var(--spacing-2)' }}>📅 {patient.date}</div>
-                                    <div style={{ marginBottom: 'var(--spacing-2)' }}>📱 {patient.phone}</div>
-                                    <div>✉️ {patient.email}</div>
+                                    <div style={{ marginBottom: 'var(--spacing-2)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        📅 {patient.date}
+                                    </div>
+                                    <div style={{ marginBottom: 'var(--spacing-2)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        📱 {patient.phone}
+                                    </div>
+                                    <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        ✉️ {patient.email}
+                                    </div>
+                                </div>
+
+                                <div style={{
+                                    display: 'flex',
+                                    gap: 'var(--spacing-2)',
+                                    borderTop: '1px solid var(--color-gray-100)',
+                                    paddingTop: 'var(--spacing-4)',
+                                    marginTop: 'auto'
+                                }}>
+                                    <button
+                                        onClick={(e) => handleEditClick(e, patient)}
+                                        className="btn btn-secondary btn-sm"
+                                        style={{ flex: 1, height: '36px' }}
+                                    >
+                                        <Edit2 size={14} style={{ marginRight: '6px' }} />
+                                        Modifier
+                                    </button>
+                                    <button
+                                        onClick={(e) => handleDeletePatient(e, patient.id, patient.name)}
+                                        className="btn btn-secondary btn-sm btn-hover-danger"
+                                        style={{ width: '36px', height: '36px', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                        title="Supprimer"
+                                    >
+                                        <Trash2 size={14} />
+                                    </button>
                                 </div>
                             </div>
                         )) : (
