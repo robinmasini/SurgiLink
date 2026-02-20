@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Plus, X, User, Clipboard, Mail, Phone } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import { scheduleTimeBasedReminders } from '../services/reminderService';
+import { scheduleTimeBasedReminders, sendManualReminder } from '../services/reminderService';
+import { generatePatientToken } from '../services/tokenService';
 
 export default function AddPatientModal({ isOpen, onClose, onPatientAdded }) {
     const [formData, setFormData] = useState({
@@ -53,13 +54,30 @@ export default function AddPatientModal({ isOpen, onClose, onPatientAdded }) {
             } else {
                 const newPatient = data[0];
 
-                // Schedule automated reminders (J-7, J-2, J-1)
+                // 1. Generate Token Immediately
+                const tokenRes = await generatePatientToken(newPatient.id);
+                const token = tokenRes.success ? tokenRes.token : null;
+
+                // 2. Schedule automated reminders (J-7, J-2, J-1)
                 if (newPatient.date) {
-                    await scheduleTimeBasedReminders(newPatient.id, new Date(newPatient.date));
+                    const surgeryDate = new Date(newPatient.date);
+                    await scheduleTimeBasedReminders(newPatient.id, surgeryDate);
+
+                    // 3. Immediate J-7 Send if surgery is within 7 days
+                    const daysUntil = Math.ceil((surgeryDate - new Date()) / (1000 * 60 * 60 * 24));
+                    if (daysUntil <= 7) {
+                        await sendManualReminder(
+                            newPatient.id,
+                            'J7',
+                            null,
+                            'j7_reminder',
+                            { ...newPatient, token }
+                        );
+                    }
                 }
 
                 alert(`Patient ${formData.name} enregistré avec succès !`);
-                if (onPatientAdded) onPatientAdded(newPatient);
+                if (onPatientAdded) onPatientAdded({ ...newPatient, token });
                 onClose();
                 setFormData({
                     name: '',

@@ -5,7 +5,7 @@ export const smsTemplates = {
     // J-7 General Reminder
     j7_reminder: {
         name: "J-7 Checklist Reminder",
-        message: "Bonjour {first_name}, votre intervention est prévue le {procedure_date}. Pensez à compléter votre checklist J-7 : {checklist_link}. {clinic_name}",
+        message: "Bonjour {first_name}, complétez votre checklist J-7 avant votre opération du {procedure_date} ici : {checklist_link}. {clinic_name}",
         variables: ['first_name', 'procedure_date', 'checklist_link', 'clinic_name']
     },
 
