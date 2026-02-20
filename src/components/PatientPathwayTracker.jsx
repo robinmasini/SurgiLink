@@ -86,7 +86,7 @@ export default function PatientPathwayTracker() {
             screen,
             itemId,
             templateKey,
-            patient
+            { ...patient, token }
         );
 
         if (result.success) {
@@ -189,12 +189,27 @@ export default function PatientPathwayTracker() {
                             padding: 'var(--spacing-4)',
                             border: '1px solid var(--color-gray-300)',
                             borderRadius: 'var(--border-radius-lg)',
-                            background: 'white'
+                            background: 'white',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: 'var(--spacing-3)'
                         }}
                     >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)', marginBottom: 'var(--spacing-3)' }}>
-                            {getStatusIcon(status[screen])}
-                            <span style={{ fontWeight: 'var(--font-weight-semibold)' }}>{screen}</span>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)' }}>
+                                {getStatusIcon(status[screen])}
+                                <span style={{ fontWeight: 'var(--font-weight-semibold)' }}>{screen}</span>
+                            </div>
+                            <button
+                                onClick={() => handleSendReminder(screen, null, `${screen.toLowerCase()}_reminder`)}
+                                disabled={sending === `${screen}_null`}
+                                className="btn btn-secondary btn-sm"
+                                style={{ padding: '4px 8px', fontSize: 'var(--font-size-xs)' }}
+                                title={`Envoyer le SMS général ${screen}`}
+                            >
+                                {sending === `${screen}_null` ? <Loader size={12} className="animate-spin" /> : <Send size={12} />}
+                                <span style={{ marginLeft: '4px' }}>SMS {screen}</span>
+                            </button>
                         </div>
                         <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-600)' }}>
                             {getStatusText(status[screen])}

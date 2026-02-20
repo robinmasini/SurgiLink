@@ -145,8 +145,8 @@ export async function processPendingReminders() {
  */
 export async function sendManualReminder(patientId, screen, itemId, templateKey, patient) {
     try {
-        // Check anti-spam
-        const canSend = await canSendReminder(patientId, itemId, 24, 3);
+        // Check anti-spam - use screen if itemId is null
+        const canSend = await canSendReminder(patientId, itemId || screen, 24, 3);
 
         if (!canSend.canSend) {
             return {
@@ -162,10 +162,10 @@ export async function sendManualReminder(patientId, screen, itemId, templateKey,
             procedure_date: patient.date || 'bientôt',
             arrival_time: patient.arrival_time || '07:30',
             clinic_name: 'SurgiLink',
-            clinic_phone: '01 XX XX XX XX',
-            checklist_link: `https://surgilink.eu/patient/pathway/${screen.toLowerCase()}/${patientId}`,
-            consignes_link: `https://surgilink.eu/patient/pathway/${screen.toLowerCase()}/${patientId}`,
-            item_name: itemId.replace(/_/g, ' ')
+            clinic_phone: '01 44 44 44 44',
+            checklist_link: `https://surgilink.eu/patient-portal/${patient.token || ''}`,
+            consignes_link: `https://surgilink.eu/patient-portal/${patient.token || ''}`,
+            item_name: itemId ? itemId.replace(/_/g, ' ') : ''
         };
 
         // Send SMS

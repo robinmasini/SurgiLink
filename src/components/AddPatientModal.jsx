@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Plus, X, User, Clipboard, Mail, Phone } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { scheduleTimeBasedReminders } from '../services/reminderService';
 
 export default function AddPatientModal({ isOpen, onClose, onPatientAdded }) {
     const [formData, setFormData] = useState({
@@ -48,12 +49,17 @@ export default function AddPatientModal({ isOpen, onClose, onPatientAdded }) {
 
             if (error) {
                 console.error('Error saving patient:', error);
-                // Fallback to local state update if table doesn't exist yet (for demo/dev)
-                // In a real app, we'd handle the error properly
                 alert(`Erreur lors de l'enregistrement : ${error.message}`);
             } else {
+                const newPatient = data[0];
+
+                // Schedule automated reminders (J-7, J-2, J-1)
+                if (newPatient.date) {
+                    await scheduleTimeBasedReminders(newPatient.id, new Date(newPatient.date));
+                }
+
                 alert(`Patient ${formData.name} enregistré avec succès !`);
-                if (onPatientAdded) onPatientAdded(data[0]);
+                if (onPatientAdded) onPatientAdded(newPatient);
                 onClose();
                 setFormData({
                     name: '',
