@@ -61,18 +61,23 @@ export default function AddPatientModal({ isOpen, onClose, onPatientAdded }) {
                 // 2. Schedule automated reminders (J-7, J-2, J-1)
                 if (newPatient.date) {
                     const surgeryDate = new Date(newPatient.date);
+                    console.log('Patient créé, planification des rappels pour:', surgeryDate);
                     await scheduleTimeBasedReminders(newPatient.id, surgeryDate);
 
                     // 3. Immediate J-7 Send if surgery is within 7 days
                     const daysUntil = Math.ceil((surgeryDate - new Date()) / (1000 * 60 * 60 * 24));
+                    console.log('Jours avant intervention:', daysUntil);
+
                     if (daysUntil <= 7) {
-                        await sendManualReminder(
+                        console.log('Déclenchement immédiat du SMS J-7...');
+                        const smsRes = await sendManualReminder(
                             newPatient.id,
                             'J7',
                             null,
                             'j7_reminder',
                             { ...newPatient, token }
                         );
+                        console.log('Résultat SMS immédiat:', smsRes);
                     }
                 }
 

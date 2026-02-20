@@ -145,10 +145,12 @@ export async function processPendingReminders() {
  */
 export async function sendManualReminder(patientId, screen, itemId, templateKey, patient) {
     try {
+        console.log(`[sendManualReminder] Vérification anti-spam pour Patient:${patientId}, Item:${itemId || screen}`);
         // Check anti-spam - use screen if itemId is null
         const canSend = await canSendReminder(patientId, itemId || screen, 24, 3);
 
         if (!canSend.canSend) {
+            console.warn(`[sendManualReminder] Anti-spam bloqué: ${canSend.reason}`);
             return {
                 success: false,
                 canSend: false,
@@ -169,6 +171,7 @@ export async function sendManualReminder(patientId, screen, itemId, templateKey,
         };
 
         // Send SMS
+        console.log(`[sendManualReminder] Appel de sendSMS pour ${patient.phone}...`);
         const result = await sendSMS(
             templateKey,
             patient.phone || '',
@@ -179,6 +182,7 @@ export async function sendManualReminder(patientId, screen, itemId, templateKey,
                 linkedItemId: itemId
             }
         );
+        console.log(`[sendManualReminder] Résultat sendSMS:`, result);
 
         return {
             success: result.success,

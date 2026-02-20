@@ -20,7 +20,11 @@ export async function sendSMS(templateKey, to, variables, metadata = {}) {
             metadata: { variables, ...metadata }
         };
 
-        if (!D7_API_TOKEN) throw new Error('D7Networks API Token not configured.');
+        console.log(`[sendSMS] Tentative d'envoi à D7: ${formattedPhone}`);
+        if (!D7_API_TOKEN) {
+            console.error('[sendSMS] Token D7 manquant !');
+            throw new Error('D7Networks API Token not configured.');
+        }
 
         const response = await fetch('https://api.d7networks.com/messages/v1/send', {
             method: 'POST',
@@ -46,16 +50,23 @@ export async function sendSMS(templateKey, to, variables, metadata = {}) {
         });
 
         const d7Data = await response.json();
+        console.log(`[sendSMS] Réponse D7 (Statut ${response.status}):`, d7Data);
         if (!response.ok) throw new Error(d7Data.message || d7Data.detail || 'D7Networks API error');
 
         const messageId = d7Data.request_id || `D7_${Date.now()}`;
 
-        await supabase.from('sms_logs').insert({
+        console.log(`[sendSMS] Insertion du log de succès dans Supabase...`);
+        const { error: dbError } = await supabase.from('sms_logs').insert({
             ...logEntry,
             status: 'sent',
             sent_at: new Date().toISOString(),
             provider_message_id: messageId
         });
+
+        if (dbError) {
+            console.error(`[sendSMS] ERREUR DB lors du log de succès:`, dbError);
+            throw dbError;
+        }
 
         return { success: true, messageId };
     } catch (error) {
@@ -71,7 +82,9 @@ export async function sendSMS(templateKey, to, variables, metadata = {}) {
                 error_message: error.message,
                 metadata
             });
-        } catch (dbError) { }
+        } catch (dbError) {
+            console.error(`[sendSMS] ERREUR DB lors du log d'échec:`, dbError);
+        }
         return { success: false, error: error.message };
     }
 }
