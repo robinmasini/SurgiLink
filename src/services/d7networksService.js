@@ -70,7 +70,8 @@ export async function sendSMS(templateKey, to, variables, metadata = {}) {
 
         return { success: true, messageId };
     } catch (error) {
-        console.error('D7Networks SMS send error:', error);
+        const errorMessage = error?.message || (typeof error === 'object' ? JSON.stringify(error) : String(error));
+        console.error('D7Networks SMS send error:', errorMessage);
         try {
             await supabase.from('sms_logs').insert({
                 patient_id: metadata.patientId,
@@ -79,13 +80,13 @@ export async function sendSMS(templateKey, to, variables, metadata = {}) {
                 screen: metadata.screen || null,
                 phone_number: to,
                 status: 'failed',
-                error_message: error.message,
+                error_message: errorMessage,
                 metadata
             });
         } catch (dbError) {
             console.error(`[sendSMS] ERREUR DB lors du log d'échec:`, dbError);
         }
-        return { success: false, error: error.message };
+        return { success: false, error: errorMessage };
     }
 }
 
