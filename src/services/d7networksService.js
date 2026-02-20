@@ -70,9 +70,19 @@ export async function sendSMS(templateKey, to, variables, metadata = {}) {
 
         return { success: true, messageId };
     } catch (error) {
-        const errorMessage = error?.message || (typeof error === 'object' ? JSON.stringify(error) : String(error));
+        let errorMessage = 'Unknown error';
+        if (error instanceof Error) {
+            errorMessage = error.message;
+        } else if (typeof error === 'object' && error !== null) {
+            errorMessage = JSON.stringify(error);
+        } else {
+            errorMessage = String(error);
+        }
+
         console.error('D7Networks SMS send error:', errorMessage);
+
         try {
+            // Attempt to log failure to DB
             await supabase.from('sms_logs').insert({
                 patient_id: metadata.patientId,
                 template_key: templateKey,
@@ -84,8 +94,9 @@ export async function sendSMS(templateKey, to, variables, metadata = {}) {
                 metadata
             });
         } catch (dbError) {
-            console.error(`[sendSMS] ERREUR DB lors du log d'échec:`, dbError);
+            console.error(`[sendSMS] CRITICAL: Impossible de logger l'échec dans Supabase:`, dbError);
         }
+
         return { success: false, error: errorMessage };
     }
 }
