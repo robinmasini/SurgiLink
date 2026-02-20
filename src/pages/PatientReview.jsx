@@ -387,6 +387,14 @@ export default function PatientReview() {
                                         <button onClick={() => setIsEditModalOpen(true)} style={{ background: 'transparent', border: 'none', color: 'var(--color-gray-400)', cursor: 'pointer' }}>
                                             <Edit2 size={18} />
                                         </button>
+                                        <button
+                                            onClick={handleDeletePatient}
+                                            style={{ background: 'transparent', border: 'none', color: 'var(--color-gray-400)', cursor: 'pointer' }}
+                                            className="btn-hover-danger"
+                                            title="Supprimer le patient"
+                                        >
+                                            <Trash2 size={18} />
+                                        </button>
                                     </div>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-4)', color: 'var(--color-gray-500)', fontSize: 'var(--font-size-md)' }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-1)' }}>

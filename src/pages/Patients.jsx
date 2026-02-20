@@ -4,7 +4,7 @@ import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import AddPatientModal from '../components/AddPatientModal';
 import EditPatientModal from '../components/EditPatientModal';
-import { Users, Search, Filter, Plus, Edit2 } from 'lucide-react';
+import { Users, Search, Filter, Plus, Edit2, Trash2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { calculateDaysUntilSurgery } from '../utils/dateUtils';
 
@@ -93,6 +93,28 @@ export default function Patients() {
         e.stopPropagation(); // Prevent navigation to patient details
         setSelectedPatient(patient);
         setIsEditModalOpen(true);
+    };
+
+    const handleDeletePatient = async (e, patientId, patientName) => {
+        e.stopPropagation(); // Prevent navigation
+        if (!confirm(`Supprimer le patient ${patientName} ? Cette action supprimera également tout son historique et ses documents.`)) {
+            return;
+        }
+
+        try {
+            const { error } = await supabase
+                .from('patients')
+                .delete()
+                .eq('id', patientId);
+
+            if (error) throw error;
+
+            alert('Patient supprimé');
+            setPatientsList(prev => prev.filter(p => p.id !== patientId));
+        } catch (err) {
+            console.error('Error deleting patient:', err);
+            alert(`Erreur: ${err.message}`);
+        }
     };
 
     const filteredPatients = patientsList.filter(p =>
@@ -184,6 +206,23 @@ export default function Patients() {
                                     title="Modifier le patient"
                                 >
                                     <Edit2 size={16} />
+                                </button>
+                                <button
+                                    onClick={(e) => handleDeletePatient(e, patient.id, patient.name)}
+                                    className="btn btn-secondary btn-hover-danger"
+                                    style={{
+                                        position: 'absolute',
+                                        top: 'var(--spacing-3)',
+                                        right: 'calc(var(--spacing-3) + 40px)',
+                                        padding: 'var(--spacing-2)',
+                                        minWidth: 'auto',
+                                        border: '1px solid var(--color-gray-200)',
+                                        background: 'white',
+                                        zIndex: 1
+                                    }}
+                                    title="Supprimer le patient"
+                                >
+                                    <Trash2 size={16} />
                                 </button>
 
                                 <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-4)', marginBottom: 'var(--spacing-4)' }}>
