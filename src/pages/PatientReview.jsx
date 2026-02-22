@@ -47,7 +47,7 @@ export default function PatientReview() {
         J1: {},
         J2_Satisfaction: {}
     });
-    const [riskStatus, setRiskStatus] = useState('SAIN'); // SAIN, VIGILANCE, CRITIQUE
+    const [riskStatus, setRiskStatus] = useState('NORMAL'); // NORMAL, VIGILANCE, URGENT
     const [activeTab, setActiveTab] = useState('overview'); // Not used but kept for logic if needed
     const [documents, setDocuments] = useState([]);
     const [isDragging, setIsDragging] = useState(false);
@@ -106,9 +106,9 @@ export default function PatientReview() {
             const hasHardRisk = riskJ7.hard.length > 0 || riskJ2.hard.length > 0 || riskJ1.hard.length > 0;
             const hasSoftRisk = riskJ7.soft.length > 0 || riskJ2.soft.length > 0 || riskJ1.soft.length > 0;
 
-            if (hasHardRisk) setRiskStatus('CRITIQUE');
+            if (hasHardRisk) setRiskStatus('URGENT');
             else if (hasSoftRisk) setRiskStatus('VIGILANCE');
-            else setRiskStatus('SAIN');
+            else setRiskStatus('NORMAL');
 
             // Calculate display progress
             let progress = 0;
@@ -345,8 +345,8 @@ export default function PatientReview() {
                         <div className="card glass-effect" style={{ padding: 'var(--spacing-8)', position: 'relative' }}>
                             <div style={{ position: 'absolute', top: 'var(--spacing-6)', right: 'var(--spacing-8)' }}>
                                 <div style={{
-                                    background: riskStatus === 'CRITIQUE' ? 'var(--color-danger-50)' : riskStatus === 'VIGILANCE' ? 'var(--color-warning-50)' : 'var(--color-success-50)',
-                                    color: riskStatus === 'CRITIQUE' ? 'var(--color-danger-600)' : riskStatus === 'VIGILANCE' ? 'var(--color-warning-600)' : 'var(--color-success-600)',
+                                    background: riskStatus === 'URGENT' ? 'var(--color-danger-50)' : riskStatus === 'VIGILANCE' ? 'var(--color-warning-50)' : 'var(--color-success-50)',
+                                    color: riskStatus === 'URGENT' ? 'var(--color-danger-600)' : riskStatus === 'VIGILANCE' ? 'var(--color-warning-600)' : 'var(--color-success-600)',
                                     padding: '8px 20px',
                                     borderRadius: '100px',
                                     display: 'flex',
@@ -354,7 +354,7 @@ export default function PatientReview() {
                                     gap: 'var(--spacing-2)',
                                     fontWeight: 'var(--font-weight-bold)',
                                     fontSize: 'var(--font-size-sm)',
-                                    border: `1px solid ${riskStatus === 'CRITIQUE' ? 'var(--color-danger-100)' : riskStatus === 'VIGILANCE' ? 'var(--color-warning-100)' : 'var(--color-success-100)'}`
+                                    border: `1px solid ${riskStatus === 'URGENT' ? 'var(--color-danger-100)' : riskStatus === 'VIGILANCE' ? 'var(--color-warning-100)' : 'var(--color-success-100)'}`
                                 }}>
                                     <div style={{
                                         width: '8px',
