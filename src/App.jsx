@@ -18,6 +18,7 @@ import PatientJ1 from './pages/PatientJ1';
 import PatientPathwayTracker from './components/PatientPathwayTracker';
 import PatientPortal from './pages/PatientPortal';
 import ProtectedRoute from './components/ProtectedRoute';
+import PatientTokenRoute from './components/PatientTokenRoute';
 import './index.css';
 
 // Force deploy trigger - 2026-02-02
@@ -52,14 +53,14 @@ function App() {
         <Route path="/staff/pathway/:patientId" element={<ProtectedRoute><PatientPathwayTracker /></ProtectedRoute>} />
 
         {/* Patient Portal Routes - Token-based access (no authentication required) */}
-        <Route path="/patient-portal/:token" element={<PatientPortal />} />
-        <Route path="/patient-portal/:token/j7" element={<PatientJ7 />} />
-        <Route path="/patient-portal/:token/j3" element={<PatientJ3 />} />
-        <Route path="/patient-portal/:token/j2" element={<PatientJ2 />} />
-        <Route path="/patient-portal/:token/j1-preop" element={<PatientJ1PreOp />} />
-        <Route path="/patient-portal/:token/j0" element={<PatientJ0 />} />
-        <Route path="/patient-portal/:token/j1" element={<PatientJ1 />} />
-        <Route path="/patient-portal/:token/success" element={<PatientSuccess />} />
+        <Route path="/patient-portal/:token" element={<PatientTokenRoute><PatientPortal /></PatientTokenRoute>} />
+        <Route path="/patient-portal/:token/j7" element={<PatientTokenRoute><PatientJ7 /></PatientTokenRoute>} />
+        <Route path="/patient-portal/:token/j3" element={<PatientTokenRoute><PatientJ3 /></PatientTokenRoute>} />
+        <Route path="/patient-portal/:token/j2" element={<PatientTokenRoute><PatientJ2 /></PatientTokenRoute>} />
+        <Route path="/patient-portal/:token/j1-preop" element={<PatientTokenRoute><PatientJ1PreOp /></PatientTokenRoute>} />
+        <Route path="/patient-portal/:token/j0" element={<PatientTokenRoute><PatientJ0 /></PatientTokenRoute>} />
+        <Route path="/patient-portal/:token/j1" element={<PatientTokenRoute><PatientJ1 /></PatientTokenRoute>} />
+        <Route path="/patient-portal/:token/success" element={<PatientTokenRoute><PatientSuccess /></PatientTokenRoute>} />
       </Routes>
     </Router>
   );

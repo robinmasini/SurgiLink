@@ -8,10 +8,18 @@ import QuestionRenderer from '../components/pathway/QuestionRenderer';
 import AlertBanner from '../components/pathway/AlertBanner';
 import { usePatientId } from '../hooks/usePatientId';
 
-export default function PatientJ7() {
+export default function PatientJ7({ patient: propPatient, token: propToken }) {
     const navigate = useNavigate();
-    const { token } = useParams();
-    const { patientId: resolvedPatientId, loading: loadingPatientId, error: patientIdError, isTokenMode } = usePatientId();
+    const { token: urlToken } = useParams();
+    const token = propToken || urlToken;
+    const { patientId: hookPatientId, loading: hookLoading, error: hookError, isTokenMode: hookIsTokenMode } = usePatientId();
+
+    // Resolve patient ID and mode from either props or hook
+    const resolvedPatientId = propPatient?.id || hookPatientId;
+    const loadingPatientId = !propPatient && hookLoading;
+    const patientIdError = !propPatient && hookError;
+    const isTokenMode = propPatient ? true : hookIsTokenMode;
+
     const [responses, setResponses] = useState({});
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);

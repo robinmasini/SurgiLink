@@ -17,34 +17,53 @@ import {
 import ClinicAppointmentCard from '../components/ClinicAppointmentCard';
 import PatientTraceability from '../components/PatientTraceability';
 
-export default function PatientPortal() {
+export default function PatientPortal({ patient: initialPatient }) {
     const { token } = useParams();
     const navigate = useNavigate();
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(!initialPatient);
     const [error, setError] = useState(null);
-    const [patient, setPatient] = useState(null);
-    const [activeTab, setActiveTab] = useState('info'); // 'info', 'questionnaires', 'tracker'
+    const [patient, setPatient] = useState(initialPatient);
     const [medicalHistory, setMedicalHistory] = useState([]);
 
     useEffect(() => {
-        loadPatientData();
-    }, [token]);
+        if (initialPatient) {
+            setPatient(initialPatient);
+            loadMedicalHistory(initialPatient.id);
+        } else {
+            loadPatientData();
+        }
+    }, [initialPatient, token]);
+
+    const loadMedicalHistory = async (patientId) => {
+        try {
+            const { data: historyData, error: historyError } = await supabase
+                .from('medical_history')
+                .select('*')
+                .eq('patient_id', patientId)
+                .order('date', { ascending: false });
+
+            if (!historyError) {
+                setMedicalHistory(historyData || []);
+            }
+        } catch (err) {
+            console.error('Error loading history:', err);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const loadPatientData = async () => {
         setLoading(true);
         setError(null);
 
         try {
-            // Validate token and get patient ID
             const validation = await validateToken(token);
-
             if (!validation.valid) {
                 setError(validation.error || 'Lien invalid');
                 setLoading(false);
                 return;
             }
 
-            // Load patient data
             const { data: patientData, error: patientError } = await supabase
                 .from('patients')
                 .select('*')
@@ -53,22 +72,10 @@ export default function PatientPortal() {
 
             if (patientError) throw patientError;
             setPatient(patientData);
-
-            // Load medical history
-            const { data: historyData, error: historyError } = await supabase
-                .from('medical_history')
-                .select('*')
-                .eq('patient_id', validation.patientId)
-                .order('date', { ascending: false });
-
-            if (!historyError) {
-                setMedicalHistory(historyData || []);
-            }
-
+            loadMedicalHistory(patientData.id);
         } catch (err) {
             console.error('Error loading patient data:', err);
             setError('Erreur lors du chargement de vos données');
-        } finally {
             setLoading(false);
         }
     };
