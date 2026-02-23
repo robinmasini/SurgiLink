@@ -75,10 +75,13 @@ export default function PatientPortal({ patient: initialPatient }) {
             loadMedicalHistory(patientData.id);
 
             // Update last_consulted_at proof
-            await supabase
+            const { error: trackError } = await supabase
                 .from('patients')
                 .update({ last_consulted_at: new Date().toISOString() })
                 .eq('id', patientData.id);
+
+            if (trackError) console.error('Consultation tracking error:', trackError);
+            else console.log('Consultation tracked successfully');
 
         } catch (err) {
             console.error('Error loading patient data:', err);
