@@ -388,6 +388,15 @@ a:hover {
   color: var(--color-primary-600);
 }
 
+.badge-gold {
+  background: linear-gradient(135deg, #FFD700, #DAA520);
+  color: #5C4033;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 4px rgba(218, 165, 32, 0.3);
+}
+
 /* Input Styles */
 .input {
   width: 100%;

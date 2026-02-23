@@ -73,6 +73,9 @@ export default function Sidebar() {
                     <div className="sidebar-profile-info">
                         <div className="sidebar-profile-name">DESOUCHES Christophe</div>
                         <div className="sidebar-profile-title">Praticien</div>
+                        <div className="badge badge-gold" style={{ fontSize: '9px', padding: '2px 8px', marginTop: '4px', width: 'fit-content' }}>
+                            Admin PRO
+                        </div>
                         <div className="sidebar-profile-specialty">
                             <span className="sidebar-profile-specialty-label">Corps de métier</span>
                             <span className="sidebar-profile-specialty-text">
