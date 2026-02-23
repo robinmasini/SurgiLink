@@ -73,6 +73,13 @@ export default function PatientPortal({ patient: initialPatient }) {
             if (patientError) throw patientError;
             setPatient(patientData);
             loadMedicalHistory(patientData.id);
+
+            // Update last_consulted_at proof
+            await supabase
+                .from('patients')
+                .update({ last_consulted_at: new Date().toISOString() })
+                .eq('id', patientData.id);
+
         } catch (err) {
             console.error('Error loading patient data:', err);
             setError('Erreur lors du chargement de vos données');

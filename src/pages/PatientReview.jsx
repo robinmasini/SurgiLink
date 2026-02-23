@@ -598,10 +598,25 @@ export default function PatientReview() {
                                     </div>
                                     <h3>Données Cliniques</h3>
                                 </div>
-                                <button className="btn btn-secondary btn-xs" style={{ color: 'var(--color-orange-600)', background: 'var(--color-orange-50)', border: 'none', padding: '6px 12px' }}>
-                                    <Edit2 size={14} style={{ marginRight: '6px' }} />
-                                    Corriger
-                                </button>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-4)' }}>
+                                    {patient.last_consulted_at && (
+                                        <div style={{
+                                            fontSize: 'var(--font-size-xs)',
+                                            color: 'var(--color-success-600)',
+                                            background: 'var(--color-success-50)',
+                                            padding: '4px 12px',
+                                            borderRadius: 'var(--radius-full)',
+                                            border: '1px solid var(--color-success-100)',
+                                            fontWeight: '500'
+                                        }}>
+                                            Consulté le {new Date(patient.last_consulted_at).toLocaleDateString('fr-FR')} à {new Date(patient.last_consulted_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })} par {patient.name}
+                                        </div>
+                                    )}
+                                    <button className="btn btn-secondary btn-xs" style={{ color: 'var(--color-orange-600)', background: 'var(--color-orange-50)', border: 'none', padding: '6px 12px' }}>
+                                        <Edit2 size={14} style={{ marginRight: '6px' }} />
+                                        Corriger
+                                    </button>
+                                </div>
                             </div>
 
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-8)' }}>
