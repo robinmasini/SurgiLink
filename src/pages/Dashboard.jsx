@@ -90,6 +90,25 @@ export default function Dashboard() {
                 <Header
                     title="Tableau de Bord"
                     subtitle="Vue d'ensemble de vos patients et indicateurs clés"
+                    actions={
+                        <button
+                            className="btn btn-secondary"
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 'var(--spacing-2)',
+                                background: 'white',
+                                color: 'var(--color-primary-600)',
+                                border: '1px solid var(--color-primary-100)',
+                                fontWeight: '600',
+                                boxShadow: 'var(--shadow-sm)'
+                            }}
+                            onClick={() => window.location.href = 'tel:#'}
+                        >
+                            <Phone size={18} />
+                            Appeler la Clinique
+                        </button>
+                    }
                 />
 
 
