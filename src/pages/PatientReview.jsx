@@ -765,6 +765,15 @@ export default function PatientReview() {
                                             Copier le lien
                                         </button>
                                         <button
+                                            onClick={() => window.open(`${window.location.origin}/patient-portal/${tokenData.token}`, '_blank')}
+                                            className="btn btn-secondary btn-sm"
+                                            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px 12px' }}
+                                            title="Ouvrir le lien"
+                                        >
+                                            <Eye size={16} />
+                                            Ouvrir
+                                        </button>
+                                        <button
                                             onClick={handleGenerateToken}
                                             disabled={isGeneratingToken}
                                             className="btn btn-secondary btn-sm"
