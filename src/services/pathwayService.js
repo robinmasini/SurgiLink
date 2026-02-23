@@ -36,10 +36,72 @@ export async function saveResponse(patientId, screen, itemId, response, complete
 
         if (error) throw error;
 
+        // Trigger global progress recalculation and sync
+        await calculateGlobalProgress(patientId);
+
         return { success: true, data };
     } catch (error) {
         console.error('Error saving pathway response:', error);
         return { success: false, error: error.message };
+    }
+}
+
+/**
+ * Calculate global progress across all protocol screens and sync with patients table
+ * @param {number} patientId - Patient ID
+ * @returns {Promise<number>} - Global progress percentage (0-100)
+ */
+export async function calculateGlobalProgress(patientId) {
+    try {
+        const screens = ['J7', 'J3', 'J2', 'J1_PreOp', 'J0', 'J1', 'J2_Satisfaction'];
+
+        // 1. Get all responses for this patient
+        const { data: responses, error: respError } = await supabase
+            .from('pathway_responses')
+            .select('*')
+            .eq('patient_id', patientId);
+
+        if (respError) throw respError;
+
+        // Create a map for quick lookup
+        const responseMap = {};
+        (responses || []).forEach(r => {
+            const key = `${r.screen}:${r.item_id}`;
+            responseMap[key] = r.response?.value;
+        });
+
+        // 2. Count total required items and completed items
+        let totalRequired = 0;
+        let totalCompleted = 0;
+
+        screens.forEach(screen => {
+            const items = getScreenItems(screen);
+            const requiredItems = items.filter(item => item.required !== false);
+
+            totalRequired += requiredItems.length;
+
+            requiredItems.forEach(item => {
+                const val = responseMap[`${screen}:${item.id}`];
+                if (val !== undefined && val !== null && val !== '') {
+                    totalCompleted += 1;
+                }
+            });
+        });
+
+        const progress = totalRequired > 0 ? Math.round((totalCompleted / totalRequired) * 100) : 0;
+
+        // 3. Update the patients table
+        const { error: updateError } = await supabase
+            .from('patients')
+            .update({ progress })
+            .eq('id', patientId);
+
+        if (updateError) throw updateError;
+
+        return progress;
+    } catch (error) {
+        console.error('Error calculating global progress:', error);
+        return 0;
     }
 }
 

@@ -110,15 +110,9 @@ export default function PatientReview() {
             else if (hasSoftRisk) setRiskStatus('VIGILANCE');
             else setRiskStatus('NORMAL');
 
-            // Calculate display progress
-            let progress = 0;
-            if (Object.keys(responsesJ7).length > 0) progress += 25;
-            if (Object.keys(responsesJ2).length > 0) progress += 25;
-            if (Object.keys(responsesJ1).length > 0) progress += 25;
-            // J+2 placeholder
             setPatient({
                 ...patientData,
-                displayProgress: progress
+                displayProgress: patientData.progress || 0
             });
 
             // Load documents
