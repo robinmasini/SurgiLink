@@ -103,7 +103,7 @@ export default function Dashboard() {
                                 fontWeight: '600',
                                 boxShadow: 'var(--shadow-sm)'
                             }}
-                            onClick={() => window.location.href = 'tel:#'}
+                            onClick={() => window.location.href = 'tel:0491550000'}
                         >
                             <Phone size={18} />
                             Appeler la Clinique
