@@ -78,23 +78,29 @@ export default function AddPatientModal({ isOpen, onClose, onPatientAdded }) {
                             { ...newPatient, token }
                         );
                         console.log('Résultat SMS immédiat:', smsRes);
-                    }
-                }
 
-                alert(`Patient ${formData.name} enregistré avec succès !`);
-                if (onPatientAdded) onPatientAdded({ ...newPatient, token });
-                onClose();
-                setFormData({
-                    name: '',
-                    operation: '',
-                    date: '',
-                    birthDate: '',
-                    phone: '',
-                    email: '',
-                    surgeonName: 'Christophe DESOUCHES',
-                    surgeryTime: '07:30',
-                    stayType: 'Ambulatoire'
-                });
+                        if (smsRes.success) {
+                            alert(`Patient ${formData.name} enregistré et SMS de bienvenue envoyé !`);
+                        } else {
+                            alert(`Patient enregistré mais le SMS n'a pas pu être envoyé : ${smsRes.error || 'Erreur inconnue'}`);
+                        }
+                    } else {
+                        alert(`Patient ${formData.name} enregistré avec succès ! (SMS planifié pour J-7)`);
+                    }
+                    if (onPatientAdded) onPatientAdded({ ...newPatient, token });
+                    onClose();
+                    setFormData({
+                        name: '',
+                        operation: '',
+                        date: '',
+                        birthDate: '',
+                        phone: '',
+                        email: '',
+                        surgeonName: 'Christophe DESOUCHES',
+                        surgeryTime: '07:30',
+                        stayType: 'Ambulatoire'
+                    });
+                }
             }
         } catch (err) {
             console.error('Unexpected error:', err);
