@@ -21,6 +21,8 @@ export default function AddPatientModal({ isOpen, onClose, onPatientAdded }) {
     if (!isOpen) return null;
 
     const handleSave = async () => {
+        console.log('--- DEBUG: handleSave START [v1.2] ---');
+        console.log('--- DEBUG: D7 Token Present:', !!import.meta.env.VITE_D7_API_TOKEN);
         if (!formData.name || !formData.operation) {
             alert('Veuillez remplir au moins le nom et l\'intervention.');
             return;
@@ -80,12 +82,12 @@ export default function AddPatientModal({ isOpen, onClose, onPatientAdded }) {
                         console.log('Résultat SMS immédiat:', smsRes);
 
                         if (smsRes.success) {
-                            alert(`Patient ${formData.name} enregistré et SMS de bienvenue envoyé !`);
+                            alert(`[v1.2] SUCCÈS : Patient ${formData.name} créé et SMS envoyé !`);
                         } else {
-                            alert(`Patient enregistré mais le SMS n'a pas pu être envoyé : ${smsRes.error || 'Erreur inconnue'}`);
+                            alert(`[v1.2] ERREUR SMS : ${smsRes.error || 'Détail inconnu'}`);
                         }
                     } else {
-                        alert(`Patient ${formData.name} enregistré avec succès ! (SMS planifié pour J-7)`);
+                        alert(`[v1.2] Patient ${formData.name} créé. SMS J-7 non déclenché car l'opération est dans ${daysUntil} jours.`);
                     }
                     if (onPatientAdded) onPatientAdded({ ...newPatient, token });
                     onClose();
