@@ -8,7 +8,10 @@ export async function sendSMS(templateKey, to, variables, metadata = {}) {
     try {
         if (!smsTemplates[templateKey]) throw new Error(`Invalid SMS template: ${templateKey}`);
         const message = interpolateTemplate(templateKey, variables);
-        const formattedPhone = to.startsWith('+') ? to : `+${to}`;
+
+        // Stricter phone formatting for D7 (D7 requires + prefix and NO spaces/dots/dashes)
+        let cleanedPhone = to.replace(/[\s\.\-\(\)]/g, '');
+        const formattedPhone = cleanedPhone.startsWith('+') ? cleanedPhone : `+${cleanedPhone}`;
 
         const logEntry = {
             patient_id: metadata.patientId,
@@ -20,9 +23,9 @@ export async function sendSMS(templateKey, to, variables, metadata = {}) {
             metadata: { variables, ...metadata }
         };
 
-        console.log(`[sendSMS] Tentative d'envoi à D7: ${formattedPhone}`);
+        console.log(`[sendSMS] Preparation: Template=${templateKey}, To=${formattedPhone}`);
         if (!D7_API_TOKEN) {
-            console.error('[sendSMS] Token D7 manquant !');
+            console.error('[sendSMS] CRITICAL: VITE_D7_API_TOKEN is missing in environment!');
             throw new Error('D7Networks API Token not configured.');
         }
 
@@ -50,8 +53,12 @@ export async function sendSMS(templateKey, to, variables, metadata = {}) {
         });
 
         const d7Data = await response.json();
-        console.log(`[sendSMS] Réponse D7 (Statut ${response.status}):`, d7Data);
-        if (!response.ok) throw new Error(d7Data.message || d7Data.detail || 'D7Networks API error');
+        console.log(`[sendSMS] D7 API Response (Status ${response.status}):`, d7Data);
+
+        if (!response.ok) {
+            const errorDetail = d7Data.message || d7Data.detail || JSON.stringify(d7Data);
+            throw new Error(`D7 API Error (${response.status}): ${errorDetail}`);
+        }
 
         const messageId = d7Data.request_id || `D7_${Date.now()}`;
 
