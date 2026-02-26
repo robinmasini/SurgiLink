@@ -30,6 +30,7 @@ import { calculateAge, formatDateFR } from '../utils/dateUtils';
 import { getPatientPathwayStatus, getResponses, calculateRiskFlags } from '../services/pathwayService';
 import { getDocuments, uploadDocument, deleteDocument, downloadDocument } from '../services/documentService';
 import { generatePatientToken, getPatientTokens, revokeToken } from '../services/tokenService';
+import { sendManualReminder } from '../services/reminderService';
 import LogoPremium from '../components/LogoPremium';
 import { Link as LinkIcon, Copy, RefreshCw, ShieldCheck } from 'lucide-react';
 
@@ -69,33 +70,6 @@ export default function PatientReview() {
             if (patientError) throw patientError;
             setPatient(patientData);
 
-            // Load medical history
-            const { data: historyData, error: historyError } = await supabase
-                .from('medical_history')
-                .select('*')
-                .eq('patient_id', id)
-                .order('date', { ascending: false });
-
-            if (historyError && historyError.code !== 'PGRST116') { // Ignore "not found" error
-                console.error('Error loading history:', historyError);
-            } else {
-                setMedicalHistory(historyData || []);
-            }
-            // Load clinical responses
-            const [responsesJ7, responsesJ2, responsesJ1, responsesSatisfaction] = await Promise.all([
-                getResponses(id, 'J7'),
-                getResponses(id, 'J2'),
-                getResponses(id, 'J1'),
-                getResponses(id, 'J2_Satisfaction')
-            ]);
-
-            setClinicalResponses({
-                J7: responsesJ7,
-                J2: responsesJ2,
-                J1: responsesJ1,
-                J2_Satisfaction: responsesSatisfaction
-            });
-
             // Calculate risk status
             const [riskJ7, riskJ2, riskJ1] = await Promise.all([
                 calculateRiskFlags(id, 'J7'),
@@ -115,6 +89,9 @@ export default function PatientReview() {
                 displayProgress: patientData.progress || 0
             });
 
+            // Load history (unified)
+            await loadHistoryData(id);
+
             // Load documents
             const docData = await getDocuments(parseInt(id));
             setDocuments(docData);
@@ -131,6 +108,54 @@ export default function PatientReview() {
         const tokens = await getPatientTokens(id);
         const activeToken = tokens.find(t => t.is_active);
         setTokenData(activeToken || null);
+    };
+
+    const loadHistoryData = async (patientId) => {
+        try {
+            // Load medical history
+            const { data: historyData, error: historyError } = await supabase
+                .from('medical_history')
+                .select('*')
+                .eq('patient_id', patientId)
+                .order('date', { ascending: false });
+
+            // Load SMS logs
+            const { data: smsLogs, error: smsError } = await supabase
+                .from('sms_logs')
+                .select('*')
+                .eq('patient_id', patientId)
+                .order('created_at', { ascending: false });
+
+            let unifiedHistory = [];
+
+            // Add medical history entries
+            if (!historyError && historyData) {
+                unifiedHistory = historyData.map(h => ({
+                    ...h,
+                    type: 'history',
+                    timestamp: h.date // or created_at if date is same
+                }));
+            }
+
+            // Add SMS logs (deduplicating if they might overlap with medical_history)
+            if (!smsError && smsLogs) {
+                const logs = smsLogs.map(l => ({
+                    ...l,
+                    type: 'sms_log',
+                    timestamp: l.sent_at || l.created_at,
+                    title: l.screen ? `SMS ${l.screen}` : 'SMS Automatique',
+                    description: l.message // Using the new column
+                }));
+                unifiedHistory = [...unifiedHistory, ...logs];
+            }
+
+            // Sort by descending timestamp
+            unifiedHistory.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            setMedicalHistory(unifiedHistory);
+
+        } catch (err) {
+            console.error('Error loading history:', err);
+        }
     };
 
     const handleGenerateToken = async () => {
@@ -806,43 +831,47 @@ export default function PatientReview() {
                                 <div className="card-icon card-icon-primary" style={{ background: 'var(--color-purple-50)', color: 'var(--color-purple-600)' }}>
                                     <History size={20} />
                                 </div>
-                                <h3>Historique</h3>
+                                <h3>Historique des événements</h3>
                             </div>
 
 
                             <div className="timeline" style={{ position: 'relative' }}>
                                 <div style={{ position: 'absolute', left: '7px', top: 0, bottom: 0, width: '2px', background: 'var(--color-gray-100)' }}></div>
-                                {medicalHistory.filter(item => item.category === 'sms').length > 0 ? (
-                                    medicalHistory.filter(item => item.category === 'sms').map((item) => (
-                                        <div key={item.id} className="timeline-item" style={{ paddingLeft: 'var(--spacing-8)', paddingBottom: 'var(--spacing-8)', position: 'relative' }}>
-                                            <div style={{
-                                                position: 'absolute',
-                                                left: 0,
-                                                top: '4px',
-                                                width: '16px',
-                                                height: '16px',
-                                                borderRadius: '50%',
-                                                background: item.category === 'sms' ? 'var(--color-secondary-500)' : 'var(--color-primary-500)',
-                                                border: '3px solid white',
-                                                boxShadow: '0 0 0 1px var(--color-gray-100)',
-                                                zIndex: 1
-                                            }}></div>
-                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)' }}>
-                                                    <span style={{ fontWeight: 'var(--font-weight-black)', fontSize: 'var(--font-size-md)' }}>{item.title}</span>
-                                                    {item.category === 'sms' && <span className="badge" style={{ fontSize: '8px', background: 'var(--color-gray-100)', letterSpacing: '0.05em' }}>SYSTEME</span>}
-                                                </div>
-                                                <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-400)', display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)' }}>
-                                                    {formatDateFR(item.date)} • {item.category === 'sms' ? 'SMS envoyé' : 'Intervention'}
-                                                </div>
-                                                {item.description && (
-                                                    <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-600)', marginTop: '4px', background: 'var(--color-gray-50)', padding: 'var(--spacing-3)', borderRadius: 'var(--border-radius-md)' }}>
-                                                        {item.description}
+                                {medicalHistory.length > 0 ? (
+                                    medicalHistory.map((item) => {
+                                        const isSystemSms = item.type === 'sms_log' || item.category === 'sms';
+                                        return (
+                                            <div key={item.id} className="timeline-item" style={{ paddingLeft: 'var(--spacing-8)', paddingBottom: 'var(--spacing-8)', position: 'relative' }}>
+                                                <div style={{
+                                                    position: 'absolute',
+                                                    left: 0,
+                                                    top: '4px',
+                                                    width: '16px',
+                                                    height: '16px',
+                                                    borderRadius: '50%',
+                                                    background: isSystemSms ? 'var(--color-secondary-500)' : 'var(--color-primary-500)',
+                                                    border: '3px solid white',
+                                                    boxShadow: '0 0 0 1px var(--color-gray-100)',
+                                                    zIndex: 1
+                                                }}></div>
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)' }}>
+                                                        <span style={{ fontWeight: 'var(--font-weight-black)', fontSize: 'var(--font-size-md)' }}>{item.title}</span>
+                                                        {isSystemSms && <span className="badge" style={{ fontSize: '8px', background: 'var(--color-gray-100)', letterSpacing: '0.05em' }}>SMS ENVOYÉ</span>}
+                                                        {item.status && <span className={`badge badge-${item.status === 'sent' || item.status === 'delivered' ? 'success' : 'danger'}`} style={{ fontSize: '7px' }}>{item.status.toUpperCase()}</span>}
                                                     </div>
-                                                )}
+                                                    <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-400)', display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)' }}>
+                                                        {formatDateFR(item.timestamp || item.date)} • {isSystemSms ? 'Communication' : 'Événement clinique'}
+                                                    </div>
+                                                    {item.description && (
+                                                        <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-600)', marginTop: '4px', background: 'var(--color-gray-50)', padding: 'var(--spacing-3)', borderRadius: 'var(--border-radius-md)', whiteSpace: 'pre-wrap' }}>
+                                                            {item.description}
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </div>
-                                        </div>
-                                    ))
+                                        );
+                                    })
                                 ) : (
                                     <p style={{ textAlign: 'center', color: 'var(--color-gray-400)', padding: 'var(--spacing-8)' }}>Aucun événement.</p>
                                 )}

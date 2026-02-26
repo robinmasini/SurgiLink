@@ -78,6 +78,7 @@ export async function sendSMS(templateKey, to, variables, metadata = {}) {
         console.log(`[sendSMS] Insertion du log de succès dans Supabase...`);
         const { error: dbError } = await supabase.from('sms_logs').insert({
             ...logEntry,
+            message: message, // Store the actual message sent
             status: 'sent',
             sent_at: new Date().toISOString(),
             provider_message_id: messageId

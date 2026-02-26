@@ -1,0 +1,3 @@
+[dotenv@17.3.1] injecting env (7) from .env -- tip: ⚙️  override existing env vars with { override: true }
+[dotenv@17.3.1] injecting env (3) from .env.local -- tip: ⚙️  load multiple .env files with { path: ['.env.local', '.env'] }
+Checking user_id for patient 13...

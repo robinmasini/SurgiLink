@@ -137,8 +137,12 @@ export async function verifyPatientDOB(token, dob) {
             return { success: false, error: 'Patient introuvable' };
         }
 
-        // 3. Compare DOB
-        // Ensure both are in the same format (YYYY-MM-DD)
+        // 3. Guard: reject if no birth_date is stored (prevents null === null bypass)
+        if (!patient.birth_date) {
+            return { success: false, error: 'Aucune date de naissance enregistrée. Veuillez contacter votre praticien.' };
+        }
+
+        // 4. Compare DOB — both in YYYY-MM-DD format
         if (patient.birth_date === dob) {
             return {
                 success: true,

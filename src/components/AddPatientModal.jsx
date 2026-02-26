@@ -17,6 +17,7 @@ export default function AddPatientModal({ isOpen, onClose, onPatientAdded }) {
         stayType: 'Ambulatoire'
     });
     const [isSaving, setIsSaving] = useState(false);
+    const [birthDateError, setBirthDateError] = useState(false);
 
     if (!isOpen) return null;
 
@@ -25,6 +26,12 @@ export default function AddPatientModal({ isOpen, onClose, onPatientAdded }) {
             alert('Veuillez remplir au moins le nom et l\'intervention.');
             return;
         }
+
+        if (!formData.birthDate) {
+            setBirthDateError(true);
+            return;
+        }
+        setBirthDateError(false);
 
         setIsSaving(true);
         try {
@@ -179,13 +186,21 @@ export default function AddPatientModal({ isOpen, onClose, onPatientAdded }) {
                         </div>
 
                         <div>
-                            <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Date de Naissance</label>
+                            <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: birthDateError ? 'var(--color-danger-600)' : 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>
+                                Date de Naissance <span style={{ color: 'var(--color-danger-500)' }}>*</span>
+                            </label>
                             <input
                                 type="date"
                                 className="input"
                                 value={formData.birthDate}
-                                onChange={(e) => setFormData({ ...formData, birthDate: e.target.value })}
+                                onChange={(e) => { setBirthDateError(false); setFormData({ ...formData, birthDate: e.target.value }); }}
+                                style={birthDateError ? { border: '1px solid var(--color-danger-500)' } : {}}
                             />
+                            {birthDateError && (
+                                <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-danger-600)', marginTop: '4px' }}>
+                                    La date de naissance est obligatoire pour activer la vérification d'identité.
+                                </p>
+                            )}
                         </div>
 
                         <div className="grid-3">

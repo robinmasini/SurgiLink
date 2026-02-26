@@ -218,7 +218,7 @@ export default function PatientTraceability({ patientId }) {
                                                 </td>
                                                 <td style={{ padding: 'var(--spacing-3)', fontSize: 'var(--font-size-sm)', maxWidth: '300px' }}>
                                                     <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                                        {sms.message}
+                                                        {sms.message || (sms.metadata?.variables ? `SMS ${sms.template_key}` : 'Message non disponible')}
                                                     </div>
                                                 </td>
                                                 <td style={{ padding: 'var(--spacing-3)', fontSize: 'var(--font-size-sm)' }}>
