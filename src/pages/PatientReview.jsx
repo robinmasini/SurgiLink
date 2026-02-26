@@ -24,7 +24,8 @@ import {
     Download,
     UploadCloud,
     Trash2,
-    Eye
+    Eye,
+    Send
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { calculateAge, formatDateFR, formatDateTimeFR } from '../utils/dateUtils';
