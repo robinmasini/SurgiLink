@@ -82,7 +82,7 @@ export default function AddPatientModal({ isOpen, onClose, onPatientAdded }) {
                         console.log('Résultat SMS immédiat:', smsRes);
 
                         if (smsRes.success) {
-                            alert(`[v1.2] SUCCÈS : Patient ${formData.name} créé et SMS envoyé !`);
+                            alert(`[v1.2] SUCCÈS : SMS envoyé à ${smsRes.to || 'destinataire'} !`);
                         } else {
                             alert(`[v1.2] ERREUR SMS : ${smsRes.error || 'Détail inconnu'}`);
                         }

@@ -11,7 +11,14 @@ export async function sendSMS(templateKey, to, variables, metadata = {}) {
 
         // Stricter phone formatting for D7 (D7 requires + prefix and NO spaces/dots/dashes)
         let cleanedPhone = to.replace(/[\s\.\-\(\)]/g, '');
-        const formattedPhone = cleanedPhone.startsWith('+') ? cleanedPhone : `+${cleanedPhone}`;
+
+        // Handle French numbers starting with 0 (convert 06... to +336...)
+        let formattedPhone;
+        if (cleanedPhone.startsWith('0') && cleanedPhone.length === 10) {
+            formattedPhone = `+33${cleanedPhone.substring(1)}`;
+        } else {
+            formattedPhone = cleanedPhone.startsWith('+') ? cleanedPhone : `+${cleanedPhone}`;
+        }
 
         const logEntry = {
             patient_id: metadata.patientId,
@@ -85,7 +92,7 @@ export async function sendSMS(templateKey, to, variables, metadata = {}) {
             throw dbError;
         }
 
-        return { success: true, messageId };
+        return { success: true, messageId, to: formattedPhone };
     } catch (error) {
         let errorMessage = 'Unknown error';
         if (error instanceof Error) {
