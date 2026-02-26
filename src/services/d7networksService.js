@@ -54,12 +54,20 @@ export async function sendSMS(templateKey, to, variables, metadata = {}) {
             })
         });
 
-        const d7Data = await response.json();
+        const responseText = await response.text();
+        let d7Data;
+        try {
+            d7Data = JSON.parse(responseText);
+        } catch (e) {
+            d7Data = responseText;
+        }
+
         console.log(`[sendSMS] D7 API Response (Status ${response.status}):`, d7Data);
 
         if (!response.ok) {
-            const errorDetail = typeof d7Data === 'string' ? d7Data : (d7Data.message || d7Data.detail || JSON.stringify(d7Data));
-            throw new Error(`D7 API Error (${response.status}): ${errorDetail}`);
+            const tokenPreview = D7_API_TOKEN ? `${D7_API_TOKEN.substring(0, 5)}...` : 'MISSING';
+            const errorMsg = typeof d7Data === 'string' ? d7Data : JSON.stringify(d7Data);
+            throw new Error(`D7 API 401 (Token:${tokenPreview}): ${errorMsg}`);
         }
 
         const messageId = d7Data.request_id || `D7_${Date.now()}`;
