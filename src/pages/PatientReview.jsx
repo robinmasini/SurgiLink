@@ -3,6 +3,7 @@ import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import EditPatientModal from '../components/EditPatientModal';
 import PatientPreviewModal from '../components/PatientPreviewModal';
+import EditSMSModal from '../components/EditSMSModal';
 import ClinicAppointmentCard from '../components/ClinicAppointmentCard';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
@@ -30,7 +31,7 @@ import { calculateAge, formatDateFR, formatDateTimeFR } from '../utils/dateUtils
 import { getPatientPathwayStatus, getResponses, calculateRiskFlags } from '../services/pathwayService';
 import { getDocuments, uploadDocument, deleteDocument, downloadDocument } from '../services/documentService';
 import { generatePatientToken, getPatientTokens, revokeToken } from '../services/tokenService';
-import { sendManualReminder } from '../services/reminderService';
+import { sendManualReminder, getNextPendingReminder, sendOverrideSMS } from '../services/reminderService';
 import LogoPremium from '../components/LogoPremium';
 import { Link as LinkIcon, Copy, RefreshCw, ShieldCheck } from 'lucide-react';
 
@@ -55,6 +56,8 @@ export default function PatientReview() {
     const [isUploading, setIsUploading] = useState(false);
     const [tokenData, setTokenData] = useState(null);
     const [isGeneratingToken, setIsGeneratingToken] = useState(false);
+    const [isSMSModalOpen, setIsSMSModalOpen] = useState(false);
+    const [nextReminder, setNextReminder] = useState(null);
     const fileInputRef = useRef(null);
 
     const loadPatientData = async () => {
@@ -190,8 +193,30 @@ export default function PatientReview() {
         if (id) {
             loadPatientData();
             loadTokenData();
+            loadNextReminder();
         }
     }, [id]);
+
+    const loadNextReminder = async () => {
+        const reminder = await getNextPendingReminder(id);
+        setNextReminder(reminder);
+    };
+
+    const handleSendManualSMS = async (customMessage, reminderId) => {
+        const res = await sendOverrideSMS(id, reminderId, customMessage, {
+            user_id: supabase.auth.getUser()?.id // Optional audit trail
+        });
+
+        if (res.success) {
+            setIsSMSModalOpen(false);
+            // Refresh history and next reminder
+            loadHistoryData(id);
+            loadNextReminder();
+            alert('SMS envoyé et rappel automatique mis à jour !');
+        } else {
+            alert(`Erreur lors de l'envoi : ${res.error}`);
+        }
+    };
 
 
     const handleFileUpload = async (files) => {
@@ -811,6 +836,16 @@ export default function PatientReview() {
                                     <div style={{ fontSize: '10px', color: 'var(--color-gray-400)', textAlign: 'center' }}>
                                         Lien actif • Créé le {new Date(tokenData.created_at || Date.now()).toLocaleDateString('fr-FR')}
                                     </div>
+                                    {nextReminder && (
+                                        <button
+                                            onClick={() => setIsSMSModalOpen(true)}
+                                            className="btn btn-secondary"
+                                            style={{ width: '100%', marginTop: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--spacing-2)', background: 'var(--color-purple-50)', color: 'var(--color-purple-700)', border: '1px solid var(--color-purple-100)' }}
+                                        >
+                                            <Send size={16} />
+                                            Préparer rappel {nextReminder.screen}
+                                        </button>
+                                    )}
                                 </div>
                             ) : (
                                 <button
@@ -886,6 +921,14 @@ export default function PatientReview() {
                 onClose={() => setIsEditModalOpen(false)}
                 patient={patient}
                 onPatientUpdated={handlePatientUpdated}
+            />
+
+            <EditSMSModal
+                isOpen={isSMSModalOpen}
+                onClose={() => setIsSMSModalOpen(false)}
+                patient={{ ...patient, token: tokenData?.token }}
+                nextReminder={nextReminder}
+                onSend={handleSendManualSMS}
             />
 
             <PatientPreviewModal

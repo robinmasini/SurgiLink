@@ -331,3 +331,100 @@ export async function scheduleStateBasedReminders(patientId, screen) {
         scheduled: scheduled.length
     };
 }
+
+/**
+ * Get the next pending reminder for a patient
+ * @param {number} patientId - Patient ID
+ * @returns {Promise<Object|null>} - Next pending reminder
+ */
+export async function getNextPendingReminder(patientId) {
+    try {
+        const { data, error } = await supabase
+            .from('reminder_queue')
+            .select('*')
+            .eq('patient_id', patientId)
+            .eq('status', 'pending')
+            .order('scheduled_for', { ascending: true })
+            .limit(1)
+            .maybeSingle();
+
+        if (error) throw error;
+        return data;
+    } catch (error) {
+        console.error('Error fetching next reminder:', error);
+        return null;
+    }
+}
+
+/**
+ * Cancel a specific reminder
+ * @param {string} reminderId - Reminder ID
+ * @returns {Promise<boolean>} - Success
+ */
+export async function cancelReminder(reminderId) {
+    try {
+        const { error } = await supabase
+            .from('reminder_queue')
+            .update({
+                status: 'cancelled',
+                processed_at: new Date().toISOString()
+            })
+            .eq('id', reminderId);
+
+        if (error) throw error;
+        return true;
+    } catch (error) {
+        console.error('Error cancelling reminder:', error);
+        return false;
+    }
+}
+/**
+ * Send a custom SMS override for a scheduled reminder
+ * @param {number} patientId - Patient ID
+ * @param {string} reminderId - ID of the reminder to override
+ * @param {string} customMessage - The custom message text
+ * @param {Object} metadata - Additional metadata
+ * @returns {Promise<Object>} - { success, error }
+ */
+export async function sendOverrideSMS(patientId, reminderId, customMessage, metadata = {}) {
+    try {
+        // 1. Get reminder details to know the template/screen
+        const { data: reminder, error: rError } = await supabase
+            .from('reminder_queue')
+            .select('*, patients(phone)')
+            .eq('id', reminderId)
+            .single();
+
+        if (rError) throw rError;
+
+        // 2. Send the custom SMS via D7
+        const result = await sendSMS(
+            reminder.template_key,
+            reminder.patients.phone,
+            {}, // Variables not needed since we use manualMessage
+            {
+                ...metadata,
+                patientId,
+                screen: reminder.screen,
+                linkedItemId: reminder.item_id,
+                manualMessage: customMessage
+            }
+        );
+
+        if (!result.success) throw new Error(result.error);
+
+        // 3. Mark the scheduled reminder as 'sent' (so it's not picked up by scheduler)
+        await supabase
+            .from('reminder_queue')
+            .update({
+                status: 'sent',
+                processed_at: new Date().toISOString()
+            })
+            .eq('id', reminderId);
+
+        return { success: true };
+    } catch (error) {
+        console.error('Error sending override SMS:', error);
+        return { success: false, error: error.message };
+    }
+}

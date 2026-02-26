@@ -6,8 +6,13 @@ const D7_SENDER_ID = import.meta.env.VITE_D7_SENDER_ID || 'SurgiLink';
 
 export async function sendSMS(templateKey, to, variables, metadata = {}) {
     try {
-        if (!smsTemplates[templateKey]) throw new Error(`Invalid SMS template: ${templateKey}`);
-        const message = interpolateTemplate(templateKey, variables);
+        let message;
+        if (metadata.manualMessage) {
+            message = metadata.manualMessage;
+        } else {
+            if (!smsTemplates[templateKey]) throw new Error(`Invalid SMS template: ${templateKey}`);
+            message = interpolateTemplate(templateKey, variables);
+        }
 
         // Stricter phone formatting for D7 (D7 requires + prefix and NO spaces/dots/dashes)
         let cleanedPhone = to.replace(/[\s\.\-\(\)]/g, '');
