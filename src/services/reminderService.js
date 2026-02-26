@@ -243,7 +243,7 @@ export async function scheduleTimeBasedReminders(patientId, interventionDate) {
     // Calculate reminder dates
     const j7Date = new Date(interventionDate);
     j7Date.setDate(j7Date.getDate() - 7);
-    j7Date.setHours(9, 0, 0, 0); // Morning
+    j7Date.setHours(10, 0, 0, 0); // 10:00 AM
 
     const j3Date = new Date(interventionDate);
     j3Date.setDate(j3Date.getDate() - 3);
@@ -251,18 +251,18 @@ export async function scheduleTimeBasedReminders(patientId, interventionDate) {
 
     const j2Date = new Date(interventionDate);
     j2Date.setDate(j2Date.getDate() - 2);
-    j2Date.setHours(9, 0, 0, 0);
+    j2Date.setHours(10, 0, 0, 0);
 
     const j1Date = new Date(interventionDate);
     j1Date.setDate(j1Date.getDate() - 1);
-    j1Date.setHours(14, 0, 0, 0); // Afternoon
+    j1Date.setHours(10, 0, 0, 0);
 
     const j0Date = new Date(interventionDate);
-    j0Date.setHours(6, 30, 0, 0); // Early morning
+    j0Date.setHours(6, 30, 0, 0); // Early morning for J-0
 
     const j1PostOpDate = new Date(interventionDate);
     j1PostOpDate.setDate(j1PostOpDate.getDate() + 1);
-    j1PostOpDate.setHours(9, 30, 0, 0);
+    j1PostOpDate.setHours(10, 0, 0, 0);
 
     const j2PostOpDate = new Date(interventionDate);
     j2PostOpDate.setDate(j2PostOpDate.getDate() + 2);
