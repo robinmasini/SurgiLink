@@ -56,3 +56,19 @@ export const formatDateFR = (date, options = { day: 'numeric', month: 'long', ye
     if (!date) return 'Non définie';
     return new Date(date).toLocaleDateString('fr-FR', options);
 };
+
+/**
+ * Format date and time in French locale
+ * @param {string|Date} date - Date to format
+ * @returns {string} Formatted date and time string
+ */
+export const formatDateTimeFR = (date) => {
+    if (!date) return 'Non définie';
+    return new Date(date).toLocaleString('fr-FR', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    }).replace(' à ', ' • ');
+};

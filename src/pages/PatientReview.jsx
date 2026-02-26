@@ -26,7 +26,7 @@ import {
     Eye
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import { calculateAge, formatDateFR } from '../utils/dateUtils';
+import { calculateAge, formatDateFR, formatDateTimeFR } from '../utils/dateUtils';
 import { getPatientPathwayStatus, getResponses, calculateRiskFlags } from '../services/pathwayService';
 import { getDocuments, uploadDocument, deleteDocument, downloadDocument } from '../services/documentService';
 import { generatePatientToken, getPatientTokens, revokeToken } from '../services/tokenService';
@@ -861,7 +861,7 @@ export default function PatientReview() {
                                                         {item.status && <span className={`badge badge-${item.status === 'sent' || item.status === 'delivered' ? 'success' : 'danger'}`} style={{ fontSize: '7px' }}>{item.status.toUpperCase()}</span>}
                                                     </div>
                                                     <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-400)', display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)' }}>
-                                                        {formatDateFR(item.timestamp || item.date)} • {isSystemSms ? 'Communication' : 'Événement clinique'}
+                                                        {isSystemSms ? formatDateTimeFR(item.timestamp || item.date) : formatDateFR(item.timestamp || item.date)} • {isSystemSms ? 'Communication' : 'Événement clinique'}
                                                     </div>
                                                     {item.description && (
                                                         <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-600)', marginTop: '4px', background: 'var(--color-gray-50)', padding: 'var(--spacing-3)', borderRadius: 'var(--border-radius-md)', whiteSpace: 'pre-wrap' }}>
