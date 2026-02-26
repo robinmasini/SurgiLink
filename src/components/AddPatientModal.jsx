@@ -76,15 +76,13 @@ export default function AddPatientModal({ isOpen, onClose, onPatientAdded }) {
                     console.log('Jours avant intervention:', daysUntil);
 
                     if (daysUntil <= 7) {
-                        console.log('Déclenchement immédiat du SMS J-7...');
                         const smsRes = await sendManualReminder(
                             newPatient.id,
-                            'J7',
+                            'J-7',
                             null,
                             'j7_reminder',
                             { ...newPatient, token }
                         );
-                        console.log('Résultat SMS immédiat:', smsRes);
 
                         if (smsRes.success) {
                             alert(`Patient ${formData.name} enregistré et SMS de bienvenue envoyé !`);
