@@ -27,6 +27,8 @@ export async function sendSMS(templateKey, to, variables, metadata = {}) {
         if (!D7_API_TOKEN) {
             console.error('[sendSMS] CRITICAL: VITE_D7_API_TOKEN is missing in environment!');
             throw new Error('D7Networks API Token not configured.');
+        } else {
+            console.log(`[sendSMS] Token length: ${D7_API_TOKEN.length}, Pattern: ${D7_API_TOKEN.substring(0, 10)}...`);
         }
 
         const response = await fetch('https://api.d7networks.com/messages/v1/send', {
@@ -56,7 +58,7 @@ export async function sendSMS(templateKey, to, variables, metadata = {}) {
         console.log(`[sendSMS] D7 API Response (Status ${response.status}):`, d7Data);
 
         if (!response.ok) {
-            const errorDetail = d7Data.message || d7Data.detail || JSON.stringify(d7Data);
+            const errorDetail = typeof d7Data === 'string' ? d7Data : (d7Data.message || d7Data.detail || JSON.stringify(d7Data));
             throw new Error(`D7 API Error (${response.status}): ${errorDetail}`);
         }
 
