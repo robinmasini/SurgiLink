@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { formatDateFR } from '../utils/dateUtils';
+import { formatDateFR, formatDateTimeFR } from '../utils/dateUtils';
 import { History, Activity, MessageSquare, Calendar, Loader } from 'lucide-react';
 
 /**
@@ -211,7 +211,7 @@ export default function PatientTraceability({ patientId }) {
                                         {smsData.map((sms, index) => (
                                             <tr key={sms.id} style={{ borderBottom: index < smsData.length - 1 ? '1px solid var(--color-gray-200)' : 'none' }}>
                                                 <td style={{ padding: 'var(--spacing-3)', fontSize: 'var(--font-size-sm)' }}>
-                                                    {new Date(sms.sent_at || sms.created_at).toLocaleDateString('fr-FR')} à {new Date(sms.sent_at || sms.created_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                                                    {formatDateTimeFR(sms.sent_at || sms.created_at)}
                                                 </td>
                                                 <td style={{ padding: 'var(--spacing-3)', fontSize: 'var(--font-size-sm)' }}>
                                                     {sms.screen || sms.template_key || 'Général'}
