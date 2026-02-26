@@ -90,10 +90,11 @@ export async function processPendingReminders() {
             const variables = {
                 first_name: patient.name?.split(' ')[0] || 'Patient',
                 procedure_date: patient.date || 'bientôt',
+                arrival_time: patient.surgery_time || '07:30',
                 clinic_name: 'SurgiLink',
                 clinic_phone: '01 XX XX XX XX',
-                checklist_link: `https://surgilink.eu/patient/pathway/${reminder.screen.toLowerCase()}/${patient.id}`,
-                consignes_link: `https://surgilink.eu/patient/pathway/${reminder.screen.toLowerCase()}/${patient.id}`
+                checklist_link: `https://surgilink.eu/patient-portal/${patient.token || patient.id}`,
+                consignes_link: `https://surgilink.eu/patient-portal/${patient.token || patient.id}`
             };
 
             const result = await sendSMS(
@@ -103,7 +104,8 @@ export async function processPendingReminders() {
                 {
                     patientId: reminder.patient_id,
                     screen: reminder.screen,
-                    linkedItemId: reminder.item_id
+                    linkedItemId: reminder.item_id,
+                    manualMessage: reminder.custom_message // Use custom message if set
                 }
             );
 
@@ -241,22 +243,40 @@ export async function scheduleTimeBasedReminders(patientId, interventionDate) {
     // Calculate reminder dates
     const j7Date = new Date(interventionDate);
     j7Date.setDate(j7Date.getDate() - 7);
+    j7Date.setHours(9, 0, 0, 0); // Morning
+
+    const j3Date = new Date(interventionDate);
+    j3Date.setDate(j3Date.getDate() - 3);
+    j3Date.setHours(10, 0, 0, 0);
 
     const j2Date = new Date(interventionDate);
     j2Date.setDate(j2Date.getDate() - 2);
+    j2Date.setHours(9, 0, 0, 0);
 
     const j1Date = new Date(interventionDate);
     j1Date.setDate(j1Date.getDate() - 1);
+    j1Date.setHours(14, 0, 0, 0); // Afternoon
+
+    const j0Date = new Date(interventionDate);
+    j0Date.setHours(6, 30, 0, 0); // Early morning
 
     const j1PostOpDate = new Date(interventionDate);
     j1PostOpDate.setDate(j1PostOpDate.getDate() + 1);
+    j1PostOpDate.setHours(9, 30, 0, 0);
+
+    const j2PostOpDate = new Date(interventionDate);
+    j2PostOpDate.setDate(j2PostOpDate.getDate() + 2);
+    j2PostOpDate.setHours(10, 0, 0, 0);
 
     // Queue reminders
     const remindersToQueue = [
-        { screen: 'J7', date: j7Date, template: 'j7_reminder' },
-        { screen: 'J2', date: j2Date, template: 'j2_reminder' },
-        { screen: 'J7', date: j1Date, template: 'j1_reminder_long' }, // J-1 reminder
-        { screen: 'J1', date: j1PostOpDate, template: 'j1_postop' }
+        { screen: 'J-7', date: j7Date, template: 'j7_reminder' },
+        { screen: 'J-3', date: j3Date, template: 'j3_reminder' },
+        { screen: 'J-2', date: j2Date, template: 'j2_reminder' },
+        { screen: 'J-1', date: j1Date, template: 'j1_reminder_long' },
+        { screen: 'J-0', date: j0Date, template: 'j0_reminder' },
+        { screen: 'J+1', date: j1PostOpDate, template: 'j1_postop' },
+        { screen: 'J+2', date: j2PostOpDate, template: 'j2_postop' }
     ];
 
     for (const reminder of remindersToQueue) {
@@ -425,6 +445,52 @@ export async function sendOverrideSMS(patientId, reminderId, customMessage, meta
         return { success: true };
     } catch (error) {
         console.error('Error sending override SMS:', error);
+        return { success: false, error: error.message };
+    }
+}
+/**
+ * Get all pending reminders for a patient
+ * @param {number} patientId - Patient ID
+ * @returns {Promise<Array>} - List of pending reminders
+ */
+export async function getPendingReminders(patientId) {
+    try {
+        const { data, error } = await supabase
+            .from('reminder_queue')
+            .select('*')
+            .eq('patient_id', patientId)
+            .eq('status', 'pending')
+            .order('scheduled_for', { ascending: true });
+
+        if (error) throw error;
+        return data || [];
+    } catch (error) {
+        console.error('Error fetching pending reminders:', error);
+        return [];
+    }
+}
+
+/**
+ * Update a scheduled reminder with custom message and/or time
+ * @param {string} reminderId - Reminder ID
+ * @param {Object} updates - { customMessage, scheduledFor }
+ * @returns {Promise<Object>} - { success, error }
+ */
+export async function updateReminder(reminderId, updates) {
+    try {
+        const payload = {};
+        if (updates.customMessage !== undefined) payload.custom_message = updates.customMessage;
+        if (updates.scheduledFor !== undefined) payload.scheduled_for = updates.scheduledFor;
+
+        const { error } = await supabase
+            .from('reminder_queue')
+            .update(payload)
+            .eq('id', reminderId);
+
+        if (error) throw error;
+        return { success: true };
+    } catch (error) {
+        console.error('Error updating reminder:', error);
         return { success: false, error: error.message };
     }
 }

@@ -8,6 +8,12 @@ export const smsTemplates = {
         message: "Bonjour {first_name}, votre dossier J-7 pour l'opération du {procedure_date} est ici : {checklist_link}",
         variables: ['first_name', 'procedure_date', 'checklist_link']
     },
+    // J-3 Pre-op Verification
+    j3_reminder: {
+        name: "J-3 Verification",
+        message: "Bonjour {first_name}, à J-3 de votre intervention, merci de vérifier que vous avez bien complété tous les documents sur votre portail : {checklist_link}",
+        variables: ['first_name', 'checklist_link']
+    },
 
     // J-7 Targeted Reminders
     j7_anesthesia_missing: {
@@ -48,11 +54,25 @@ export const smsTemplates = {
         variables: ['first_name', 'arrival_time', 'clinic_name']
     },
 
+    // J-0 Day of Surgery
+    j0_reminder: {
+        name: "J-0 Day Summary",
+        message: "Bonjour {first_name}, nous vous attendons à {arrival_time} à la clinique. N'oubliez pas vos documents originaux. À tout de suite !",
+        variables: ['first_name', 'arrival_time']
+    },
+
     // J+1 Post-op Follow-up
     j1_postop: {
-        name: "J+1 Post-op Call Notice",
-        message: "Bonjour {first_name}, vous serez contacté(e) aujourd'hui par notre équipe pour votre suivi post-opératoire. Merci de répondre à l'appel. {clinic_name}",
-        variables: ['first_name', 'clinic_name']
+        name: "J+1 Post-op Follow-up",
+        message: "Bonjour {first_name}, comment vous sentez-vous aujourd'hui ? Notre équipe vous contactera dans la journée pour votre suivi post-opératoire.",
+        variables: ['first_name']
+    },
+
+    // J+2 Recovery Follow-up
+    j2_postop: {
+        name: "J+2 Recovery Check",
+        message: "Bonjour {first_name}, nous espérons que votre récupération se passe bien. N'hésitez pas à consulter vos consignes post-opératoires ici : {consignes_link}",
+        variables: ['first_name', 'consignes_link']
     },
 
     // Generic Targeted Reminder

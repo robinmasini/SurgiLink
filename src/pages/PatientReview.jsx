@@ -32,7 +32,7 @@ import { calculateAge, formatDateFR, formatDateTimeFR } from '../utils/dateUtils
 import { getPatientPathwayStatus, getResponses, calculateRiskFlags } from '../services/pathwayService';
 import { getDocuments, uploadDocument, deleteDocument, downloadDocument } from '../services/documentService';
 import { generatePatientToken, getPatientTokens, revokeToken } from '../services/tokenService';
-import { sendManualReminder, getNextPendingReminder, sendOverrideSMS } from '../services/reminderService';
+import { sendManualReminder, getNextPendingReminder, getPendingReminders, sendOverrideSMS, updateReminder } from '../services/reminderService';
 import LogoPremium from '../components/LogoPremium';
 import { Link as LinkIcon, Copy, RefreshCw, ShieldCheck } from 'lucide-react';
 
@@ -59,6 +59,8 @@ export default function PatientReview() {
     const [isGeneratingToken, setIsGeneratingToken] = useState(false);
     const [isSMSModalOpen, setIsSMSModalOpen] = useState(false);
     const [nextReminder, setNextReminder] = useState(null);
+    const [pendingReminders, setPendingReminders] = useState([]);
+    const [editingReminder, setEditingReminder] = useState(null);
     const fileInputRef = useRef(null);
 
     const loadPatientData = async () => {
@@ -199,23 +201,56 @@ export default function PatientReview() {
     }, [id]);
 
     const loadNextReminder = async () => {
-        const reminder = await getNextPendingReminder(id);
-        setNextReminder(reminder);
+        const reminders = await getPendingReminders(id);
+        setPendingReminders(reminders);
+        setNextReminder(reminders.length > 0 ? reminders[0] : null);
+    };
+
+    const handleUpdateReminder = async (reminderId, updates) => {
+        const res = await updateReminder(reminderId, updates);
+        if (res.success) {
+            setIsSMSModalOpen(false);
+            setEditingReminder(null);
+            loadNextReminder();
+            alert('Rappel mis à jour !');
+        } else {
+            alert(`Erreur: ${res.error}`);
+        }
     };
 
     const handleSendManualSMS = async (customMessage, reminderId) => {
         const res = await sendOverrideSMS(id, reminderId, customMessage, {
-            user_id: supabase.auth.getUser()?.id // Optional audit trail
+            user_id: (await supabase.auth.getUser()).data.user?.id // Avoid null
         });
 
         if (res.success) {
             setIsSMSModalOpen(false);
+            setEditingReminder(null);
             // Refresh history and next reminder
             loadHistoryData(id);
             loadNextReminder();
             alert('SMS envoyé et rappel automatique mis à jour !');
         } else {
             alert(`Erreur lors de l'envoi : ${res.error}`);
+        }
+    };
+
+    const handleRegenerateSchedule = async () => {
+        if (!confirm('Cela va supprimer tous les rappels en attente et les remplacer par le nouveau planning complet (J-7 à J+2). Continuer ?')) return;
+
+        try {
+            // 1. Delete pending
+            await supabase.from('reminder_queue').delete().eq('patient_id', id).eq('status', 'pending');
+
+            // 2. Re-schedule
+            const { scheduleTimeBasedReminders } = await import('../services/reminderService');
+            await scheduleTimeBasedReminders(id, patient.date);
+
+            loadNextReminder();
+            alert('Planning SMS régénéré avec succès !');
+        } catch (err) {
+            console.error('Error regenerating schedule:', err);
+            alert('Erreur lors de la régénération du planning.');
         }
     };
 
@@ -837,15 +872,41 @@ export default function PatientReview() {
                                     <div style={{ fontSize: '10px', color: 'var(--color-gray-400)', textAlign: 'center' }}>
                                         Lien actif • Créé le {new Date(tokenData.created_at || Date.now()).toLocaleDateString('fr-FR')}
                                     </div>
-                                    {nextReminder && (
-                                        <button
-                                            onClick={() => setIsSMSModalOpen(true)}
-                                            className="btn btn-secondary"
-                                            style={{ width: '100%', marginTop: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--spacing-2)', background: 'var(--color-purple-50)', color: 'var(--color-purple-700)', border: '1px solid var(--color-purple-100)' }}
-                                        >
-                                            <Send size={16} />
-                                            Préparer rappel {nextReminder.screen}
-                                        </button>
+                                    {pendingReminders.length > 0 && (
+                                        <div style={{ marginTop: 'var(--spacing-6)', paddingTop: 'var(--spacing-6)', borderTop: '1px solid var(--color-gray-100)' }}>
+                                            <h4 style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-gray-500)', textTransform: 'uppercase', marginBottom: 'var(--spacing-4)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                <History size={14} />
+                                                Rappels planifiés ({pendingReminders.length})
+                                            </h4>
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                                {pendingReminders.map(rem => (
+                                                    <div key={rem.id} style={{ padding: 'var(--spacing-3)', background: 'var(--color-gray-50)', borderRadius: 'var(--border-radius-md)', border: '1px solid var(--color-gray-200)' }}>
+                                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                                                            <span style={{ fontWeight: 'var(--font-weight-bold)', fontSize: 'var(--font-size-sm)', color: 'var(--color-purple-700)' }}>{rem.screen}</span>
+                                                            <span style={{ fontSize: '10px', color: 'var(--color-gray-500)' }}>
+                                                                {new Date(rem.scheduled_for).toLocaleDateString('fr-FR')} {new Date(rem.scheduled_for).getHours()}:{String(new Date(rem.scheduled_for).getMinutes()).padStart(2, '0')}
+                                                            </span>
+                                                        </div>
+                                                        <button
+                                                            onClick={() => { setEditingReminder(rem); setIsSMSModalOpen(true); }}
+                                                            className="btn btn-secondary btn-sm"
+                                                            style={{ width: '100%', fontSize: '11px', padding: '4px 8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', background: 'white' }}
+                                                        >
+                                                            <Edit2 size={12} />
+                                                            Gérer / Envoyer
+                                                        </button>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            <button
+                                                onClick={handleRegenerateSchedule}
+                                                className="btn btn-secondary"
+                                                style={{ width: '100%', marginTop: 'var(--spacing-4)', fontSize: '10px', padding: 'var(--spacing-2)', border: '1px dashed var(--color-gray-300)', background: 'transparent', color: 'var(--color-gray-400)' }}
+                                            >
+                                                <RefreshCw size={12} style={{ marginRight: '4px' }} />
+                                                Regénérer le planning complet
+                                            </button>
+                                        </div>
                                     )}
                                 </div>
                             ) : (
@@ -915,7 +976,7 @@ export default function PatientReview() {
                         </div>
                     </div>
                 </div>
-            </main>
+            </main >
 
             <EditPatientModal
                 isOpen={isEditModalOpen}
@@ -924,13 +985,18 @@ export default function PatientReview() {
                 onPatientUpdated={handlePatientUpdated}
             />
 
-            <EditSMSModal
-                isOpen={isSMSModalOpen}
-                onClose={() => setIsSMSModalOpen(false)}
-                patient={{ ...patient, token: tokenData?.token }}
-                nextReminder={nextReminder}
-                onSend={handleSendManualSMS}
-            />
+            {
+                isSMSModalOpen && (
+                    <EditSMSModal
+                        isOpen={isSMSModalOpen}
+                        onClose={() => { setIsSMSModalOpen(false); setEditingReminder(null); }}
+                        patient={{ ...patient, token: tokenData?.token }}
+                        reminder={editingReminder || nextReminder}
+                        onSend={handleSendManualSMS}
+                        onUpdate={handleUpdateReminder}
+                    />
+                )
+            }
 
             <PatientPreviewModal
                 isOpen={isPreviewModalOpen}
@@ -940,6 +1006,6 @@ export default function PatientReview() {
                 onStatusChange={loadPatientData}
             />
 
-        </div>
+        </div >
     );
 }
