@@ -530,8 +530,8 @@ export default function PatientReview() {
                         </div>
 
                         {/* 2. Documents Section */}
-                        <div className="card glass-effect" style={{ padding: 'var(--spacing-8)' }}>
-                            <div className="card-header" style={{ marginBottom: 'var(--spacing-6)' }}>
+                        <div className="card glass-effect" style={{ padding: 'var(--spacing-6)' }}>
+                            <div className="card-header" style={{ marginBottom: 'var(--spacing-4)' }}>
                                 <div className="card-icon card-icon-primary" style={{ background: 'var(--color-primary-50)', color: 'var(--color-primary-600)' }}>
                                     <FileText size={20} />
                                 </div>
@@ -556,19 +556,19 @@ export default function PatientReview() {
                                     border: isDragging ? '2px dashed var(--color-primary-500)' : '2px dashed var(--color-gray-200)',
                                     background: isDragging ? 'var(--color-primary-50)' : 'rgba(255, 255, 255, 0.4)',
                                     borderRadius: 'var(--border-radius-xl)',
-                                    padding: 'var(--spacing-10)',
+                                    padding: 'var(--spacing-6)',
                                     textAlign: 'center',
                                     position: 'relative',
                                     cursor: 'pointer',
                                     transition: 'all 0.2s ease'
                                 }}
                             >
-                                <UploadCloud size={48} style={{ color: isDragging ? 'var(--color-primary-400)' : 'var(--color-gray-300)', marginBottom: 'var(--spacing-4)' }} />
-                                <div style={{ fontSize: 'var(--font-size-lg)', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-gray-900)' }}>
-                                    {isDragging ? 'Déposez les fichiers ici' : 'Glissez-déposez les documents ici'}
+                                <UploadCloud size={40} style={{ color: isDragging ? 'var(--color-primary-400)' : 'var(--color-gray-300)', marginBottom: 'var(--spacing-3)' }} />
+                                <div style={{ fontSize: 'var(--font-size-md)', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-gray-900)' }}>
+                                    {isDragging ? 'Déposez ici' : 'Glissez-déposez les documents ici'}
                                 </div>
-                                <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-400)', marginTop: '4px' }}>(Ordonnances, Arrêt de travail, Consignes...)</div>
-                                {documents.length === 0 && !isUploading && <p style={{ marginTop: 'var(--spacing-6)', color: 'var(--color-gray-400)', fontSize: 'var(--font-size-sm)' }}>Aucun document disponible.</p>}
+                                <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-400)', marginTop: '2px' }}>(Ordonnances, Arrêt de travail, Consignes...)</div>
+                                {documents.length === 0 && !isUploading && <p style={{ marginTop: 'var(--spacing-4)', color: 'var(--color-gray-400)', fontSize: 'var(--font-size-xs)' }}>Aucun document disponible.</p>}
 
                                 {isUploading && (
                                     <div style={{
@@ -589,14 +589,14 @@ export default function PatientReview() {
                             </div>
 
                             {documents.length > 0 && (
-                                <div style={{ display: 'grid', gap: '12px', marginTop: 'var(--spacing-6)' }}>
+                                <div style={{ display: 'grid', gap: '8px', marginTop: 'var(--spacing-4)' }}>
                                     {documents.map(doc => (
                                         <div key={doc.id} className="glass-effect" style={{
-                                            padding: '12px 16px',
-                                            borderRadius: '12px',
+                                            padding: '8px 12px',
+                                            borderRadius: '10px',
                                             display: 'flex',
                                             alignItems: 'center',
-                                            gap: '12px',
+                                            gap: '10px',
                                             border: '1px solid rgba(0,0,0,0.03)'
                                         }}>
                                             <div style={{
@@ -613,7 +613,7 @@ export default function PatientReview() {
                                             </div>
                                             <div style={{ flex: 1 }}>
                                                 <div style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-medium)' }}>{doc.name}</div>
-                                                <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-400)' }}>{doc.size} • {new Date(doc.created_at || new Date()).toLocaleDateString('fr-FR')}</div>
+                                                <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-400)' }}>{doc.size}</div>
                                             </div>
                                             <div style={{ display: 'flex', gap: '4px' }}>
                                                 <button
