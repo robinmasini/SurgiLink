@@ -179,7 +179,7 @@ export default function PatientPortal({ patient: initialPatient }) {
                 {/* Header Greeting */}
                 <div style={{ marginBottom: 'var(--spacing-8)' }}>
                     <h1 style={{ fontSize: '32px', fontWeight: '800', marginBottom: 'var(--spacing-1)', color: '#1A1A1A' }}>
-                        Bonjour, {patientInitials}
+                        Bonjour, {patient?.name?.trim().split(/\s+/)[0] || 'Patient'}
                     </h1>
                     <p style={{ color: '#666', fontSize: '16px', fontWeight: '500' }}>Votre portail de suivi personnalisé</p>
                 </div>
