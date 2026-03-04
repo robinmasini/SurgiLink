@@ -165,10 +165,6 @@ export default function PatientPortal({ patient: initialPatient }) {
         );
     }
 
-    const patientInitials = patient?.name
-        ? patient.name.trim().split(/\s+/).map(n => n[0]).filter(Boolean).join('').toUpperCase()
-        : 'P';
-
     return (
         <div style={{
             minHeight: '100vh',
@@ -179,7 +175,7 @@ export default function PatientPortal({ patient: initialPatient }) {
                 {/* Header Greeting */}
                 <div style={{ marginBottom: 'var(--spacing-8)' }}>
                     <h1 style={{ fontSize: '32px', fontWeight: '800', marginBottom: 'var(--spacing-1)', color: '#1A1A1A' }}>
-                        Bonjour, {patient?.name?.trim().split(/\s+/)[0] || 'Patient'}
+                        Bonjour, {patient?.name || 'Patient'}
                     </h1>
                     <p style={{ color: '#666', fontSize: '16px', fontWeight: '500' }}>Votre portail de suivi personnalisé</p>
                 </div>

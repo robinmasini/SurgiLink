@@ -940,6 +940,7 @@ textarea.input {
   margin-left: var(--sidebar-width);
   min-height: 100vh;
   padding: var(--spacing-8);
+  background: linear-gradient(135deg, var(--color-background) 0%, #F1F3F6 100%);
 }
 
 /* Header */
