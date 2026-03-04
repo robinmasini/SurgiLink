@@ -487,18 +487,21 @@ export default function PatientReview() {
                                         <span className="badge" style={{ background: 'var(--color-gray-100)', color: 'var(--color-gray-700)', padding: '6px 16px' }}>{patient.stay_type || 'Ambulatoire'}</span>
                                         <span className="badge" style={{ background: 'var(--color-primary-50)', color: 'var(--color-primary-600)', padding: '6px 16px' }}>{patient.operation}</span>
                                         <span className="badge" style={{
-                                            background: '#F5F1EE',
-                                            color: '#8B7355',
-                                            padding: '6px 16px',
+                                            background: '#FAF7F5',
+                                            color: '#6D4C41',
+                                            padding: '8px 20px',
                                             display: 'flex',
                                             alignItems: 'center',
                                             gap: 'var(--spacing-2)',
-                                            border: '1px solid #EADDCD'
+                                            border: '1px solid #D7C4B0',
+                                            fontSize: 'var(--font-size-md)',
+                                            fontWeight: '700',
+                                            boxShadow: '0 2px 4px rgba(109, 76, 65, 0.05)'
                                         }}>
-                                            <Calendar size={14} />
+                                            <Calendar size={16} />
                                             {patient.date ? formatDateFR(patient.date) : 'Date non définie'}
-                                            <span style={{ opacity: 0.3, margin: '0 2px' }}>|</span>
-                                            <Clock size={14} />
+                                            <span style={{ opacity: 0.3, margin: '0 4px' }}>|</span>
+                                            <Clock size={16} />
                                             {patient.surgery_time || '07:30'}
                                         </span>
                                     </div>
