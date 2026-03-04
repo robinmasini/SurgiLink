@@ -18,7 +18,7 @@ const countries = [
     { name: 'Tunisie', code: '+216', flag: '🇹🇳' },
 ];
 
-export default function PhoneInput({ value, onChange, placeholder = '06 00 00 00 00' }) {
+export default function PhoneInput({ value, onChange, placeholder = '6 00 00 00 00' }) {
     const [isOpen, setIsOpen] = useState(false);
     const [selectedCountry, setSelectedCountry] = useState(countries[0]);
     const dropdownRef = useRef(null);
