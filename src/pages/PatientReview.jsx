@@ -614,149 +614,6 @@ export default function PatientReview() {
                             </div>
                         </div>
 
-                        {/* 2. Documents Section */}
-                        <div className="card glass-effect" style={{ padding: 'var(--spacing-6)' }}>
-                            <div className="card-header" style={{ marginBottom: 'var(--spacing-4)' }}>
-                                <div className="card-icon card-icon-primary" style={{ background: 'var(--color-primary-50)', color: 'var(--color-primary-600)' }}>
-                                    <FileText size={20} />
-                                </div>
-                                <h3>Ordonnance du cabinet</h3>
-                            </div>
-
-                            <input
-                                type="file"
-                                ref={(el) => (fileInputRef.current = el)}
-                                style={{ display: 'none' }}
-                                multiple
-                                onChange={(e) => handleFileUpload(e.target.files)}
-                            />
-
-                            <div
-                                className={`upload-zone ${isDragging ? 'dragging' : ''}`}
-                                onDragOver={onDragOver}
-                                onDragLeave={onDragLeave}
-                                onDrop={onDrop}
-                                onClick={() => fileInputRef.current.click()}
-                                style={{
-                                    border: isDragging ? '2px dashed var(--color-primary-500)' : '2px dashed var(--color-gray-200)',
-                                    background: isDragging ? 'var(--color-primary-50)' : 'rgba(255, 255, 255, 0.4)',
-                                    borderRadius: 'var(--border-radius-xl)',
-                                    padding: 'var(--spacing-6)',
-                                    textAlign: 'center',
-                                    position: 'relative',
-                                    cursor: 'pointer',
-                                    transition: 'all 0.2s ease'
-                                }}
-                            >
-                                <UploadCloud size={40} style={{ color: isDragging ? 'var(--color-primary-400)' : 'var(--color-gray-300)', marginBottom: 'var(--spacing-3)' }} />
-                                <div style={{ fontSize: 'var(--font-size-md)', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-gray-900)' }}>
-                                    {isDragging ? 'Déposez ici' : 'Glissez-déposez les documents ici'}
-                                </div>
-                                <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-400)', marginTop: '2px' }}>(Ordonnances, Arrêt de travail, Consignes...)</div>
-                                {documents.length === 0 && !isUploading && <p style={{ marginTop: 'var(--spacing-4)', color: 'var(--color-gray-400)', fontSize: 'var(--font-size-xs)' }}>Aucun document disponible.</p>}
-
-                                {isUploading && (
-                                    <div style={{
-                                        position: 'absolute',
-                                        inset: 0,
-                                        background: 'rgba(255,255,255,0.8)',
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        borderRadius: 'var(--border-radius-xl)',
-                                        zIndex: 10
-                                    }}>
-                                        <div className="spinner" style={{ borderTopColor: 'var(--color-primary-500)' }}></div>
-                                        <div style={{ marginTop: 'var(--spacing-4)', fontWeight: 'bold', color: 'var(--color-primary-600)' }}>Téléchargement en cours...</div>
-                                    </div>
-                                )}
-                            </div>
-
-                            {documents.length > 0 && (
-                                <div style={{ display: 'grid', gap: '8px', marginTop: 'var(--spacing-4)' }}>
-                                    {documents.map(doc => (
-                                        <div key={doc.id} className="glass-effect" style={{
-                                            padding: '8px 12px',
-                                            borderRadius: '10px',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            gap: '10px',
-                                            border: '1px solid rgba(0,0,0,0.03)'
-                                        }}>
-                                            <div style={{
-                                                width: '36px',
-                                                height: '36px',
-                                                borderRadius: '8px',
-                                                background: 'var(--color-primary-100)',
-                                                color: 'var(--color-primary-600)',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center'
-                                            }}>
-                                                <FileText size={18} />
-                                            </div>
-                                            <div style={{ flex: 1 }}>
-                                                <div style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-medium)' }}>{doc.name}</div>
-                                                <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-400)' }}>{doc.size}</div>
-                                            </div>
-                                            <div style={{ display: 'flex', gap: '4px' }}>
-                                                <button
-                                                    onClick={(e) => { e.stopPropagation(); handleDownloadDocument(doc.storage_path, doc.name); }}
-                                                    style={{
-                                                        background: 'transparent',
-                                                        border: 'none',
-                                                        color: 'var(--color-primary-500)',
-                                                        cursor: 'pointer',
-                                                        padding: '8px',
-                                                        borderRadius: '50%',
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        justifyContent: 'center'
-                                                    }}
-                                                    title="Télécharger"
-                                                >
-                                                    <Download size={18} />
-                                                </button>
-                                                <button
-                                                    onClick={(e) => { e.stopPropagation(); removeDocument(doc.id, doc.storage_path); }}
-                                                    style={{
-                                                        background: 'transparent',
-                                                        border: 'none',
-                                                        color: 'var(--color-gray-400)',
-                                                        cursor: 'pointer',
-                                                        padding: '8px',
-                                                        borderRadius: '50%',
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        justifyContent: 'center'
-                                                    }}
-                                                    className="btn-hover-danger"
-                                                    title="Supprimer"
-                                                >
-                                                    <Trash2 size={16} />
-                                                </button>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-
-                            <div style={{
-                                marginTop: 'var(--spacing-6)',
-                                padding: 'var(--spacing-4)',
-                                background: 'var(--color-primary-50)',
-                                borderRadius: 'var(--border-radius-md)',
-                                color: 'var(--color-primary-700)',
-                                fontSize: 'var(--font-size-sm)',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: 'var(--spacing-3)'
-                            }}>
-                                <AlertCircle size={18} />
-                                <span>Un SMS contenant le lien sécurisé sera envoyé automatiquement au patient <b>20 minutes</b> après le dépôt du document.</span>
-                            </div>
-                        </div>
 
                         {/* 3. Clinical Data Area */}
                         <div className="card glass-effect" style={{ padding: 'var(--spacing-8)' }}>
@@ -816,6 +673,147 @@ export default function PatientReview() {
                                                 </div>
                                             </div>
                                         ))}
+                                    </div>
+                                </div>
+
+                                {/* Document Uploader - Inserted between Pre-op and Post-op */}
+                                <div>
+                                    <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-gray-400)', textTransform: 'uppercase', marginBottom: 'var(--spacing-4)', letterSpacing: '0.05em' }}>
+                                        Ordonnance du cabinet
+                                    </div>
+                                    <div style={{ padding: 'var(--spacing-2)' }}>
+                                        <input
+                                            type="file"
+                                            ref={(el) => (fileInputRef.current = el)}
+                                            style={{ display: 'none' }}
+                                            multiple
+                                            onChange={(e) => handleFileUpload(e.target.files)}
+                                        />
+
+                                        <div
+                                            className={`upload-zone ${isDragging ? 'dragging' : ''}`}
+                                            onDragOver={onDragOver}
+                                            onDragLeave={onDragLeave}
+                                            onDrop={onDrop}
+                                            onClick={() => fileInputRef.current.click()}
+                                            style={{
+                                                border: isDragging ? '2px dashed var(--color-primary-500)' : '2px dashed var(--color-gray-200)',
+                                                background: isDragging ? 'var(--color-primary-50)' : 'rgba(255, 255, 255, 0.2)',
+                                                borderRadius: 'var(--border-radius-xl)',
+                                                padding: 'var(--spacing-4)',
+                                                textAlign: 'center',
+                                                position: 'relative',
+                                                cursor: 'pointer',
+                                                transition: 'all 0.2s ease'
+                                            }}
+                                        >
+                                            <UploadCloud size={32} style={{ color: isDragging ? 'var(--color-primary-400)' : 'var(--color-gray-300)', marginBottom: 'var(--spacing-2)' }} />
+                                            <div style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-gray-900)' }}>
+                                                {isDragging ? 'Déposez ici' : 'Glissez-déposez les documents ici'}
+                                            </div>
+                                            <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-400)', marginTop: '2px' }}>(Ordonnances, Arrêt de travail, Consignes...)</div>
+
+                                            {isUploading && (
+                                                <div style={{
+                                                    position: 'absolute',
+                                                    inset: 0,
+                                                    background: 'rgba(255,255,255,0.8)',
+                                                    display: 'flex',
+                                                    flexDirection: 'column',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    borderRadius: 'var(--border-radius-xl)',
+                                                    zIndex: 10
+                                                }}>
+                                                    <div className="spinner" style={{ borderTopColor: 'var(--color-primary-500)' }}></div>
+                                                    <div style={{ marginTop: 'var(--spacing-2)', fontWeight: 'bold', color: 'var(--color-primary-600)', fontSize: '12px' }}>Téléchargement...</div>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {documents.length > 0 && (
+                                            <div style={{ display: 'grid', gap: '8px', marginTop: 'var(--spacing-4)' }}>
+                                                {documents.map(doc => (
+                                                    <div key={doc.id} className="glass-effect" style={{
+                                                        padding: '6px 10px',
+                                                        borderRadius: '8px',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: '8px',
+                                                        border: '1px solid rgba(0,0,0,0.03)'
+                                                    }}>
+                                                        <div style={{
+                                                            width: '28px',
+                                                            height: '28px',
+                                                            borderRadius: '6px',
+                                                            background: 'var(--color-primary-100)',
+                                                            color: 'var(--color-primary-600)',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center'
+                                                        }}>
+                                                            <FileText size={14} />
+                                                        </div>
+                                                        <div style={{ flex: 1 }}>
+                                                            <div style={{ fontSize: '13px', fontWeight: 'var(--font-weight-medium)' }}>{doc.name}</div>
+                                                            <div style={{ fontSize: '11px', color: 'var(--color-gray-400)' }}>{doc.size}</div>
+                                                        </div>
+                                                        <div style={{ display: 'flex', gap: '2px' }}>
+                                                            <button
+                                                                onClick={(e) => { e.stopPropagation(); handleDownloadDocument(doc.storage_path, doc.name); }}
+                                                                style={{
+                                                                    background: 'transparent',
+                                                                    border: 'none',
+                                                                    color: 'var(--color-primary-500)',
+                                                                    cursor: 'pointer',
+                                                                    padding: '4px',
+                                                                    borderRadius: '50%',
+                                                                    display: 'flex',
+                                                                    alignItems: 'center',
+                                                                    justifyContent: 'center'
+                                                                }}
+                                                                title="Télécharger"
+                                                            >
+                                                                <Download size={14} />
+                                                            </button>
+                                                            <button
+                                                                onClick={(e) => { e.stopPropagation(); removeDocument(doc.id, doc.storage_path); }}
+                                                                style={{
+                                                                    background: 'transparent',
+                                                                    border: 'none',
+                                                                    color: 'var(--color-gray-400)',
+                                                                    cursor: 'pointer',
+                                                                    padding: '4px',
+                                                                    borderRadius: '50%',
+                                                                    display: 'flex',
+                                                                    alignItems: 'center',
+                                                                    justifyContent: 'center'
+                                                                }}
+                                                                className="btn-hover-danger"
+                                                                title="Supprimer"
+                                                            >
+                                                                <Trash2 size={12} />
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+
+                                        <div style={{
+                                            marginTop: 'var(--spacing-4)',
+                                            padding: 'var(--spacing-3)',
+                                            background: 'var(--color-primary-50)',
+                                            borderRadius: 'var(--border-radius-md)',
+                                            color: 'var(--color-primary-700)',
+                                            fontSize: '11px',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: 'var(--spacing-2)'
+                                        }}>
+                                            <AlertCircle size={14} />
+                                            <span>Lien sécurisé envoyé <b>20 min</b> après le dépôt.</span>
+                                        </div>
                                     </div>
                                 </div>
 
