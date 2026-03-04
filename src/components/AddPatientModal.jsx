@@ -14,7 +14,7 @@ export default function AddPatientModal({ isOpen, onClose, onPatientAdded }) {
         phone: '+33 ',
         email: '',
         surgeonName: 'Christophe DESOUCHES',
-        surgeryTime: '07:30',
+        surgeryTime: 'Non-communiquée',
         stayType: 'Ambulatoire'
     });
     const [isSaving, setIsSaving] = useState(false);
@@ -83,7 +83,7 @@ export default function AddPatientModal({ isOpen, onClose, onPatientAdded }) {
                         phone: '',
                         email: '',
                         surgeonName: 'Christophe DESOUCHES',
-                        surgeryTime: '07:30',
+                        surgeryTime: 'Non-communiquée',
                         stayType: 'Ambulatoire'
                     });
                 }
@@ -182,32 +182,17 @@ export default function AddPatientModal({ isOpen, onClose, onPatientAdded }) {
                             )}
                         </div>
 
-                        <div className="grid-2">
-                            <div>
-                                <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Date d'intervention</label>
-                                <div style={{ position: 'relative' }}>
-                                    <Calendar size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-gray-400)', zIndex: 1 }} />
-                                    <input
-                                        type="date"
-                                        className="input"
-                                        style={{ paddingLeft: '40px' }}
-                                        value={formData.date}
-                                        onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                                    />
-                                </div>
-                            </div>
-                            <div>
-                                <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Heure</label>
-                                <div style={{ position: 'relative' }}>
-                                    <Clock size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-gray-400)', zIndex: 1 }} />
-                                    <input
-                                        type="time"
-                                        className="input"
-                                        style={{ paddingLeft: '40px' }}
-                                        value={formData.surgeryTime}
-                                        onChange={(e) => setFormData({ ...formData, surgeryTime: e.target.value })}
-                                    />
-                                </div>
+                        <div>
+                            <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Date d'intervention</label>
+                            <div style={{ position: 'relative' }}>
+                                <Calendar size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-gray-400)', zIndex: 1 }} />
+                                <input
+                                    type="date"
+                                    className="input"
+                                    style={{ paddingLeft: '40px' }}
+                                    value={formData.date}
+                                    onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                                />
                             </div>
                         </div>
 

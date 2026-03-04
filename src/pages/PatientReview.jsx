@@ -513,7 +513,7 @@ export default function PatientReview() {
                                             {patient.date ? formatDateFR(patient.date) : 'Date non définie'}
                                             <span style={{ opacity: 0.3, margin: '0 4px' }}>|</span>
                                             <Clock size={16} />
-                                            {patient.surgery_time || '07:30'}
+                                            {patient.surgery_time || 'Non-communiquée'}
                                         </span>
 
                                         {/* J-Condition Badge */}
@@ -592,7 +592,7 @@ export default function PatientReview() {
                                             <div style={{ fontWeight: 'var(--font-weight-semibold)', color: '#8B7355', display: 'flex', alignItems: 'center', gap: '8px' }}>
                                                 {patient.date ? formatDateFR(patient.date) : 'Non définie'}
                                                 <span style={{ color: 'var(--color-gray-300)' }}>à</span>
-                                                {patient.surgery_time || '07:30'}
+                                                {patient.surgery_time || 'Non-communiquée'}
                                             </div>
                                         </div>
                                         <div>
