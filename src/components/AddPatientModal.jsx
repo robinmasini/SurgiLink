@@ -7,7 +7,8 @@ import { generatePatientToken } from '../services/tokenService';
 
 export default function AddPatientModal({ isOpen, onClose, onPatientAdded }) {
     const [formData, setFormData] = useState({
-        name: '',
+        firstName: '',
+        lastName: '',
         operation: '',
         date: '',
         birthDate: '',
@@ -23,8 +24,8 @@ export default function AddPatientModal({ isOpen, onClose, onPatientAdded }) {
     if (!isOpen) return null;
 
     const handleSave = async () => {
-        if (!formData.name || !formData.operation) {
-            alert('Veuillez remplir au moins le nom et l\'intervention.');
+        if (!formData.firstName || !formData.lastName || !formData.operation) {
+            alert('Veuillez remplir le prénom, le nom et l\'intervention.');
             return;
         }
 
@@ -36,11 +37,12 @@ export default function AddPatientModal({ isOpen, onClose, onPatientAdded }) {
 
         setIsSaving(true);
         try {
+            const fullName = `${formData.firstName.trim()} ${formData.lastName.trim()}`;
             const { data, error } = await supabase
                 .from('patients')
                 .insert([
                     {
-                        name: formData.name,
+                        name: fullName,
                         operation: formData.operation,
                         date: formData.date || new Date().toISOString().split('T')[0],
                         birth_date: formData.birthDate || null,
@@ -72,11 +74,12 @@ export default function AddPatientModal({ isOpen, onClose, onPatientAdded }) {
                     console.log('Patient créé, planification des rappels pour:', surgeryDate);
                     await scheduleTimeBasedReminders(newPatient.id, surgeryDate);
 
-                    alert(`Patient ${formData.name} enregistré avec succès !`);
+                    alert(`Patient ${fullName} enregistré avec succès !`);
                     if (onPatientAdded) onPatientAdded({ ...newPatient, token });
                     onClose();
                     setFormData({
-                        name: '',
+                        firstName: '',
+                        lastName: '',
                         operation: '',
                         date: '',
                         birthDate: '',
@@ -113,17 +116,32 @@ export default function AddPatientModal({ isOpen, onClose, onPatientAdded }) {
 
                 <div style={{ padding: 'var(--spacing-6)' }}>
                     <div style={{ display: 'grid', gap: 'var(--spacing-4)' }}>
-                        <div>
-                            <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Nom Complet</label>
-                            <div style={{ position: 'relative' }}>
-                                <User size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-gray-400)' }} />
-                                <input
-                                    className="input"
-                                    placeholder="Ex: Jean Martin"
-                                    style={{ paddingLeft: '40px' }}
-                                    value={formData.name}
-                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                />
+                        <div className="grid-2">
+                            <div>
+                                <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Prénom</label>
+                                <div style={{ position: 'relative' }}>
+                                    <User size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-gray-400)' }} />
+                                    <input
+                                        className="input"
+                                        placeholder="Ex: Jean"
+                                        style={{ paddingLeft: '40px' }}
+                                        value={formData.firstName}
+                                        onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                                    />
+                                </div>
+                            </div>
+                            <div>
+                                <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Nom</label>
+                                <div style={{ position: 'relative' }}>
+                                    <User size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-gray-400)' }} />
+                                    <input
+                                        className="input"
+                                        placeholder="Ex: Martin"
+                                        style={{ paddingLeft: '40px' }}
+                                        value={formData.lastName}
+                                        onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                                    />
+                                </div>
                             </div>
                         </div>
 

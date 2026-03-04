@@ -5,7 +5,8 @@ import PhoneInput from './PhoneInput';
 
 export default function EditPatientModal({ isOpen, onClose, patient, onPatientUpdated }) {
     const [formData, setFormData] = useState({
-        name: '',
+        firstName: '',
+        lastName: '',
         operation: '',
         date: '',
         birthDate: '',
@@ -37,8 +38,13 @@ export default function EditPatientModal({ isOpen, onClose, patient, onPatientUp
                 }
             }
 
+            const nameParts = (patient.name || '').split(' ');
+            const firstName = nameParts[0] || '';
+            const lastName = nameParts.slice(1).join(' ') || '';
+
             setFormData({
-                name: patient.name || '',
+                firstName,
+                lastName,
                 operation: patient.operation || '',
                 date: operationDate || '',
                 birthDate: patient.birth_date || '',
@@ -56,17 +62,18 @@ export default function EditPatientModal({ isOpen, onClose, patient, onPatientUp
     if (!isOpen || !patient) return null;
 
     const handleSave = async () => {
-        if (!formData.name || !formData.operation) {
-            alert('Veuillez remplir au moins le nom et l\'intervention.');
+        if (!formData.firstName || !formData.lastName || !formData.operation) {
+            alert('Veuillez remplir le prénom, le nom et l\'intervention.');
             return;
         }
 
         setIsSaving(true);
         try {
+            const fullName = `${formData.firstName.trim()} ${formData.lastName.trim()}`;
             const { data, error } = await supabase
                 .from('patients')
                 .update({
-                    name: formData.name,
+                    name: fullName,
                     operation: formData.operation,
                     date: formData.date || null,
                     birth_date: formData.birthDate || null,
@@ -85,7 +92,7 @@ export default function EditPatientModal({ isOpen, onClose, patient, onPatientUp
                 console.error('Error updating patient:', error);
                 alert(`Erreur lors de la mise à jour : ${error.message}`);
             } else {
-                alert(`Patient ${formData.name} mis à jour avec succès !`);
+                alert(`Patient ${fullName} mis à jour avec succès !`);
                 if (onPatientUpdated) onPatientUpdated(data[0]);
                 onClose();
             }
@@ -129,17 +136,32 @@ export default function EditPatientModal({ isOpen, onClose, patient, onPatientUp
                     flex: 1
                 }}>
                     <div style={{ display: 'grid', gap: 'var(--spacing-4)' }}>
-                        <div>
-                            <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Nom Complet</label>
-                            <div style={{ position: 'relative' }}>
-                                <User size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-gray-400)' }} />
-                                <input
-                                    className="input"
-                                    placeholder="Ex: Jean Martin"
-                                    style={{ paddingLeft: '40px' }}
-                                    value={formData.name}
-                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                />
+                        <div className="grid-2">
+                            <div>
+                                <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Prénom</label>
+                                <div style={{ position: 'relative' }}>
+                                    <User size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-gray-400)' }} />
+                                    <input
+                                        className="input"
+                                        placeholder="Ex: Jean"
+                                        style={{ paddingLeft: '40px' }}
+                                        value={formData.firstName}
+                                        onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                                    />
+                                </div>
+                            </div>
+                            <div>
+                                <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Nom</label>
+                                <div style={{ position: 'relative' }}>
+                                    <User size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-gray-400)' }} />
+                                    <input
+                                        className="input"
+                                        placeholder="Ex: Martin"
+                                        style={{ paddingLeft: '40px' }}
+                                        value={formData.lastName}
+                                        onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                                    />
+                                </div>
                             </div>
                         </div>
 
