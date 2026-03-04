@@ -26,7 +26,13 @@ import {
     Trash2,
     Eye,
     Send,
-    Mail
+    Mail,
+    Phone,
+    MapPin,
+    Link as LinkIcon,
+    Copy,
+    RefreshCw,
+    ShieldCheck
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { calculateAge, formatDateFR, formatDateTimeFR } from '../utils/dateUtils';
@@ -35,7 +41,6 @@ import { getDocuments, uploadDocument, deleteDocument, downloadDocument } from '
 import { generatePatientToken, getPatientTokens, revokeToken } from '../services/tokenService';
 import { sendManualReminder, getNextPendingReminder, getPendingReminders, sendOverrideSMS, updateReminder } from '../services/reminderService';
 import LogoPremium from '../components/LogoPremium';
-import { Link as LinkIcon, Copy, RefreshCw, ShieldCheck, MapPin } from 'lucide-react';
 import clinicImage from '../assets/clinic.png';
 
 export default function PatientReview() {
