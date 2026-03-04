@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Plus, X, User, Clipboard, Mail, Phone } from 'lucide-react';
+import { Plus, X, User, Clipboard, Mail, Phone, Calendar, Clock } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import PhoneInput from './PhoneInput';
 import { scheduleTimeBasedReminders, sendManualReminder } from '../services/reminderService';
 import { generatePatientToken } from '../services/tokenService';
 
@@ -10,7 +11,7 @@ export default function AddPatientModal({ isOpen, onClose, onPatientAdded }) {
         operation: '',
         date: '',
         birthDate: '',
-        phone: '',
+        phone: '+33 ',
         email: '',
         surgeonName: 'Christophe DESOUCHES',
         surgeryTime: '07:30',
@@ -201,38 +202,41 @@ export default function AddPatientModal({ isOpen, onClose, onPatientAdded }) {
                             )}
                         </div>
 
-                        <div className="grid-3">
+                        <div className="grid-2">
                             <div>
                                 <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Date d'intervention</label>
-                                <input
-                                    type="date"
-                                    className="input"
-                                    value={formData.date}
-                                    onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                                />
-                            </div>
-                            <div>
-                                <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Heure</label>
-                                <input
-                                    type="time"
-                                    className="input"
-                                    value={formData.surgeryTime}
-                                    onChange={(e) => setFormData({ ...formData, surgeryTime: e.target.value })}
-                                />
-                            </div>
-                            <div>
-                                <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Téléphone</label>
                                 <div style={{ position: 'relative' }}>
-                                    <Phone size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-gray-400)' }} />
+                                    <Calendar size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-gray-400)', zIndex: 1 }} />
                                     <input
+                                        type="date"
                                         className="input"
-                                        placeholder="06 00 00 00 00"
                                         style={{ paddingLeft: '40px' }}
-                                        value={formData.phone}
-                                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                                        value={formData.date}
+                                        onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                                     />
                                 </div>
                             </div>
+                            <div>
+                                <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Heure</label>
+                                <div style={{ position: 'relative' }}>
+                                    <Clock size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-gray-400)', zIndex: 1 }} />
+                                    <input
+                                        type="time"
+                                        className="input"
+                                        style={{ paddingLeft: '40px' }}
+                                        value={formData.surgeryTime}
+                                        onChange={(e) => setFormData({ ...formData, surgeryTime: e.target.value })}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Téléphone</label>
+                            <PhoneInput
+                                value={formData.phone}
+                                onChange={(val) => setFormData({ ...formData, phone: val })}
+                            />
                         </div>
 
                         <div>
