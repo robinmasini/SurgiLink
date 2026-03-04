@@ -25,7 +25,8 @@ import {
     UploadCloud,
     Trash2,
     Eye,
-    Send
+    Send,
+    Mail
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { calculateAge, formatDateFR, formatDateTimeFR } from '../utils/dateUtils';
@@ -509,7 +510,10 @@ export default function PatientReview() {
                                     {/* Detailed Info Grid */}
                                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 'var(--spacing-6)', marginTop: 'var(--spacing-6)', paddingTop: 'var(--spacing-6)', borderTop: '1px solid var(--color-gray-100)' }}>
                                         <div>
-                                            <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', textTransform: 'uppercase', marginBottom: '4px' }}>Clinique</div>
+                                            <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', textTransform: 'uppercase', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                <MapPin size={12} style={{ color: 'var(--color-gray-400)' }} />
+                                                Clinique
+                                            </div>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                                 <div style={{
                                                     width: '32px',
@@ -527,11 +531,17 @@ export default function PatientReview() {
                                             </div>
                                         </div>
                                         <div>
-                                            <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', textTransform: 'uppercase', marginBottom: '4px' }}>Chirurgien</div>
+                                            <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', textTransform: 'uppercase', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                <User size={12} style={{ color: 'var(--color-gray-400)' }} />
+                                                Chirurgien
+                                            </div>
                                             <div style={{ fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-gray-900)' }}>{patient.surgeon_name || 'Dr. Christophe DESOUCHES'}</div>
                                         </div>
                                         <div>
-                                            <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', textTransform: 'uppercase', marginBottom: '4px' }}>Date & Heure Intervention</div>
+                                            <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', textTransform: 'uppercase', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                <Calendar size={12} style={{ color: 'var(--color-gray-400)' }} />
+                                                Date & Heure Intervention
+                                            </div>
                                             <div style={{ fontWeight: 'var(--font-weight-semibold)', color: '#8B7355', display: 'flex', alignItems: 'center', gap: '8px' }}>
                                                 {patient.date ? formatDateFR(patient.date) : 'Non définie'}
                                                 <span style={{ color: 'var(--color-gray-300)' }}>à</span>
@@ -539,11 +549,17 @@ export default function PatientReview() {
                                             </div>
                                         </div>
                                         <div>
-                                            <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', textTransform: 'uppercase', marginBottom: '4px' }}>Téléphone</div>
+                                            <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', textTransform: 'uppercase', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                <Phone size={12} style={{ color: 'var(--color-gray-400)' }} />
+                                                Téléphone
+                                            </div>
                                             <div style={{ fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-gray-900)' }}>{patient.phone || 'Non renseigné'}</div>
                                         </div>
                                         <div>
-                                            <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', textTransform: 'uppercase', marginBottom: '4px' }}>Email</div>
+                                            <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', textTransform: 'uppercase', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                <Mail size={12} style={{ color: 'var(--color-gray-400)' }} />
+                                                Email
+                                            </div>
                                             <div style={{ fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-gray-900)' }}>{patient.email || 'Non renseigné'}</div>
                                         </div>
                                     </div>
