@@ -165,7 +165,9 @@ export default function PatientPortal({ patient: initialPatient }) {
         );
     }
 
-    const patientInitials = patient?.name ? patient.name.split(' ').map(n => n[0]).join('').toUpperCase() : 'P';
+    const patientInitials = patient?.name
+        ? patient.name.trim().split(/\s+/).map(n => n[0]).filter(Boolean).join('').toUpperCase()
+        : 'P';
 
     return (
         <div style={{
