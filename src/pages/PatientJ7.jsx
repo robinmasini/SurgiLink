@@ -1,3 +1,14 @@
+import { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { LogOut, Clock, Sparkles, Scissors, AlertCircle } from 'lucide-react';
+import { pathwayConfig } from '../config/pathway.config';
+import { saveResponse, getResponses, markScreenCompleted, calculateRiskFlags } from '../services/pathwayService';
+import { scheduleStateBasedReminders } from '../services/reminderService';
+import QuestionRenderer from '../components/pathway/QuestionRenderer';
+import AlertBanner from '../components/pathway/AlertBanner';
+import CompactAppointmentCard from '../components/CompactAppointmentCard';
+import { usePatientId } from '../hooks/usePatientId';
+import { supabase } from '../lib/supabase';
 import { calculateAge, formatDateFR, calculateDaysUntilSurgery } from '../utils/dateUtils';
 
 export default function PatientJ7({ patient: propPatient, token: propToken }) {

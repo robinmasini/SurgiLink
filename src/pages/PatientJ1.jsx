@@ -8,6 +8,7 @@ import AlertBanner from '../components/pathway/AlertBanner';
 import CompactAppointmentCard from '../components/CompactAppointmentCard';
 import { usePatientId } from '../hooks/usePatientId';
 import { supabase } from '../lib/supabase';
+import { calculateDaysUntilSurgery } from '../utils/dateUtils';
 
 export default function PatientJ1() {
     const navigate = useNavigate();
