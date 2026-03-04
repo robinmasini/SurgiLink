@@ -133,6 +133,22 @@ export default function PatientPortal({ patient: initialPatient }) {
         );
     }
 
+    if (!patient) {
+        return (
+            <div className="patient-view" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', padding: 'var(--spacing-4)' }}>
+                <div className="card" style={{ maxWidth: '400px', textAlign: 'center' }}>
+                    <AlertCircle size={48} style={{ color: 'var(--color-danger-500)', marginBottom: 'var(--spacing-4)' }} />
+                    <h2 style={{ marginBottom: 'var(--spacing-2)' }}>Accès non autorisé</h2>
+                    <p style={{ color: 'var(--color-gray-600)' }}>
+                        Impossible de charger les données de votre dossier. Veuillez contacter votre établissement de soins.
+                    </p>
+                </div>
+            </div>
+        );
+    }
+
+    const patientInitials = patient?.name ? patient.name.split(' ').map(n => n[0]).join('').toUpperCase() : 'P';
+
     return (
         <div style={{
             minHeight: '100vh',
@@ -143,7 +159,7 @@ export default function PatientPortal({ patient: initialPatient }) {
                 {/* Header Greeting */}
                 <div style={{ marginBottom: 'var(--spacing-8)' }}>
                     <h1 style={{ fontSize: '32px', fontWeight: '800', marginBottom: 'var(--spacing-1)', color: '#1A1A1A' }}>
-                        Bonjour, {patient?.name?.split(' ').map(n => n[0]).join('') || 'Patient'}
+                        Bonjour, {patientInitials}
                     </h1>
                     <p style={{ color: '#666', fontSize: '16px', fontWeight: '500' }}>Votre portail de suivi personnalisé</p>
                 </div>
