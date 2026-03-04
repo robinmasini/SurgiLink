@@ -29,6 +29,7 @@ export default function PatientPortal({ patient: initialPatient }) {
     const [error, setError] = useState(null);
     const [patient, setPatient] = useState(initialPatient);
     const [medicalHistory, setMedicalHistory] = useState([]);
+    const [responses, setResponses] = useState({});
 
     useEffect(() => {
         if (initialPatient) {
@@ -50,10 +51,27 @@ export default function PatientPortal({ patient: initialPatient }) {
             if (!historyError) {
                 setMedicalHistory(historyData || []);
             }
+            loadPatientResponses(patientId);
         } catch (err) {
             console.error('Error loading history:', err);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const loadPatientResponses = async (patientId) => {
+        try {
+            const { data, error } = await supabase
+                .from('pathway_responses')
+                .select('responses')
+                .eq('patient_id', patientId)
+                .single();
+
+            if (!error && data) {
+                setResponses(data.responses || {});
+            }
+        } catch (err) {
+            console.error('Error loading responses:', err);
         }
     };
 
