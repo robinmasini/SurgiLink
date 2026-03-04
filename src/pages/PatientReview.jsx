@@ -34,7 +34,8 @@ import { getDocuments, uploadDocument, deleteDocument, downloadDocument } from '
 import { generatePatientToken, getPatientTokens, revokeToken } from '../services/tokenService';
 import { sendManualReminder, getNextPendingReminder, getPendingReminders, sendOverrideSMS, updateReminder } from '../services/reminderService';
 import LogoPremium from '../components/LogoPremium';
-import { Link as LinkIcon, Copy, RefreshCw, ShieldCheck } from 'lucide-react';
+import { Link as LinkIcon, Copy, RefreshCw, ShieldCheck, MapPin } from 'lucide-react';
+import clinicImage from '../assets/clinic.png';
 
 export default function PatientReview() {
     const { id } = useParams();
@@ -504,6 +505,24 @@ export default function PatientReview() {
 
                                     {/* Detailed Info Grid */}
                                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 'var(--spacing-6)', marginTop: 'var(--spacing-6)', paddingTop: 'var(--spacing-6)', borderTop: '1px solid var(--color-gray-100)' }}>
+                                        <div>
+                                            <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', textTransform: 'uppercase', marginBottom: '4px' }}>Clinique</div>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                <div style={{
+                                                    width: '32px',
+                                                    height: '32px',
+                                                    borderRadius: '6px',
+                                                    overflow: 'hidden',
+                                                    flexShrink: 0,
+                                                    border: '1px solid var(--color-gray-100)'
+                                                }}>
+                                                    <img src={clinicImage} alt="Clinique" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                </div>
+                                                <div style={{ fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-gray-900)', fontSize: '13px' }}>
+                                                    {patient.clinic_name || 'Clinique de Vitrolles'}
+                                                </div>
+                                            </div>
+                                        </div>
                                         <div>
                                             <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', textTransform: 'uppercase', marginBottom: '4px' }}>Chirurgien</div>
                                             <div style={{ fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-gray-900)' }}>{patient.surgeon_name || 'Dr. Christophe DESOUCHES'}</div>
