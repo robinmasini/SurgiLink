@@ -1,14 +1,4 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { LogOut, Clock, Sparkles, Scissors, AlertCircle } from 'lucide-react';
-import { pathwayConfig } from '../config/pathway.config';
-import { saveResponse, getResponses, markScreenCompleted, calculateRiskFlags } from '../services/pathwayService';
-import { scheduleStateBasedReminders } from '../services/reminderService';
-import QuestionRenderer from '../components/pathway/QuestionRenderer';
-import AlertBanner from '../components/pathway/AlertBanner';
-import CompactAppointmentCard from '../components/CompactAppointmentCard';
-import { usePatientId } from '../hooks/usePatientId';
-import { supabase } from '../lib/supabase';
+import { calculateAge, formatDateFR, calculateDaysUntilSurgery } from '../utils/dateUtils';
 
 export default function PatientJ7({ patient: propPatient, token: propToken }) {
     const navigate = useNavigate();
@@ -155,10 +145,12 @@ export default function PatientJ7({ patient: propPatient, token: propToken }) {
             <div className="patient-content fade-in">
                 {patient && (
                     <CompactAppointmentCard
+                        variant="pill"
                         clinicName={patient.clinic_name}
                         appointmentDate={patient.date}
                         appointmentTime={patient.surgery_time}
-                        style={{ background: 'rgba(255, 255, 255, 0.4)', marginBottom: 'var(--spacing-4)' }}
+                        jValue={calculateDaysUntilSurgery(patient.date)}
+                        style={{ justifyContent: 'center', marginBottom: 'var(--spacing-6)' }}
                     />
                 )}
 

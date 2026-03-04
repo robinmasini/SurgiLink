@@ -1,9 +1,13 @@
-import { MapPin, Calendar, Clock } from 'lucide-react';
+import { MapPin, Calendar, Clock, Zap } from 'lucide-react';
+import clinicImageNew from '../assets/clinic_new.png';
 
 export default function CompactAppointmentCard({
     clinicName,
-    appointmentDate, // Expected format: YYYY-MM-DD or full datetime
-    appointmentTime, // Expected format: HH:mm
+    appointmentDate,
+    appointmentTime,
+    address = "La Tuilière II, Rue Bel air, 13127 Vitrolles",
+    jValue = "J-5",
+    variant = "pill", // "pill" (top bars) or "card" (clinic detail)
     style = {}
 }) {
     // Helper to format date in a short version
@@ -21,62 +25,123 @@ export default function CompactAppointmentCard({
         }
     };
 
-    return (
-        <div
-            className="glass-effect"
-            style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 'var(--spacing-4)',
-                padding: '12px 20px',
-                borderRadius: '16px',
-                border: '1px solid rgba(255, 255, 255, 0.4)',
-                boxShadow: '0 4px 15px rgba(0,0,0,0.05)',
-                margin: '0 auto var(--spacing-6)',
-                maxWidth: 'fit-content',
-                flexWrap: 'wrap',
-                ...style
-            }}
-        >
-            {/* Clinic Section */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+    const formatLongDate = (dateStr) => {
+        if (!dateStr) return 'Non définie';
+        const date = new Date(dateStr);
+        return date.toLocaleDateString('fr-FR', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        });
+    };
+
+    if (variant === "pill") {
+        return (
+            <div style={{ display: 'flex', gap: 'var(--spacing-3)', marginBottom: 'var(--spacing-6)', flexWrap: 'wrap', ...style }}>
+                {/* Date/Time Pill */}
                 <div style={{
-                    color: 'var(--color-primary-600)',
-                    background: 'var(--color-primary-50)',
-                    padding: '6px',
-                    borderRadius: '8px',
-                    display: 'flex'
+                    background: 'white',
+                    border: '1px solid #D7C4B0',
+                    padding: '10px 24px',
+                    borderRadius: '25px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                    boxShadow: '0 2px 8px rgba(215, 196, 176, 0.15)'
                 }}>
-                    <MapPin size={14} />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <Calendar size={18} style={{ color: '#6D4C41' }} />
+                        <span style={{ fontWeight: '700', color: '#6D4C41' }}>{formatLongDate(appointmentDate)}</span>
+                    </div>
+                    <div style={{ width: '1px', height: '16px', background: '#D7C4B0' }} />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <Clock size={18} style={{ color: '#6D4C41' }} />
+                        <span style={{ fontWeight: '700', color: '#6D4C41' }}>{appointmentTime || '07:30'}</span>
+                    </div>
                 </div>
-                <div style={{ fontWeight: '700', fontSize: '14px', color: 'var(--color-gray-900)' }}>
-                    {clinicName || 'Clinique de Vitrolles'}
+
+                {/* J-Condition Pill */}
+                <div style={{
+                    background: '#37474F',
+                    color: 'white',
+                    padding: '10px 24px',
+                    borderRadius: '25px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                }}>
+                    <Zap size={18} fill="currentColor" />
+                    <span style={{ fontWeight: '800', fontSize: '18px' }}>{jValue}</span>
+                </div>
+            </div>
+        );
+    }
+
+    // Card variant (the horizontal clinic card)
+    return (
+        <div style={{
+            background: 'white',
+            borderRadius: '24px',
+            padding: 'var(--spacing-4)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 'var(--spacing-4)',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.03)',
+            ...style
+        }}>
+            {/* Thumbnail */}
+            <div style={{
+                width: '80px',
+                height: '80px',
+                borderRadius: '16px',
+                overflow: 'hidden',
+                flexShrink: 0
+            }}>
+                <img src={clinicImageNew} alt="Clinic" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            </div>
+
+            {/* Info */}
+            <div style={{ flex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                    <div style={{ background: '#F5F5F5', padding: '6px', borderRadius: '8px', color: '#D7C4B0' }}>
+                        <MapPin size={14} />
+                    </div>
+                    <h3 style={{ fontSize: '18px', fontWeight: '800', color: '#1A1A1A', margin: 0 }}>{clinicName}</h3>
+                </div>
+                <div style={{ fontSize: '13px', color: '#666', marginLeft: '30px', fontWeight: '500' }}>
+                    {address}
                 </div>
             </div>
 
-            {/* Separator */}
-            <div style={{ width: '1px', height: '20px', background: 'var(--color-gray-200)' }} />
-
-            {/* Date Section */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Calendar size={14} style={{ color: 'var(--color-gray-400)' }} />
-                <div style={{ fontWeight: '600', fontSize: '14px', color: 'var(--color-gray-700)' }}>
+            {/* Side Pills (Date/Time) */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <div style={{
+                    background: '#F5F7FA',
+                    padding: '6px 12px',
+                    borderRadius: '8px',
+                    fontSize: '13px',
+                    fontWeight: '700',
+                    color: '#455A64',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px'
+                }}>
+                    <Calendar size={14} />
                     {formatShortDate(appointmentDate)}
                 </div>
-            </div>
-
-            {/* Time Section */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Clock size={14} style={{ color: 'var(--color-gray-400)' }} />
                 <div style={{
+                    background: '#F5F7FA',
+                    padding: '6px 12px',
+                    borderRadius: '8px',
+                    fontSize: '13px',
                     fontWeight: '700',
-                    fontSize: '14px',
-                    color: 'var(--color-primary-600)',
-                    background: 'var(--color-primary-50)',
-                    padding: '2px 8px',
-                    borderRadius: '6px'
+                    color: '#455A64',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px'
                 }}>
+                    <Clock size={14} />
                     {appointmentTime || '07:30'}
                 </div>
             </div>

@@ -141,10 +141,12 @@ export default function PatientJ1() {
             <div className="patient-content fade-in">
                 {patient && (
                     <CompactAppointmentCard
+                        variant="pill"
                         clinicName={patient.clinic_name}
                         appointmentDate={patient.date}
                         appointmentTime={patient.surgery_time}
-                        style={{ background: 'rgba(255, 255, 255, 0.4)', marginBottom: 'var(--spacing-4)' }}
+                        jValue={calculateDaysUntilSurgery(patient.date)}
+                        style={{ justifyContent: 'center', marginBottom: 'var(--spacing-6)' }}
                     />
                 )}
 
