@@ -35,7 +35,7 @@ import {
     ShieldCheck
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import { calculateAge, formatDateFR, formatDateTimeFR } from '../utils/dateUtils';
+import { calculateAge, calculateDaysUntilSurgery, formatDateFR, formatDateTimeFR } from '../utils/dateUtils';
 import { getPatientPathwayStatus, getResponses, calculateRiskFlags } from '../services/pathwayService';
 import { getDocuments, uploadDocument, deleteDocument, downloadDocument } from '../services/documentService';
 import { generatePatientToken, getPatientTokens, revokeToken } from '../services/tokenService';
@@ -487,6 +487,11 @@ export default function PatientReview() {
                                         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-1)' }}>
                                             <Calendar size={16} />
                                             Né(e) le {patient.birth_date ? formatDateFR(patient.birth_date) : 'N/A'}
+                                            {patient.birth_date && (
+                                                <span style={{ color: 'var(--color-gray-400)', marginLeft: '4px' }}>
+                                                    ({calculateAge(patient.birth_date)} ans)
+                                                </span>
+                                            )}
                                         </div>
                                     </div>
                                     <div style={{ display: 'flex', gap: 'var(--spacing-2)', marginTop: 'var(--spacing-4)', flexWrap: 'wrap' }}>
@@ -510,6 +515,43 @@ export default function PatientReview() {
                                             <Clock size={16} />
                                             {patient.surgery_time || '07:30'}
                                         </span>
+
+                                        {/* J-Condition Badge */}
+                                        {patient.date && (() => {
+                                            const jValue = calculateDaysUntilSurgery(patient.date);
+                                            const days = parseInt(jValue.replace(/[J+\-]/g, ''));
+                                            const isPostOp = jValue.includes('+');
+                                            const isPreOp = jValue.includes('-') && days > 0;
+                                            const isToday = jValue === 'J-0';
+
+                                            let badgeStyle = {
+                                                padding: '8px 16px',
+                                                borderRadius: '30px',
+                                                fontWeight: '800',
+                                                fontSize: '14px',
+                                                boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '6px'
+                                            };
+
+                                            if (isToday) {
+                                                badgeStyle = { ...badgeStyle, background: 'var(--color-primary-600)', color: 'white' };
+                                            } else if (isPostOp) {
+                                                badgeStyle = { ...badgeStyle, background: '#8E24AA', color: 'white' };
+                                            } else if (days <= 3) {
+                                                badgeStyle = { ...badgeStyle, background: '#E65100', color: 'white' }; // Urgent countdown
+                                            } else {
+                                                badgeStyle = { ...badgeStyle, background: 'var(--color-gray-700)', color: 'white' };
+                                            }
+
+                                            return (
+                                                <div style={badgeStyle}>
+                                                    <Zap size={14} fill="currentColor" />
+                                                    {jValue}
+                                                </div>
+                                            );
+                                        })()}
                                     </div>
 
                                     {/* Detailed Info Grid */}
