@@ -210,7 +210,7 @@ export default function PatientPortal({ patient: initialPatient }) {
 
                     {/* Protocol Status Row */}
                     <ProtocolStatus
-                        progress={Math.round((Object.keys(responses).length / 7) * 100) || 0}
+                        progress={patient?.progress || (responses ? Math.round((Object.keys(responses).length / 7) * 100) : 0)}
                         statusLabel="Protocole en cours d'exécution"
                     />
                 </div>
