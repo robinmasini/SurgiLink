@@ -43,21 +43,54 @@ export default function PhoneInput({ value, onChange, placeholder = '06 00 00 00
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
+    const formatValue = (val, countryCode) => {
+        if (!val) return '';
+        // Remove all non-numeric characters for processing
+        const numbers = val.replace(/\D/g, '');
+
+        if (countryCode === '+33') {
+            // French format: X XX XX XX XX
+            const chars = numbers.split('');
+            let formatted = '';
+            for (let i = 0; i < chars.length && i < 9; i++) {
+                if (i === 1 || i === 3 || i === 5 || i === 7) formatted += ' ';
+                formatted += chars[i];
+            }
+            return formatted;
+        }
+
+        // Default: just groups of 2 or 3? Let's stay simple for others
+        // but maybe just group by 2 for general readability
+        const chars = numbers.split('');
+        let formatted = '';
+        for (let i = 0; i < chars.length; i++) {
+            if (i > 0 && i % 2 === 0 && countryCode !== '+1') formatted += ' ';
+            formatted += chars[i];
+        }
+        return formatted;
+    };
+
     const handleCountrySelect = (country) => {
-        const oldValueWithoutPrefix = value ? value.replace(selectedCountry.code, '').trim() : '';
+        const rawValue = value ? value.replace(selectedCountry.code, '').replace(/\s/g, '') : '';
         setSelectedCountry(country);
-        onChange(`${country.code} ${oldValueWithoutPrefix}`);
+        const formatted = formatValue(rawValue, country.code);
+        onChange(`${country.code} ${formatted}`);
         setIsOpen(false);
     };
 
     const handleInputChange = (e) => {
-        const rawValue = e.target.value;
-        // Strip redundant prefix if user types it
-        let cleanValue = rawValue;
-        if (rawValue.startsWith(selectedCountry.code)) {
-            cleanValue = rawValue.replace(selectedCountry.code, '').trim();
+        let rawInput = e.target.value;
+
+        // Strip prefix if user pasted it
+        if (rawInput.startsWith(selectedCountry.code)) {
+            rawInput = rawInput.replace(selectedCountry.code, '');
         }
-        onChange(`${selectedCountry.code} ${cleanValue}`);
+
+        // Clean and reformat
+        const numbersOnly = rawInput.replace(/\D/g, '');
+        const formatted = formatValue(numbersOnly, selectedCountry.code);
+
+        onChange(`${selectedCountry.code} ${formatted}`);
     };
 
     const displayValue = value ? value.replace(selectedCountry.code, '').trim() : '';
