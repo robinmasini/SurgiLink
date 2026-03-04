@@ -72,27 +72,7 @@ export default function AddPatientModal({ isOpen, onClose, onPatientAdded }) {
                     console.log('Patient créé, planification des rappels pour:', surgeryDate);
                     await scheduleTimeBasedReminders(newPatient.id, surgeryDate);
 
-                    // 3. Immediate J-7 Send if surgery is within 7 days
-                    const daysUntil = Math.ceil((surgeryDate - new Date()) / (1000 * 60 * 60 * 24));
-                    console.log('Jours avant intervention:', daysUntil);
-
-                    if (daysUntil <= 7) {
-                        const smsRes = await sendManualReminder(
-                            newPatient.id,
-                            'J-7',
-                            null,
-                            'j7_reminder',
-                            { ...newPatient, token }
-                        );
-
-                        if (smsRes.success) {
-                            alert(`Patient ${formData.name} enregistré et SMS de bienvenue envoyé !`);
-                        } else {
-                            alert(`Patient enregistré mais le SMS n'a pas pu être envoyé : ${smsRes.error || 'Erreur inconnue'}`);
-                        }
-                    } else {
-                        alert(`Patient ${formData.name} enregistré avec succès ! (SMS planifié pour J-7)`);
-                    }
+                    alert(`Patient ${formData.name} enregistré avec succès !`);
                     if (onPatientAdded) onPatientAdded({ ...newPatient, token });
                     onClose();
                     setFormData({
