@@ -6,7 +6,9 @@ import { saveResponse, getResponses, markScreenCompleted, calculateRiskFlags } f
 import { scheduleStateBasedReminders } from '../services/reminderService';
 import QuestionRenderer from '../components/pathway/QuestionRenderer';
 import AlertBanner from '../components/pathway/AlertBanner';
+import CompactAppointmentCard from '../components/CompactAppointmentCard';
 import { usePatientId } from '../hooks/usePatientId';
+import { supabase } from '../lib/supabase';
 
 export default function PatientJ7({ patient: propPatient, token: propToken }) {
     const navigate = useNavigate();
@@ -23,6 +25,7 @@ export default function PatientJ7({ patient: propPatient, token: propToken }) {
     const [responses, setResponses] = useState({});
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [patient, setPatient] = useState(propPatient || null);
     const [riskFlags, setRiskFlags] = useState({ soft: [], hard: [] });
 
     const config = pathwayConfig.J7;
@@ -30,6 +33,7 @@ export default function PatientJ7({ patient: propPatient, token: propToken }) {
     useEffect(() => {
         if (resolvedPatientId) {
             loadResponses();
+            if (!propPatient) loadPatientData();
         }
     }, [resolvedPatientId]);
 
@@ -38,6 +42,11 @@ export default function PatientJ7({ patient: propPatient, token: propToken }) {
         const flags = calculateRiskFlagsSync();
         setRiskFlags(flags);
     }, [responses]);
+
+    const loadPatientData = async () => {
+        const { data } = await supabase.from('patients').select('*').eq('id', resolvedPatientId).single();
+        if (data) setPatient(data);
+    };
 
     const loadResponses = async () => {
         if (!resolvedPatientId) return;
@@ -144,6 +153,15 @@ export default function PatientJ7({ patient: propPatient, token: propToken }) {
 
             {/* Content */}
             <div className="patient-content fade-in">
+                {patient && (
+                    <CompactAppointmentCard
+                        clinicName={patient.clinic_name}
+                        appointmentDate={patient.date}
+                        appointmentTime={patient.surgery_time}
+                        style={{ background: 'rgba(255, 255, 255, 0.4)', marginBottom: 'var(--spacing-4)' }}
+                    />
+                )}
+
                 {/* Time Alert */}
                 <AlertBanner
                     type="info"

@@ -5,7 +5,9 @@ import { pathwayConfig } from '../config/pathway.config';
 import { saveResponse, getResponses, markScreenCompleted } from '../services/pathwayService';
 import QuestionRenderer from '../components/pathway/QuestionRenderer';
 import AlertBanner from '../components/pathway/AlertBanner';
+import CompactAppointmentCard from '../components/CompactAppointmentCard';
 import { usePatientId } from '../hooks/usePatientId';
+import { supabase } from '../lib/supabase';
 
 export default function PatientJ1() {
     const navigate = useNavigate();
@@ -14,6 +16,7 @@ export default function PatientJ1() {
     const [responses, setResponses] = useState({});
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [patient, setPatient] = useState(null);
     const [alerts, setAlerts] = useState({ soft: [], hard: [] });
 
     const config = pathwayConfig.J1;
@@ -21,12 +24,18 @@ export default function PatientJ1() {
     useEffect(() => {
         if (resolvedPatientId) {
             loadResponses();
+            loadPatientData();
         }
     }, [resolvedPatientId]);
 
     useEffect(() => {
         calculateAlerts();
     }, [responses]);
+
+    const loadPatientData = async () => {
+        const { data } = await supabase.from('patients').select('*').eq('id', resolvedPatientId).single();
+        if (data) setPatient(data);
+    };
 
     const loadResponses = async () => {
         if (!resolvedPatientId) return;
@@ -130,6 +139,15 @@ export default function PatientJ1() {
 
             {/* Content */}
             <div className="patient-content fade-in">
+                {patient && (
+                    <CompactAppointmentCard
+                        clinicName={patient.clinic_name}
+                        appointmentDate={patient.date}
+                        appointmentTime={patient.surgery_time}
+                        style={{ background: 'rgba(255, 255, 255, 0.4)', marginBottom: 'var(--spacing-4)' }}
+                    />
+                )}
+
                 {/* Title */}
                 <div style={{ marginBottom: 'var(--spacing-6)' }}>
                     <h3 style={{ fontSize: 'var(--font-size-2xl)', fontWeight: 'var(--font-weight-bold)', marginBottom: 'var(--spacing-2)' }}>

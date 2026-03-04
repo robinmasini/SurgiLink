@@ -15,6 +15,7 @@ import {
     Home
 } from 'lucide-react';
 import ClinicAppointmentCard from '../components/ClinicAppointmentCard';
+import CompactAppointmentCard from '../components/CompactAppointmentCard';
 import PatientTraceability from '../components/PatientTraceability';
 
 export default function PatientPortal({ patient: initialPatient }) {
@@ -174,11 +175,10 @@ export default function PatientPortal({ patient: initialPatient }) {
 
                 {/* Single View Content */}
                 <div className="fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-6)' }}>
-                    <ClinicAppointmentCard
+                    <CompactAppointmentCard
                         clinicName={patient.clinic_name}
-                        appointmentDatetime={patient.appointment_datetime}
-                        operationType={patient.operation}
-                        operationCategory={patient.operation_category || 'Ambulatoire'}
+                        appointmentDate={patient.date}
+                        appointmentTime={patient.surgery_time}
                     />
 
                     <div className="card glass-effect">

@@ -5,7 +5,9 @@ import { pathwayConfig } from '../config/pathway.config';
 import { saveResponse, getResponses, markScreenCompleted } from '../services/pathwayService';
 import QuestionRenderer from '../components/pathway/QuestionRenderer';
 import AlertBanner from '../components/pathway/AlertBanner';
+import CompactAppointmentCard from '../components/CompactAppointmentCard';
 import { usePatientId } from '../hooks/usePatientId';
+import { supabase } from '../lib/supabase';
 
 export default function PatientJ0() {
     const navigate = useNavigate();
@@ -14,14 +16,21 @@ export default function PatientJ0() {
     const [responses, setResponses] = useState({});
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [patient, setPatient] = useState(null);
 
     const config = pathwayConfig.J0;
 
     useEffect(() => {
         if (resolvedPatientId) {
             loadResponses();
+            loadPatientData();
         }
     }, [resolvedPatientId]);
+
+    const loadPatientData = async () => {
+        const { data } = await supabase.from('patients').select('*').eq('id', resolvedPatientId).single();
+        if (data) setPatient(data);
+    };
 
     const loadResponses = async () => {
         if (!resolvedPatientId) return;
@@ -89,6 +98,15 @@ export default function PatientJ0() {
 
             {/* Content */}
             <div className="patient-content fade-in">
+                {patient && (
+                    <CompactAppointmentCard
+                        clinicName={patient.clinic_name}
+                        appointmentDate={patient.date}
+                        appointmentTime={patient.surgery_time}
+                        style={{ background: 'rgba(255, 255, 255, 0.4)', marginBottom: 'var(--spacing-4)' }}
+                    />
+                )}
+
                 <AlertBanner
                     type="info"
                     title={`Arrivée prévue à l'heure convenue`}
