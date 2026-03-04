@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Plus, X, User, Clipboard, Mail, Phone, Calendar, Clock } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import PhoneInput from './PhoneInput';
+import InterventionSelect from './InterventionSelect';
 import { scheduleTimeBasedReminders, sendManualReminder } from '../services/reminderService';
 import { generatePatientToken } from '../services/tokenService';
 
@@ -146,17 +147,29 @@ export default function AddPatientModal({ isOpen, onClose, onPatientAdded }) {
                         </div>
 
                         <div>
+                            <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: birthDateError ? 'var(--color-danger-600)' : 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>
+                                Date de Naissance <span style={{ color: 'var(--color-danger-500)' }}>*</span>
+                            </label>
+                            <input
+                                type="date"
+                                className="input"
+                                value={formData.birthDate}
+                                onChange={(e) => { setBirthDateError(false); setFormData({ ...formData, birthDate: e.target.value }); }}
+                                style={birthDateError ? { border: '1px solid var(--color-danger-500)' } : {}}
+                            />
+                            {birthDateError && (
+                                <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-danger-600)', marginTop: '4px' }}>
+                                    La date de naissance est obligatoire pour activer la vérification d'identité.
+                                </p>
+                            )}
+                        </div>
+
+                        <div>
                             <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Intervention</label>
-                            <div style={{ position: 'relative' }}>
-                                <Clipboard size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-gray-400)' }} />
-                                <input
-                                    className="input"
-                                    placeholder="Ex: Rhinoplastie"
-                                    style={{ paddingLeft: '40px' }}
-                                    value={formData.operation}
-                                    onChange={(e) => setFormData({ ...formData, operation: e.target.value })}
-                                />
-                            </div>
+                            <InterventionSelect
+                                value={formData.operation}
+                                onChange={(val) => setFormData({ ...formData, operation: val })}
+                            />
                         </div>
 
                         <div className="grid-2">
@@ -182,23 +195,6 @@ export default function AddPatientModal({ isOpen, onClose, onPatientAdded }) {
                             </div>
                         </div>
 
-                        <div>
-                            <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: birthDateError ? 'var(--color-danger-600)' : 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>
-                                Date de Naissance <span style={{ color: 'var(--color-danger-500)' }}>*</span>
-                            </label>
-                            <input
-                                type="date"
-                                className="input"
-                                value={formData.birthDate}
-                                onChange={(e) => { setBirthDateError(false); setFormData({ ...formData, birthDate: e.target.value }); }}
-                                style={birthDateError ? { border: '1px solid var(--color-danger-500)' } : {}}
-                            />
-                            {birthDateError && (
-                                <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-danger-600)', marginTop: '4px' }}>
-                                    La date de naissance est obligatoire pour activer la vérification d'identité.
-                                </p>
-                            )}
-                        </div>
 
                         <div>
                             <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Date d'intervention</label>
