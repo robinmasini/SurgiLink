@@ -586,12 +586,13 @@ export default function PatientReview() {
                                     <div style={{
                                         display: 'grid',
                                         gridTemplateColumns: '1fr 1fr 1fr',
-                                        gap: 'var(--spacing-8)',
+                                        columnGap: 'var(--spacing-8)',
+                                        rowGap: 'var(--spacing-10)',
                                         marginTop: 'var(--spacing-10)',
                                         paddingTop: 'var(--spacing-8)',
                                         borderTop: '1px solid var(--color-gray-100)'
                                     }}>
-                                        {/* Column 1: Clinique */}
+                                        {/* Item 1: Clinique */}
                                         <div>
                                             <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', textTransform: 'uppercase', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '600' }}>
                                                 <MapPin size={12} style={{ color: 'var(--color-gray-400)' }} />
@@ -612,50 +613,9 @@ export default function PatientReview() {
                                                     {patient.clinic_name || 'Clinique de Vitrolles'}
                                                 </div>
                                             </div>
-
-                                            <div style={{ marginTop: 'var(--spacing-8)' }}>
-                                                <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', textTransform: 'uppercase', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '600' }}>
-                                                    <Calendar size={12} style={{ color: 'var(--color-gray-400)' }} />
-                                                    Date & Heure Intervention
-                                                </div>
-                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                                    <div style={{
-                                                        background: '#FAF7F5',
-                                                        color: '#8B7355',
-                                                        padding: '4px 12px',
-                                                        borderRadius: '6px',
-                                                        fontSize: '13px',
-                                                        fontWeight: '700',
-                                                        width: 'fit-content',
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        gap: '6px',
-                                                        border: '1px solid #EEDDCC'
-                                                    }}>
-                                                        <Calendar size={14} />
-                                                        {patient.date ? formatDateFR(patient.date) : 'Non définie'}
-                                                    </div>
-                                                    <div style={{
-                                                        background: '#FAF7F5',
-                                                        color: '#8B7355',
-                                                        padding: '4px 12px',
-                                                        borderRadius: '6px',
-                                                        fontSize: '13px',
-                                                        fontWeight: '700',
-                                                        width: 'fit-content',
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        gap: '6px',
-                                                        border: '1px solid #EEDDCC'
-                                                    }}>
-                                                        <Clock size={14} />
-                                                        {patient.surgery_time || 'Non-communiquée'}
-                                                    </div>
-                                                </div>
-                                            </div>
                                         </div>
 
-                                        {/* Column 2: Chirurgien & Email */}
+                                        {/* Item 2: Chirurgien */}
                                         <div>
                                             <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', textTransform: 'uppercase', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '600' }}>
                                                 <User size={12} style={{ color: 'var(--color-gray-400)' }} />
@@ -664,19 +624,9 @@ export default function PatientReview() {
                                             <div style={{ fontWeight: '700', color: 'var(--color-gray-900)', fontSize: '18px', lineHeight: '1.2' }}>
                                                 {patient.surgeon_name || 'Christophe DESOUCHES'}
                                             </div>
-
-                                            <div style={{ marginTop: 'var(--spacing-8)' }}>
-                                                <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', textTransform: 'uppercase', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '600' }}>
-                                                    <Mail size={12} style={{ color: 'var(--color-gray-400)' }} />
-                                                    Email
-                                                </div>
-                                                <div style={{ fontWeight: '700', color: 'var(--color-gray-900)', fontSize: '16px' }}>
-                                                    {patient.email || 'Non renseigné'}
-                                                </div>
-                                            </div>
                                         </div>
 
-                                        {/* Column 3: Téléphone */}
+                                        {/* Item 3: Téléphone */}
                                         <div>
                                             <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', textTransform: 'uppercase', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '600' }}>
                                                 <Phone size={12} style={{ color: 'var(--color-gray-400)' }} />
@@ -684,6 +634,59 @@ export default function PatientReview() {
                                             </div>
                                             <div style={{ fontWeight: '700', color: 'var(--color-gray-900)', fontSize: '20px' }}>
                                                 {patient.phone || 'Non renseigné'}
+                                            </div>
+                                        </div>
+
+                                        {/* Item 4: Date & Heure Intervention (Aligned in Row 2) */}
+                                        <div>
+                                            <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', textTransform: 'uppercase', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '600' }}>
+                                                <Calendar size={12} style={{ color: 'var(--color-gray-400)' }} />
+                                                Date & Heure Intervention
+                                            </div>
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                                <div style={{
+                                                    background: '#FAF7F5',
+                                                    color: '#8B7355',
+                                                    padding: '4px 12px',
+                                                    borderRadius: '6px',
+                                                    fontSize: '13px',
+                                                    fontWeight: '700',
+                                                    width: 'fit-content',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: '6px',
+                                                    border: '1px solid #EEDDCC'
+                                                }}>
+                                                    <Calendar size={14} />
+                                                    {patient.date ? formatDateFR(patient.date) : 'Non définie'}
+                                                </div>
+                                                <div style={{
+                                                    background: '#FAF7F5',
+                                                    color: '#8B7355',
+                                                    padding: '4px 12px',
+                                                    borderRadius: '6px',
+                                                    fontSize: '13px',
+                                                    fontWeight: '700',
+                                                    width: 'fit-content',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: '6px',
+                                                    border: '1px solid #EEDDCC'
+                                                }}>
+                                                    <Clock size={14} />
+                                                    {patient.surgery_time || 'Non-communiquée'}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Item 5: Email (Aligned in Row 2) */}
+                                        <div>
+                                            <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', textTransform: 'uppercase', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '600' }}>
+                                                <Mail size={12} style={{ color: 'var(--color-gray-400)' }} />
+                                                Email
+                                            </div>
+                                            <div style={{ fontWeight: '700', color: 'var(--color-gray-900)', fontSize: '16px' }}>
+                                                {patient.email || 'Non renseigné'}
                                             </div>
                                         </div>
                                     </div>
