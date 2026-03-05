@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { validateToken } from '../services/tokenService';
+import { getDocuments, downloadDocument } from '../services/documentService';
 import { calculateAge, formatDateFR, calculateDaysUntilSurgery } from '../utils/dateUtils';
 import {
     User,
@@ -30,11 +31,13 @@ export default function PatientPortal({ patient: initialPatient }) {
     const [patient, setPatient] = useState(initialPatient);
     const [medicalHistory, setMedicalHistory] = useState([]);
     const [responses, setResponses] = useState({});
+    const [documents, setDocuments] = useState([]);
 
     useEffect(() => {
         if (initialPatient) {
             setPatient(initialPatient);
             loadMedicalHistory(initialPatient.id);
+            loadDocuments(initialPatient.id);
         } else {
             loadPatientData();
         }
@@ -75,6 +78,15 @@ export default function PatientPortal({ patient: initialPatient }) {
         }
     };
 
+    const loadDocuments = async (patientId) => {
+        try {
+            const docData = await getDocuments(patientId);
+            setDocuments(docData || []);
+        } catch (err) {
+            console.error('Error loading documents:', err);
+        }
+    };
+
     const loadPatientData = async () => {
         setLoading(true);
         setError(null);
@@ -96,6 +108,7 @@ export default function PatientPortal({ patient: initialPatient }) {
             if (patientError) throw patientError;
             setPatient(patientData);
             loadMedicalHistory(patientData.id);
+            loadDocuments(patientData.id);
 
             // Update last_consulted_at proof
             const { error: trackError } = await supabase
@@ -111,6 +124,14 @@ export default function PatientPortal({ patient: initialPatient }) {
             setError('Erreur lors du chargement de vos données');
             setLoading(false);
         }
+    };
+
+    const handleDownloadPrescription = async () => {
+        if (documents.length === 0) return;
+
+        // Take the first/latest document as the prescription
+        const prescription = documents[0];
+        await downloadDocument(prescription.storage_path, prescription.name);
     };
 
     if (loading) {
@@ -204,6 +225,8 @@ export default function PatientPortal({ patient: initialPatient }) {
                         clinicName={patient.clinic_name || 'Clinique de Vitrolles'}
                         appointmentDate={patient.date}
                         appointmentTime={patient.surgery_time}
+                        hasPrescription={documents.length > 0}
+                        onDownloadPrescription={handleDownloadPrescription}
                     />
 
                     {/* Protocol Status Row */}

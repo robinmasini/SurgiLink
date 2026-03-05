@@ -1,4 +1,4 @@
-import { MapPin, Calendar, Clock, Zap } from 'lucide-react';
+import { MapPin, Calendar, Clock, Zap, Download } from 'lucide-react';
 import clinicImageNew from '../assets/clinic_new.png';
 
 export default function CompactAppointmentCard({
@@ -8,6 +8,8 @@ export default function CompactAppointmentCard({
     address = "La Tuilière II, Rue Bel air, 13127 Vitrolles",
     jValue = "J-5",
     variant = "pill", // "pill" (top bars) or "card" (clinic detail)
+    hasPrescription = false,
+    onDownloadPrescription = null,
     style = {}
 }) {
     // Helper to format date in a short version
@@ -37,7 +39,7 @@ export default function CompactAppointmentCard({
 
     if (variant === "pill") {
         return (
-            <div style={{ display: 'flex', gap: 'var(--spacing-3)', marginBottom: 'var(--spacing-6)', flexWrap: 'wrap', ...style }}>
+            <div style={{ display: 'flex', gap: 'var(--spacing-3)', marginBottom: 'var(--spacing-6)', flexWrap: 'wrap', alignItems: 'center', ...style }}>
                 {/* Date/Time Pill */}
                 <div style={{
                     background: 'white',
@@ -74,6 +76,40 @@ export default function CompactAppointmentCard({
                     <Zap size={18} fill="currentColor" />
                     <span style={{ fontWeight: '800', fontSize: '18px' }}>{jValue}</span>
                 </div>
+
+                {/* Download Prescription Pill */}
+                {hasPrescription && (
+                    <button
+                        onClick={onDownloadPrescription}
+                        style={{
+                            background: 'white',
+                            border: '1px solid #D7C4B0',
+                            padding: '10px 24px',
+                            borderRadius: '25px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '12px',
+                            boxShadow: '0 2px 8px rgba(215, 196, 176, 0.15)',
+                            cursor: 'pointer',
+                            fontSize: '14px',
+                            fontWeight: '700',
+                            color: '#6D4C41',
+                            transition: 'all 0.2s ease',
+                            outline: 'none'
+                        }}
+                        onMouseOver={(e) => {
+                            e.currentTarget.style.background = '#FDFCFB';
+                            e.currentTarget.style.transform = 'translateY(-1px)';
+                        }}
+                        onMouseOut={(e) => {
+                            e.currentTarget.style.background = 'white';
+                            e.currentTarget.style.transform = 'translateY(0)';
+                        }}
+                    >
+                        <Download size={18} style={{ color: '#6D4C41' }} />
+                        <span>Télécharger mon ordonnance</span>
+                    </button>
+                )}
             </div>
         );
     }
