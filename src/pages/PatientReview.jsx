@@ -494,9 +494,8 @@ export default function PatientReview() {
                                             )}
                                         </div>
                                     </div>
-                                    <div style={{ display: 'flex', gap: 'var(--spacing-2)', marginTop: 'var(--spacing-4)', flexWrap: 'wrap' }}>
-                                        <span className="badge" style={{ background: 'var(--color-gray-100)', color: 'var(--color-gray-700)', padding: '6px 16px' }}>{patient.stay_type || 'Ambulatoire'}</span>
-                                        <span className="badge" style={{ background: 'var(--color-primary-50)', color: 'var(--color-primary-600)', padding: '6px 16px' }}>{patient.operation}</span>
+                                    {/* Intervention Row 1: Date & Countdown */}
+                                    <div style={{ display: 'flex', gap: 'var(--spacing-3)', marginTop: 'var(--spacing-4)', flexWrap: 'wrap', alignItems: 'center' }}>
                                         <span className="badge" style={{
                                             background: '#FAF7F5',
                                             color: '#6D4C41',
@@ -552,6 +551,30 @@ export default function PatientReview() {
                                                 </div>
                                             );
                                         })()}
+                                    </div>
+
+                                    {/* Intervention Row 2: Stay Type & Operation */}
+                                    <div style={{ display: 'flex', gap: 'var(--spacing-2)', marginTop: 'var(--spacing-3)', flexWrap: 'wrap' }}>
+                                        <span className="badge" style={{
+                                            background: 'var(--color-gray-100)',
+                                            color: 'var(--color-gray-700)',
+                                            padding: '6px 16px',
+                                            border: '1px solid var(--color-gray-200)',
+                                            fontSize: '13px',
+                                            fontWeight: '600'
+                                        }}>
+                                            {patient.stay_type || 'Ambulatoire'}
+                                        </span>
+                                        <span className="badge" style={{
+                                            background: 'var(--color-primary-50)',
+                                            color: 'var(--color-primary-600)',
+                                            padding: '6px 16px',
+                                            border: '1px solid var(--color-primary-100)',
+                                            fontSize: '13px',
+                                            fontWeight: '600'
+                                        }}>
+                                            {patient.operation}
+                                        </span>
                                     </div>
 
                                     {/* Detailed Info Grid */}
