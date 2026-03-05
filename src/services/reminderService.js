@@ -274,7 +274,7 @@ export async function scheduleTimeBasedReminders(patientId, interventionDate) {
 
     // Queue reminders
     const remindersToQueue = [
-        { screen: 'Digitalisation', date: j10Date, template: 'welcome_digitalization' },
+        { screen: 'Bienvenue', date: j10Date, template: 'welcome_digitalization' },
         { screen: 'J-7', date: j7Date, template: 'j7_reminder' },
         { screen: 'J-3', date: j3Date, template: 'j3_reminder' },
         { screen: 'J-2', date: j2Date, template: 'j2_reminder' },

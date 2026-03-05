@@ -258,7 +258,7 @@ export default function PatientReview() {
     };
 
     const handleRegenerateSchedule = async () => {
-        if (!confirm('Cela va supprimer tous les rappels en attente et les remplacer par le nouveau planning complet (J-7 à J+2). Continuer ?')) return;
+        if (!confirm('Cela va supprimer tous les rappels en attente et les remplacer par le nouveau planning complet (Bienvenue J-10 à J+2). Continuer ?')) return;
 
         try {
             // 1. Delete pending
@@ -1050,22 +1050,23 @@ export default function PatientReview() {
                                     <div style={{ fontSize: '10px', color: 'var(--color-gray-400)', textAlign: 'center' }}>
                                         Lien actif • Créé le {new Date(tokenData.created_at || Date.now()).toLocaleDateString('fr-FR')}
                                     </div>
-                                    {pendingReminders.length > 0 && (
-                                        <div style={{ marginTop: 'var(--spacing-6)', paddingTop: 'var(--spacing-6)', borderTop: '1px solid var(--color-gray-100)' }}>
-                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-4)' }}>
-                                                <h4 style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-gray-500)', textTransform: 'uppercase', marginBottom: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                    <History size={14} />
-                                                    Rappels planifiés ({pendingReminders.length})
-                                                </h4>
-                                                <button
-                                                    onClick={() => setIsCustomSMSModalOpen(true)}
-                                                    className="btn btn-secondary btn-xs"
-                                                    style={{ fontSize: '10px', padding: '4px 8px', borderColor: 'var(--color-primary-200)', color: 'var(--color-primary-600)' }}
-                                                >
-                                                    <Send size={12} style={{ marginRight: '4px' }} />
-                                                    SMS personnalisé
-                                                </button>
-                                            </div>
+                                    <div style={{ marginTop: 'var(--spacing-6)', paddingTop: 'var(--spacing-6)', borderTop: '1px solid var(--color-gray-100)' }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-4)' }}>
+                                            <h4 style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-gray-500)', textTransform: 'uppercase', marginBottom: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                <History size={14} />
+                                                Rappels planifiés {pendingReminders.length > 0 ? `(${pendingReminders.length})` : ''}
+                                            </h4>
+                                            <button
+                                                onClick={() => setIsCustomSMSModalOpen(true)}
+                                                className="btn btn-secondary btn-xs"
+                                                style={{ fontSize: '10px', padding: '4px 8px', borderColor: 'var(--color-primary-200)', color: 'var(--color-primary-600)' }}
+                                            >
+                                                <Send size={12} style={{ marginRight: '4px' }} />
+                                                SMS personnalisé
+                                            </button>
+                                        </div>
+
+                                        {pendingReminders.length > 0 ? (
                                             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                                                 {pendingReminders.map(rem => (
                                                     <div key={rem.id} style={{ padding: 'var(--spacing-3)', background: 'var(--color-gray-50)', borderRadius: 'var(--border-radius-md)', border: '1px solid var(--color-gray-200)' }}>
@@ -1086,16 +1087,21 @@ export default function PatientReview() {
                                                     </div>
                                                 ))}
                                             </div>
-                                            <button
-                                                onClick={handleRegenerateSchedule}
-                                                className="btn btn-secondary"
-                                                style={{ width: '100%', marginTop: 'var(--spacing-4)', fontSize: '10px', padding: 'var(--spacing-2)', border: '1px dashed var(--color-gray-300)', background: 'transparent', color: 'var(--color-gray-400)' }}
-                                            >
-                                                <RefreshCw size={12} style={{ marginRight: '4px' }} />
-                                                Regénérer le planning complet
-                                            </button>
-                                        </div>
-                                    )}
+                                        ) : (
+                                            <div style={{ fontSize: '11px', color: 'var(--color-gray-400)', textAlign: 'center', padding: 'var(--spacing-4)', background: 'var(--color-gray-50)', borderRadius: 'var(--border-radius-md)', border: '1px dashed var(--color-gray-200)' }}>
+                                                Aucun rappel planifié.
+                                            </div>
+                                        )}
+
+                                        <button
+                                            onClick={handleRegenerateSchedule}
+                                            className="btn btn-secondary"
+                                            style={{ width: '100%', marginTop: 'var(--spacing-4)', fontSize: '10px', padding: 'var(--spacing-2)', border: '1px dashed var(--color-gray-300)', background: 'transparent', color: 'var(--color-gray-400)' }}
+                                        >
+                                            <RefreshCw size={12} style={{ marginRight: '4px' }} />
+                                            Regénérer le planning complet
+                                        </button>
+                                    </div>
                                 </div>
                             ) : (
                                 <button
