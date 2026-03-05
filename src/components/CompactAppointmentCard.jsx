@@ -79,6 +79,38 @@ export default function CompactAppointmentCard({
                     <span style={{ fontWeight: '800', fontSize: '18px' }}>{jValue}</span>
                 </div>
 
+                {/* Stay Type & Operation Pills */}
+                {stayType && (
+                    <div style={{
+                        background: '#F5F7FA',
+                        border: '1px solid #CFD8DC',
+                        padding: '10px 24px',
+                        borderRadius: '25px',
+                        color: '#455A64',
+                        fontWeight: '700',
+                        fontSize: '14px',
+                        display: 'flex',
+                        alignItems: 'center'
+                    }}>
+                        {stayType}
+                    </div>
+                )}
+                {operation && (
+                    <div style={{
+                        background: '#FDF7F2',
+                        border: '1px solid #EEDDCC',
+                        padding: '10px 24px',
+                        borderRadius: '25px',
+                        color: '#8D6E63',
+                        fontWeight: '700',
+                        fontSize: '14px',
+                        display: 'flex',
+                        alignItems: 'center'
+                    }}>
+                        {operation}
+                    </div>
+                )}
+
                 {/* Download Prescription Pill */}
                 {hasPrescription && (
                     <button
@@ -112,50 +144,6 @@ export default function CompactAppointmentCard({
                         <Download size={18} style={{ color: '#6D4C41' }} />
                         <span>Télécharger mon ordonnance</span>
                     </button>
-                )}
-
-                {/* Second Row for Vital Info */}
-                {(stayType || operation) && (
-                    <div style={{
-                        width: '100%',
-                        display: 'flex',
-                        gap: 'var(--spacing-3)',
-                        marginTop: 'var(--spacing-4)',
-                        flexWrap: 'wrap'
-                    }}>
-                        {stayType && (
-                            <div style={{
-                                background: 'rgba(255, 255, 255, 0.5)',
-                                border: '1px solid #D7C4B0',
-                                padding: '8px 20px',
-                                borderRadius: '20px',
-                                color: '#6D4C41',
-                                fontWeight: '700',
-                                fontSize: '13px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                boxShadow: '0 2px 6px rgba(215, 196, 176, 0.1)'
-                            }}>
-                                {stayType}
-                            </div>
-                        )}
-                        {operation && (
-                            <div style={{
-                                background: 'rgba(255, 255, 255, 0.5)',
-                                border: '1px solid #D7C4B0',
-                                padding: '8px 20px',
-                                borderRadius: '20px',
-                                color: '#6D4C41',
-                                fontWeight: '700',
-                                fontSize: '13px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                boxShadow: '0 2px 6px rgba(215, 196, 176, 0.1)'
-                            }}>
-                                {operation}
-                            </div>
-                        )}
-                    </div>
                 )}
             </div>
         );

@@ -483,7 +483,7 @@ export default function PatientReview() {
                                             <Trash2 size={18} />
                                         </button>
                                     </div>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-4)', color: 'var(--color-gray-500)', fontSize: 'var(--font-size-md)' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-4)', color: 'var(--color-gray-500)', fontSize: 'var(--font-size-md)', marginTop: 'var(--spacing-2)' }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-1)' }}>
                                             <Calendar size={16} />
                                             Né(e) le {patient.birth_date ? formatDateFR(patient.birth_date) : 'N/A'}
@@ -495,7 +495,7 @@ export default function PatientReview() {
                                         </div>
                                     </div>
                                     {/* Intervention Row 1: Date & Countdown */}
-                                    <div style={{ display: 'flex', gap: 'var(--spacing-3)', marginTop: 'var(--spacing-4)', flexWrap: 'wrap', alignItems: 'center' }}>
+                                    <div style={{ display: 'flex', gap: 'var(--spacing-3)', marginTop: 'var(--spacing-6)', flexWrap: 'wrap', alignItems: 'center' }}>
                                         <span className="badge" style={{
                                             background: '#FAF7F5',
                                             color: '#6D4C41',
@@ -554,7 +554,7 @@ export default function PatientReview() {
                                     </div>
 
                                     {/* Intervention Row 2: Stay Type & Operation */}
-                                    <div style={{ display: 'flex', gap: 'var(--spacing-2)', marginTop: 'var(--spacing-3)', flexWrap: 'wrap' }}>
+                                    <div style={{ display: 'flex', gap: 'var(--spacing-2)', marginTop: 'var(--spacing-5)', flexWrap: 'wrap' }}>
                                         <span className="badge" style={{
                                             background: 'var(--color-gray-100)',
                                             color: 'var(--color-gray-700)',
