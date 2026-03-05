@@ -231,7 +231,7 @@ export default function PatientPortal({ patient: initialPatient }) {
                         appointmentDate={patient.date}
                         appointmentTime={patient.surgery_time}
                         jValue={calculateDaysUntilSurgery(patient.date)}
-                        hasPrescription={documents.length > 0}
+                        hasPrescription={true} // FORCÉ POUR TEST
                         onDownloadPrescription={handleDownloadPrescription}
                     />
 
