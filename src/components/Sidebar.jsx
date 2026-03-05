@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 
 const navItems = [
-    { path: '/dashboard', label: 'Dashboard Administratif', icon: LayoutDashboard },
+    { path: '/dashboard', label: 'Dashboard Cabinet', icon: LayoutDashboard },
     { path: '/review/active', label: 'Dashboard Infirmier', icon: Stethoscope },
     { path: '/patients', label: 'Patients Actifs', icon: Users },
     { path: '/rentabilite', label: 'Rentabilité & ROI', icon: TrendingUp },
