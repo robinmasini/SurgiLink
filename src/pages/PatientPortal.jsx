@@ -80,10 +80,12 @@ export default function PatientPortal({ patient: initialPatient }) {
 
     const loadDocuments = async (patientId) => {
         try {
+            console.log('[DEBUG] Loading documents for patientId:', patientId);
             const docData = await getDocuments(patientId);
+            console.log('[DEBUG] Documents found:', docData);
             setDocuments(docData || []);
         } catch (err) {
-            console.error('Error loading documents:', err);
+            console.error('[DEBUG] Error loading documents:', err);
         }
     };
 
