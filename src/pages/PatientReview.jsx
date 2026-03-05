@@ -4,6 +4,7 @@ import Header from '../components/Header';
 import EditPatientModal from '../components/EditPatientModal';
 import PatientPreviewModal from '../components/PatientPreviewModal';
 import EditSMSModal from '../components/EditSMSModal';
+import CustomSMSModal from '../components/CustomSMSModal';
 import ClinicAppointmentCard from '../components/ClinicAppointmentCard';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
@@ -65,6 +66,7 @@ export default function PatientReview() {
     const [tokenData, setTokenData] = useState(null);
     const [isGeneratingToken, setIsGeneratingToken] = useState(false);
     const [isSMSModalOpen, setIsSMSModalOpen] = useState(false);
+    const [isCustomSMSModalOpen, setIsCustomSMSModalOpen] = useState(false);
     const [nextReminder, setNextReminder] = useState(null);
     const [pendingReminders, setPendingReminders] = useState([]);
     const [editingReminder, setEditingReminder] = useState(null);
