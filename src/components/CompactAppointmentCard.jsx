@@ -95,7 +95,8 @@ export default function CompactAppointmentCard({
                             fontWeight: '700',
                             color: '#6D4C41',
                             transition: 'all 0.2s ease',
-                            outline: 'none'
+                            outline: 'none',
+                            marginLeft: 'auto'
                         }}
                         onMouseOver={(e) => {
                             e.currentTarget.style.background = '#FDFCFB';
