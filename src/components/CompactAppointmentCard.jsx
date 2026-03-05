@@ -10,6 +10,8 @@ export default function CompactAppointmentCard({
     variant = "pill", // "pill" (top bars) or "card" (clinic detail)
     hasPrescription = false,
     onDownloadPrescription = null,
+    stayType = null,
+    operation = null,
     style = {}
 }) {
     // Helper to format date in a short version
@@ -110,6 +112,42 @@ export default function CompactAppointmentCard({
                         <Download size={18} style={{ color: '#6D4C41' }} />
                         <span>Télécharger mon ordonnance</span>
                     </button>
+                )}
+
+                {/* Second Row for Vital Info */}
+                {(stayType || operation) && (
+                    <div style={{ width: '100%', display: 'flex', gap: 'var(--spacing-3)', marginTop: 'var(--spacing-2)', flexWrap: 'wrap' }}>
+                        {stayType && (
+                            <div style={{
+                                background: '#F5F7FA',
+                                border: '1px solid #CFD8DC',
+                                padding: '10px 24px',
+                                borderRadius: '25px',
+                                color: '#455A64',
+                                fontWeight: '700',
+                                fontSize: '14px',
+                                display: 'flex',
+                                alignItems: 'center'
+                            }}>
+                                {stayType}
+                            </div>
+                        )}
+                        {operation && (
+                            <div style={{
+                                background: '#FDF7F2',
+                                border: '1px solid #EEDDCC',
+                                padding: '10px 24px',
+                                borderRadius: '25px',
+                                color: '#8D6E63',
+                                fontWeight: '700',
+                                fontSize: '14px',
+                                display: 'flex',
+                                alignItems: 'center'
+                            }}>
+                                {operation}
+                            </div>
+                        )}
+                    </div>
                 )}
             </div>
         );

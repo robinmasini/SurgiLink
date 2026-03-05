@@ -230,6 +230,8 @@ export default function PatientPortal({ patient: initialPatient }) {
                         jValue={calculateDaysUntilSurgery(patient.date)}
                         hasPrescription={documents.length > 0}
                         onDownloadPrescription={handleDownloadPrescription}
+                        stayType={patient.stay_type}
+                        operation={patient.operation}
                     />
 
                     {/* Clinic Card Row */}
