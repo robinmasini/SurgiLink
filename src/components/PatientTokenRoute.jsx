@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { validateToken } from '../services/tokenService';
-import PatientPortalAuth from './PatientPortalAuth';
 import { Loader, AlertCircle } from 'lucide-react';
 
 export default function PatientTokenRoute({ children }) {
@@ -10,8 +9,6 @@ export default function PatientTokenRoute({ children }) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [patient, setPatient] = useState(null);
-    const [verified, setVerified] = useState(false);
-    const [verificationLoading, setVerificationLoading] = useState(false);
 
     // Initial check: is the token valid and is the patient already verified in this session?
     useEffect(() => {
@@ -29,25 +26,16 @@ export default function PatientTokenRoute({ children }) {
                     return;
                 }
 
-                // 2. Check if this patient is already verified in the session
-                const isVerified = sessionStorage.getItem(`patient_verified_${validation.patientId}`) === 'true';
+                // 2. Load the patient data immediately (no DOB check required anymore)
+                const { data: patientData, error: patientError } = await supabase
+                    .from('patients')
+                    .select('*')
+                    .eq('id', validation.patientId)
+                    .single();
 
-                if (isVerified) {
-                    // If already verified, load the patient data immediately
-                    const { data: patientData, error: patientError } = await supabase
-                        .from('patients')
-                        .select('*')
-                        .eq('id', validation.patientId)
-                        .single();
+                if (patientError) throw patientError;
 
-                    if (patientError) throw patientError;
-
-                    setPatient(patientData);
-                    setVerified(true);
-                } else {
-                    // Not verified yet, we stay on the auth screen
-                    setVerified(false);
-                }
+                setPatient(patientData);
 
             } catch (err) {
                 console.error('Error in PatientTokenRoute initial check:', err);
@@ -60,32 +48,8 @@ export default function PatientTokenRoute({ children }) {
         checkInitialStatus();
     }, [token]);
 
-    const handleVerifySuccess = async (patientId) => {
-        setVerificationLoading(true);
-        try {
-            // Store verification in session
-            sessionStorage.setItem(`patient_verified_${patientId}`, 'true');
 
-            // Now that we are verified, load the patient data
-            const { data: patientData, error: patientError } = await supabase
-                .from('patients')
-                .select('*')
-                .eq('id', patientId)
-                .single();
-
-            if (patientError) throw patientError;
-
-            setPatient(patientData);
-            setVerified(true);
-        } catch (err) {
-            console.error('Error loading patient after verification:', err);
-            setError('Erreur lors du chargement de vos données');
-        } finally {
-            setVerificationLoading(false);
-        }
-    };
-
-    if (loading || verificationLoading) {
+    if (loading) {
         return (
             <div style={{
                 minHeight: '100vh',
@@ -97,7 +61,7 @@ export default function PatientTokenRoute({ children }) {
                 <div style={{ textAlign: 'center' }}>
                     <Loader className="animate-spin" size={48} style={{ margin: '0 auto var(--spacing-4)', color: 'var(--color-primary-500)' }} />
                     <p style={{ color: 'var(--color-gray-600)' }}>
-                        {verificationLoading ? 'Vérification en cours...' : 'Chargement de l\'accès sécurisé...'}
+                        Chargement de l'accès sécurisé...
                     </p>
                 </div>
             </div>
@@ -125,9 +89,6 @@ export default function PatientTokenRoute({ children }) {
         );
     }
 
-    if (!verified) {
-        return <PatientPortalAuth token={token} onVerify={handleVerifySuccess} />;
-    }
 
     // Pass patient and token to children
     return (
