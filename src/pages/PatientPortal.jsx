@@ -219,12 +219,9 @@ export default function PatientPortal({ patient: initialPatient }) {
                         appointmentDate={patient.date}
                         appointmentTime={patient.surgery_time}
                         jValue={calculateDaysUntilSurgery(patient.date)}
-                        hasPrescription={true} // FORCED FOR TEST
+                        hasPrescription={documents.length > 0}
                         onDownloadPrescription={handleDownloadPrescription}
                     />
-                    <div style={{ color: 'red', fontSize: '10px', marginTop: '-20px', marginBottom: '10px' }}>
-                        DEBUG TOP: Patient {patient.id} | Docs: {documents.length}
-                    </div>
 
                     {/* Clinic Card Row */}
                     <CompactAppointmentCard
