@@ -80,7 +80,6 @@ export default function PatientPortal({ patient: initialPatient }) {
 
     const loadDocuments = async (patientId) => {
         try {
-            console.log('[DEBUG] Loading documents for patientId:', patientId);
             const { data, error } = await supabase
                 .from('patient_documents')
                 .select('*')
@@ -88,16 +87,14 @@ export default function PatientPortal({ patient: initialPatient }) {
                 .order('created_at', { ascending: false });
 
             if (error) {
-                console.error('[DEBUG] Fetch error:', error);
-                // Fallback to empty
+                console.error('Fetch error:', error);
                 setDocuments([]);
                 return;
             }
 
-            console.log('[DEBUG] Documents found:', data);
             setDocuments(data || []);
         } catch (err) {
-            console.error('[DEBUG] Catch error loading documents:', err);
+            console.error('Error loading documents:', err);
         }
     };
 
@@ -231,7 +228,7 @@ export default function PatientPortal({ patient: initialPatient }) {
                         appointmentDate={patient.date}
                         appointmentTime={patient.surgery_time}
                         jValue={calculateDaysUntilSurgery(patient.date)}
-                        hasPrescription={true} // FORCÉ POUR TEST
+                        hasPrescription={documents.length > 0}
                         onDownloadPrescription={handleDownloadPrescription}
                     />
 

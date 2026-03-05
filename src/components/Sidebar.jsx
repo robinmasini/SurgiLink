@@ -14,10 +14,10 @@ import {
 } from 'lucide-react';
 
 const navItems = [
-    { path: '/dashboard', label: 'Tableau de bord', icon: LayoutDashboard },
-    { path: '/patients', label: 'File Active Patients', icon: Users },
+    { path: '/dashboard', label: 'Dashboard Administratif', icon: LayoutDashboard },
+    { path: '/review/active', label: 'Dashboard Infirmier', icon: Stethoscope },
+    { path: '/patients', label: 'Patients Actifs', icon: Users },
     { path: '/rentabilite', label: 'Rentabilité & ROI', icon: TrendingUp },
-    { path: '/review/active', label: 'Suivi par Statut', icon: Stethoscope },
 ];
 
 export default function Sidebar() {
