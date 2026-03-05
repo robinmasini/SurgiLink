@@ -227,9 +227,12 @@ export default function PatientPortal({ patient: initialPatient }) {
                         clinicName={patient.clinic_name || 'Clinique de Vitrolles'}
                         appointmentDate={patient.date}
                         appointmentTime={patient.surgery_time}
-                        hasPrescription={documents.length > 0}
+                        hasPrescription={true} // FORCED FOR TEST
                         onDownloadPrescription={handleDownloadPrescription}
                     />
+                    <div style={{ color: 'red', fontSize: '10px', marginTop: '-20px', marginBottom: '10px' }}>
+                        DEBUG: Patient {patient.id} | Docs: {documents.length}
+                    </div>
 
                     {/* Protocol Status Row */}
                     <ProtocolStatus
