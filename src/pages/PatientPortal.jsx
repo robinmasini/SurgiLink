@@ -81,11 +81,23 @@ export default function PatientPortal({ patient: initialPatient }) {
     const loadDocuments = async (patientId) => {
         try {
             console.log('[DEBUG] Loading documents for patientId:', patientId);
-            const docData = await getDocuments(patientId);
-            console.log('[DEBUG] Documents found:', docData);
-            setDocuments(docData || []);
+            const { data, error } = await supabase
+                .from('patient_documents')
+                .select('*')
+                .eq('patient_id', patientId)
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                console.error('[DEBUG] Fetch error:', error);
+                // Fallback to empty
+                setDocuments([]);
+                return;
+            }
+
+            console.log('[DEBUG] Documents found:', data);
+            setDocuments(data || []);
         } catch (err) {
-            console.error('[DEBUG] Error loading documents:', err);
+            console.error('[DEBUG] Catch error loading documents:', err);
         }
     };
 
