@@ -80,6 +80,13 @@ export const smsTemplates = {
         name: "Generic Item Reminder",
         message: "Bonjour {first_name}, il manque une information importante : {item_name}. Complétez votre dossier : {checklist_link}. {clinic_name}",
         variables: ['first_name', 'item_name', 'checklist_link', 'clinic_name']
+    },
+
+    // Welcome / Digitalization Reminder
+    welcome_digitalization: {
+        name: "SMS de Bienvenue (Digitalisation)",
+        message: "Bonjour {first_name}, bienvenue chez {clinic_name}. Pour votre opération du {procedure_date}, vous allez recevoir une série de questionnaires d'accompagnement. Familialisez-vous avec votre portail ici : {checklist_link}. À bientôt !",
+        variables: ['first_name', 'clinic_name', 'procedure_date', 'checklist_link']
     }
 };
 

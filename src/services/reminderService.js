@@ -268,8 +268,13 @@ export async function scheduleTimeBasedReminders(patientId, interventionDate) {
     j2PostOpDate.setDate(j2PostOpDate.getDate() + 2);
     j2PostOpDate.setHours(10, 0, 0, 0);
 
+    const j10Date = new Date(interventionDate);
+    j10Date.setDate(j10Date.getDate() - 10);
+    j10Date.setHours(10, 0, 0, 0); // 10:00 AM
+
     // Queue reminders
     const remindersToQueue = [
+        { screen: 'Digitalisation', date: j10Date, template: 'welcome_digitalization' },
         { screen: 'J-7', date: j7Date, template: 'j7_reminder' },
         { screen: 'J-3', date: j3Date, template: 'j3_reminder' },
         { screen: 'J-2', date: j2Date, template: 'j2_reminder' },
