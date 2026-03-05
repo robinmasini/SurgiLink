@@ -39,7 +39,7 @@ import { calculateAge, calculateDaysUntilSurgery, formatDateFR, formatDateTimeFR
 import { getPatientPathwayStatus, getResponses, calculateRiskFlags } from '../services/pathwayService';
 import { getDocuments, uploadDocument, deleteDocument, downloadDocument } from '../services/documentService';
 import { generatePatientToken, getPatientTokens, revokeToken } from '../services/tokenService';
-import { sendManualReminder, getNextPendingReminder, getPendingReminders, sendOverrideSMS, updateReminder } from '../services/reminderService';
+import { sendManualReminder, getNextPendingReminder, getPendingReminders, sendOverrideSMS, updateReminder, sendPunctualSMS } from '../services/reminderService';
 import LogoPremium from '../components/LogoPremium';
 import clinicImage from '../assets/clinic.png';
 
@@ -237,6 +237,19 @@ export default function PatientReview() {
             loadHistoryData(id);
             loadNextReminder();
             alert('SMS envoyé et rappel automatique mis à jour !');
+        } else {
+            alert(`Erreur lors de l'envoi : ${res.error}`);
+        }
+    };
+
+    const handleSendPunctualSMS = async (message) => {
+        const res = await sendPunctualSMS(id, message, patient);
+
+        if (res.success) {
+            setIsCustomSMSModalOpen(false);
+            // Refresh history
+            loadHistoryData(id);
+            alert('SMS personnalisé envoyé avec succès !');
         } else {
             alert(`Erreur lors de l'envoi : ${res.error}`);
         }
@@ -1037,10 +1050,20 @@ export default function PatientReview() {
                                     </div>
                                     {pendingReminders.length > 0 && (
                                         <div style={{ marginTop: 'var(--spacing-6)', paddingTop: 'var(--spacing-6)', borderTop: '1px solid var(--color-gray-100)' }}>
-                                            <h4 style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-gray-500)', textTransform: 'uppercase', marginBottom: 'var(--spacing-4)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                <History size={14} />
-                                                Rappels planifiés ({pendingReminders.length})
-                                            </h4>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-4)' }}>
+                                                <h4 style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-gray-500)', textTransform: 'uppercase', marginBottom: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                    <History size={14} />
+                                                    Rappels planifiés ({pendingReminders.length})
+                                                </h4>
+                                                <button
+                                                    onClick={() => setIsCustomSMSModalOpen(true)}
+                                                    className="btn btn-secondary btn-xs"
+                                                    style={{ fontSize: '10px', padding: '4px 8px', borderColor: 'var(--color-primary-200)', color: 'var(--color-primary-600)' }}
+                                                >
+                                                    <Send size={12} style={{ marginRight: '4px' }} />
+                                                    SMS personnalisé
+                                                </button>
+                                            </div>
                                             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                                                 {pendingReminders.map(rem => (
                                                     <div key={rem.id} style={{ padding: 'var(--spacing-3)', background: 'var(--color-gray-50)', borderRadius: 'var(--border-radius-md)', border: '1px solid var(--color-gray-200)' }}>
@@ -1160,6 +1183,13 @@ export default function PatientReview() {
                     />
                 )
             }
+
+            <CustomSMSModal
+                isOpen={isCustomSMSModalOpen}
+                onClose={() => setIsCustomSMSModalOpen(false)}
+                patient={patient}
+                onSend={handleSendPunctualSMS}
+            />
 
             <PatientPreviewModal
                 isOpen={isPreviewModalOpen}

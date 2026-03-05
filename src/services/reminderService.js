@@ -494,3 +494,48 @@ export async function updateReminder(reminderId, updates) {
         return { success: false, error: error.message };
     }
 }
+/**
+ * Send a punctual (one-off) custom SMS and log it in history
+ * @param {number} patientId - Patient ID
+ * @param {string} message - Custom message text
+ * @param {Object} patient - Patient object (phone, name...)
+ * @returns {Promise<Object>} - { success, error }
+ */
+export async function sendPunctualSMS(patientId, message, patient) {
+    try {
+        // 1. Send via D7 (metadata screen='CUSTOM' to distinguish)
+        const result = await sendSMS(
+            'custom_punctual',
+            patient.phone,
+            {},
+            {
+                patientId,
+                screen: 'MESSAGE',
+                manualMessage: message
+            }
+        );
+
+        if (!result.success) throw new Error(result.error || 'Failed to send SMS');
+
+        // 2. Log in medical_history
+        const { error: historyError } = await supabase
+            .from('medical_history')
+            .insert({
+                patient_id: patientId,
+                date: new Date().toISOString().split('T')[0],
+                title: 'SMS Ponctuel Envoyé',
+                description: message,
+                category: 'sms'
+            });
+
+        if (historyError) {
+            console.error('Error logging to history:', historyError);
+            // We don't fail the whole operation if history logging fails, but it's not ideal
+        }
+
+        return { success: true };
+    } catch (error) {
+        console.error('Error in sendPunctualSMS:', error);
+        return { success: false, error: error.message };
+    }
+}
