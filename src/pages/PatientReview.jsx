@@ -307,7 +307,7 @@ export default function PatientReview() {
     };
 
     const handleRegenerateSchedule = async () => {
-        if (!confirm('Cela va supprimer tous les rappels en attente et les remplacer par le nouveau planning complet (Bienvenue J-10 à J+2). Continuer ?')) return;
+        if (!confirm('Cela va supprimer tous les rappels en attente et les remplacer par le nouveau planning complet (Bienvenue J-10 à J+4). Continuer ?')) return;
 
         try {
             // 1. Delete pending
