@@ -1042,204 +1042,204 @@ export default function PatientReview() {
                                 </div>
                             </div>
                         </div>
+
+                        {/* 4. Protocol Progress */}
+                        <div className="card glass-effect" style={{ padding: 'var(--spacing-8)' }}>
+                            <div className="card-header" style={{ marginBottom: 'var(--spacing-6)' }}>
+                                <div className="card-icon card-icon-success">
+                                    <Activity size={20} />
+                                </div>
+                                <h3>État du Protocole</h3>
+                            </div>
+                            <div style={{ textAlign: 'center' }}>
+                                <div style={{ fontSize: 'var(--font-size-4xl)', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-primary-500)', marginBottom: 'var(--spacing-2)' }}>
+                                    {patient.displayProgress || patient.progress || 0}%
+                                </div>
+                                <div className="progress-bar" style={{ height: '12px', background: 'var(--color-gray-100)', borderRadius: '6px', overflow: 'hidden', marginBottom: 'var(--spacing-4)' }}>
+                                    <div className="progress-fill progress-fill-primary" style={{ width: `${patient.displayProgress || patient.progress || 0}%`, height: '100%', transition: 'width 0.5s ease' }}></div>
+                                </div>
+                                <div className="badge badge-success" style={{ padding: '8px 20px', borderRadius: '20px' }}>Protocole en cours d'exécution</div>
+                            </div>
+                        </div>
                     </div>
 
-                    {/* 4. Protocol Progress */}
-                    <div className="card glass-effect" style={{ padding: 'var(--spacing-8)' }}>
-                        <div className="card-header" style={{ marginBottom: 'var(--spacing-6)' }}>
-                            <div className="card-icon card-icon-success">
-                                <Activity size={20} />
-                            </div>
-                            <h3>État du Protocole</h3>
-                        </div>
-                        <div style={{ textAlign: 'center' }}>
-                            <div style={{ fontSize: 'var(--font-size-4xl)', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-primary-500)', marginBottom: 'var(--spacing-2)' }}>
-                                {patient.displayProgress || patient.progress || 0}%
-                            </div>
-                            <div className="progress-bar" style={{ height: '12px', background: 'var(--color-gray-100)', borderRadius: '6px', overflow: 'hidden', marginBottom: 'var(--spacing-4)' }}>
-                                <div className="progress-fill progress-fill-primary" style={{ width: `${patient.displayProgress || patient.progress || 0}%`, height: '100%', transition: 'width 0.5s ease' }}></div>
-                            </div>
-                            <div className="badge badge-success" style={{ padding: '8px 20px', borderRadius: '20px' }}>Protocole en cours d'exécution</div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Right Column: history & Secure Link */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-8)' }}>
-                    {/* Secure Link Card */}
-                    <div className="card glass-effect" style={{ padding: 'var(--spacing-8)', border: '1px solid var(--color-primary-100)' }}>
-                        <div className="card-header" style={{ marginBottom: 'var(--spacing-6)' }}>
-                            <div className="card-icon card-icon-primary" style={{ background: 'var(--color-primary-50)', color: 'var(--color-primary-600)' }}>
-                                <ShieldCheck size={20} />
-                            </div>
-                            <h3>Accès Patient Sécurisé</h3>
-                        </div>
-
-                        <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-500)', marginBottom: 'var(--spacing-6)' }}>
-                            Générez un lien unique pour permettre au patient d'accéder à son portail sans mot de passe.
-                        </p>
-
-                        {tokenData ? (
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-4)' }}>
-                                <div style={{
-                                    background: 'var(--color-gray-50)',
-                                    padding: 'var(--spacing-4)',
-                                    borderRadius: 'var(--border-radius-lg)',
-                                    border: '1px dashed var(--color-gray-200)',
-                                    wordBreak: 'break-all',
-                                    fontSize: 'var(--font-size-xs)',
-                                    color: 'var(--color-primary-700)',
-                                    fontFamily: 'monospace',
-                                    position: 'relative'
-                                }}>
-                                    {`${window.location.origin}/patient-portal/${tokenData.token}`}
+                    {/* Right Column: history & Secure Link */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-8)' }}>
+                        {/* Secure Link Card */}
+                        <div className="card glass-effect" style={{ padding: 'var(--spacing-8)', border: '1px solid var(--color-primary-100)' }}>
+                            <div className="card-header" style={{ marginBottom: 'var(--spacing-6)' }}>
+                                <div className="card-icon card-icon-primary" style={{ background: 'var(--color-primary-50)', color: 'var(--color-primary-600)' }}>
+                                    <ShieldCheck size={20} />
                                 </div>
-                                <div style={{ display: 'flex', gap: 'var(--spacing-2)' }}>
-                                    <button
-                                        onClick={() => copyToClipboard(`${window.location.origin}/patient-portal/${tokenData.token}`)}
-                                        className="btn btn-primary btn-sm"
-                                        style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--spacing-2)' }}
-                                    >
-                                        <Copy size={16} />
-                                        Copier le lien
-                                    </button>
-                                    <button
-                                        onClick={() => window.open(`${window.location.origin}/patient-portal/${tokenData.token}`, '_blank')}
-                                        className="btn btn-secondary btn-sm"
-                                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px 12px' }}
-                                        title="Ouvrir le lien"
-                                    >
-                                        <Eye size={16} />
-                                        Ouvrir
-                                    </button>
-                                    <button
-                                        onClick={handleGenerateToken}
-                                        disabled={isGeneratingToken}
-                                        className="btn btn-secondary btn-sm"
-                                        title="Régénérer le lien"
-                                        style={{ padding: '8px' }}
-                                    >
-                                        <RefreshCw size={16} className={isGeneratingToken ? 'animate-spin' : ''} />
-                                    </button>
-                                </div>
-                                <div style={{ fontSize: '10px', color: 'var(--color-gray-400)', textAlign: 'center' }}>
-                                    Lien actif • Créé le {new Date(tokenData.created_at || Date.now()).toLocaleDateString('fr-FR')}
-                                </div>
-                                <div style={{ marginTop: 'var(--spacing-6)', paddingTop: 'var(--spacing-6)', borderTop: '1px solid var(--color-gray-100)' }}>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-4)' }}>
-                                        <h4 style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-gray-500)', textTransform: 'uppercase', marginBottom: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                            <History size={14} />
-                                            Rappels planifiés {pendingReminders.length > 0 ? `(${pendingReminders.length})` : ''}
-                                        </h4>
+                                <h3>Accès Patient Sécurisé</h3>
+                            </div>
+
+                            <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-500)', marginBottom: 'var(--spacing-6)' }}>
+                                Générez un lien unique pour permettre au patient d'accéder à son portail sans mot de passe.
+                            </p>
+
+                            {tokenData ? (
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-4)' }}>
+                                    <div style={{
+                                        background: 'var(--color-gray-50)',
+                                        padding: 'var(--spacing-4)',
+                                        borderRadius: 'var(--border-radius-lg)',
+                                        border: '1px dashed var(--color-gray-200)',
+                                        wordBreak: 'break-all',
+                                        fontSize: 'var(--font-size-xs)',
+                                        color: 'var(--color-primary-700)',
+                                        fontFamily: 'monospace',
+                                        position: 'relative'
+                                    }}>
+                                        {`${window.location.origin}/patient-portal/${tokenData.token}`}
+                                    </div>
+                                    <div style={{ display: 'flex', gap: 'var(--spacing-2)' }}>
                                         <button
-                                            onClick={() => setIsCustomSMSModalOpen(true)}
-                                            className="btn btn-secondary btn-xs"
-                                            style={{ fontSize: '10px', padding: '4px 8px', borderColor: 'var(--color-primary-200)', color: 'var(--color-primary-600)' }}
+                                            onClick={() => copyToClipboard(`${window.location.origin}/patient-portal/${tokenData.token}`)}
+                                            className="btn btn-primary btn-sm"
+                                            style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--spacing-2)' }}
                                         >
-                                            <Send size={12} style={{ marginRight: '4px' }} />
-                                            SMS personnalisé
+                                            <Copy size={16} />
+                                            Copier le lien
+                                        </button>
+                                        <button
+                                            onClick={() => window.open(`${window.location.origin}/patient-portal/${tokenData.token}`, '_blank')}
+                                            className="btn btn-secondary btn-sm"
+                                            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px 12px' }}
+                                            title="Ouvrir le lien"
+                                        >
+                                            <Eye size={16} />
+                                            Ouvrir
+                                        </button>
+                                        <button
+                                            onClick={handleGenerateToken}
+                                            disabled={isGeneratingToken}
+                                            className="btn btn-secondary btn-sm"
+                                            title="Régénérer le lien"
+                                            style={{ padding: '8px' }}
+                                        >
+                                            <RefreshCw size={16} className={isGeneratingToken ? 'animate-spin' : ''} />
                                         </button>
                                     </div>
+                                    <div style={{ fontSize: '10px', color: 'var(--color-gray-400)', textAlign: 'center' }}>
+                                        Lien actif • Créé le {new Date(tokenData.created_at || Date.now()).toLocaleDateString('fr-FR')}
+                                    </div>
+                                    <div style={{ marginTop: 'var(--spacing-6)', paddingTop: 'var(--spacing-6)', borderTop: '1px solid var(--color-gray-100)' }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-4)' }}>
+                                            <h4 style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-gray-500)', textTransform: 'uppercase', marginBottom: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                <History size={14} />
+                                                Rappels planifiés {pendingReminders.length > 0 ? `(${pendingReminders.length})` : ''}
+                                            </h4>
+                                            <button
+                                                onClick={() => setIsCustomSMSModalOpen(true)}
+                                                className="btn btn-secondary btn-xs"
+                                                style={{ fontSize: '10px', padding: '4px 8px', borderColor: 'var(--color-primary-200)', color: 'var(--color-primary-600)' }}
+                                            >
+                                                <Send size={12} style={{ marginRight: '4px' }} />
+                                                SMS personnalisé
+                                            </button>
+                                        </div>
 
-                                    {pendingReminders.length > 0 ? (
-                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                            {pendingReminders.map(rem => (
-                                                <div key={rem.id} style={{ padding: 'var(--spacing-3)', background: 'var(--color-gray-50)', borderRadius: 'var(--border-radius-md)', border: '1px solid var(--color-gray-200)' }}>
-                                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                                                        <span style={{ fontWeight: 'var(--font-weight-bold)', fontSize: 'var(--font-size-sm)', color: 'var(--color-purple-700)' }}>{rem.screen}</span>
-                                                        <span style={{ fontSize: '10px', color: 'var(--color-gray-500)' }}>
-                                                            {new Date(rem.scheduled_for).toLocaleDateString('fr-FR')} {new Date(rem.scheduled_for).getHours()}:{String(new Date(rem.scheduled_for).getMinutes()).padStart(2, '0')}
-                                                        </span>
+                                        {pendingReminders.length > 0 ? (
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                                {pendingReminders.map(rem => (
+                                                    <div key={rem.id} style={{ padding: 'var(--spacing-3)', background: 'var(--color-gray-50)', borderRadius: 'var(--border-radius-md)', border: '1px solid var(--color-gray-200)' }}>
+                                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                                                            <span style={{ fontWeight: 'var(--font-weight-bold)', fontSize: 'var(--font-size-sm)', color: 'var(--color-purple-700)' }}>{rem.screen}</span>
+                                                            <span style={{ fontSize: '10px', color: 'var(--color-gray-500)' }}>
+                                                                {new Date(rem.scheduled_for).toLocaleDateString('fr-FR')} {new Date(rem.scheduled_for).getHours()}:{String(new Date(rem.scheduled_for).getMinutes()).padStart(2, '0')}
+                                                            </span>
+                                                        </div>
+                                                        <button
+                                                            onClick={() => { setEditingReminder(rem); setIsSMSModalOpen(true); }}
+                                                            className="btn btn-secondary btn-sm"
+                                                            style={{ width: '100%', fontSize: '11px', padding: '4px 8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', background: 'white' }}
+                                                        >
+                                                            <Edit2 size={12} />
+                                                            Gérer / Envoyer
+                                                        </button>
                                                     </div>
-                                                    <button
-                                                        onClick={() => { setEditingReminder(rem); setIsSMSModalOpen(true); }}
-                                                        className="btn btn-secondary btn-sm"
-                                                        style={{ width: '100%', fontSize: '11px', padding: '4px 8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', background: 'white' }}
-                                                    >
-                                                        <Edit2 size={12} />
-                                                        Gérer / Envoyer
-                                                    </button>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    ) : (
-                                        <div style={{ fontSize: '11px', color: 'var(--color-gray-400)', textAlign: 'center', padding: 'var(--spacing-4)', background: 'var(--color-gray-50)', borderRadius: 'var(--border-radius-md)', border: '1px dashed var(--color-gray-200)' }}>
-                                            Aucun rappel planifié.
-                                        </div>
-                                    )}
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <div style={{ fontSize: '11px', color: 'var(--color-gray-400)', textAlign: 'center', padding: 'var(--spacing-4)', background: 'var(--color-gray-50)', borderRadius: 'var(--border-radius-md)', border: '1px dashed var(--color-gray-200)' }}>
+                                                Aucun rappel planifié.
+                                            </div>
+                                        )}
 
-                                    <button
-                                        onClick={handleRegenerateSchedule}
-                                        className="btn btn-secondary"
-                                        style={{ width: '100%', marginTop: 'var(--spacing-4)', fontSize: '10px', padding: 'var(--spacing-2)', border: '1px dashed var(--color-gray-300)', background: 'transparent', color: 'var(--color-gray-400)' }}
-                                    >
-                                        <RefreshCw size={12} style={{ marginRight: '4px' }} />
-                                        Regénérer le planning complet
-                                    </button>
+                                        <button
+                                            onClick={handleRegenerateSchedule}
+                                            className="btn btn-secondary"
+                                            style={{ width: '100%', marginTop: 'var(--spacing-4)', fontSize: '10px', padding: 'var(--spacing-2)', border: '1px dashed var(--color-gray-300)', background: 'transparent', color: 'var(--color-gray-400)' }}
+                                        >
+                                            <RefreshCw size={12} style={{ marginRight: '4px' }} />
+                                            Regénérer le planning complet
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                        ) : (
-                            <button
-                                onClick={handleGenerateToken}
-                                disabled={isGeneratingToken}
-                                className="btn btn-primary"
-                                style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--spacing-2)' }}
-                            >
-                                {isGeneratingToken ? <RefreshCw size={18} className="animate-spin" /> : <LinkIcon size={18} />}
-                                Générer un lien d'accès
-                            </button>
-                        )}
-                    </div>
-
-                    {/* History Card */}
-                    <div className="card glass-effect" style={{ height: 'fit-content', padding: 'var(--spacing-8)' }}>
-                        <div className="card-header" style={{ marginBottom: 'var(--spacing-8)' }}>
-                            <div className="card-icon card-icon-primary" style={{ background: 'var(--color-purple-50)', color: 'var(--color-purple-600)' }}>
-                                <History size={20} />
-                            </div>
-                            <h3>Historique des événements</h3>
+                            ) : (
+                                <button
+                                    onClick={handleGenerateToken}
+                                    disabled={isGeneratingToken}
+                                    className="btn btn-primary"
+                                    style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--spacing-2)' }}
+                                >
+                                    {isGeneratingToken ? <RefreshCw size={18} className="animate-spin" /> : <LinkIcon size={18} />}
+                                    Générer un lien d'accès
+                                </button>
+                            )}
                         </div>
 
-                        <div className="timeline" style={{ position: 'relative' }}>
-                            <div style={{ position: 'absolute', left: '7px', top: 0, bottom: 0, width: '2px', background: 'var(--color-gray-100)' }}></div>
-                            {medicalHistory.length > 0 ? (
-                                medicalHistory.map((item) => {
-                                    const isSystemSms = item.type === 'sms_log' || item.category === 'sms';
-                                    return (
-                                        <div key={item.id} className="timeline-item" style={{ paddingLeft: 'var(--spacing-8)', paddingBottom: 'var(--spacing-8)', position: 'relative' }}>
-                                            <div style={{
-                                                position: 'absolute',
-                                                left: 0,
-                                                top: '4px',
-                                                width: '16px',
-                                                height: '16px',
-                                                borderRadius: '50%',
-                                                background: isSystemSms ? 'var(--color-secondary-500)' : 'var(--color-primary-500)',
-                                                border: '3px solid white',
-                                                boxShadow: '0 0 0 1px var(--color-gray-100)',
-                                                zIndex: 1
-                                            }}></div>
-                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)' }}>
-                                                    <span style={{ fontWeight: 'var(--font-weight-black)', fontSize: 'var(--font-size-md)' }}>{item.title}</span>
-                                                    {isSystemSms && <span className="badge" style={{ fontSize: '8px', background: 'var(--color-gray-100)', letterSpacing: '0.05em' }}>SMS ENVOYÉ</span>}
-                                                    {item.status && <span className={`badge badge-${item.status === 'sent' || item.status === 'delivered' ? 'success' : 'danger'}`} style={{ fontSize: '7px' }}>{item.status.toUpperCase()}</span>}
-                                                </div>
-                                                <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-400)', display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)' }}>
-                                                    {isSystemSms ? formatDateTimeFR(item.timestamp || item.date) : formatDateFR(item.timestamp || item.date)} • {isSystemSms ? 'Communication' : 'Événement clinique'}
-                                                </div>
-                                                {item.description && (
-                                                    <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-600)', marginTop: '4px', background: 'var(--color-gray-50)', padding: 'var(--spacing-3)', borderRadius: 'var(--border-radius-md)', whiteSpace: 'pre-wrap' }}>
-                                                        {item.description}
+                        {/* History Card */}
+                        <div className="card glass-effect" style={{ height: 'fit-content', padding: 'var(--spacing-8)' }}>
+                            <div className="card-header" style={{ marginBottom: 'var(--spacing-8)' }}>
+                                <div className="card-icon card-icon-primary" style={{ background: 'var(--color-purple-50)', color: 'var(--color-purple-600)' }}>
+                                    <History size={20} />
+                                </div>
+                                <h3>Historique des événements</h3>
+                            </div>
+
+                            <div className="timeline" style={{ position: 'relative' }}>
+                                <div style={{ position: 'absolute', left: '7px', top: 0, bottom: 0, width: '2px', background: 'var(--color-gray-100)' }}></div>
+                                {medicalHistory.length > 0 ? (
+                                    medicalHistory.map((item) => {
+                                        const isSystemSms = item.type === 'sms_log' || item.category === 'sms';
+                                        return (
+                                            <div key={item.id} className="timeline-item" style={{ paddingLeft: 'var(--spacing-8)', paddingBottom: 'var(--spacing-8)', position: 'relative' }}>
+                                                <div style={{
+                                                    position: 'absolute',
+                                                    left: 0,
+                                                    top: '4px',
+                                                    width: '16px',
+                                                    height: '16px',
+                                                    borderRadius: '50%',
+                                                    background: isSystemSms ? 'var(--color-secondary-500)' : 'var(--color-primary-500)',
+                                                    border: '3px solid white',
+                                                    boxShadow: '0 0 0 1px var(--color-gray-100)',
+                                                    zIndex: 1
+                                                }}></div>
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)' }}>
+                                                        <span style={{ fontWeight: 'var(--font-weight-black)', fontSize: 'var(--font-size-md)' }}>{item.title}</span>
+                                                        {isSystemSms && <span className="badge" style={{ fontSize: '8px', background: 'var(--color-gray-100)', letterSpacing: '0.05em' }}>SMS ENVOYÉ</span>}
+                                                        {item.status && <span className={`badge badge-${item.status === 'sent' || item.status === 'delivered' ? 'success' : 'danger'}`} style={{ fontSize: '7px' }}>{item.status.toUpperCase()}</span>}
                                                     </div>
-                                                )}
+                                                    <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-400)', display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)' }}>
+                                                        {isSystemSms ? formatDateTimeFR(item.timestamp || item.date) : formatDateFR(item.timestamp || item.date)} • {isSystemSms ? 'Communication' : 'Événement clinique'}
+                                                    </div>
+                                                    {item.description && (
+                                                        <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-600)', marginTop: '4px', background: 'var(--color-gray-50)', padding: 'var(--spacing-3)', borderRadius: 'var(--border-radius-md)', whiteSpace: 'pre-wrap' }}>
+                                                            {item.description}
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </div>
-                                        </div>
-                                    );
-                                })
-                            ) : (
-                                <p style={{ textAlign: 'center', color: 'var(--color-gray-400)', padding: 'var(--spacing-8)' }}>Aucun événement.</p>
-                            )}
+                                        );
+                                    })
+                                ) : (
+                                    <p style={{ textAlign: 'center', color: 'var(--color-gray-400)', padding: 'var(--spacing-8)' }}>Aucun événement.</p>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>
