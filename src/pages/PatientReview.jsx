@@ -91,18 +91,37 @@ export default function PatientReview() {
             setPatient(patientData);
 
             // Calculate risk status
-            const [riskJ7, riskJ2, riskJ1] = await Promise.all([
+            const [riskJ7, riskJ2, riskJ1Pre, riskJ1, riskJ4] = await Promise.all([
                 calculateRiskFlags(id, 'J7'),
                 calculateRiskFlags(id, 'J2'),
-                calculateRiskFlags(id, 'J1')
+                calculateRiskFlags(id, 'J1_PreOp'),
+                calculateRiskFlags(id, 'J1'),
+                calculateRiskFlags(id, 'J4_Satisfaction')
             ]);
 
-            const hasHardRisk = riskJ7.hard?.length > 0 || riskJ2.hard?.length > 0 || riskJ1.hard?.length > 0;
-            const hasSoftRisk = riskJ7.soft?.length > 0 || riskJ2.soft?.length > 0 || riskJ1.soft?.length > 0;
+            const hasHardRisk = riskJ7.hard?.length > 0 || riskJ2.hard?.length > 0 || riskJ1Pre.hard?.length > 0 || riskJ1.hard?.length > 0 || riskJ4.hard?.length > 0;
+            const hasSoftRisk = riskJ7.soft?.length > 0 || riskJ2.soft?.length > 0 || riskJ1Pre.soft?.length > 0 || riskJ1.soft?.length > 0 || riskJ4.soft?.length > 0;
 
             if (hasHardRisk) setRiskStatus('URGENT');
             else if (hasSoftRisk) setRiskStatus('VIGILANCE');
             else setRiskStatus('NORMAL');
+
+            // Load clinical responses for all steps
+            const [respJ7, respJ2, respJ1Pre, respJ1, respJ4] = await Promise.all([
+                getResponses(id, 'J7'),
+                getResponses(id, 'J2'),
+                getResponses(id, 'J1_PreOp'),
+                getResponses(id, 'J1'),
+                getResponses(id, 'J4_Satisfaction')
+            ]);
+
+            setClinicalResponses({
+                J7: respJ7 || {},
+                J2: respJ2 || {},
+                J1_PreOp: respJ1Pre || {},
+                J1: respJ1 || {},
+                J4_Satisfaction: respJ4 || {}
+            });
 
             setPatient({
                 ...patientData,
@@ -792,10 +811,10 @@ export default function PatientReview() {
                                         {[
                                             { id: 'anesthesia_consultation', label: 'Anesthésie', screen: 'J7' },
                                             { id: 'blood_work', label: 'Bilan sanguin', screen: 'J7' },
-                                            { id: 'accompagnant_ok', label: 'Accompagnant', screen: 'J7' },
-                                            { id: 'fasting_ok', label: 'Jeûne J-2', screen: 'J2' },
-                                            { id: 'hygiene_shower_ok', label: 'Douche J-2', screen: 'J2' },
-                                            { id: 'vitals_check', label: 'Signes vitaux J-2', screen: 'J2' }
+                                            { id: 'companion_confirmed', label: 'Accompagnant', screen: 'J7' },
+                                            { id: 'fasting_understood', label: 'Jeûne J-2', screen: 'J2' },
+                                            { id: 'shower_understood', label: 'Douche J-2', screen: 'J2' },
+                                            { id: 'recent_health_check', label: 'Santé J-2', screen: 'J2' }
                                         ].map(item => (
                                             <div key={item.id} className="card" style={{ padding: 'var(--spacing-4)', background: 'rgba(255,255,255,0.4)', border: '1px solid var(--color-gray-100)' }}>
                                                 <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', marginBottom: '4px' }}>{item.label}</div>
@@ -994,13 +1013,12 @@ export default function PatientReview() {
                                 </div>
                                 <div className="grid-3" style={{ gap: 'var(--spacing-4)' }}>
                                     {[
-                                        { id: 'has_pain', label: 'douleur' },
-                                        { id: 'fever_infection', label: 'fievre' },
-                                        { id: 'bleeding', label: 'pansement_tache' },
-                                        { id: 'ponv_check', label: 'nausees' },
-                                        { id: 'urine_ok', label: 'urine_ok' },
-                                        { id: 'pain_medication', label: 'medocs_pris' },
-                                        { id: 'urgency', label: 'urgence_vitale' }
+                                        { id: 'pain_level', label: 'Douleur (0-10)' },
+                                        { id: 'general_state', label: 'État général' },
+                                        { id: 'nausea_check', label: 'Nausées/Vomiss.' },
+                                        { id: 'site_check', label: 'Saignement/Gonfl.' },
+                                        { id: 'worry_check', label: 'Symptôme inquiétant' },
+                                        { id: 'treatment_followup', label: 'Traitement/Consignes' }
                                     ].map(item => (
                                         <div key={item.id} className="card" style={{ padding: 'var(--spacing-4)', background: 'rgba(255,255,255,0.4)', border: '1px solid var(--color-gray-100)' }}>
                                             <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', marginBottom: '4px' }}>{item.label}</div>
@@ -1019,9 +1037,9 @@ export default function PatientReview() {
                                 </div>
                                 <div className="grid-3" style={{ gap: 'var(--spacing-4)' }}>
                                     {[
-                                        { id: 'care_score', label: 'Prise en charge' },
-                                        { id: 'recommend_score', label: 'Recommandation' },
-                                        { id: 'overall_comment', label: 'Commentaire', fullWidth: true }
+                                        { id: 'soins_qualite', label: 'Prise en charge' },
+                                        { id: 'recommandation', label: 'Recommandation' },
+                                        { id: 'verbatim', label: 'Commentaire', fullWidth: true }
                                     ].map(item => (
                                         <div key={item.id} className="card" style={{
                                             padding: 'var(--spacing-4)',

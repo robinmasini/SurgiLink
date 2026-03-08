@@ -71,12 +71,15 @@ export default function PatientPortal({ patient: initialPatient }) {
         try {
             const { data, error } = await supabase
                 .from('pathway_responses')
-                .select('responses')
-                .eq('patient_id', patientId)
-                .single();
+                .select('item_id, response')
+                .eq('patient_id', patientId);
 
             if (!error && data) {
-                setResponses(data.responses || {});
+                const aggregated = {};
+                data.forEach(row => {
+                    aggregated[row.item_id] = row.response?.value;
+                });
+                setResponses(aggregated);
             }
         } catch (err) {
             console.error('Error loading responses:', err);
