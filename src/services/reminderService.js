@@ -245,10 +245,6 @@ export async function scheduleTimeBasedReminders(patientId, interventionDate) {
     j7Date.setDate(j7Date.getDate() - 7);
     j7Date.setHours(10, 0, 0, 0); // 10:00 AM
 
-    const j3Date = new Date(interventionDate);
-    j3Date.setDate(j3Date.getDate() - 3);
-    j3Date.setHours(10, 0, 0, 0);
-
     const j2Date = new Date(interventionDate);
     j2Date.setDate(j2Date.getDate() - 2);
     j2Date.setHours(10, 0, 0, 0);
@@ -264,24 +260,27 @@ export async function scheduleTimeBasedReminders(patientId, interventionDate) {
     j1PostOpDate.setDate(j1PostOpDate.getDate() + 1);
     j1PostOpDate.setHours(10, 0, 0, 0);
 
-    const j2PostOpDate = new Date(interventionDate);
-    j2PostOpDate.setDate(j2PostOpDate.getDate() + 2);
-    j2PostOpDate.setHours(10, 0, 0, 0);
+    const j4SatisfactionDate = new Date(interventionDate);
+    j4SatisfactionDate.setDate(j4SatisfactionDate.getDate() + 4);
+    j4SatisfactionDate.setHours(11, 0, 0, 0);
 
-    const j10Date = new Date(interventionDate);
-    j10Date.setDate(j10Date.getDate() - 10);
-    j10Date.setHours(10, 0, 0, 0); // 10:00 AM
+    const j4EsatisDate = new Date(interventionDate);
+    j4EsatisDate.setDate(j4EsatisDate.getDate() + 4);
+    j4EsatisDate.setHours(11, 30, 0, 0); // Slightly after our internal survey
+
+    const j10BeforeDate = new Date(interventionDate);
+    j10BeforeDate.setDate(j10BeforeDate.getDate() - 10);
+    j10BeforeDate.setHours(10, 0, 0, 0); // Welcome message
 
     // Queue reminders
     const remindersToQueue = [
-        { screen: 'Bienvenue', date: j10Date, template: 'welcome_digitalization' },
+        { screen: 'Bienvenue', date: j10BeforeDate, template: 'welcome_accueil' },
         { screen: 'J-7', date: j7Date, template: 'j7_reminder' },
-        { screen: 'J-3', date: j3Date, template: 'j3_reminder' },
         { screen: 'J-2', date: j2Date, template: 'j2_reminder' },
         { screen: 'J-1', date: j1Date, template: 'j1_reminder_long' },
-        { screen: 'J-0', date: j0Date, template: 'j0_reminder' },
         { screen: 'J+1', date: j1PostOpDate, template: 'j1_postop' },
-        { screen: 'J+2', date: j2PostOpDate, template: 'j2_postop' }
+        { screen: 'J+4', date: j4SatisfactionDate, template: 'j4_satisfaction' },
+        { screen: 'E-SATIS', date: j4EsatisDate, template: 'j4_esatis' }
     ];
 
     for (const reminder of remindersToQueue) {

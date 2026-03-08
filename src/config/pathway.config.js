@@ -1,383 +1,272 @@
 // Ambulatory Pathway Configuration
-// Config-driven question system for all 7 SMS steps
-// Questions redistributed from original J7 and J2 screens across the full 7-day protocol
+// Config-driven question system for the 5-step pathway
+// Questions redistributed across the full protocol
 
 export const pathwayConfig = {
-    // J-7: Administrative checks (anesthesia, blood work, companion)
+    // J-7: Questionnaire de Pré-admission
     J7: {
-        title: "Checklist Préparation",
-        subtitle: "J-7 avant votre intervention",
+        title: "Questionnaire de Pré-admission J-7",
+        subtitle: "Préparation de votre intervention",
+        intro_text: "Afin de préparer au mieux votre intervention en chirurgie ambulatoire et de garantir votre sécurité, merci de répondre à ce rapide questionnaire.\nN'hésitez surtout pas à cocher \"Non\", cela ne veut pas dire que votre opération sera annulée. Si vous cochez \"Non\", l'équipe de la clinique vous rappellera pour trouver une solution adaptée à votre situation.",
         sections: [
             {
-                id: "administrative",
+                id: "medication_prep",
                 icon: "📋",
-                title: "Étape Administrative",
-                subtitle: "Dernière ligne droite ! Vérifions ensemble que tout est prêt.",
+                title: "PARTIE 1 : Préparation médicale à l'intervention",
                 items: [
                     {
                         id: "anesthesia_consultation",
                         type: "yes_no",
-                        label: "Avez-vous effectué votre consultation d'anesthésie ?",
-                        why: "C'est une obligation légale de sécurité.",
-                        action: "Si non effectuée, contactez-nous au plus vite.",
-                        required: true,
-                        risk_flag_rule: { type: "hard", condition: "no" },
-                        reminder_policy: {
-                            auto_reminder_delay_hours: 48,
-                            max_reminders: 3,
-                            sms_template_key: "j7_anesthesia_missing"
-                        }
-                    },
-                    {
-                        id: "blood_work",
-                        type: "yes_no",
-                        label: "Avez-vous réalisé votre bilan sanguin / cardiologique ?",
-                        why: "Pour vérifier qu'il n'y a aucune contre-indication.",
-                        action: "Si prescrit mais non effectué, faites-le rapidement.",
-                        required: true,
-                        risk_flag_rule: { type: "soft", condition: "no" },
-                        reminder_policy: {
-                            auto_reminder_delay_hours: 72,
-                            max_reminders: 2,
-                            sms_template_key: "j7_bloodwork_missing"
-                        }
-                    }
-                ]
-            },
-            {
-                id: "companion",
-                icon: "👤",
-                title: "Retour à domicile",
-                subtitle: null,
-                items: [
-                    {
-                        id: "companion_confirmed",
-                        type: "yes_no",
-                        label: "Votre accompagnant est-il bien confirmé pour votre retour à domicile ?",
-                        why: "La loi interdit formellement de rentrer seul après une anesthésie.",
-                        action: "Organisez-vous dès maintenant avec un proche.",
-                        required: true,
-                        risk_flag_rule: { type: "hard", condition: "no" },
-                        alert_if_no: {
-                            type: "danger",
-                            header: "Sortie compromise",
-                            message: "Contactez-nous vite."
-                        },
-                        reminder_policy: {
-                            auto_reminder_delay_hours: 48,
-                            max_reminders: 3,
-                            sms_template_key: "j7_companion_missing"
-                        }
-                    }
-                ]
-            }
-        ]
-    },
-
-    // J-3: Epilation prep + recent infection check
-    J3: {
-        title: "Préparation Épilation",
-        subtitle: "J-3 avant votre intervention",
-        sections: [
-            {
-                id: "preparation",
-                icon: "✂️",
-                title: "Préparation Épilation",
-                subtitle: null,
-                items: [
-                    {
-                        id: "hair_removal_cream",
-                        type: "yes_no",
-                        label: "Avez-vous acheté la crème dépilatoire et réalisé le test d'allergie ?",
-                        why: "Tester la crème à l'avance évite les réactions allergiques de dernière minute.",
-                        action: "Appliquez un peu de crème sur l'avant-bras 48h avant.",
-                        required: true,
-                        warning_banner: {
-                            type: "warning",
-                            message: "L'épilation devra être faite à la crème dépilatoire la veille de l'opération. Le rasoir est interdit."
-                        },
-                        risk_flag_rule: { type: "soft", condition: "no" },
-                        reminder_policy: {
-                            auto_reminder_delay_hours: 72,
-                            max_reminders: 2,
-                            sms_template_key: "generic_item_reminder"
-                        }
-                    },
-                    {
-                        id: "recent_infection",
-                        type: "yes_no",
-                        label: "Signes infectieux récents (fièvre, plaie, infection) ?",
-                        why: "Une infection peut contre-indiquer l'intervention.",
-                        action: "Si oui, contactez-nous immédiatement.",
-                        required: true,
-                        risk_flag_rule: { type: "hard", condition: "yes" }
-                    }
-                ]
-            }
-        ]
-    },
-
-    // J-2: Documents, fasting, understanding
-    J2: {
-        title: "Consignes Préopératoires",
-        subtitle: "J-2 avant votre intervention",
-        sections: [
-            {
-                id: "documents",
-                icon: "📄",
-                title: "Documents & Organisation",
-                subtitle: "Préparez tout pour le jour J.",
-                items: [
-                    {
-                        id: "documents_ready",
-                        type: "yes_no",
-                        label: "Documents prêts (pièce d'identité, carte vitale, ordonnances)",
-                        why: "Obligatoire pour l'admission.",
-                        action: "Préparez-les dans un sac aujourd'hui.",
-                        required: true,
-                        risk_flag_rule: { type: "soft", condition: "no" }
-                    }
-                ]
-            },
-            {
-                id: "fasting",
-                icon: "🍽️",
-                title: "Jeûne Préopératoire",
-                subtitle: null,
-                items: [
-                    {
-                        id: "fasting_understood",
-                        type: "yes_no",
-                        label: "Avez-vous bien compris et noté les consignes de jeûne ?",
-                        why: "Le jeûne réduit les risques anesthésiques.",
-                        action: "Notez l'heure de votre dernier repas et boisson.",
-                        required: true,
-                        info_banner: {
-                            type: "info",
-                            message: "Vous pouvez boire de l'eau claire jusqu'à 2h avant l'intervention. Dernier repas léger 6h avant."
-                        },
-                        risk_flag_rule: { type: "soft", condition: "no" }
-                    }
-                ]
-            },
-            {
-                id: "understanding",
-                icon: "✅",
-                title: "Compréhension",
-                subtitle: null,
-                items: [
-                    {
-                        id: "day_j_instructions",
-                        type: "yes_no",
-                        label: "Consignes du jour J notées (heure, lieu, choses à apporter)",
-                        why: "Pour éviter le stress de dernière minute.",
-                        action: "Notez tout dans votre téléphone ou sur papier.",
-                        required: true
-                    }
-                ]
-            }
-        ]
-    },
-
-    // J-1: Hygiene, treatments, no razor
-    J1_PreOp: {
-        title: "Veille de l'Intervention",
-        subtitle: "J-1 - Dernières préparations",
-        sections: [
-            {
-                id: "hygiene",
-                icon: "🚿",
-                title: "Hygiène & Préparation",
-                subtitle: null,
-                items: [
-                    {
-                        id: "shower_planned",
-                        type: "yes_no",
-                        label: "Avez-vous prévu votre douche à la bétadine / savon doux le matin de l'intervention ?",
-                        why: "Réduit le risque infectieux.",
-                        action: "Prévoyez une douche complète avec savon doux.",
-                        required: true
-                    },
-                    {
-                        id: "no_razor",
-                        type: "yes_no",
-                        label: "Confirmation : pas de rasage de la zone opératoire (crème dépilatoire uniquement) ?",
-                        why: "Le rasoir crée des micro-coupures favorisant les infections.",
-                        action: "Utilisez uniquement une crème dépilatoire testée.",
-                        required: true,
-                        risk_flag_rule: { type: "soft", condition: "no" }
-                    }
-                ]
-            },
-            {
-                id: "medical",
-                icon: "💊",
-                title: "Traitements & Santé",
-                subtitle: null,
-                items: [
-                    {
-                        id: "treatments_reviewed",
-                        type: "yes_no",
-                        label: "Traitements habituels revus avec l'équipe",
-                        why: "Certains médicaments doivent être arrêtés ou adaptés.",
-                        action: "Relisez les consignes de l'anesthésiste.",
-                        required: true,
-                        risk_flag_rule: { type: "soft", condition: "no" }
-                    }
-                ]
-            }
-        ]
-    },
-
-    // J-0: Final companion check + infection since J-2
-    J0: {
-        title: "Jour de l'Intervention",
-        subtitle: "J-0 - Dernières vérifications",
-        sections: [
-            {
-                id: "documents_final",
-                icon: "📄",
-                title: "Vérification Finale",
-                subtitle: null,
-                items: [
-                    {
-                        id: "companion_final_check",
-                        type: "yes_no",
-                        label: "Accompagnant confirmé (dernière vérification)",
-                        why: "Indispensable pour votre sortie.",
-                        action: "Reconfirmez avec la personne.",
+                        label: "Avez-vous réalisé votre consultation d'anesthésie pré-opératoire ou l’avez-vous planifiée avant le J-2 ?",
+                        why: "C'est une étape obligatoire au minimum 48h avant toute intervention pour évaluer votre état de santé.",
                         required: true,
                         risk_flag_rule: { type: "hard", condition: "no" }
                     },
                     {
-                        id: "recent_infection_j2",
+                        id: "recent_symptoms",
                         type: "yes_no",
-                        label: "Apparition de signes infectieux depuis J-2 ?",
-                        why: "Pourrait nécessiter un report.",
-                        action: "Si oui, contactez-nous immédiatement.",
-                        required: true,
-                        risk_flag_rule: { type: "hard", condition: "yes" }
-                    }
-                ]
-            }
-        ]
-    },
-
-    // J+1: Post-op Follow-up
-    J1: {
-        title: "Suivi Post-opératoire",
-        subtitle: "J+1 - Votre état de santé",
-        sections: [
-            {
-                id: "symptoms",
-                icon: "🌡️",
-                title: "Symptômes & Douleur",
-                subtitle: null,
-                items: [
-                    {
-                        id: "has_pain",
-                        type: "yes_no",
-                        label: "Ressentez-vous une douleur importante malgré les traitements ?",
-                        why: "Évalue l'efficacité de la prise en charge.",
-                        required: true,
-                        conditional_fields: {
-                            show_if: "yes",
-                            fields: [
-                                { id: "pain_level", type: "slider_0_10", label: "Niveau de douleur (0 = aucune, 10 = insupportable)" }
-                            ]
-                        }
-                    },
-                    {
-                        id: "fever_infection",
-                        type: "yes_no",
-                        label: "Avez-vous de la fièvre (plus de 38°C) ou des frissons ?",
-                        why: "Peut être un signe d'infection.",
+                        label: "Présentez-vous des symptômes anormaux (fièvre, toux, rhume, infection...) ?",
+                        why: "Être malade peut augmenter les risques liés à l'anesthésie.",
                         required: true,
                         risk_flag_rule: { type: "hard", condition: "yes" }
                     },
                     {
-                        id: "ponv_check",
+                        id: "blood_work",
                         type: "yes_no",
-                        label: "Ressentez-vous des nausées ou avez-vous vomi ?",
-                        why: "NVPO fréquentes après anesthésie.",
-                        required: true
-                    },
-                    {
-                        id: "urine_ok",
-                        type: "yes_no",
-                        label: "Avez-vous pu uriner normalement depuis votre retour ?",
-                        why: "Important après une anesthésie.",
+                        label: "Avez-vous réalisé le bilan sanguin (et/ou les examens) prescrit ?",
+                        why: "Analyses vitales pour votre sécurité au bloc opératoire (coagulation, absence d'infection, etc.).",
                         required: true,
                         risk_flag_rule: { type: "soft", condition: "no" }
                     }
                 ]
             },
             {
-                id: "safety",
-                icon: "⚠️",
-                title: "Sécurité & Pansement",
-                subtitle: null,
+                id: "security_prep",
+                icon: "👤",
+                title: "PARTIE 2 : Retour à domicile et Sécurité post-opératoire",
                 items: [
                     {
-                        id: "bleeding",
+                        id: "companion_confirmed",
                         type: "yes_no",
-                        label: "Votre pansement est-il taché de sang ou se décolle-t-il ?",
-                        why: "Nécessite une surveillance du site opératoire.",
+                        label: "Avez-vous prévu un accompagnant adulte pour votre trajet de retour ?",
+                        why: "Il est strictement interdit de conduire ou de rentrer seul, même en taxi/VTC.",
                         required: true,
-                        risk_flag_rule: { type: "hard", condition: "yes" }
+                        risk_flag_rule: { type: "hard", condition: "no" }
                     },
                     {
-                        id: "urgency",
+                        id: "night_companion",
                         type: "yes_no",
-                        label: "Ressentez-vous une gêne respiratoire, une douleur thoracique ou une jambe gonflée ?",
-                        why: "Signes d'alerte nécessitant un avis médical rapide.",
+                        label: "Une personne adulte et valide passera-t-elle la première nuit avec vous ?",
+                        why: "C'est une mesure de sécurité indispensable pour appeler les secours en cas de problème.",
                         required: true,
-                        risk_flag_rule: { type: "hard", condition: "yes" }
-                    }
-                ]
-            },
-            {
-                id: "medication",
-                icon: "💊",
-                title: "Traitements",
-                subtitle: null,
-                items: [
+                        risk_flag_rule: { type: "hard", condition: "no" }
+                    },
                     {
-                        id: "pain_medication",
+                        id: "distance_urgency",
                         type: "yes_no",
-                        label: "Prenez-vous bien vos médicaments contre la douleur comme prescrit ?",
-                        why: "L'observance est clé pour le confort.",
-                        required: true
+                        label: "Votre domicile se trouve-t-il à moins d'une heure (1h) d'une structure d'urgence ?",
+                        why: "Vous devez pouvoir rejoindre rapidement un service médical compétent en cas de complication.",
+                        required: true,
+                        risk_flag_rule: { type: "soft", condition: "no" }
                     }
                 ]
             }
         ]
     },
 
-    // J+2: Satisfaction
-    J2_Satisfaction: {
-        title: "Satisfaction & Retour d'expérience",
-        subtitle: "J+2 - Votre avis nous intéresse",
+    // J-2: Consignes et Vérification
+    J2: {
+        title: "Questionnaire J-2 – Vérification rapide",
+        subtitle: "Avant votre intervention",
         sections: [
             {
-                id: "feedback",
-                icon: "💬",
-                title: "Votre avis",
-                subtitle: null,
+                id: "fasting",
+                icon: "🍽️",
+                title: "1. Jeûne avant l’anesthésie",
                 items: [
                     {
-                        id: "nps",
+                        id: "fasting_understood",
+                        type: "yes_no",
+                        label: "Avez-vous bien compris et prévu de respecter les consignes de jeûne ?",
+                        info_text: "Aliments solides et tabac : arrêt -6h. Boissons claires : arrêt -2h.",
+                        required: true,
+                        risk_flag_rule: { type: "hard", condition: "no" }
+                    }
+                ]
+            },
+            {
+                id: "hygiene",
+                icon: "🚿",
+                title: "2. Hygiène et préparation de la peau",
+                items: [
+                    {
+                        id: "hygiene_understood",
+                        type: "yes_no",
+                        label: "Avez-vous bien compris les consignes d’hygiène (2 douches au savon) et de préparation opératoire ?",
+                        required: true,
+                        risk_flag_rule: { type: "soft", condition: "no" }
+                    }
+                ]
+            },
+            {
+                id: "recent_health",
+                icon: "🌡️",
+                title: "3. État de santé récent",
+                items: [
+                    {
+                        id: "recent_health_check",
+                        type: "yes_no",
+                        label: "Depuis votre consultation, avez-vous eu fièvre, toux, infection ou autre problème de santé ?",
+                        required: true,
+                        risk_flag_rule: { type: "hard", condition: "yes" }
+                    }
+                ]
+            }
+        ]
+    },
+
+    // J-1: Confirmation
+    J1_PreOp: {
+        title: "Confirmation de votre admission",
+        subtitle: "J-1 - Message Confirmation",
+        sections: [
+            {
+                id: "confirmation",
+                icon: "✅",
+                title: "Confirmation",
+                items: [
+                    {
+                        id: "admission_confirmed",
+                        type: "yes_no",
+                        label: "Confirmez-vous que vous avez noté l’heure de votre admission et organisé votre venue ?",
+                        required: true,
+                        risk_flag_rule: { type: "hard", condition: "no" }
+                    }
+                ]
+            }
+        ]
+    },
+
+    // J+1: Suivi post-op
+    J1: {
+        title: "Suivi post-opératoire J+1",
+        subtitle: "Votre récupération",
+        sections: [
+            {
+                id: "postop_status",
+                icon: "🌡️",
+                title: "État de santé",
+                items: [
+                    {
+                        id: "pain_level",
                         type: "slider_0_10",
-                        label: "Sur une échelle de 0 à 10, recommanderiez-vous notre cabinet ?",
+                        label: "Quelle est votre douleur actuellement ? (0=aucune, 10=intense)",
                         required: true
                     },
                     {
-                        id: "commentaire",
-                        type: "text",
-                        label: "Souhaitez-vous nous laisser un commentaire sur votre prise en charge ?",
-                        multiline: true,
-                        required: false
+                        id: "general_state",
+                        type: "scale",
+                        label: "Comment est votre état général ?",
+                        options: ["Très satisfaisant", "Satisfaisant", "Moyennement satisfaisant", "Inquiétant"],
+                        required: true
+                    },
+                    {
+                        id: "nausea_check",
+                        type: "yes_no",
+                        label: "Avez-vous eu des nausées ou vomissements importants ?",
+                        required: true,
+                        risk_flag_rule: { type: "soft", condition: "yes" }
+                    },
+                    {
+                        id: "site_check",
+                        type: "yes_no",
+                        label: "Avez-vous remarqué saignement, gonflement ou écoulement anormal ?",
+                        required: true,
+                        risk_flag_rule: { type: "hard", condition: "yes" }
+                    },
+                    {
+                        id: "worry_check",
+                        type: "yes_no",
+                        label: "Avez-vous un symptôme qui vous inquiète ?",
+                        required: true,
+                        risk_flag_rule: { type: "hard", condition: "yes" }
+                    },
+                    {
+                        id: "treatment_followup",
+                        type: "yes_no",
+                        label: "Avez-vous pu prendre les traitements et suivre les consignes de sortie ?",
+                        required: true,
+                        risk_flag_rule: { type: "soft", condition: "no" }
                     }
+                ]
+            }
+        ]
+    },
+
+    // J+4: Satisfaction
+    J4_Satisfaction: {
+        title: "Enquête de satisfaction",
+        subtitle: "J+4 - Votre avis",
+        sections: [
+            {
+                id: "accueil",
+                icon: "🤝",
+                title: "1. L’accueil à la clinique",
+                items: [
+                    { id: "accueil_qualite", type: "rating", label: "Qualité de l’accueil et courtoisie de l’équipe" },
+                    { id: "accueil_attente", type: "rating", label: "Délai d’attente lors de votre admission" },
+                    { id: "accueil_infos", type: "rating", label: "Informations reçues à votre arrivée" }
+                ]
+            },
+            {
+                id: "medical",
+                icon: "🩺",
+                title: "2. Votre prise en charge médicale",
+                items: [
+                    { id: "soins_qualite", type: "rating", label: "La qualité des soins reçus" },
+                    { id: "medecins_ecoute", type: "rating", label: "L’écoute et la disponibilité des médecins" },
+                    { id: "soignant_ecoute", type: "rating", label: "L’écoute et l’accompagnement des soignants" },
+                    { id: "douleur_prise_en_charge", type: "rating", label: "La prise en charge de votre douleur" }
+                ]
+            },
+            {
+                id: "confort",
+                icon: "🛏️",
+                title: "3. Votre confort pendant le séjour",
+                items: [
+                    { id: "confort_chambre", type: "rating", label: "Le confort de votre chambre/espace de repos" },
+                    { id: "confort_repas", type: "rating", label: "La qualité des repas ou collations" }
+                ]
+            },
+            {
+                id: "organisation",
+                icon: "📋",
+                title: "4. Organisation de votre sortie",
+                items: [
+                    { id: "sortie_explications", type: "rating", label: "Les explications concernant la suite du traitement" },
+                    { id: "sortie_clarte_docs", type: "rating", label: "La clarté des documents remis" }
+                ]
+            },
+            {
+                id: "global",
+                icon: "⭐",
+                title: "5. Votre avis global",
+                items: [
+                    {
+                        id: "recommendation",
+                        type: "select",
+                        label: "Recommanderiez-vous la clinique à un proche ?",
+                        options: ["Oui tout à fait", "Oui probablement", "Plutôt non", "Non"],
+                        required: true
+                    }
+                ]
+            },
+            {
+                id: "comments",
+                icon: "💬",
+                title: "6. Commentaire (facultatif)",
+                items: [
+                    { id: "comment", type: "text", label: "Commentaire ou suggestion pour nous améliorer", multiline: true }
                 ]
             }
         ]
@@ -386,7 +275,7 @@ export const pathwayConfig = {
 
 /**
  * Get all items from a screen configuration
- * @param {string} screen - J7, J3, J2, J1_PreOp, J0, J1 or J2_Satisfaction
+ * @param {string} screen - J7, J2, J1_PreOp, J1 or J4_Satisfaction
  * @returns {Array} - Flat array of all items
  */
 export function getScreenItems(screen) {
@@ -398,7 +287,7 @@ export function getScreenItems(screen) {
 
 /**
  * Get a specific item configuration
- * @param {string} screen - J7, J3, J2, J1_PreOp, J0, J1 or J2_Satisfaction
+ * @param {string} screen - J7, J2, J1_PreOp, J1 or J4_Satisfaction
  * @param {string} itemId - Item ID
  * @returns {Object|null} - Item config or null
  */

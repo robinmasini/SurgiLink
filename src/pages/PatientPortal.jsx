@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { validateToken } from '../services/tokenService';
 import { getDocuments, downloadDocument } from '../services/documentService';
+import { getCustomQuestions, answerCustomQuestion } from '../services/customQuestionService';
 import { calculateAge, formatDateFR, calculateDaysUntilSurgery } from '../utils/dateUtils';
 import {
     User,
@@ -22,6 +23,7 @@ import ClinicAppointmentCard from '../components/ClinicAppointmentCard';
 import CompactAppointmentCard from '../components/CompactAppointmentCard';
 import ProtocolStatus from '../components/ProtocolStatus';
 import PatientTraceability from '../components/PatientTraceability';
+import { HelpCircle, Send, RefreshCw } from 'lucide-react';
 
 export default function PatientPortal({ patient: initialPatient }) {
     const { token } = useParams();
@@ -32,12 +34,15 @@ export default function PatientPortal({ patient: initialPatient }) {
     const [medicalHistory, setMedicalHistory] = useState([]);
     const [responses, setResponses] = useState({});
     const [documents, setDocuments] = useState([]);
+    const [customQuestions, setCustomQuestions] = useState([]);
+    const [answeringQuestionId, setAnsweringQuestionId] = useState(null);
 
     useEffect(() => {
         if (initialPatient) {
             setPatient(initialPatient);
             loadMedicalHistory(initialPatient.id);
             loadDocuments(initialPatient.id);
+            loadCustomQuestions(initialPatient.id);
         } else {
             loadPatientData();
         }
@@ -79,22 +84,15 @@ export default function PatientPortal({ patient: initialPatient }) {
     };
 
     const loadDocuments = async (patientId) => {
+        // ... (existing code)
+    };
+
+    const loadCustomQuestions = async (patientId) => {
         try {
-            const { data, error } = await supabase
-                .from('patient_documents')
-                .select('*')
-                .eq('patient_id', patientId)
-                .order('created_at', { ascending: false });
-
-            if (error) {
-                console.error('Fetch error:', error);
-                setDocuments([]);
-                return;
-            }
-
-            setDocuments(data || []);
+            const questions = await getCustomQuestions(patientId);
+            setCustomQuestions(questions);
         } catch (err) {
-            console.error('Error loading documents:', err);
+            console.error('Error loading custom questions:', err);
         }
     };
 
@@ -143,6 +141,22 @@ export default function PatientPortal({ patient: initialPatient }) {
         // Take the first/latest document as the prescription
         const prescription = documents[0];
         await downloadDocument(prescription.storage_path, prescription.name);
+    };
+
+    const handleAnswerCustomQuestion = async (questionId, response) => {
+        if (!response.trim()) return;
+        setAnsweringQuestionId(questionId);
+        try {
+            const res = await answerCustomQuestion(questionId, response);
+            if (res.success) {
+                // Refresh local questions state
+                setCustomQuestions(prev => prev.map(q => q.id === questionId ? { ...q, response, answered_at: new Date().toISOString() } : q));
+            } else {
+                alert(`Erreur: ${res.error}`);
+            }
+        } finally {
+            setAnsweringQuestionId(null);
+        }
     };
 
     if (loading) {
@@ -244,7 +258,7 @@ export default function PatientPortal({ patient: initialPatient }) {
 
                     {/* Protocol Status Row */}
                     <ProtocolStatus
-                        progress={patient?.progress || (responses ? Math.round((Object.keys(responses).length / 7) * 100) : 0)}
+                        progress={patient?.progress || (responses ? Math.round((Object.keys(responses).length / 5) * 100) : 0)}
                         statusLabel="Protocole en cours d'exécution"
                     />
                 </div>
@@ -256,6 +270,47 @@ export default function PatientPortal({ patient: initialPatient }) {
                     borderRadius: '32px',
                     border: '1px solid rgba(255, 255, 255, 0.5)'
                 }}>
+                    {/* Custom Questions Section */}
+                    {customQuestions.filter(q => !q.response).length > 0 && (
+                        <div style={{ marginBottom: 'var(--spacing-6)' }}>
+                            <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-primary-600)', textTransform: 'uppercase', marginBottom: 'var(--spacing-4)', letterSpacing: '0.05em' }}>
+                                Question(s) spécifique(s) pour vous
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                {customQuestions.filter(q => !q.response).map(q => (
+                                    <div key={q.id} className="card glass-effect" style={{ padding: 'var(--spacing-4)', background: 'rgba(255,255,255,0.8)', borderLeft: '4px solid var(--color-primary-500)' }}>
+                                        <div style={{ fontSize: '15px', color: 'var(--color-gray-900)', fontWeight: '600', marginBottom: '12px' }}>
+                                            {q.question_text}
+                                        </div>
+                                        <div style={{ display: 'flex', gap: '8px' }}>
+                                            <input
+                                                type="text"
+                                                className="input"
+                                                placeholder="Votre réponse ici..."
+                                                style={{ flex: 1, fontSize: '14px', height: '40px', background: 'white' }}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter') handleAnswerCustomQuestion(q.id, e.target.value);
+                                                }}
+                                            />
+                                            <button
+                                                className="btn btn-primary"
+                                                style={{ padding: '0 16px', height: '40px', background: 'var(--color-primary-600)' }}
+                                                disabled={answeringQuestionId === q.id}
+                                                onClick={(e) => {
+                                                    const input = e.currentTarget.previousSibling;
+                                                    handleAnswerCustomQuestion(q.id, input.value);
+                                                }}
+                                            >
+                                                {answeringQuestionId === q.id ? <RefreshCw size={18} className="animate-spin" /> : <Send size={18} />}
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                            <div style={{ height: '1px', background: 'rgba(255,255,255,0.5)', margin: '24px 0' }}></div>
+                        </div>
+                    )}
+
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--spacing-6)' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                             <div style={{ background: '#FFF3E0', padding: '8px', borderRadius: '10px', color: '#E65100' }}>
@@ -282,12 +337,10 @@ export default function PatientPortal({ patient: initialPatient }) {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-3)' }}>
                         {[
                             { to: `j7`, emoji: '📋', label: 'Questionnaire J-7', desc: 'Préparation administrative (anesthésie, accompagnant)' },
-                            { to: `j3`, emoji: '✂️', label: 'Questionnaire J-3', desc: 'Préparation épilation et vérification infections' },
                             { to: `j2`, emoji: '📄', label: 'Questionnaire J-2', desc: 'Documents, jeûne et consignes du jour J' },
-                            { to: `j1-preop`, emoji: '🚿', label: 'Questionnaire J-1', desc: 'Hygiène, traitements et préparation de la veille' },
-                            { to: `j0`, emoji: '🏥', label: 'Questionnaire J-0', desc: 'Vérifications finales le jour de l\'intervention' },
+                            { to: `j1-preop`, emoji: '🚿', label: 'Confirmation J-1', desc: 'Dernière vérification avant votre venue' },
                             { to: `j1`, emoji: '🌡️', label: 'Suivi J+1', desc: 'Bilan post-opératoire du lendemain' },
-                            { to: `j2-sat`, emoji: '⭐', label: 'Satisfaction J+2', desc: 'Votre avis sur votre prise en charge', disabled: true },
+                            { to: `j4`, emoji: '⭐', label: 'Satisfaction J+4', desc: 'Votre avis sur votre prise en charge' },
                         ].map(step => (
                             step.disabled ? (
                                 <div

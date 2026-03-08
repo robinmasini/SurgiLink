@@ -3,15 +3,13 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Sparkles, AlertCircle } from 'lucide-react';
 import { pathwayConfig } from '../config/pathway.config';
 import { saveResponse, getResponses, markScreenCompleted } from '../services/pathwayService';
-import { scheduleStateBasedReminders } from '../services/reminderService';
 import QuestionRenderer from '../components/pathway/QuestionRenderer';
-import AlertBanner from '../components/pathway/AlertBanner';
 import CompactAppointmentCard from '../components/CompactAppointmentCard';
 import { usePatientId } from '../hooks/usePatientId';
 import { supabase } from '../lib/supabase';
 import { calculateDaysUntilSurgery } from '../utils/dateUtils';
 
-export default function PatientJ3() {
+export default function PatientJ4() {
     const navigate = useNavigate();
     const { token } = useParams();
     const { patientId: resolvedPatientId, loading: loadingPatientId, error: patientIdError, isTokenMode } = usePatientId();
@@ -20,7 +18,7 @@ export default function PatientJ3() {
     const [saving, setSaving] = useState(false);
     const [patient, setPatient] = useState(null);
 
-    const config = pathwayConfig.J3;
+    const config = pathwayConfig.J4_Satisfaction;
 
     useEffect(() => {
         if (resolvedPatientId) {
@@ -37,7 +35,7 @@ export default function PatientJ3() {
     const loadResponses = async () => {
         if (!resolvedPatientId) return;
         setLoading(true);
-        const data = await getResponses(parseInt(resolvedPatientId), 'J3');
+        const data = await getResponses(parseInt(resolvedPatientId), 'J4_Satisfaction');
         setResponses(data);
         setLoading(false);
     };
@@ -45,15 +43,14 @@ export default function PatientJ3() {
     const handleChange = async (itemId, value) => {
         setResponses(prev => ({ ...prev, [itemId]: value }));
         if (resolvedPatientId) {
-            await saveResponse(parseInt(resolvedPatientId), 'J3', itemId, value, false);
+            await saveResponse(parseInt(resolvedPatientId), 'J4_Satisfaction', itemId, value, false);
         }
     };
 
     const handleSubmit = async () => {
         setSaving(true);
         if (resolvedPatientId) {
-            await markScreenCompleted(parseInt(resolvedPatientId), 'J3');
-            await scheduleStateBasedReminders(parseInt(resolvedPatientId), 'J3');
+            await markScreenCompleted(parseInt(resolvedPatientId), 'J4_Satisfaction');
         }
         setSaving(false);
         if (isTokenMode) {
@@ -95,8 +92,8 @@ export default function PatientJ3() {
         <div className="patient-view">
             {/* Header */}
             <div className="patient-header" style={{ padding: 'var(--spacing-6) var(--spacing-4)', textAlign: 'center', display: 'block' }}>
-                <h2 style={{ fontSize: 'var(--font-size-2xl)', marginBottom: 'var(--spacing-1)' }}>Dossier Médical</h2>
-                <div style={{ color: 'var(--color-primary-600)', fontWeight: 'var(--font-weight-semibold)' }}>J-3 • Rappel Intermédiaire</div>
+                <h2 style={{ fontSize: 'var(--font-size-2xl)', marginBottom: 'var(--spacing-1)' }}>Votre avis nous intéresse</h2>
+                <div style={{ color: 'var(--color-primary-600)', fontWeight: 'var(--font-weight-semibold)' }}>Enquête de satisfaction J+4</div>
             </div>
 
             {/* Content */}
@@ -112,11 +109,18 @@ export default function PatientJ3() {
                     />
                 )}
 
-                <AlertBanner
-                    type="info"
-                    title="À 3 jours de votre intervention"
-                    message="Vérifiez que tout est bien organisé pour votre retour à domicile et que vos documents sont prêts."
-                />
+                <div style={{
+                    background: 'var(--color-primary-50)',
+                    padding: 'var(--spacing-4)',
+                    borderRadius: 'var(--radius-lg)',
+                    marginBottom: 'var(--spacing-6)',
+                    fontSize: '14px',
+                    lineHeight: '1.5',
+                    color: 'var(--color-primary-900)',
+                    border: '1px solid var(--color-primary-100)'
+                }}>
+                    <strong>Merci de nous aider à nous améliorer.</strong> Vos réponses sont précieuses pour la qualité de notre prise en charge.
+                </div>
 
                 {/* Sections */}
                 {config.sections.map((section) => (
@@ -136,7 +140,7 @@ export default function PatientJ3() {
                                 item={item}
                                 value={responses[item.id]?.main ?? responses[item.id]}
                                 onChange={handleChange}
-                                screen="J3"
+                                screen="J4_Satisfaction"
                             />
                         ))}
                     </div>
@@ -149,7 +153,7 @@ export default function PatientJ3() {
                     onClick={handleSubmit}
                     disabled={saving}
                 >
-                    {saving ? 'Enregistrement...' : 'Valider le rappel J-3'}
+                    {saving ? 'Enregistrement...' : 'Envoyer mon avis'}
                 </button>
             </div>
 

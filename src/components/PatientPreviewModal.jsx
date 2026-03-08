@@ -8,12 +8,10 @@ import AlertBanner from './pathway/AlertBanner';
 // All 7 SMS steps in order with their specific alert color coding
 const ALL_TABS = [
     { key: 'J7', label: 'J-7', sublabel: 'Préparation', color: null },
-    { key: 'J3', label: 'J-3', sublabel: 'Épilation', color: 'orange' },
     { key: 'J2', label: 'J-2', sublabel: 'Consignes', color: 'red' },
     { key: 'J1_PreOp', label: 'J-1', sublabel: 'Veille', color: 'red' },
-    { key: 'J0', label: 'J-0', sublabel: 'Jour J', color: 'red' },
     { key: 'J1', label: 'J+1', sublabel: 'Suivi', color: 'red' },
-    { key: 'J2_Satisfaction', label: 'J+2', sublabel: 'Avis', color: 'orange' },
+    { key: 'J4_Satisfaction', label: 'J+4', sublabel: 'Avis', color: 'orange' },
 ];
 
 export default function PatientPreviewModal({ isOpen, onClose, patient, onResponseSaved, onStatusChange }) {
@@ -326,7 +324,7 @@ export default function PatientPreviewModal({ isOpen, onClose, patient, onRespon
                             </div>
 
                             {/* Time Alert for pre-op steps */}
-                            {['J7', 'J3', 'J2', 'J1_PreOp', 'J0'].includes(activeTab) && (
+                            {['J7', 'J2', 'J1_PreOp'].includes(activeTab) && (
                                 <AlertBanner
                                     type="info"
                                     title={`Arrivée prévue à ${patient?.surgery_time || '07:30'}`}

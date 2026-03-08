@@ -115,27 +115,9 @@ export default function PatientJ1() {
     return (
         <div className="patient-view">
             {/* Header */}
-            <div className="patient-header">
-                <div className="patient-header-left">
-                    <h2>Appel Post-opératoire</h2>
-                    <span>J+1 • Suivi Patient</span>
-                </div>
-                <button
-                    style={{
-                        background: 'transparent',
-                        border: 'none',
-                        cursor: 'pointer',
-                        color: 'var(--color-gray-500)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: '40px',
-                        height: '40px'
-                    }}
-                    onClick={() => navigate('/dashboard')}
-                >
-                    <LogOut size={20} />
-                </button>
+            <div className="patient-header" style={{ padding: 'var(--spacing-6) var(--spacing-4)', textAlign: 'center', display: 'block' }}>
+                <h2 style={{ fontSize: 'var(--font-size-2xl)', marginBottom: 'var(--spacing-1)' }}>Suivi Post-opératoire</h2>
+                <div style={{ color: 'var(--color-primary-600)', fontWeight: 'var(--font-weight-semibold)' }}>Premier jour (J+1)</div>
             </div>
 
             {/* Content */}
@@ -168,17 +150,6 @@ export default function PatientJ1() {
                                     type="danger"
                                     title={`🚨 ALERTE: ${alert.label}`}
                                     message={alert.action}
-                                    actions={[
-                                        {
-                                            label: 'Appeler le Patient',
-                                            onClick: () => console.log('Call patient'),
-                                            style: { background: 'var(--color-danger-600)', color: 'white' }
-                                        },
-                                        {
-                                            label: 'Avis Médecin',
-                                            onClick: () => console.log('Request medical opinion')
-                                        }
-                                    ]}
                                 />
                             </div>
                         ))}
@@ -230,7 +201,7 @@ export default function PatientJ1() {
                     onClick={handleSubmit}
                     disabled={saving}
                 >
-                    {saving ? 'Enregistrement...' : 'Valider l\'appel post-opératoire'}
+                    {saving ? 'Enregistrement...' : 'Valider mon suivi J+1'}
                 </button>
             </div>
 

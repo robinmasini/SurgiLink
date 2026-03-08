@@ -54,7 +54,7 @@ export async function sendSMS(templateKey, to, variables, metadata = {}) {
                         recipients: [formattedPhone],
                         content: message,
                         msg_type: 'text',
-                        data_coding: 'text'
+                        data_coding: 'auto'
                     }
                 ],
                 message_globals: {

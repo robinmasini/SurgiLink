@@ -131,8 +131,8 @@ export default function PatientJ2() {
         <div className="patient-view">
             {/* Header */}
             <div className="patient-header" style={{ padding: 'var(--spacing-6) var(--spacing-4)', textAlign: 'center', display: 'block' }}>
-                <h2 style={{ fontSize: 'var(--font-size-2xl)', marginBottom: 'var(--spacing-1)' }}>Dossier Médical</h2>
-                <div style={{ color: 'var(--color-primary-600)', fontWeight: 'var(--font-weight-semibold)' }}>J-2 • Consignes</div>
+                <h2 style={{ fontSize: 'var(--font-size-2xl)', marginBottom: 'var(--spacing-1)' }}>Votre Dossier Médical</h2>
+                <div style={{ color: 'var(--color-primary-600)', fontWeight: 'var(--font-weight-semibold)' }}>Vérification J-2</div>
             </div>
 
             {/* Content */}
@@ -153,7 +153,7 @@ export default function PatientJ2() {
                     <h3 style={{ fontSize: 'var(--font-size-2xl)', fontWeight: 'var(--font-weight-bold)', marginBottom: 'var(--spacing-2)' }}>
                         {config.title}
                     </h3>
-                    <p style={{ color: 'var(--color-gray-600)' }}>{config.subtitle}</p>
+                    <p style={{ color: 'var(--color-gray-600)' }}>Dernière vérification rapide avant votre intervention.</p>
                 </div>
 
 
