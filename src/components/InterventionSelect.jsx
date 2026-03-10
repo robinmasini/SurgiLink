@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Search, ChevronDown, Check, Clipboard } from 'lucide-react';
+import { Search, ChevronDown, Check, Clipboard, Plus } from 'lucide-react';
 
 const INTERVENTIONS = [
     {
@@ -169,6 +169,33 @@ export default function InterventionSelect({ value, onChange }) {
                     </div>
 
                     <div style={{ overflowY: 'auto', flex: 1, padding: '4px' }}>
+                        {/* Custom Option */}
+                        {search.trim() && (
+                            <div
+                                onClick={() => {
+                                    onChange(search.trim());
+                                    setIsOpen(false);
+                                    setSearch("");
+                                }}
+                                style={{
+                                    padding: '10px 12px',
+                                    fontSize: 'var(--font-size-sm)',
+                                    color: 'var(--color-primary-600)',
+                                    cursor: 'pointer',
+                                    borderRadius: 'var(--radius-md)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '10px',
+                                    borderBottom: '1px solid var(--color-gray-100)',
+                                    background: 'var(--color-primary-50)',
+                                    marginBottom: '8px'
+                                }}
+                            >
+                                <Plus size={16} />
+                                <div style={{ fontWeight: '600' }}>Utiliser "{search.trim()}"</div>
+                            </div>
+                        )}
+
                         {filteredInterventions.map((cat, idx) => (
                             <div key={idx}>
                                 <div style={{
@@ -210,7 +237,7 @@ export default function InterventionSelect({ value, onChange }) {
                                 ))}
                             </div>
                         ))}
-                        {filteredInterventions.length === 0 && (
+                        {filteredInterventions.length === 0 && !search && (
                             <div style={{ padding: '20px', textAlign: 'center', color: 'var(--color-gray-400)', fontSize: 'var(--font-size-sm)' }}>
                                 Aucun résultat pour "{search}"
                             </div>

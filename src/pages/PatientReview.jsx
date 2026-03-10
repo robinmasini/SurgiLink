@@ -633,17 +633,34 @@ export default function PatientReview() {
                                         }}>
                                             {patient.stay_type || 'Ambulatoire'}
                                         </span>
-                                        <span className="badge" style={{
-                                            background: '#FDF7F2',
-                                            color: '#8D6E63',
-                                            padding: '8px 24px',
-                                            border: '1px solid #EEDDCC',
-                                            fontSize: '14px',
-                                            fontWeight: '700',
-                                            borderRadius: '20px'
-                                        }}>
-                                            {patient.operation}
-                                        </span>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                            <span className="badge" style={{
+                                                background: '#FDF7F2',
+                                                color: '#8D6E63',
+                                                padding: '8px 24px',
+                                                border: '1px solid #EEDDCC',
+                                                fontSize: '14px',
+                                                fontWeight: '700',
+                                                borderRadius: '20px'
+                                            }}>
+                                                {patient.operation}
+                                            </span>
+                                            <button
+                                                onClick={() => setIsEditModalOpen(true)}
+                                                style={{
+                                                    background: 'transparent',
+                                                    border: 'none',
+                                                    color: 'var(--color-gray-400)',
+                                                    cursor: 'pointer',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    padding: '4px'
+                                                }}
+                                                title="Modifier l'intervention"
+                                            >
+                                                <Edit2 size={16} />
+                                            </button>
+                                        </div>
                                     </div>
 
                                     {/* Detailed Info Grid */}
