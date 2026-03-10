@@ -92,13 +92,7 @@ export default function CategoryReview() {
                 </div>
 
                 {category === 'active' && (
-                    <div style={{
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
-                        gap: 'var(--spacing-6)',
-                        marginBottom: 'var(--spacing-8)',
-                        alignItems: 'stretch'
-                    }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-6)', marginBottom: 'var(--spacing-8)' }}>
                         {/* Welcome Banner */}
                         <div className="welcome-banner welcome-banner-clean fade-in">
                             <div className="welcome-banner-content">
