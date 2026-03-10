@@ -1735,8 +1735,11 @@ textarea.input {
 
 .welcome-banner-clean .welcome-banner-content {
   max-width: 50%;
-  padding-left: var(--spacing-8);
-  height: auto;
+  padding-left: var(--spacing-6);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .welcome-banner-clean .welcome-banner-welcome,
@@ -1751,11 +1754,11 @@ textarea.input {
 
 .welcome-banner-clean .welcome-banner-image {
   object-position: right center !important;
-  /* Head of surgeon on the right */
   width: 100% !important;
   height: 100% !important;
   object-fit: cover !important;
   animation: none !important;
+  z-index: 1 !important;
 }
 
 .welcome-banner::after {
