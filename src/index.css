@@ -1723,8 +1723,10 @@ textarea.input {
   color: var(--color-gray-900) !important;
   box-shadow: var(--shadow-sm) !important;
   border: 1px solid var(--color-gray-100) !important;
-  height: 320px;
-  /* Force rectangular height */
+  height: 440px;
+  /* Perfectly match 2x2 stats grid height */
+  display: flex !important;
+  align-items: center !important;
 }
 
 .welcome-banner-clean::after {
@@ -1733,7 +1735,8 @@ textarea.input {
 
 .welcome-banner-clean .welcome-banner-content {
   max-width: 50%;
-  padding-left: var(--spacing-6);
+  padding-left: var(--spacing-8);
+  height: auto;
 }
 
 .welcome-banner-clean .welcome-banner-welcome,
