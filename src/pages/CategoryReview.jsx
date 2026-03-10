@@ -94,7 +94,7 @@ export default function CategoryReview() {
                 {category === 'active' && (
                     <div style={{
                         display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
                         gap: 'var(--spacing-6)',
                         marginBottom: 'var(--spacing-8)',
                         alignItems: 'stretch'
