@@ -230,6 +230,11 @@ export default function PatientPortal({ patient: initialPatient }) {
                     <p style={{ color: '#666', fontSize: '16px', fontWeight: '500' }}>Votre portail de suivi personnalisé</p>
                 </div>
 
+                {/* Doctolib Integration - Moved to Top */}
+                <div style={{ marginBottom: 'var(--spacing-8)' }}>
+                    <DoctolibButton />
+                </div>
+
                 {/* Main Info Glass Container */}
                 <div style={{
                     background: 'rgba(255, 255, 255, 0.4)',
@@ -420,11 +425,6 @@ export default function PatientPortal({ patient: initialPatient }) {
                             )
                         ))}
                     </div>
-                </div>
-
-                {/* Doctolib Integration */}
-                <div style={{ marginTop: 'var(--spacing-6)' }}>
-                    <DoctolibButton />
                 </div>
             </div>
         </div>

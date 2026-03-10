@@ -62,7 +62,7 @@ export default function Dashboard() {
 
             const activeCount = allPatients.length;
             const completeCount = allPatients.filter(p => p.progress === 100).length;
-            const requiredCount = allPatients.filter(p => p.status === 'incomplete' || p.status === 'alerte' || p.status === 'critique').length;
+            const requiredCount = allPatients.filter(p => p.status === 'alerte' || p.status === 'critique').length;
             const weeklyCount = allPatients.filter(p => {
                 if (!p.date) return false;
                 const surgeryDate = new Date(p.date);
