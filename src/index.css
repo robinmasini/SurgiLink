@@ -1719,14 +1719,19 @@ textarea.input {
 }
 
 .welcome-banner-clean {
-  background: white;
+  background: white !important;
   color: var(--color-gray-900) !important;
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--color-gray-100);
+  box-shadow: var(--shadow-sm) !important;
+  border: 1px solid var(--color-gray-100) !important;
 }
 
 .welcome-banner-clean::after {
   display: none !important;
+}
+
+.welcome-banner-clean .welcome-banner-content {
+  max-width: 60%;
+  /* Allow more space for text on the left */
 }
 
 .welcome-banner-clean .welcome-banner-welcome,
@@ -1734,8 +1739,16 @@ textarea.input {
 .welcome-banner-clean .welcome-banner-instruction,
 .welcome-banner-clean .welcome-banner-date-label,
 .welcome-banner-clean .welcome-banner-date-value {
-  color: var(--color-gray-900) !important;
+  color: #000000 !important;
   opacity: 1 !important;
+  text-shadow: none !important;
+}
+
+.welcome-banner-clean .welcome-banner-image {
+  object-position: center right;
+  /* Subject is on the right of the uploaded PNG */
+  animation: none !important;
+  /* Fixed image, no zoom */
 }
 
 .welcome-banner::after {
