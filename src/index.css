@@ -1750,10 +1750,12 @@ textarea.input {
 }
 
 .welcome-banner-clean .welcome-banner-image {
-  object-position: center right;
-  /* Subject is on the right of the uploaded PNG */
+  object-position: right center !important;
+  /* Head of surgeon on the right */
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
   animation: none !important;
-  /* Fixed image, no zoom */
 }
 
 .welcome-banner::after {
