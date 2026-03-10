@@ -99,7 +99,7 @@ export default function CategoryReview() {
                         marginBottom: 'var(--spacing-8)'
                     }}>
                         {/* Welcome Banner */}
-                        <div className="welcome-banner fade-in">
+                        <div className="welcome-banner welcome-banner-clean fade-in">
                             <div className="welcome-banner-content">
                                 <div></div>
                                 <div>
