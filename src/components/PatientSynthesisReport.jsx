@@ -37,8 +37,8 @@ export default function PatientSynthesisReport({
             lineHeight: '1.5'
         }}>
             {/* Header */}
-            <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-                <img src={logoSurgilink} alt="SurgiLink" style={{ height: '40px', marginBottom: '15px' }} />
+            <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+                <img src={logoSurgilink} alt="SurgiLink" style={{ height: '120px', marginBottom: '10px' }} />
                 <h1 style={{
                     fontSize: '24px',
                     fontWeight: '800',

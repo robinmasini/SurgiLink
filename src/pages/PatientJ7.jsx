@@ -53,7 +53,7 @@ export default function PatientJ7({ patient: propPatient, token: propToken }) {
     const loadResponses = async () => {
         if (!resolvedPatientId) return;
         setLoading(true);
-        const data = await getResponses(parseInt(resolvedPatientId), 'J7');
+        const data = await getResponses(resolvedPatientId, 'J7');
         setResponses(data);
         setLoading(false);
     };
@@ -90,7 +90,7 @@ export default function PatientJ7({ patient: propPatient, token: propToken }) {
 
         // Save to database
         if (resolvedPatientId) {
-            await saveResponse(parseInt(resolvedPatientId), 'J7', itemId, value, false);
+            await saveResponse(resolvedPatientId, 'J7', itemId, value, false);
         }
     };
 
@@ -99,10 +99,10 @@ export default function PatientJ7({ patient: propPatient, token: propToken }) {
 
         if (resolvedPatientId) {
             // Mark screen as completed
-            await markScreenCompleted(parseInt(resolvedPatientId), 'J7');
+            await markScreenCompleted(resolvedPatientId, 'J7');
 
             // Schedule state-based reminders for incomplete items
-            await scheduleStateBasedReminders(parseInt(resolvedPatientId), 'J7');
+            await scheduleStateBasedReminders(resolvedPatientId, 'J7');
         }
 
         setSaving(false);

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { LogOut, Sparkles } from 'lucide-react';
+import { LogOut, Sparkles, AlertCircle } from 'lucide-react';
 import { pathwayConfig } from '../config/pathway.config';
 import { saveResponse, getResponses, markScreenCompleted } from '../services/pathwayService';
 import QuestionRenderer from '../components/pathway/QuestionRenderer';
@@ -11,14 +11,21 @@ import { usePatientId } from '../hooks/usePatientId';
 import { supabase } from '../lib/supabase';
 import { calculateDaysUntilSurgery } from '../utils/dateUtils';
 
-export default function PatientJ1() {
+export default function PatientJ1({ patient: propPatient, token: propToken }) {
     const navigate = useNavigate();
-    const { token } = useParams();
-    const { patientId: resolvedPatientId, loading: loadingPatientId, error: patientIdError, isTokenMode } = usePatientId();
+    const { token: urlToken } = useParams();
+    const token = propToken || urlToken;
+    const { patientId: hookPatientId, loading: hookLoading, error: hookError, isTokenMode: hookIsTokenMode } = usePatientId();
+    // Resolve patient ID and mode from either props or hook
+    const resolvedPatientId = propPatient?.id || hookPatientId;
+    const patientIdError = !propPatient && hookError;
+    const loadingPatientId = !propPatient && hookLoading;
+    const isTokenMode = propPatient ? true : hookIsTokenMode;
+
     const [responses, setResponses] = useState({});
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
-    const [patient, setPatient] = useState(null);
+    const [patient, setPatient] = useState(propPatient || null);
     const [alerts, setAlerts] = useState({ soft: [], hard: [] });
 
     const config = pathwayConfig.J1;
@@ -26,7 +33,7 @@ export default function PatientJ1() {
     useEffect(() => {
         if (resolvedPatientId) {
             loadResponses();
-            loadPatientData();
+            if (!propPatient) loadPatientData();
         }
     }, [resolvedPatientId]);
 
@@ -42,7 +49,7 @@ export default function PatientJ1() {
     const loadResponses = async () => {
         if (!resolvedPatientId) return;
         setLoading(true);
-        const data = await getResponses(parseInt(resolvedPatientId), 'J1');
+        const data = await getResponses(resolvedPatientId, 'J1');
         setResponses(data);
         setLoading(false);
     };
@@ -85,7 +92,7 @@ export default function PatientJ1() {
         setResponses(prev => ({ ...prev, [itemId]: value }));
 
         if (resolvedPatientId) {
-            await saveResponse(parseInt(resolvedPatientId), 'J1', itemId, value, false);
+            await saveResponse(resolvedPatientId, 'J1', itemId, value, false);
         }
     };
 
@@ -93,7 +100,7 @@ export default function PatientJ1() {
         setSaving(true);
 
         if (resolvedPatientId) {
-            await markScreenCompleted(parseInt(resolvedPatientId), 'J1');
+            await markScreenCompleted(resolvedPatientId, 'J1');
         }
 
         setSaving(false);
@@ -104,6 +111,26 @@ export default function PatientJ1() {
             navigate('/patient/success');
         }
     };
+
+    if (loadingPatientId) {
+        return (
+            <div className="patient-view" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+                <div>Chargement...</div>
+            </div>
+        );
+    }
+
+    if (patientIdError) {
+        return (
+            <div className="patient-view" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+                <div className="card" style={{ maxWidth: '500px', textAlign: 'center', padding: 'var(--spacing-6)' }}>
+                    <AlertCircle size={64} style={{ margin: '0 auto var(--spacing-4)', color: 'var(--color-danger-500)' }} />
+                    <h2 style={{ marginBottom: 'var(--spacing-2)' }}>Accès non autorisé</h2>
+                    <p style={{ color: 'var(--color-gray-600)' }}>{patientIdError}</p>
+                </div>
+            </div>
+        );
+    }
 
     if (loading) {
         return (

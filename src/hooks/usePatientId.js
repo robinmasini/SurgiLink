@@ -20,7 +20,7 @@ export function usePatientId() {
 
             // Check if we have a direct patientId
             if (params.patientId) {
-                setPatientId(parseInt(params.patientId));
+                setPatientId(params.patientId);
                 setIsTokenMode(false);
                 setLoading(false);
                 return;

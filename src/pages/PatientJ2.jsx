@@ -12,14 +12,22 @@ import { usePatientId } from '../hooks/usePatientId';
 import { supabase } from '../lib/supabase';
 import { calculateDaysUntilSurgery } from '../utils/dateUtils';
 
-export default function PatientJ2() {
+export default function PatientJ2({ patient: propPatient, token: propToken }) {
     const navigate = useNavigate();
-    const { token } = useParams();
-    const { patientId: resolvedPatientId, loading: loadingPatientId, error: patientIdError, isTokenMode } = usePatientId();
+    const { token: urlToken } = useParams();
+    const token = propToken || urlToken;
+    const { patientId: hookPatientId, loading: hookLoading, error: hookError, isTokenMode: hookIsTokenMode } = usePatientId();
+
+    // Resolve patient ID and mode from either props or hook
+    const resolvedPatientId = propPatient?.id || hookPatientId;
+    const loadingPatientId = !propPatient && hookLoading;
+    const patientIdError = !propPatient && hookError;
+    const isTokenMode = propPatient ? true : hookIsTokenMode;
+
     const [responses, setResponses] = useState({});
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
-    const [patient, setPatient] = useState(null);
+    const [patient, setPatient] = useState(propPatient || null);
     const [riskFlags, setRiskFlags] = useState({ soft: [], hard: [] });
 
     const config = pathwayConfig.J2;
@@ -27,7 +35,7 @@ export default function PatientJ2() {
     useEffect(() => {
         if (resolvedPatientId) {
             loadResponses();
-            loadPatientData();
+            if (!propPatient) loadPatientData();
         }
     }, [resolvedPatientId]);
 
@@ -44,7 +52,7 @@ export default function PatientJ2() {
     const loadResponses = async () => {
         if (!resolvedPatientId) return;
         setLoading(true);
-        const data = await getResponses(parseInt(resolvedPatientId), 'J2');
+        const data = await getResponses(resolvedPatientId, 'J2');
         setResponses(data);
         setLoading(false);
     };
@@ -79,7 +87,7 @@ export default function PatientJ2() {
         setResponses(prev => ({ ...prev, [itemId]: value }));
 
         if (resolvedPatientId) {
-            await saveResponse(parseInt(resolvedPatientId), 'J2', itemId, value, false);
+            await saveResponse(resolvedPatientId, 'J2', itemId, value, false);
         }
     };
 
@@ -87,8 +95,8 @@ export default function PatientJ2() {
         setSaving(true);
 
         if (resolvedPatientId) {
-            await markScreenCompleted(parseInt(resolvedPatientId), 'J2');
-            await scheduleStateBasedReminders(parseInt(resolvedPatientId), 'J2');
+            await markScreenCompleted(resolvedPatientId, 'J2');
+            await scheduleStateBasedReminders(resolvedPatientId, 'J2');
         }
 
         setSaving(false);

@@ -9,21 +9,29 @@ import { usePatientId } from '../hooks/usePatientId';
 import { supabase } from '../lib/supabase';
 import { calculateDaysUntilSurgery } from '../utils/dateUtils';
 
-export default function PatientJ4() {
+export default function PatientJ4({ patient: propPatient, token: propToken }) {
     const navigate = useNavigate();
-    const { token } = useParams();
-    const { patientId: resolvedPatientId, loading: loadingPatientId, error: patientIdError, isTokenMode } = usePatientId();
+    const { token: urlToken } = useParams();
+    const token = propToken || urlToken;
+    const { patientId: hookPatientId, loading: hookLoading, error: hookError, isTokenMode: hookIsTokenMode } = usePatientId();
+
+    // Resolve patient ID and mode from either props or hook
+    const resolvedPatientId = propPatient?.id || hookPatientId;
+    const loadingPatientId = !propPatient && hookLoading;
+    const patientIdError = !propPatient && hookError;
+    const isTokenMode = propPatient ? true : hookIsTokenMode;
+
     const [responses, setResponses] = useState({});
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
-    const [patient, setPatient] = useState(null);
+    const [patient, setPatient] = useState(propPatient || null);
 
     const config = pathwayConfig.J4_Satisfaction;
 
     useEffect(() => {
         if (resolvedPatientId) {
             loadResponses();
-            loadPatientData();
+            if (!propPatient) loadPatientData();
         }
     }, [resolvedPatientId]);
 
@@ -35,7 +43,7 @@ export default function PatientJ4() {
     const loadResponses = async () => {
         if (!resolvedPatientId) return;
         setLoading(true);
-        const data = await getResponses(parseInt(resolvedPatientId), 'J4_Satisfaction');
+        const data = await getResponses(resolvedPatientId, 'J4_Satisfaction');
         setResponses(data);
         setLoading(false);
     };
@@ -43,7 +51,7 @@ export default function PatientJ4() {
     const handleChange = async (itemId, value) => {
         setResponses(prev => ({ ...prev, [itemId]: value }));
         if (resolvedPatientId) {
-            await saveResponse(parseInt(resolvedPatientId), 'J4_Satisfaction', itemId, value, false);
+            await saveResponse(resolvedPatientId, 'J4_Satisfaction', itemId, value, false);
         }
     };
 

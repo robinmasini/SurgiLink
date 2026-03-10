@@ -12,21 +12,29 @@ import { usePatientId } from '../hooks/usePatientId';
 import { supabase } from '../lib/supabase';
 import { calculateDaysUntilSurgery } from '../utils/dateUtils';
 
-export default function PatientJ1PreOp() {
+export default function PatientJ1PreOp({ patient: propPatient, token: propToken }) {
     const navigate = useNavigate();
-    const { token } = useParams();
-    const { patientId: resolvedPatientId, loading: loadingPatientId, error: patientIdError, isTokenMode } = usePatientId();
+    const { token: urlToken } = useParams();
+    const token = propToken || urlToken;
+    const { patientId: hookPatientId, loading: hookLoading, error: hookError, isTokenMode: hookIsTokenMode } = usePatientId();
+
+    // Resolve patient ID and mode from either props or hook
+    const resolvedPatientId = propPatient?.id || hookPatientId;
+    const loadingPatientId = !propPatient && hookLoading;
+    const patientIdError = !propPatient && hookError;
+    const isTokenMode = propPatient ? true : hookIsTokenMode;
+
     const [responses, setResponses] = useState({});
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
-    const [patient, setPatient] = useState(null);
+    const [patient, setPatient] = useState(propPatient || null);
 
     const config = pathwayConfig.J1_PreOp;
 
     useEffect(() => {
         if (resolvedPatientId) {
             loadResponses();
-            loadPatientData();
+            if (!propPatient) loadPatientData();
         }
     }, [resolvedPatientId]);
 
@@ -38,7 +46,7 @@ export default function PatientJ1PreOp() {
     const loadResponses = async () => {
         if (!resolvedPatientId) return;
         setLoading(true);
-        const data = await getResponses(parseInt(resolvedPatientId), 'J1_PreOp');
+        const data = await getResponses(resolvedPatientId, 'J1_PreOp');
         setResponses(data);
         setLoading(false);
     };
@@ -46,15 +54,15 @@ export default function PatientJ1PreOp() {
     const handleChange = async (itemId, value) => {
         setResponses(prev => ({ ...prev, [itemId]: value }));
         if (resolvedPatientId) {
-            await saveResponse(parseInt(resolvedPatientId), 'J1_PreOp', itemId, value, false);
+            await saveResponse(resolvedPatientId, 'J1_PreOp', itemId, value, false);
         }
     };
 
     const handleSubmit = async () => {
         setSaving(true);
         if (resolvedPatientId) {
-            await markScreenCompleted(parseInt(resolvedPatientId), 'J1_PreOp');
-            await scheduleStateBasedReminders(parseInt(resolvedPatientId), 'J1_PreOp');
+            await markScreenCompleted(resolvedPatientId, 'J1_PreOp');
+            await scheduleStateBasedReminders(resolvedPatientId, 'J1_PreOp');
         }
         setSaving(false);
         if (isTokenMode) {
