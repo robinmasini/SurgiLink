@@ -12,6 +12,7 @@ import {
     Filter
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import welcomeCardInfirmier from '../assets/welcomecard-infirmier.png';
 
 const categoryConfigs = {
     'active': { title: 'Patients Actifs', icon: <Users size={24} />, color: 'var(--color-primary-500)', bg: 'var(--color-primary-50)' },
@@ -80,15 +81,38 @@ export default function CategoryReview() {
         <div style={{ display: 'flex' }}>
             <Sidebar />
             <main className="main-content">
-                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-4)', marginBottom: 'var(--spacing-6)' }}>
-                    <button onClick={() => navigate('/dashboard')} className="btn btn-secondary btn-sm" style={{ padding: '8px' }}>
-                        <ChevronLeft size={20} />
-                    </button>
-                    <Header
-                        title={`Revue : ${config.title}`}
-                        subtitle={`Liste détaillée des patients dans la catégorie ${config.title}`}
-                    />
+        </div>
+
+                {
+        category === 'active' && (
+            <div className="welcome-banner fade-in" style={{ marginBottom: 'var(--spacing-8)' }}>
+                <div className="welcome-banner-content">
+                    <div></div>
+                    <div>
+                        <div className="welcome-banner-welcome">Bonjour,</div>
+                        <div className="welcome-banner-greeting">Espace Infirmier</div>
+                        <div className="welcome-banner-instruction">Suivi des patients actifs et alertes</div>
+                    </div>
+                    <div>
+                        <div className="welcome-banner-date-label">Date d'aujourd'hui</div>
+                        <div className="welcome-banner-date-value">
+                            {new Date().toLocaleDateString('fr-FR', {
+                                weekday: 'long',
+                                day: 'numeric',
+                                month: 'long',
+                                year: 'numeric'
+                            }).replace(/^\w/, (c) => c.toUpperCase())}
+                        </div>
+                    </div>
                 </div>
+                <img
+                    src={welcomeCardInfirmier}
+                    alt="Espace Infirmier"
+                    className="welcome-banner-image"
+                />
+            </div>
+        )
+    }
 
                 <div className="card glass-effect" style={{ marginBottom: 'var(--spacing-6)' }}>
                     <div style={{ display: 'flex', gap: 'var(--spacing-4)' }}>
@@ -142,7 +166,7 @@ export default function CategoryReview() {
                         </tbody>
                     </table>
                 </div>
-            </main>
-        </div>
+            </main >
+        </div >
     );
 }
