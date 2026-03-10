@@ -41,6 +41,8 @@ import { calculateAge, calculateDaysUntilSurgery, formatDateFR, formatDateTimeFR
 import { getPatientPathwayStatus, getResponses, calculateRiskFlags } from '../services/pathwayService';
 import { getDocuments, uploadDocument, deleteDocument, downloadDocument } from '../services/documentService';
 import { generatePatientToken, getPatientTokens, revokeToken } from '../services/tokenService';
+import { generateSynthesisPDF } from '../services/pdfService';
+import PatientSynthesisReport from '../components/PatientSynthesisReport';
 import { sendManualReminder, getNextPendingReminder, getPendingReminders, sendOverrideSMS, updateReminder, sendPunctualSMS } from '../services/reminderService';
 import { getCustomQuestions, addCustomQuestion, deleteCustomQuestion } from '../services/customQuestionService';
 import LogoPremium from '../components/LogoPremium';
@@ -75,6 +77,8 @@ export default function PatientReview() {
     const [editingReminder, setEditingReminder] = useState(null);
     const [customQuestions, setCustomQuestions] = useState([]);
     const [isAddQuestionModalOpen, setIsAddQuestionModalOpen] = useState(false);
+    const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+    const reportRef = useRef(null);
     const fileInputRef = useRef(null);
 
     const loadPatientData = async () => {
@@ -303,6 +307,18 @@ export default function PatientReview() {
             setCustomQuestions(prev => prev.filter(q => q.id !== questionId));
         } else {
             alert(`Erreur lors de la suppression: ${res.error}`);
+        }
+    };
+
+    const handleDownloadSynthesis = async () => {
+        setIsGeneratingPDF(true);
+        try {
+            const fileName = `Synthese_${patient.name.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
+            await generateSynthesisPDF(reportRef.current, fileName);
+        } catch (err) {
+            console.error('Error during PDF generation:', err);
+        } finally {
+            setIsGeneratingPDF(false);
         }
     };
 
@@ -805,6 +821,15 @@ export default function PatientReview() {
                                             "Non encore consulté par le patient"
                                         )}
                                     </div>
+                                    <button
+                                        onClick={handleDownloadSynthesis}
+                                        disabled={isGeneratingPDF}
+                                        className="btn btn-secondary btn-sm"
+                                        style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+                                    >
+                                        {isGeneratingPDF ? <RefreshCw size={14} className="animate-spin" /> : <Download size={14} />}
+                                        Synthèse PDF
+                                    </button>
                                     <button
                                         onClick={() => setIsAddQuestionModalOpen(true)}
                                         className="btn btn-primary btn-sm"
@@ -1325,6 +1350,18 @@ export default function PatientReview() {
                 onResponseSaved={handleModalResponseSaved}
                 onStatusChange={loadPatientData}
             />
+            {/* Hidden Report for PDF Generation */}
+            <div style={{ position: 'absolute', left: '-9999px', top: '-9999px' }}>
+                <div ref={reportRef}>
+                    <PatientSynthesisReport
+                        patient={patient}
+                        clinicalResponses={clinicalResponses}
+                        smsData={medicalHistory.filter(h => h.type === 'sms_log')}
+                        medicalHistory={medicalHistory.filter(h => h.type === 'history')}
+                        documents={documents}
+                    />
+                </div>
+            </div>
         </div>
     );
 }

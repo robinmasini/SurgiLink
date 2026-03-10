@@ -10,8 +10,8 @@ const D7_API_TOKEN = process.env.VITE_D7_API_TOKEN;
 const D7_SENDER_ID = process.env.VITE_D7_SENDER_ID || 'SurgiLink';
 
 async function sendTestSms() {
-    const to = '+33603096001';
-    const message = 'Test direct depuis SurgiLink CLI. Si vous recevez ce message, la configuration D7Networks est correcte.';
+    const to = '+33630848023';
+    const message = 'Test direct depuis SurgiLink CLI avec accents : jeûne, opération, anesthésie. Si vous recevez ce message correctement sur Android, le problème est résolu.';
 
     console.log(`Tentative d'envoi vers ${to}...`);
 
@@ -36,7 +36,7 @@ async function sendTestSms() {
                         recipients: [to],
                         content: message,
                         msg_type: 'text',
-                        data_coding: 'text'
+                        data_coding: 'auto'
                     }
                 ],
                 message_globals: {

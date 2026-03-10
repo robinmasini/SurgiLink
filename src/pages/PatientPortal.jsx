@@ -24,7 +24,9 @@ import CompactAppointmentCard from '../components/CompactAppointmentCard';
 import ProtocolStatus from '../components/ProtocolStatus';
 import PatientTraceability from '../components/PatientTraceability';
 import DoctolibButton from '../components/pathway/DoctolibButton';
-import { HelpCircle, Send, RefreshCw } from 'lucide-react';
+import { HelpCircle, Send, RefreshCw, Download } from 'lucide-react';
+import { generateSynthesisPDF } from '../services/pdfService';
+import PatientSynthesisReport from '../components/PatientSynthesisReport';
 
 export default function PatientPortal({ patient: initialPatient }) {
     const { token } = useParams();
@@ -37,6 +39,9 @@ export default function PatientPortal({ patient: initialPatient }) {
     const [documents, setDocuments] = useState([]);
     const [customQuestions, setCustomQuestions] = useState([]);
     const [answeringQuestionId, setAnsweringQuestionId] = useState(null);
+    const [smsData, setSmsData] = useState([]);
+    const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+    const reportRef = useRef(null);
 
     useEffect(() => {
         if (initialPatient) {
@@ -60,6 +65,17 @@ export default function PatientPortal({ patient: initialPatient }) {
             if (!historyError) {
                 setMedicalHistory(historyData || []);
             }
+            // Load SMS logs for PDF
+            const { data: smsLogs, error: smsError } = await supabase
+                .from('sms_logs')
+                .select('*')
+                .eq('patient_id', patientId)
+                .order('sent_at', { ascending: false });
+
+            if (!smsError) {
+                setSmsData(smsLogs || []);
+            }
+
             loadPatientResponses(patientId);
         } catch (err) {
             console.error('Error loading history:', err);
@@ -145,6 +161,18 @@ export default function PatientPortal({ patient: initialPatient }) {
         // Take the first/latest document as the prescription
         const prescription = documents[0];
         await downloadDocument(prescription.storage_path, prescription.name);
+    };
+
+    const handleDownloadSynthesis = async () => {
+        setIsGeneratingPDF(true);
+        try {
+            const fileName = `Ma_Synthese_${patient.name.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
+            await generateSynthesisPDF(reportRef.current, fileName);
+        } catch (err) {
+            console.error('Error during PDF generation:', err);
+        } finally {
+            setIsGeneratingPDF(false);
+        }
     };
 
     const handleAnswerCustomQuestion = async (questionId, response) => {
@@ -327,19 +355,37 @@ export default function PatientPortal({ patient: initialPatient }) {
                             </div>
                             <h3 style={{ fontSize: '18px', fontWeight: '800', color: '#1A1A1A' }}>Votre Parcours de Soins</h3>
                         </div>
-                        <div style={{
-                            background: '#37474F',
-                            color: 'white',
-                            padding: '6px 16px',
-                            borderRadius: '20px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px',
-                            fontSize: '14px',
-                            fontWeight: '700'
-                        }}>
-                            <Zap size={14} fill="currentColor" />
-                            {calculateDaysUntilSurgery(patient.date)}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <button
+                                onClick={handleDownloadSynthesis}
+                                disabled={isGeneratingPDF}
+                                className="btn btn-secondary btn-sm"
+                                style={{
+                                    padding: '6px 12px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '6px',
+                                    background: 'rgba(255,255,255,0.8)',
+                                    borderRadius: '12px'
+                                }}
+                            >
+                                {isGeneratingPDF ? <RefreshCw size={14} className="animate-spin" /> : <Download size={14} />}
+                                <span style={{ fontSize: '12px', fontWeight: '600' }}>Synthèse PDF</span>
+                            </button>
+                            <div style={{
+                                background: '#37474F',
+                                color: 'white',
+                                padding: '6px 16px',
+                                borderRadius: '20px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                                fontSize: '14px',
+                                fontWeight: '700'
+                            }}>
+                                <Zap size={14} fill="currentColor" />
+                                {calculateDaysUntilSurgery(patient.date)}
+                            </div>
                         </div>
                     </div>
 
@@ -425,6 +471,19 @@ export default function PatientPortal({ patient: initialPatient }) {
                             )
                         ))}
                     </div>
+                </div>
+            </div>
+
+            {/* Hidden Report for PDF Generation */}
+            <div style={{ position: 'absolute', left: '-9999px', top: '-9999px' }}>
+                <div ref={reportRef}>
+                    <PatientSynthesisReport
+                        patient={patient}
+                        clinicalResponses={responses}
+                        smsData={smsData}
+                        medicalHistory={medicalHistory}
+                        documents={documents}
+                    />
                 </div>
             </div>
         </div>
