@@ -788,10 +788,15 @@ export default function PatientReview() {
                                     </div>
                                     <button
                                         onClick={() => setIsAddQuestionModalOpen(true)}
-                                        className="btn btn-primary btn-xs"
-                                        style={{ padding: '6px 12px', background: 'var(--color-primary-600)' }}
+                                        className="btn btn-primary btn-sm"
+                                        style={{
+                                            padding: '8px 16px',
+                                            background: 'var(--color-primary-600)',
+                                            fontWeight: '600',
+                                            boxShadow: 'var(--shadow-sm)'
+                                        }}
                                     >
-                                        <Plus size={14} style={{ marginRight: '6px' }} />
+                                        <Plus size={18} style={{ marginRight: '8px' }} />
                                         Ajouter une question
                                     </button>
                                     <button className="btn btn-secondary btn-xs" style={{ color: 'var(--color-orange-600)', background: 'var(--color-orange-50)', border: 'none', padding: '6px 12px' }}>
