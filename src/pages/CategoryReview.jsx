@@ -92,31 +92,94 @@ export default function CategoryReview() {
                 </div>
 
                 {category === 'active' && (
-                    <div className="welcome-banner fade-in" style={{ marginBottom: 'var(--spacing-8)' }}>
-                        <div className="welcome-banner-content">
-                            <div></div>
-                            <div>
-                                <div className="welcome-banner-welcome">Bonjour,</div>
-                                <div className="welcome-banner-greeting">Espace Infirmier</div>
-                                <div className="welcome-banner-instruction">Suivi des patients actifs et alertes</div>
-                            </div>
-                            <div>
-                                <div className="welcome-banner-date-label">Date d'aujourd'hui</div>
-                                <div className="welcome-banner-date-value">
-                                    {new Date().toLocaleDateString('fr-FR', {
-                                        weekday: 'long',
-                                        day: 'numeric',
-                                        month: 'long',
-                                        year: 'numeric'
-                                    }).replace(/^\w/, (c) => c.toUpperCase())}
+                    <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
+                        gap: 'var(--spacing-6)',
+                        marginBottom: 'var(--spacing-8)'
+                    }}>
+                        {/* Welcome Banner */}
+                        <div className="welcome-banner fade-in">
+                            <div className="welcome-banner-content">
+                                <div></div>
+                                <div>
+                                    <div className="welcome-banner-welcome">Bonjour,</div>
+                                    <div className="welcome-banner-greeting">Espace Infirmier</div>
+                                    <div className="welcome-banner-instruction">Suivi des patients actifs et alertes</div>
+                                </div>
+                                <div>
+                                    <div className="welcome-banner-date-label">Date d'aujourd'hui</div>
+                                    <div className="welcome-banner-date-value">
+                                        {new Date().toLocaleDateString('fr-FR', {
+                                            weekday: 'long',
+                                            day: 'numeric',
+                                            month: 'long',
+                                            year: 'numeric'
+                                        }).replace(/^\w/, (c) => c.toUpperCase())}
+                                    </div>
                                 </div>
                             </div>
+                            <img
+                                src={welcomeCardInfirmier}
+                                alt="Espace Infirmier"
+                                className="welcome-banner-image"
+                            />
                         </div>
-                        <img
-                            src={welcomeCardInfirmier}
-                            alt="Espace Infirmier"
-                            className="welcome-banner-image"
-                        />
+
+                        {/* Stats Grid - Matching Dashboard dimensions */}
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-4)' }}>
+                            <div className="stat-card">
+                                <div className="stat-card-icon" style={{ background: 'var(--color-primary-50)' }}>
+                                    <Users size={24} style={{ color: 'var(--color-primary-500)' }} />
+                                </div>
+                                <div className="stat-card-value">{patients.length}</div>
+                                <div className="stat-card-label">Patients Totaux</div>
+                                <div className="stat-card-meta">Base active</div>
+                            </div>
+
+                            <div className="stat-card">
+                                <div className="stat-card-icon" style={{ background: 'var(--color-success-50)' }}>
+                                    <CheckCircle size={24} style={{ color: 'var(--color-success-500)' }} />
+                                </div>
+                                <div className="stat-card-value">
+                                    {patients.filter(p => p.progress === 100).length}
+                                </div>
+                                <div className="stat-card-label">Protocoles complets</div>
+                                <div className="stat-card-meta">Dossiers OK</div>
+                            </div>
+
+                            <div className="stat-card">
+                                <div className="stat-card-icon" style={{ background: 'var(--color-warning-50)' }}>
+                                    <AlertTriangle size={24} style={{ color: 'var(--color-warning-500)' }} />
+                                </div>
+                                <div className="stat-card-value">
+                                    {patients.filter(p => p.status === 'alerte' || p.status === 'critique').length}
+                                </div>
+                                <div className="stat-card-label">Actions requises</div>
+                                <div className="stat-card-meta" style={{ color: 'var(--color-danger-500)' }}>Attention requise</div>
+                            </div>
+
+                            <div className="stat-card">
+                                <div className="stat-card-icon" style={{ background: 'var(--color-info-50)' }}>
+                                    <Calendar size={24} style={{ color: 'var(--color-info-500)' }} />
+                                </div>
+                                <div className="stat-card-value">
+                                    {patients.filter(p => {
+                                        if (!p.date) return false;
+                                        const now = new Date();
+                                        const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay() + 1));
+                                        startOfWeek.setHours(0, 0, 0, 0);
+                                        const endOfWeek = new Date(startOfWeek);
+                                        endOfWeek.setDate(endOfWeek.getDate() + 6);
+                                        endOfWeek.setHours(23, 59, 59, 999);
+                                        const surgeryDate = new Date(p.date);
+                                        return surgeryDate >= startOfWeek && surgeryDate <= endOfWeek;
+                                    }).length}
+                                </div>
+                                <div className="stat-card-label">Interventions / Sem.</div>
+                                <div className="stat-card-meta">Semaine en cours</div>
+                            </div>
+                        </div>
                     </div>
                 )}
 
