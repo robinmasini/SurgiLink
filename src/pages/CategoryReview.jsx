@@ -54,8 +54,20 @@ export default function CategoryReview() {
         const matchesCategory = (() => {
             if (category === 'complete') return p.progress === 100;
             if (category === 'required') return p.status === 'incomplete';
-            if (category === 'weekly') return true; // simplified
-            return true;
+            if (category === 'weekly') {
+                if (!p.date) return false;
+                const now = new Date();
+                const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay() + 1));
+                startOfWeek.setHours(0, 0, 0, 0);
+
+                const endOfWeek = new Date(startOfWeek);
+                endOfWeek.setDate(endOfWeek.getDate() + 6);
+                endOfWeek.setHours(23, 59, 59, 999);
+
+                const surgeryDate = new Date(p.date);
+                return surgeryDate >= startOfWeek && surgeryDate <= endOfWeek;
+            }
+            return true; // 'active' or any other show all
         })();
 
         const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||

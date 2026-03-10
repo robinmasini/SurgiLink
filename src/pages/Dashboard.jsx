@@ -28,6 +28,13 @@ export default function Dashboard() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [patients, setPatients] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [stats, setStats] = useState({
+        active: 0,
+        complete: 0,
+        required: 0,
+        weekly: 0,
+        recentActive: 0
+    });
 
     useEffect(() => {
         loadPatients();
@@ -36,16 +43,51 @@ export default function Dashboard() {
     const loadPatients = async () => {
         setIsLoading(true);
         try {
-            const { data, error } = await supabase
+            // Fetch all patients to calculate stats (if dataset is small)
+            // Or fetch separate counts for better performance if dataset grows
+            const { data: allPatients, error: allPatientsError } = await supabase
                 .from('patients')
-                .select('*')
-                .order('created_at', { ascending: false })
-                .limit(5); // Only get 5 most recent for dashboard
+                .select('*');
 
-            if (error) throw error;
+            if (allPatientsError) throw allPatientsError;
 
-            // Format patients with dynamic days calculation
-            const formattedPatients = (data || []).map(patient => ({
+            // Calculate stats
+            const now = new Date();
+            const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay() + 1));
+            startOfWeek.setHours(0, 0, 0, 0);
+
+            const endOfWeek = new Date(startOfWeek);
+            endOfWeek.setDate(endOfWeek.getDate() + 6);
+            endOfWeek.setHours(23, 59, 59, 999);
+
+            const activeCount = allPatients.length;
+            const completeCount = allPatients.filter(p => p.progress === 100).length;
+            const requiredCount = allPatients.filter(p => p.status === 'incomplete').length;
+            const weeklyCount = allPatients.filter(p => {
+                if (!p.date) return false;
+                const surgeryDate = new Date(p.date);
+                return surgeryDate >= startOfWeek && surgeryDate <= endOfWeek;
+            }).length;
+
+            // Calculate "recent active" (+X cette semaine)
+            const oneWeekAgo = new Date();
+            oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+            const recentActiveCount = allPatients.filter(p => new Date(p.created_at) >= oneWeekAgo).length;
+
+            setStats({
+                active: activeCount,
+                complete: completeCount,
+                required: requiredCount,
+                weekly: weeklyCount,
+                recentActive: recentActiveCount
+            });
+
+            // Format 5 most recent patients for display
+            const recentPatients = allPatients
+                .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+                .slice(0, 5);
+
+            const formattedPatients = recentPatients.map(patient => ({
                 ...patient,
                 daysUntil: calculateDaysUntilSurgery(patient.date),
                 date: patient.date ? new Date(patient.date).toLocaleDateString('fr-FR', {
@@ -163,18 +205,18 @@ export default function Dashboard() {
                             <div className="stat-card-icon" style={{ background: 'var(--color-primary-50)' }}>
                                 <Users size={24} style={{ color: 'var(--color-primary-500)' }} />
                             </div>
-                            <div className="stat-card-value">12</div>
+                            <div className="stat-card-value">{stats.active}</div>
                             <div className="stat-card-label">Patients actifs</div>
-                            <div className="stat-card-meta">+3 cette semaine</div>
+                            <div className="stat-card-meta">+{stats.recentActive} cette semaine</div>
                         </div>
 
                         <div className="stat-card" style={{ cursor: 'pointer' }} onClick={() => navigate('/review/complete')}>
                             <div className="stat-card-icon" style={{ background: 'var(--color-success-50)' }}>
                                 <CheckCircle size={24} style={{ color: 'var(--color-success-500)' }} />
                             </div>
-                            <div className="stat-card-value">8</div>
+                            <div className="stat-card-value">{stats.complete}</div>
                             <div className="stat-card-label">Protocoles complets</div>
-                            <div className="stat-card-meta">67% de conformité</div>
+                            <div className="stat-card-meta">{stats.active > 0 ? Math.round((stats.complete / stats.active) * 100) : 0}% de conformité</div>
                         </div>
 
                         <div className="stat-card" style={{ cursor: 'pointer' }} onClick={() => navigate('/review/required')}>
@@ -182,18 +224,22 @@ export default function Dashboard() {
                                 <AlertTriangle size={24} style={{ color: 'var(--color-warning-500)' }} />
                             </div>
                             <span className="badge badge-danger stat-card-badge">Priorité</span>
-                            <div className="stat-card-value">3</div>
+                            <div className="stat-card-value">{stats.required}</div>
                             <div className="stat-card-label">Actions requises</div>
-                            <div className="stat-card-meta" style={{ color: 'var(--color-danger-500)' }}>Attention requise</div>
+                            <div className="stat-card-meta" style={{ color: 'var(--color-danger-500)' }}>
+                                {stats.required > 0 ? "Attention requise" : "Tout est à jour"}
+                            </div>
                         </div>
 
                         <div className="stat-card" style={{ cursor: 'pointer' }} onClick={() => navigate('/review/weekly')}>
                             <div className="stat-card-icon" style={{ background: 'var(--color-info-50)' }}>
                                 <Calendar size={24} style={{ color: 'var(--color-info-500)' }} />
                             </div>
-                            <div className="stat-card-value">5</div>
+                            <div className="stat-card-value">{stats.weekly}</div>
                             <div className="stat-card-label">Interventions cette semaine</div>
-                            <div className="stat-card-meta">Prochain: Demain</div>
+                            <div className="stat-card-meta">
+                                {stats.weekly > 0 ? "Suivi en cours" : "Aucune prévue"}
+                            </div>
                         </div>
                     </div>
                 </div>
