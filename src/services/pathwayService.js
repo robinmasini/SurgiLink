@@ -70,9 +70,11 @@ export async function calculateGlobalProgress(patientId) {
             responseMap[key] = r.response?.value;
         });
 
-        // 2. Count total required items and completed items
+        // 2. Count total required items and completed items + Calculate risks
         let totalRequired = 0;
         let totalCompleted = 0;
+        let hasHardRisk = false;
+        let hasSoftRisk = false;
 
         screens.forEach(screen => {
             const items = getScreenItems(screen);
@@ -80,20 +82,33 @@ export async function calculateGlobalProgress(patientId) {
 
             totalRequired += requiredItems.length;
 
-            requiredItems.forEach(item => {
+            const screenResponses = {};
+            items.forEach(item => {
                 const val = responseMap[`${screen}:${item.id}`];
-                if (val !== undefined && val !== null && val !== '') {
+                screenResponses[item.id] = val;
+                if (item.required !== false && val !== undefined && val !== null && val !== '') {
                     totalCompleted += 1;
                 }
             });
+
+            // Calculate risk flags for this screen
+            const riskFlags = getRiskFlags(screen, screenResponses);
+            if (riskFlags.hard && riskFlags.hard.length > 0) hasHardRisk = true;
+            if (riskFlags.soft && riskFlags.soft.length > 0) hasSoftRisk = true;
         });
 
         const progress = totalRequired > 0 ? Math.round((totalCompleted / totalRequired) * 100) : 0;
 
+        // Determine status based on risks and progress
+        let status = 'incomplete';
+        if (hasHardRisk) status = 'critique';
+        else if (hasSoftRisk) status = 'alerte';
+        else if (progress === 100) status = 'ready';
+
         // 3. Update the patients table
         const { error: updateError } = await supabase
             .from('patients')
-            .update({ progress })
+            .update({ progress, status })
             .eq('id', patientId);
 
         if (updateError) throw updateError;

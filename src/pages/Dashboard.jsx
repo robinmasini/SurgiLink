@@ -62,7 +62,7 @@ export default function Dashboard() {
 
             const activeCount = allPatients.length;
             const completeCount = allPatients.filter(p => p.progress === 100).length;
-            const requiredCount = allPatients.filter(p => p.status === 'incomplete').length;
+            const requiredCount = allPatients.filter(p => p.status === 'incomplete' || p.status === 'alerte' || p.status === 'critique').length;
             const weeklyCount = allPatients.filter(p => {
                 if (!p.date) return false;
                 const surgeryDate = new Date(p.date);
@@ -115,6 +115,10 @@ export default function Dashboard() {
                 return <span className="badge badge-success">Prêt</span>;
             case 'incomplete':
                 return <span className="badge badge-warning">Protocole incomplet</span>;
+            case 'alerte':
+                return <span className="badge badge-warning">Alerte</span>;
+            case 'critique':
+                return <span className="badge badge-danger">Critique</span>;
             case 'postop':
                 return <span className="badge badge-info">Suivi post-op</span>;
             case 'pending':

@@ -53,7 +53,7 @@ export default function CategoryReview() {
     const filteredPatients = patients.filter(p => {
         const matchesCategory = (() => {
             if (category === 'complete') return p.progress === 100;
-            if (category === 'required') return p.status === 'incomplete';
+            if (category === 'required') return p.status === 'incomplete' || p.status === 'alerte' || p.status === 'critique';
             if (category === 'weekly') {
                 if (!p.date) return false;
                 const now = new Date();
