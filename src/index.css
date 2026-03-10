@@ -1723,7 +1723,7 @@ textarea.input {
   color: #000000 !important;
   box-shadow: var(--shadow-sm) !important;
   border: 1px solid var(--color-gray-100) !important;
-  height: 320px !important;
+  min-height: 320px;
   display: flex !important;
   align-items: center !important;
   overflow: hidden !important;
