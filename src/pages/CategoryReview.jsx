@@ -9,7 +9,8 @@ import {
     Calendar,
     ChevronLeft,
     Search,
-    Filter
+    Filter,
+    Phone
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import welcomeCardInfirmier from '../assets/welcomecard-infirmier.png';
@@ -113,9 +114,12 @@ export default function CategoryReview() {
                             <div className="welcome-banner-content">
                                 <div></div>
                                 <div>
-                                    <div className="welcome-banner-welcome">Bonjour,</div>
-                                    <div className="welcome-banner-greeting">Espace Infirmier</div>
-                                    <div className="welcome-banner-instruction">Suivi des patients actifs et alertes</div>
+                                    <div className="welcome-banner-welcome">Bienvenue,</div>
+                                    <div className="welcome-banner-name" style={{ fontSize: 'var(--font-size-xl)', marginBottom: 'var(--spacing-6)' }}>
+                                        Prénom/Nom de l'infirmier(ère)
+                                    </div>
+                                    <div className="welcome-banner-greeting">Ravi de vous revoir !</div>
+                                    <div className="welcome-banner-instruction">Consultez votre Espace Infirmier</div>
                                 </div>
                                 <div>
                                     <div className="welcome-banner-date-label">Date d'aujourd'hui</div>
