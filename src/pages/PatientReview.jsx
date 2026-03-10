@@ -634,17 +634,19 @@ export default function PatientReview() {
                                             {patient.stay_type || 'Ambulatoire'}
                                         </span>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                            <span className="badge" style={{
-                                                background: '#FDF7F2',
-                                                color: '#8D6E63',
-                                                padding: '8px 24px',
-                                                border: '1px solid #EEDDCC',
-                                                fontSize: '14px',
-                                                fontWeight: '700',
-                                                borderRadius: '20px'
-                                            }}>
-                                                {patient.operation}
-                                            </span>
+                                            {(patient.operation || '').split(', ').filter(Boolean).map((op, i) => (
+                                                <span key={i} className="badge" style={{
+                                                    background: '#FDF7F2',
+                                                    color: '#8D6E63',
+                                                    padding: '8px 24px',
+                                                    border: '1px solid #EEDDCC',
+                                                    fontSize: '14px',
+                                                    fontWeight: '700',
+                                                    borderRadius: '20px'
+                                                }}>
+                                                    {op}
+                                                </span>
+                                            ))}
                                             <button
                                                 onClick={() => setIsEditModalOpen(true)}
                                                 style={{

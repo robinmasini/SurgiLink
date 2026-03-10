@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Search, ChevronDown, Check, Clipboard, Plus } from 'lucide-react';
+import { Search, ChevronDown, Check, Clipboard, Plus, X } from 'lucide-react';
 
 const INTERVENTIONS = [
     {
@@ -94,6 +94,9 @@ export default function InterventionSelect({ value, onChange }) {
     const [search, setSearch] = useState("");
     const dropdownRef = useRef(null);
 
+    // Parse existing value into an array
+    const selectedOptions = value ? value.split(', ').filter(Boolean) : [];
+
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -103,6 +106,16 @@ export default function InterventionSelect({ value, onChange }) {
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
+
+    const toggleOption = (opt) => {
+        let newOptions;
+        if (selectedOptions.includes(opt)) {
+            newOptions = selectedOptions.filter(o => o !== opt);
+        } else {
+            newOptions = [...selectedOptions, opt];
+        }
+        onChange(newOptions.join(', '));
+    };
 
     const filteredInterventions = INTERVENTIONS.map(cat => ({
         ...cat,
@@ -121,19 +134,51 @@ export default function InterventionSelect({ value, onChange }) {
                     background: 'var(--color-white)',
                     border: '1px solid var(--color-gray-200)',
                     borderRadius: 'var(--radius-lg)',
-                    padding: '0 12px',
-                    height: '42px',
+                    padding: '8px 12px',
+                    minHeight: '42px',
                     cursor: 'pointer',
                     transition: 'all var(--transition-fast)',
                     boxShadow: isOpen ? '0 0 0 3px var(--color-primary-50)' : 'none',
-                    borderColor: isOpen ? 'var(--color-primary-400)' : 'var(--color-gray-200)'
+                    borderColor: isOpen ? 'var(--color-primary-400)' : 'var(--color-gray-200)',
+                    flexWrap: 'wrap',
+                    gap: '4px'
                 }}
             >
-                <Clipboard size={16} style={{ color: 'var(--color-gray-400)', marginRight: '12px' }} />
-                <div style={{ flex: 1, color: value ? 'var(--color-gray-900)' : 'var(--color-gray-400)', fontSize: 'var(--font-size-sm)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {value || "Sélectionner une intervention"}
-                </div>
-                <ChevronDown size={16} style={{ color: 'var(--color-gray-400)', transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
+                <Clipboard size={16} style={{ color: 'var(--color-gray-400)', marginRight: '8px' }} />
+
+                {selectedOptions.length > 0 ? (
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', flex: 1 }}>
+                        {selectedOptions.map((opt, i) => (
+                            <span key={i} style={{
+                                background: 'var(--color-primary-50)',
+                                color: 'var(--color-primary-700)',
+                                padding: '2px 8px',
+                                borderRadius: '12px',
+                                fontSize: '11px',
+                                fontWeight: '600',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '4px'
+                            }}>
+                                {opt}
+                                <X
+                                    size={10}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        toggleOption(opt);
+                                    }}
+                                    style={{ cursor: 'pointer' }}
+                                />
+                            </span>
+                        ))}
+                    </div>
+                ) : (
+                    <div style={{ flex: 1, color: 'var(--color-gray-400)', fontSize: 'var(--font-size-sm)' }}>
+                        Sélectionner intervention(s)
+                    </div>
+                )}
+
+                <ChevronDown size={16} style={{ color: 'var(--color-gray-400)', transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s', marginLeft: 'auto' }} />
             </div>
 
             {isOpen && (
@@ -159,10 +204,18 @@ export default function InterventionSelect({ value, onChange }) {
                             <input
                                 autoFocus
                                 className="input"
-                                placeholder="Rechercher une intervention..."
+                                placeholder="Rechercher ou ajouter..."
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
                                 style={{ paddingLeft: '32px', height: '34px', fontSize: 'var(--font-size-xs)' }}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' && search.trim()) {
+                                        if (!selectedOptions.includes(search.trim())) {
+                                            toggleOption(search.trim());
+                                        }
+                                        setSearch("");
+                                    }
+                                }}
                                 onClick={(e) => e.stopPropagation()}
                             />
                         </div>
@@ -173,8 +226,9 @@ export default function InterventionSelect({ value, onChange }) {
                         {search.trim() && (
                             <div
                                 onClick={() => {
-                                    onChange(search.trim());
-                                    setIsOpen(false);
+                                    if (!selectedOptions.includes(search.trim())) {
+                                        toggleOption(search.trim());
+                                    }
                                     setSearch("");
                                 }}
                                 style={{
@@ -192,7 +246,7 @@ export default function InterventionSelect({ value, onChange }) {
                                 }}
                             >
                                 <Plus size={16} />
-                                <div style={{ fontWeight: '600' }}>Utiliser "{search.trim()}"</div>
+                                <div style={{ fontWeight: '600' }}>Ajouter "{search.trim()}"</div>
                             </div>
                         )}
 
@@ -211,11 +265,7 @@ export default function InterventionSelect({ value, onChange }) {
                                 {cat.options.map((opt, optIdx) => (
                                     <div
                                         key={optIdx}
-                                        onClick={() => {
-                                            onChange(opt);
-                                            setIsOpen(false);
-                                            setSearch("");
-                                        }}
+                                        onClick={() => toggleOption(opt)}
                                         style={{
                                             padding: '8px 12px',
                                             fontSize: 'var(--font-size-sm)',
@@ -225,14 +275,18 @@ export default function InterventionSelect({ value, onChange }) {
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'space-between',
-                                            background: value === opt ? 'var(--color-primary-50)' : 'transparent',
+                                            background: selectedOptions.includes(opt) ? 'var(--color-primary-50)' : 'transparent',
                                             transition: 'background 0.2s'
                                         }}
-                                        onMouseEnter={(e) => e.target.style.background = value === opt ? 'var(--color-primary-100)' : 'var(--color-gray-50)'}
-                                        onMouseLeave={(e) => e.target.style.background = value === opt ? 'var(--color-primary-50)' : 'transparent'}
+                                        onMouseEnter={(e) => {
+                                            if (!selectedOptions.includes(opt)) e.currentTarget.style.background = 'var(--color-gray-50)';
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            if (!selectedOptions.includes(opt)) e.currentTarget.style.background = 'transparent';
+                                        }}
                                     >
                                         <span>{opt}</span>
-                                        {value === opt && <Check size={14} style={{ color: 'var(--color-primary-600)' }} />}
+                                        {selectedOptions.includes(opt) && <Check size={14} style={{ color: 'var(--color-primary-600)' }} />}
                                     </div>
                                 ))}
                             </div>

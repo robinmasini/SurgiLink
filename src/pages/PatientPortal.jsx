@@ -23,6 +23,7 @@ import ClinicAppointmentCard from '../components/ClinicAppointmentCard';
 import CompactAppointmentCard from '../components/CompactAppointmentCard';
 import ProtocolStatus from '../components/ProtocolStatus';
 import PatientTraceability from '../components/PatientTraceability';
+import DoctolibButton from '../components/pathway/DoctolibButton';
 import { HelpCircle, Send, RefreshCw } from 'lucide-react';
 
 export default function PatientPortal({ patient: initialPatient }) {
@@ -421,6 +422,10 @@ export default function PatientPortal({ patient: initialPatient }) {
                     </div>
                 </div>
 
+                {/* Doctolib Integration */}
+                <div style={{ marginTop: 'var(--spacing-6)' }}>
+                    <DoctolibButton />
+                </div>
             </div>
         </div>
     );
