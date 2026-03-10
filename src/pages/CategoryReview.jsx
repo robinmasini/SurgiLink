@@ -81,14 +81,29 @@ export default function CategoryReview() {
         <div style={{ display: 'flex' }}>
             <Sidebar />
             <main className="main-content">
-                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-4)', marginBottom: 'var(--spacing-6)' }}>
-                    <button onClick={() => navigate('/dashboard')} className="btn btn-secondary btn-sm" style={{ padding: '8px' }}>
-                        <ChevronLeft size={20} />
-                    </button>
-                    <Header
-                        title={`Revue : ${config.title}`}
-                        subtitle={`Liste détaillée des patients dans la catégorie ${config.title}`}
-                    />
+                <div style={{ marginBottom: 'var(--spacing-8)' }}>
+                    {category === 'active' ? (
+                        <Header
+                            title="Tableau de Bord"
+                            subtitle="Vue d'ensemble de vos patients et indicateurs clés"
+                            actions={
+                                <button className="btn btn-secondary">
+                                    <Phone size={18} />
+                                    Appeler la Clinique
+                                </button>
+                            }
+                        />
+                    ) : (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-4)', marginBottom: 'var(--spacing-6)' }}>
+                            <button onClick={() => navigate(-1)} className="btn btn-secondary btn-sm" style={{ padding: '8px' }}>
+                                <ChevronLeft size={20} />
+                            </button>
+                            <Header
+                                title={`Revue : ${config.title}`}
+                                subtitle={`Liste détaillée des patients dans la catégorie ${config.title}`}
+                            />
+                        </div>
+                    )}
                 </div>
 
                 {category === 'active' && (
