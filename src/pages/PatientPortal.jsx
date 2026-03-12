@@ -441,12 +441,18 @@ export default function PatientPortal({ patient: initialPatient }) {
 
                                         {/* Dynamic Requisition Badge */}
                                         {(() => {
-                                            const days = calculateDaysUntilSurgery(patient.date);
+                                            // Get numeric days for accurate comparison
+                                            const today = new Date();
+                                            today.setHours(0, 0, 0, 0);
+                                            const surgeryDate = patient.date ? new Date(patient.date) : null;
+                                            if (surgeryDate) surgeryDate.setHours(0, 0, 0, 0);
+
+                                            const diffDays = surgeryDate ? Math.ceil((surgeryDate - today) / (1000 * 60 * 60 * 24)) : 999;
                                             let isRequired = false;
 
-                                            if (step.to === 'j7' && days <= 7 && !responses['anesthesia_consultation']) isRequired = true;
-                                            if (step.to === 'j2' && days <= 2 && !responses['fasting_understood']) isRequired = true;
-                                            if (step.to === 'j1-preop' && days <= 1 && !responses['admission_confirmed']) isRequired = true;
+                                            if (step.to === 'j7' && diffDays <= 7 && !responses['anesthesia_consultation']) isRequired = true;
+                                            if (step.to === 'j2' && diffDays <= 2 && !responses['fasting_understood']) isRequired = true;
+                                            if (step.to === 'j1-preop' && diffDays <= 1 && !responses['admission_confirmed']) isRequired = true;
 
                                             if (!isRequired) return null;
 
