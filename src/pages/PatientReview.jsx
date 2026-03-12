@@ -47,6 +47,7 @@ import { sendManualReminder, getNextPendingReminder, getPendingReminders, sendOv
 import { getCustomQuestions, addCustomQuestion, deleteCustomQuestion } from '../services/customQuestionService';
 import LogoPremium from '../components/LogoPremium';
 import clinicImage from '../assets/clinic.png';
+import StatusBolt from '../components/StatusBolt';
 
 export default function PatientReview() {
     const { id } = useParams();
@@ -511,26 +512,7 @@ export default function PatientReview() {
                         {/* 1. Patient Card */}
                         <div className="card glass-effect" style={{ padding: 'var(--spacing-8)', position: 'relative' }}>
                             <div style={{ position: 'absolute', top: 'var(--spacing-6)', right: 'var(--spacing-8)' }}>
-                                <div style={{
-                                    background: riskStatus === 'URGENT' ? 'var(--color-danger-50)' : riskStatus === 'VIGILANCE' ? 'var(--color-warning-50)' : 'var(--color-success-50)',
-                                    color: riskStatus === 'URGENT' ? 'var(--color-danger-600)' : riskStatus === 'VIGILANCE' ? 'var(--color-warning-600)' : 'var(--color-success-600)',
-                                    padding: '8px 20px',
-                                    borderRadius: '100px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: 'var(--spacing-2)',
-                                    fontWeight: 'var(--font-weight-bold)',
-                                    fontSize: 'var(--font-size-sm)',
-                                    border: `1px solid ${riskStatus === 'URGENT' ? 'var(--color-danger-100)' : riskStatus === 'VIGILANCE' ? 'var(--color-warning-100)' : 'var(--color-success-100)'}`
-                                }}>
-                                    <div style={{
-                                        width: '8px',
-                                        height: '8px',
-                                        borderRadius: '50%',
-                                        background: 'currentColor'
-                                    }}></div>
-                                    Facteur de risques : {riskStatus}
-                                </div>
+                                <StatusBolt status={patient.status} showLabel={true} size={24} />
                             </div>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-6)', position: 'relative' }}>
                                 <div style={{ flex: 1 }}>

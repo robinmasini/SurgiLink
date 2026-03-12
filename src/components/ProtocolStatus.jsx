@@ -1,6 +1,16 @@
 import { Activity } from 'lucide-react';
 
-export default function ProtocolStatus({ progress = 0, statusLabel = "Protocole en cours d'exécution" }) {
+const statusConfigs = {
+    'neutre': { color: '#9E9E9E', bg: '#F5F5F5' },
+    'alerte': { color: '#F59E0B', bg: '#FFFBEB' },
+    'critique': { color: '#EF4444', bg: '#FEF2F2' },
+    'ready': { color: '#10B981', bg: '#ECFDF5' },
+    'incomplete': { color: '#B3967A', bg: '#FCFBF9' }
+};
+
+export default function ProtocolStatus({ progress = 0, status = 'neutre', statusLabel = "Protocole en cours d'exécution" }) {
+    const config = statusConfigs[status] || statusConfigs['neutre'];
+
     return (
         <div className="card" style={{
             background: 'white',
@@ -11,10 +21,10 @@ export default function ProtocolStatus({ progress = 0, statusLabel = "Protocole 
         }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: 'var(--spacing-6)' }}>
                 <div style={{
-                    background: '#E8F5E9',
+                    background: `${config.color}15`,
                     padding: '6px',
                     borderRadius: '8px',
-                    color: '#2E7D32',
+                    color: config.color,
                     display: 'flex'
                 }}>
                     <Activity size={16} />
@@ -26,7 +36,7 @@ export default function ProtocolStatus({ progress = 0, statusLabel = "Protocole 
                 <div style={{
                     fontSize: '48px',
                     fontWeight: '800',
-                    color: '#D7C4B0', // Beige color from image
+                    color: config.color,
                     marginBottom: 'var(--spacing-4)',
                     lineHeight: 1
                 }}>
@@ -46,7 +56,7 @@ export default function ProtocolStatus({ progress = 0, statusLabel = "Protocole 
                     <div style={{
                         width: `${progress}%`,
                         height: '100%',
-                        background: '#D7C4B0',
+                        background: config.color,
                         borderRadius: '4px',
                         transition: 'width 0.5s ease-out'
                     }} />
@@ -55,8 +65,8 @@ export default function ProtocolStatus({ progress = 0, statusLabel = "Protocole 
                 {/* Status Pill */}
                 <div style={{
                     display: 'inline-flex',
-                    background: '#E8F5E9',
-                    color: '#2E7D32',
+                    background: config.bg,
+                    color: config.color,
                     padding: '6px 16px',
                     borderRadius: '20px',
                     fontSize: '12px',

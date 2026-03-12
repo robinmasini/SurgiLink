@@ -296,6 +296,7 @@ export default function PatientPortal({ patient: initialPatient }) {
                     {/* Protocol Status Row */}
                     <ProtocolStatus
                         progress={patient?.progress || (responses ? Math.round((Object.keys(responses).length / 5) * 100) : 0)}
+                        status={patient?.status}
                         statusLabel="Protocole en cours d'exécution"
                     />
                 </div>

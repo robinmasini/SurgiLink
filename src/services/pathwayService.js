@@ -97,15 +97,55 @@ export async function calculateGlobalProgress(patientId) {
             if (riskFlags.soft && riskFlags.soft.length > 0) hasSoftRisk = true;
         });
 
-        const progress = totalRequired > 0 ? Math.round((totalCompleted / totalRequired) * 100) : 0;
+        // 3. Get patient data for time-based risks
+        const { data: patient, error: patientFetchError } = await supabase
+            .from('patients')
+            .select('created_at, date')
+            .eq('id', patientId)
+            .single();
 
-        // Determine status based on risks and progress
-        let status = 'incomplete';
-        if (hasHardRisk) status = 'critique';
-        else if (hasSoftRisk) status = 'alerte';
-        else if (progress === 100) status = 'ready';
+        if (patientFetchError) throw patientFetchError;
 
-        // 3. Update the patients table
+        const createdAt = new Date(patient.created_at);
+        const surgeryDate = patient.date ? new Date(patient.date) : null;
+        const now = new Date();
+        const hoursSinceCreation = (now - createdAt) / (1000 * 60 * 60);
+        const daysUntilSurgery = surgeryDate ? Math.ceil((surgeryDate - now) / (1000 * 60 * 60 * 24)) : 999;
+
+        const hasAnyJ7 = (responses || []).some(r => r.screen === 'J7');
+        const hasAnyResponse = (responses || []).length > 0;
+
+        // Determine status based on risks, progress, and timing
+        let status = 'neutre';
+
+        if (progress === 100) {
+            status = 'ready';
+        } else if (hasHardRisk) {
+            status = 'critique';
+        } else if (hasSoftRisk) {
+            status = 'alerte';
+        } else {
+            // Timing-based Alerte/Critique
+            if (!hasAnyResponse && hoursSinceCreation > 24) {
+                // Non-réponse au Bienvenue après 24h
+                status = 'alerte';
+            } else if (!hasAnyJ7 && daysUntilSurgery <= 7) {
+                // Non-réponse au J-7 après l'échéance
+                status = 'alerte';
+            }
+
+            // Upgrade to Critique if multiple deadlines are missed or very close to surgery
+            if (status === 'alerte' && daysUntilSurgery <= 2) {
+                status = 'critique';
+            }
+
+            // Default to incomplete or neutre
+            if (status === 'neutre' && progress > 0) {
+                status = 'incomplete';
+            }
+        }
+
+        // 4. Update the patients table
         const { error: updateError } = await supabase
             .from('patients')
             .update({ progress, status })

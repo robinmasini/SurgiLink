@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import welcomeCardInfirmier from '../assets/welcomecard-infirmier.png';
+import StatusBolt from '../components/StatusBolt';
 
 const categoryConfigs = {
     'active': { title: 'Patients Actifs', icon: <Users size={24} />, color: 'var(--color-primary-500)', bg: 'var(--color-primary-50)' },
@@ -235,8 +236,11 @@ export default function CategoryReview() {
                                     </td>
                                     <td style={{ padding: 'var(--spacing-4)' }}>{patient.operation}</td>
                                     <td style={{ padding: 'var(--spacing-4)' }}>
-                                        <div className="progress-bar" style={{ width: '100px' }}>
-                                            <div className="progress-fill progress-fill-primary" style={{ width: `${patient.progress}%` }}></div>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-4)' }}>
+                                            <StatusBolt status={patient.status} />
+                                            <div className="progress-bar" style={{ width: '100px', flex: 1 }}>
+                                                <div className="progress-fill progress-fill-primary" style={{ width: `${patient.progress}%` }}></div>
+                                            </div>
                                         </div>
                                     </td>
                                     <td style={{ padding: 'var(--spacing-4)', textAlign: 'right' }}>

@@ -7,20 +7,10 @@ import EditPatientModal from '../components/EditPatientModal';
 import { Users, Search, Filter, Plus, Edit2, Trash2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { calculateDaysUntilSurgery } from '../utils/dateUtils';
+import StatusBolt from '../components/StatusBolt';
 
 const getStatusBadge = (status) => {
-    switch (status) {
-        case 'ready':
-            return <span className="badge badge-success">Prêt</span>;
-        case 'incomplete':
-            return <span className="badge badge-warning">Protocole incomplet</span>;
-        case 'postop':
-            return <span className="badge badge-info">Suivi post-op</span>;
-        case 'pending':
-            return <span className="badge badge-primary">En cours</span>;
-        default:
-            return null;
-    }
+    return <StatusBolt status={status} showLabel={true} />;
 };
 
 const getDaysStyle = (daysUntil) => {

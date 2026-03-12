@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { calculateDaysUntilSurgery } from '../utils/dateUtils';
+import StatusBolt from '../components/StatusBolt';
 
 export default function Dashboard() {
     const navigate = useNavigate();
@@ -110,22 +111,7 @@ export default function Dashboard() {
     };
 
     const getStatusBadge = (status) => {
-        switch (status) {
-            case 'ready':
-                return <span className="badge badge-success">Prêt</span>;
-            case 'incomplete':
-                return <span className="badge badge-warning">Protocole incomplet</span>;
-            case 'alerte':
-                return <span className="badge badge-warning">Alerte</span>;
-            case 'critique':
-                return <span className="badge badge-danger">Critique</span>;
-            case 'postop':
-                return <span className="badge badge-info">Suivi post-op</span>;
-            case 'pending':
-                return <span className="badge badge-primary">En cours</span>;
-            default:
-                return null;
-        }
+        return <StatusBolt status={status} showLabel={true} />;
     };
 
 
