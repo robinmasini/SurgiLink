@@ -40,7 +40,7 @@ export default function ProtocolStatus({ progress = 0, status = 'neutre', status
                     marginBottom: 'var(--spacing-4)',
                     lineHeight: 1
                 }}>
-                    {progress}%
+                    {Math.min(100, progress)}%
                 </div>
 
                 {/* Progress Bar Container */}
@@ -50,11 +50,12 @@ export default function ProtocolStatus({ progress = 0, status = 'neutre', status
                     background: '#F5F5F5',
                     borderRadius: '4px',
                     position: 'relative',
-                    marginBottom: 'var(--spacing-6)'
+                    marginBottom: 'var(--spacing-6)',
+                    overflow: 'hidden'
                 }}>
                     {/* Progress Fill */}
                     <div style={{
-                        width: `${progress}%`,
+                        width: `${Math.min(100, progress)}%`,
                         height: '100%',
                         background: config.color,
                         borderRadius: '4px',

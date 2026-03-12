@@ -98,7 +98,8 @@ export async function calculateGlobalProgress(patientId) {
         });
 
         // 3. Calculate progress percentage
-        const progress = totalRequired > 0 ? Math.round((totalCompleted / totalRequired) * 100) : 0;
+        let progress = totalRequired > 0 ? Math.round((totalCompleted / totalRequired) * 100) : 0;
+        progress = Math.min(progress, 100);
 
         // 4. Get patient data for time-based risks
         const { data: patient, error: patientFetchError } = await supabase
@@ -114,8 +115,10 @@ export async function calculateGlobalProgress(patientId) {
         const now = new Date();
         const hoursSinceCreation = (now - createdAt) / (1000 * 60 * 60);
         const daysUntilSurgery = surgeryDate ? Math.ceil((surgeryDate - now) / (1000 * 60 * 60 * 24)) : 999;
+
         // Check completion of specific critical screens
         const j7Status = await getCompletionStatus(patientId, 'J7');
+        const j2Status = await getCompletionStatus(patientId, 'J2');
         const hasAcessedPortal = hoursSinceCreation > 0 && (responses || []).length > 0;
 
         // Determine status based on risks, progress, and timing
@@ -152,7 +155,7 @@ export async function calculateGlobalProgress(patientId) {
             }
         }
 
-        // 4. Update the patients table
+        // 5. Update the patients table
         const { error: updateError } = await supabase
             .from('patients')
             .update({ progress, status })

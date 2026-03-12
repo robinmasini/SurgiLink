@@ -258,11 +258,6 @@ export default function PatientPortal({ patient: initialPatient }) {
                     <p style={{ color: '#666', fontSize: '16px', fontWeight: '500' }}>Votre portail de suivi personnalisé</p>
                 </div>
 
-                {/* Doctolib Integration - Moved to Top */}
-                <div style={{ marginBottom: 'var(--spacing-8)' }}>
-                    <DoctolibButton />
-                </div>
-
                 {/* Main Info Glass Container */}
                 <div style={{
                     background: 'rgba(255, 255, 255, 0.4)',
@@ -295,10 +290,15 @@ export default function PatientPortal({ patient: initialPatient }) {
 
                     {/* Protocol Status Row */}
                     <ProtocolStatus
-                        progress={patient?.progress || (responses ? Math.round((Object.keys(responses).length / 5) * 100) : 0)}
+                        progress={Math.min(100, patient?.progress || (responses ? Math.round((Object.keys(responses).length / 20) * 100) : 0))}
                         status={patient?.status}
                         statusLabel="Protocole en cours d'exécution"
                     />
+                </div>
+
+                {/* Doctolib Integration */}
+                <div style={{ marginBottom: 'var(--spacing-8)' }}>
+                    <DoctolibButton />
                 </div>
 
                 {/* Care Pathway Section */}
@@ -439,22 +439,34 @@ export default function PatientPortal({ patient: initialPatient }) {
                                             <p style={{ fontSize: '12px', color: '#666', fontWeight: '500' }}>{step.desc}</p>
                                         </div>
 
-                                        {step.to === 'j7' && (
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginRight: 'var(--spacing-4)' }}>
-                                                <div style={{ color: '#FBC02D' }}><AlertCircle size={24} /></div>
-                                                <div style={{
-                                                    background: '#FFEBEE',
-                                                    color: '#D32F2F',
-                                                    padding: '4px 12px',
-                                                    borderRadius: '8px',
-                                                    fontSize: '11px',
-                                                    fontWeight: '800',
-                                                    textTransform: 'uppercase'
-                                                }}>
-                                                    Requis
+                                        {/* Dynamic Requisition Badge */}
+                                        {(() => {
+                                            const days = calculateDaysUntilSurgery(patient.date);
+                                            let isRequired = false;
+
+                                            if (step.to === 'j7' && days <= 7 && !responses['anesthesia_consultation']) isRequired = true;
+                                            if (step.to === 'j2' && days <= 2 && !responses['fasting_understood']) isRequired = true;
+                                            if (step.to === 'j1-preop' && days <= 1 && !responses['admission_confirmed']) isRequired = true;
+
+                                            if (!isRequired) return null;
+
+                                            return (
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginRight: 'var(--spacing-4)' }}>
+                                                    <div style={{ color: '#FF1744' }}><AlertCircle size={24} /></div>
+                                                    <div style={{
+                                                        background: '#FFEBEE',
+                                                        color: '#FF1744',
+                                                        padding: '4px 12px',
+                                                        borderRadius: '8px',
+                                                        fontSize: '11px',
+                                                        fontWeight: '800',
+                                                        textTransform: 'uppercase'
+                                                    }}>
+                                                        Requis
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        )}
+                                            );
+                                        })()}
 
                                         <div style={{
                                             color: '#BDBDBD',
