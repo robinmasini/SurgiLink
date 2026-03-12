@@ -3,32 +3,32 @@ import { Zap } from 'lucide-react';
 
 const statusConfigs = {
     'neutre': {
-        color: 'var(--color-gray-400)',
-        bg: 'var(--color-gray-100)',
+        color: '#BDBDBD',
+        bg: '#F5F5F5',
         label: 'Neutre',
         description: 'En attente de démarrage'
     },
     'alerte': {
-        color: 'var(--color-warning-500)',
-        bg: 'var(--color-warning-50)',
+        color: '#FF9100', // Vibrant Orange
+        bg: '#FFF3E0',
         label: 'Alerte',
-        description: 'Non-réponse Bienvenue/J-7'
+        description: 'Non-réponse ou retard'
     },
     'critique': {
-        color: 'var(--color-danger-500)',
-        bg: 'var(--color-danger-50)',
+        color: '#FF1744', // Vibrant Red
+        bg: '#FFEBEE',
         label: 'Critique',
-        description: 'Dossier critique / Non-réponses multiples'
+        description: 'Dossier critique / Retard important'
     },
     'ready': {
-        color: 'var(--color-success-500)',
-        bg: 'var(--color-success-50)',
+        color: '#00C853', // Deep Green
+        bg: '#E8F5E9',
         label: 'Prêt',
         description: 'Protocole complété'
     },
     'incomplete': {
-        color: 'var(--color-primary-500)',
-        bg: 'var(--color-primary-50)',
+        color: '#8D6E63', // Solid Brown (distinct from orange)
+        bg: '#EFEBE9',
         label: 'En cours',
         description: 'Protocole en cours'
     }

@@ -97,7 +97,10 @@ export async function calculateGlobalProgress(patientId) {
             if (riskFlags.soft && riskFlags.soft.length > 0) hasSoftRisk = true;
         });
 
-        // 3. Get patient data for time-based risks
+        // 3. Calculate progress percentage
+        const progress = totalRequired > 0 ? Math.round((totalCompleted / totalRequired) * 100) : 0;
+
+        // 4. Get patient data for time-based risks
         const { data: patient, error: patientFetchError } = await supabase
             .from('patients')
             .select('created_at, date')
@@ -111,9 +114,9 @@ export async function calculateGlobalProgress(patientId) {
         const now = new Date();
         const hoursSinceCreation = (now - createdAt) / (1000 * 60 * 60);
         const daysUntilSurgery = surgeryDate ? Math.ceil((surgeryDate - now) / (1000 * 60 * 60 * 24)) : 999;
-
-        const hasAnyJ7 = (responses || []).some(r => r.screen === 'J7');
-        const hasAnyResponse = (responses || []).length > 0;
+        // Check completion of specific critical screens
+        const j7Status = await getCompletionStatus(patientId, 'J7');
+        const hasAcessedPortal = hoursSinceCreation > 0 && (responses || []).length > 0;
 
         // Determine status based on risks, progress, and timing
         let status = 'neutre';
@@ -126,16 +129,20 @@ export async function calculateGlobalProgress(patientId) {
             status = 'alerte';
         } else {
             // Timing-based Alerte/Critique
-            if (!hasAnyResponse && hoursSinceCreation > 24) {
+            if (!hasAcessedPortal && hoursSinceCreation > 24) {
                 // Non-réponse au Bienvenue après 24h
                 status = 'alerte';
-            } else if (!hasAnyJ7 && daysUntilSurgery <= 7) {
-                // Non-réponse au J-7 après l'échéance
+            } else if (!j7Status.isComplete && daysUntilSurgery <= 7) {
+                // J-7 non complété à J-7
+                status = 'alerte';
+            } else if (progress < 50 && daysUntilSurgery <= 7) {
+                // Moins de 50% à J-7
                 status = 'alerte';
             }
 
-            // Upgrade to Critique if multiple deadlines are missed or very close to surgery
-            if (status === 'alerte' && daysUntilSurgery <= 2) {
+            // Upgrade logic
+            if ((status === 'alerte' || progress < 80) && daysUntilSurgery <= 3) {
+                // Pas fini à J-3
                 status = 'critique';
             }
 

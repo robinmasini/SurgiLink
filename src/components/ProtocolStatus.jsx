@@ -1,11 +1,11 @@
 import { Activity } from 'lucide-react';
 
 const statusConfigs = {
-    'neutre': { color: '#9E9E9E', bg: '#F5F5F5' },
-    'alerte': { color: '#F59E0B', bg: '#FFFBEB' },
-    'critique': { color: '#EF4444', bg: '#FEF2F2' },
-    'ready': { color: '#10B981', bg: '#ECFDF5' },
-    'incomplete': { color: '#B3967A', bg: '#FCFBF9' }
+    'neutre': { color: '#BDBDBD', bg: '#F5F5F5' },
+    'alerte': { color: '#FF9100', bg: '#FFF3E0' },
+    'critique': { color: '#FF1744', bg: '#FFEBEE' },
+    'ready': { color: '#00C853', bg: '#E8F5E9' },
+    'incomplete': { color: '#8D6E63', bg: '#EFEBE9' }
 };
 
 export default function ProtocolStatus({ progress = 0, status = 'neutre', statusLabel = "Protocole en cours d'exécution" }) {
