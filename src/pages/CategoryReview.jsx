@@ -91,7 +91,7 @@ export default function CategoryReview() {
                             actions={
                                 <button className="btn btn-secondary">
                                     <Phone size={18} />
-                                    Appeler la Clinique
+                                    Appeler le Cabinet
                                 </button>
                             }
                         />
