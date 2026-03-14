@@ -1761,7 +1761,7 @@ textarea.input {
   width: 100% !important;
   height: 100% !important;
   object-fit: cover !important;
-  animation: welcome-image-zoom 3s infinite alternate ease-in-out !important;
+  animation: welcome-image-zoom 8s infinite alternate ease-in-out !important;
   z-index: 1 !important;
 }
 
