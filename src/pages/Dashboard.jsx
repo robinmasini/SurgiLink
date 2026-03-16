@@ -129,7 +129,6 @@ export default function Dashboard() {
     return (
         <div className="dashboard-layout" data-mobile={isMobile}>
             <Sidebar />
-            <MobileNavbar />
             <main className="main-content" data-mobile={isMobile}>
                 <Header
                     title="Tableau de Bord"
@@ -155,34 +154,12 @@ export default function Dashboard() {
                     }
                 />
 
-                {isMobile && (
-                    <div className="mobile-profile-card-new">
-                        <div className="mobile-profile-left">
-                            <img src={practitionerAvatar} alt="Dr. Christophe Desouches" className="mobile-profile-img" />
-                        </div>
-                        <div className="mobile-profile-right">
-                            <div className="mobile-profile-identity">
-                                <h3>DESOUCHES CHRISTOPHE</h3>
-                                <div className="badge-admin">ADMIN PRO</div>
-                                <span className="profile-role">Praticien</span>
-                            </div>
-                            <div className="mobile-profile-metier">
-                                <span className="metier-label">CORPS DE MÉTIER</span>
-                                <span className="metier-value">CHIRURGIE ESTHÉTIQUE</span>
-                                <span className="metier-value">PLASTIQUE RECONSTRUCTRICE</span>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-
-                {/* Dashboard Top Section: Banner + Stats */}
                 <div className="dashboard-grid-top">
                     {/* Welcome Banner */}
-                    <div className="welcome-banner fade-in">
+                    <div className="welcome-banner welcome-banner-clean fade-in">
                         <div className="welcome-banner-content">
                             {/* Top Section - Empty for spacing */}
-                            <div>
+                            <div className="hide-mobile">
                             </div>
 
                             {/* Middle Section */}
@@ -220,6 +197,38 @@ export default function Dashboard() {
                             className="welcome-banner-image"
                         />
                     </div>
+
+                    {isMobile && (
+                        <div className="mobile-profile-card-new">
+                            <div className="mobile-profile-left">
+                                <img src={practitionerAvatar} alt="Dr. Christophe Desouches" className="mobile-profile-img" />
+                            </div>
+                            <div className="mobile-profile-right">
+                                <div className="mobile-profile-identity">
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', width: '100%' }}>
+                                        <h3>DESOUCHES CHRISTOPHE</h3>
+                                        <button
+                                            className="logout-icon-btn"
+                                            onClick={async () => {
+                                                await supabase.auth.signOut();
+                                                navigate('/login');
+                                            }}
+                                            style={{ background: 'transparent', border: 'none', color: 'var(--color-danger-500)', padding: 0, cursor: 'pointer' }}
+                                        >
+                                            <LogOut size={18} />
+                                        </button>
+                                    </div>
+                                    <div className="badge-admin">ADMIN PRO</div>
+                                    <span className="profile-role">Praticien</span>
+                                </div>
+                                <div className="mobile-profile-metier">
+                                    <span className="metier-label">CORPS DE MÉTIER</span>
+                                    <span className="metier-value">CHIRURGIE ESTHÉTIQUE</span>
+                                    <span className="metier-value">PLASTIQUE RECONSTRUCTRICE</span>
+                                </div>
+                            </div>
+                        </div>
+                    )}
 
                     {/* Stats Cards Grid */}
                     <div className="stat-grid">

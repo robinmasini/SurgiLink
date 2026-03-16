@@ -1294,7 +1294,7 @@ textarea.input {
 /* Floating Mobile Navbar */
 .mobile-navbar {
   position: fixed;
-  bottom: var(--spacing-6);
+  bottom: 12px;
   left: 0;
   right: 0;
   display: flex;
@@ -1417,6 +1417,23 @@ textarea.input {
   font-size: 10px;
   color: var(--color-gray-500);
   line-height: 1.4;
+}
+
+.logout-icon-btn {
+  background: transparent;
+  border: none;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: all var(--transition-fast);
+  color: var(--color-danger-500);
+}
+
+.logout-icon-btn:active {
+  background: var(--color-danger-50);
+  transform: scale(0.95);
 }
 
 /* Mobile Grid Overrides */

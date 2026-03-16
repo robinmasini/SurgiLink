@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import LogoIcon from './LogoIcon';
 import {
@@ -9,6 +10,18 @@ import {
 
 export default function MobileNavbar() {
     const location = useLocation();
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
+
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth <= 1024);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    // Also hide on login and patient portal pages
+    if (!isMobile || location.pathname === '/login' || location.pathname.startsWith('/patient-portal')) {
+        return null;
+    }
 
     const navItems = [
         { path: '/dashboard', icon: LayoutDashboard },

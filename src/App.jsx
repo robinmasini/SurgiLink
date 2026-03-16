@@ -17,12 +17,14 @@ import PatientPathwayTracker from './components/PatientPathwayTracker';
 import PatientPortal from './pages/PatientPortal';
 import ProtectedRoute from './components/ProtectedRoute';
 import PatientTokenRoute from './components/PatientTokenRoute';
+import MobileNavbar from './components/MobileNavbar';
 import './index.css';
 
 // Force deploy trigger - 2026-02-02
 function App() {
   return (
     <Router>
+      <MobileNavbar />
       <Routes>
         {/* Professional Routes */}
         <Route path="/" element={<Navigate to="/login" replace />} />
