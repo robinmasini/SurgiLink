@@ -20,7 +20,8 @@ import {
     User,
     Clipboard,
     Mail,
-    Phone
+    Phone,
+    LogOut
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { calculateDaysUntilSurgery } from '../utils/dateUtils';
