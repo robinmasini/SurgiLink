@@ -157,10 +157,10 @@ export default function Dashboard() {
 
                 <div className="dashboard-grid-top">
                     {/* Welcome Banner */}
-                    <div className="welcome-banner welcome-banner-clean fade-in">
+                    <div className="welcome-banner fade-in">
                         <div className="welcome-banner-content">
                             {/* Top Section - Empty for spacing */}
-                            <div className="hide-mobile">
+                            <div>
                             </div>
 
                             {/* Middle Section */}
