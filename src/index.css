@@ -1201,15 +1201,14 @@ textarea.input {
     padding: var(--spacing-6) 0;
     align-items: center;
     border-radius: 40px;
-    background: rgba(255, 255, 255, 0.45);
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
     transition: all var(--transition-normal);
     z-index: 1000;
-    padding-bottom: 60px;
-    /* Lift the footer elements significantly */
+    padding-bottom: var(--spacing-4);
   }
 
   .sidebar.is-mobile-expanded {
@@ -1307,9 +1306,13 @@ textarea.input {
     color: var(--color-primary-600);
   }
 
+  .sidebar-item-label {
+    display: none !important;
+  }
+
   .sidebar.is-mobile-expanded .sidebar-item-label,
   .sidebar.is-mobile-expanded .sidebar-profile-info {
-    display: block;
+    display: block !important;
     animation: fadeIn 0.3s ease-out;
   }
 
@@ -1382,7 +1385,7 @@ textarea.input {
     align-items: center !important;
     border-top: none !important;
     margin-top: auto;
-    padding-top: var(--spacing-2);
+    padding-bottom: var(--spacing-4);
   }
 
   .sidebar-logout-btn {
@@ -1420,8 +1423,8 @@ textarea.input {
     width: 100%;
     box-sizing: border-box;
     overflow-x: hidden;
-    padding-left: 90px;
-    /* Space for the pill sidebar */
+    padding-left: 90px !important;
+    /* Maintain space for the pill sidebar */
   }
 
   .dashboard-grid-top {
@@ -1496,6 +1499,7 @@ textarea.input {
 
   .main-content {
     padding: var(--spacing-4);
+    padding-left: 90px !important;
   }
 
   .patient-content {
