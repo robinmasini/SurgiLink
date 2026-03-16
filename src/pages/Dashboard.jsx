@@ -145,7 +145,7 @@ export default function Dashboard() {
 
 
                 {/* Dashboard Top Section: Banner + Stats */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-6)', marginBottom: 'var(--spacing-8)' }}>
+                <div className="dashboard-grid-top">
                     {/* Welcome Banner */}
                     <div className="welcome-banner fade-in">
                         <div className="welcome-banner-content">
@@ -190,7 +190,7 @@ export default function Dashboard() {
                     </div>
 
                     {/* Stats Cards Grid */}
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-4)' }}>
+                    <div className="stat-grid">
                         <div className="stat-card" style={{ cursor: 'pointer' }} onClick={() => navigate('/review/active')}>
                             <div className="stat-card-icon" style={{ background: 'var(--color-primary-50)' }}>
                                 <Users size={24} style={{ color: 'var(--color-primary-500)' }} />
@@ -259,7 +259,7 @@ export default function Dashboard() {
                                 <th style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', fontWeight: 'var(--font-weight-medium)', textTransform: 'uppercase' }}>Intervention</th>
                                 <th style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', fontWeight: 'var(--font-weight-medium)', textTransform: 'uppercase' }}>Date</th>
                                 <th style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', fontWeight: 'var(--font-weight-medium)', textTransform: 'uppercase' }}>Statut</th>
-                                <th style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', fontWeight: 'var(--font-weight-medium)', textTransform: 'uppercase' }}>Progression</th>
+                                <th className="hide-mobile" style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', fontWeight: 'var(--font-weight-medium)', textTransform: 'uppercase' }}>Progression</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -295,7 +295,7 @@ export default function Dashboard() {
                                     <td style={{ padding: 'var(--spacing-4)', fontSize: 'var(--font-size-sm)' }}>{patient.operation}</td>
                                     <td style={{ padding: 'var(--spacing-4)', fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-600)' }}>{patient.date}</td>
                                     <td style={{ padding: 'var(--spacing-4)' }}>{getStatusBadge(patient.status)}</td>
-                                    <td style={{ padding: 'var(--spacing-4)' }}>
+                                    <td className="hide-mobile" style={{ padding: 'var(--spacing-4)' }}>
                                         <div className="progress-bar">
                                             <div className={`progress-fill ${patient.progress === 100 ? 'progress-fill-success' : 'progress-fill-primary'}`} style={{ width: `${patient.progress}%` }}></div>
                                         </div>

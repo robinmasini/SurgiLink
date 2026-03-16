@@ -1008,23 +1008,17 @@ textarea.input {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-/* Grid Layouts */
-.grid-2 {
+.dashboard-grid-top {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: 1.25fr 0.75fr;
   gap: var(--spacing-6);
+  margin-bottom: var(--spacing-8);
 }
 
-.grid-3 {
+.stat-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--spacing-6);
-}
-
-.grid-4 {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--spacing-6);
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-4);
 }
 
 /* Patient View Layout */
@@ -1286,36 +1280,31 @@ textarea.input {
 
   .sidebar-item {
     justify-content: center;
-    padding: var(--spacing-4) var(--spacing-2);
-    width: 100%;
-    border-radius: var(--radius-lg);
-    position: relative;
+    padding: var(--spacing-2) 0;
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    margin-bottom: var(--spacing-4);
+    transition: all var(--transition-normal);
   }
 
-  .sidebar.is-mobile-expanded .sidebar-item {
-    justify-content: flex-start;
+  .sidebar-item-icon {
+    color: var(--color-gray-400);
+    display: flex;
     align-items: center;
-    padding: var(--spacing-3) var(--spacing-4);
+    justify-content: center;
   }
 
   .sidebar-item.active {
-    background: var(--color-primary-50);
+    background: var(--color-white) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--color-gray-100);
   }
 
   .sidebar-item.active .sidebar-item-icon {
     color: var(--color-primary-600);
-  }
-
-  .sidebar-item:hover {
-    background: var(--color-gray-50);
-  }
-
-  .sidebar-item-icon {
-    color: var(--color-gray-500);
-  }
-
-  .sidebar-item-label {
-    display: none;
   }
 
   .sidebar.is-mobile-expanded .sidebar-item-label,
@@ -1426,11 +1415,31 @@ textarea.input {
   }
 
   .main-content {
-    margin-left: 72px;
+    margin-left: 0;
     padding: var(--spacing-4);
-    width: calc(100vw - 72px);
+    width: 100%;
     box-sizing: border-box;
     overflow-x: hidden;
+    padding-left: 90px;
+    /* Space for the pill sidebar */
+  }
+
+  .dashboard-grid-top {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-6);
+    margin-bottom: var(--spacing-8);
+  }
+
+  .stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-4);
+  }
+
+  /* Hide element on mobile */
+  .hide-mobile {
+    display: none !important;
   }
 
   .header {
