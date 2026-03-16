@@ -1201,11 +1201,11 @@ textarea.input {
     padding: var(--spacing-6) 0;
     align-items: center;
     border-radius: 40px;
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.95) !important;
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.8) !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1) !important;
     transition: all var(--transition-normal);
     z-index: 1000;
     padding-bottom: var(--spacing-4);
@@ -1417,14 +1417,14 @@ textarea.input {
     display: none;
   }
 
-  .main-content {
-    margin-left: 0;
-    padding: var(--spacing-4);
-    width: 100%;
-    box-sizing: border-box;
-    overflow-x: hidden;
+  .main-content,
+  .main-content[data-mobile="true"] {
+    margin-left: 0 !important;
+    padding: var(--spacing-4) !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    overflow-x: hidden !important;
     padding-left: 90px !important;
-    /* Maintain space for the pill sidebar */
   }
 
   .dashboard-grid-top {
@@ -1497,8 +1497,9 @@ textarea.input {
     grid-template-columns: 1fr;
   }
 
-  .main-content {
-    padding: var(--spacing-4);
+  .main-content,
+  .main-content[data-mobile="true"] {
+    padding: var(--spacing-4) !important;
     padding-left: 90px !important;
   }
 

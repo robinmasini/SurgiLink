@@ -36,6 +36,15 @@ export default function Dashboard() {
         weekly: 0,
         recentActive: 0
     });
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= 1024);
+        };
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     useEffect(() => {
         loadPatients();
@@ -116,9 +125,9 @@ export default function Dashboard() {
 
 
     return (
-        <div style={{ display: 'flex' }}>
+        <div className="dashboard-layout" data-mobile={isMobile}>
             <Sidebar />
-            <main className="main-content">
+            <main className="main-content" data-mobile={isMobile}>
                 <Header
                     title="Tableau de Bord"
                     subtitle="Vue d'ensemble de vos patients et indicateurs clés"

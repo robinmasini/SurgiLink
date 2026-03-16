@@ -55,9 +55,9 @@ export default function Sidebar() {
                             className={`sidebar-item ${isActive ? 'active' : ''}`}
                         >
                             <span className="sidebar-item-icon">
-                                <Icon size={20} />
+                                <Icon size={isMobile ? 24 : 20} />
                             </span>
-                            <span className="sidebar-item-label">{item.label}</span>
+                            {!isMobile && <span className="sidebar-item-label">{item.label}</span>}
                         </Link>
                     );
                 })}
@@ -70,20 +70,22 @@ export default function Sidebar() {
                         alt="Dr. Christophe Desouches"
                         className="sidebar-profile-avatar"
                     />
-                    <div className="sidebar-profile-info">
-                        <div className="sidebar-profile-name">DESOUCHES Christophe</div>
-                        <div className="badge badge-gold" style={{ fontSize: '9px', padding: '2px 8px', marginBottom: '4px', width: 'fit-content' }}>
-                            Admin PRO
+                    {!isMobile && (
+                        <div className="sidebar-profile-info">
+                            <div className="sidebar-profile-name">DESOUCHES Christophe</div>
+                            <div className="badge badge-gold" style={{ fontSize: '9px', padding: '2px 8px', marginBottom: '4px', width: 'fit-content' }}>
+                                Admin PRO
+                            </div>
+                            <div className="sidebar-profile-title">Praticien</div>
+                            <div className="sidebar-profile-specialty">
+                                <span className="sidebar-profile-specialty-label">Corps de métier</span>
+                                <span className="sidebar-profile-specialty-text">
+                                    Chirurgie Esthétique<br />
+                                    Plastique reconstructrice
+                                </span>
+                            </div>
                         </div>
-                        <div className="sidebar-profile-title">Praticien</div>
-                        <div className="sidebar-profile-specialty">
-                            <span className="sidebar-profile-specialty-label">Corps de métier</span>
-                            <span className="sidebar-profile-specialty-text">
-                                Chirurgie Esthétique<br />
-                                Plastique reconstructrice
-                            </span>
-                        </div>
-                    </div>
+                    )}
                 </div>
 
                 <button
@@ -94,9 +96,9 @@ export default function Sidebar() {
                     }}
                 >
                     <span className="sidebar-item-icon">
-                        <LogOut size={18} />
+                        <LogOut size={isMobile ? 22 : 18} />
                     </span>
-                    <span className="sidebar-item-label">Déconnexion</span>
+                    {!isMobile && <span className="sidebar-item-label">Déconnexion</span>}
                 </button>
             </div>
         </aside>
