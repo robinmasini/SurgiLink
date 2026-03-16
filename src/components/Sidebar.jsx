@@ -33,6 +33,8 @@ export default function Sidebar() {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
+    if (isMobile) return null;
+
     return (
         <aside className="sidebar">
             <div className="sidebar-logo">

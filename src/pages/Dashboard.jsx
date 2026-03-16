@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
+import MobileNavbar from '../components/MobileNavbar';
 import Header from '../components/Header';
 import AddPatientModal from '../components/AddPatientModal';
 import christopheSignature from '../assets/christophe-signature.png';
+import practitionerAvatar from '../assets/practitioner-avatar.png';
 import welcomeCardV4 from '../assets/welcome-card-v4.jpg';
 import {
     Users,
@@ -127,13 +129,14 @@ export default function Dashboard() {
     return (
         <div className="dashboard-layout" data-mobile={isMobile}>
             <Sidebar />
+            <MobileNavbar />
             <main className="main-content" data-mobile={isMobile}>
                 <Header
                     title="Tableau de Bord"
                     subtitle="Vue d'ensemble de vos patients et indicateurs clés"
                     actions={
                         <button
-                            className="btn btn-secondary"
+                            className="btn btn-secondary hide-mobile"
                             style={{
                                 display: 'flex',
                                 alignItems: 'center',
@@ -151,6 +154,26 @@ export default function Dashboard() {
                         </button>
                     }
                 />
+
+                {isMobile && (
+                    <div className="mobile-profile-card-new">
+                        <div className="mobile-profile-left">
+                            <img src={practitionerAvatar} alt="Dr. Christophe Desouches" className="mobile-profile-img" />
+                        </div>
+                        <div className="mobile-profile-right">
+                            <div className="mobile-profile-identity">
+                                <h3>DESOUCHES CHRISTOPHE</h3>
+                                <div className="badge-admin">ADMIN PRO</div>
+                                <span className="profile-role">Praticien</span>
+                            </div>
+                            <div className="mobile-profile-metier">
+                                <span className="metier-label">CORPS DE MÉTIER</span>
+                                <span className="metier-value">CHIRURGIE ESTHÉTIQUE</span>
+                                <span className="metier-value">PLASTIQUE RECONSTRUCTRICE</span>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
 
                 {/* Dashboard Top Section: Banner + Stats */}
@@ -245,18 +268,17 @@ export default function Dashboard() {
 
                 {/* Patients List */}
                 <div className="card">
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-6)' }}>
+                    <div className="section-header-mobile">
                         <div>
                             <h3 style={{ marginBottom: 'var(--spacing-1)' }}>Patients en suivi</h3>
-                            <p style={{ fontSize: 'var(--font-size-sm)' }}>Liste des patients avec leur statut actuel</p>
+                            <p style={{ fontSize: 'var(--font-size-sm)' }} className="hide-mobile">Liste des patients avec leur statut actuel</p>
                         </div>
-                        <div className="card-header-actions" style={{ display: 'flex', gap: 'var(--spacing-3)' }}>
-                            <button className="btn btn-secondary" onClick={() => navigate('/patients')}>
+                        <div className="section-actions-mobile">
+                            <button className="btn-outline-mobile" onClick={() => navigate('/patients')}>
                                 Voir tout
                             </button>
-                            <button className="btn btn-primary" onClick={() => setIsModalOpen(true)}>
-                                <Plus size={16} />
-                                Ajouter un patient
+                            <button className="btn-primary-mobile" onClick={() => setIsModalOpen(true)}>
+                                <Plus size={18} /> Ajouter un patient
                             </button>
                         </div>
                     </div>
