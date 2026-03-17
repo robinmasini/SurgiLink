@@ -236,7 +236,7 @@ export default function Dashboard() {
                                 onClick={() => window.location.href = 'tel:0491550000'}
                             >
                                 <Phone size={18} />
-                                Appeler le Cabinet
+                                Appeler la Clinique
                             </button>
                         </>
                     )}
