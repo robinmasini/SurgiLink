@@ -91,31 +91,29 @@ export default function CategoryReview() {
         <div style={{ display: 'flex' }} data-mobile={isMobile}>
             <Sidebar />
             <main className="main-content" data-mobile={isMobile}>
-                <div style={{ marginBottom: 'var(--spacing-8)' }}>
-                    {category === 'active' ? (
-                        <Header
-                            title="Tableau de Bord"
-                            subtitle="Vue d'ensemble de vos patients et indicateurs clés"
-                            hideTitleMobile={true}
-                            actions={
-                                <button className="btn btn-secondary hide-mobile">
-                                    <Phone size={18} />
-                                    Appeler le Cabinet
-                                </button>
-                            }
-                        />
-                    ) : (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-4)', marginBottom: 'var(--spacing-6)' }}>
-                            <button onClick={() => navigate(-1)} className="btn btn-secondary btn-sm" style={{ padding: '8px' }}>
-                                <ChevronLeft size={20} />
+                {category === 'active' ? (
+                    <Header
+                        title="Tableau de Bord"
+                        subtitle="Vue d'ensemble de vos patients et indicateurs clés"
+                        hideTitleMobile={true}
+                        actions={
+                            <button className="btn btn-secondary hide-mobile">
+                                <Phone size={18} />
+                                Appeler le Cabinet
                             </button>
-                            <Header
-                                title={`Revue : ${config.title}`}
-                                subtitle={`Liste détaillée des patients dans la catégorie ${config.title}`}
-                            />
-                        </div>
-                    )}
-                </div>
+                        }
+                    />
+                ) : (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-4)', marginBottom: 'var(--spacing-6)' }}>
+                        <button onClick={() => navigate(-1)} className="btn btn-secondary btn-sm" style={{ padding: '8px' }}>
+                            <ChevronLeft size={20} />
+                        </button>
+                        <Header
+                            title={`Revue : ${config.title}`}
+                            subtitle={`Liste détaillée des patients dans la catégorie ${config.title}`}
+                        />
+                    </div>
+                )}
 
                 {category === 'active' && (
                     <div className="dashboard-grid-top">
@@ -124,12 +122,12 @@ export default function CategoryReview() {
                             <div className="welcome-banner-content">
                                 <div></div>
                                 <div>
-                                    <div className="welcome-banner-welcome">Bienvenue,</div>
-                                    <div className="welcome-banner-name" style={{ fontSize: 'var(--font-size-xl)', marginBottom: 'var(--spacing-6)' }}>
-                                        Prénom/Nom de l'infirmier(ère)
+                                    <div className="welcome-banner-welcome" style={{ marginBottom: '4px' }}>Bienvenue,</div>
+                                    <div className="welcome-banner-name" style={{ fontSize: 'var(--font-size-2xl)', fontWeight: '800', marginBottom: '4px', color: 'white' }}>
+                                        ESPACE INFIRMIER
                                     </div>
                                     <div className="welcome-banner-greeting">Ravi de vous revoir !</div>
-                                    <div className="welcome-banner-instruction">Consultez votre Espace Infirmier</div>
+                                    <div className="welcome-banner-instruction">Consultez votre Espace Suivi</div>
                                 </div>
                                 <div>
                                     <div className="welcome-banner-date-label">Date d'aujourd'hui</div>
