@@ -201,35 +201,44 @@ export default function Dashboard() {
                     </div>
 
                     {isMobile && (
-                        <div className="mobile-profile-card-new">
-                            <div className="mobile-profile-left">
-                                <img src={practitionerAvatar} alt="Dr. Christophe Desouches" className="mobile-profile-img" />
-                            </div>
-                            <div className="mobile-profile-right">
-                                <div className="mobile-profile-identity">
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', width: '100%' }}>
-                                        <h3>DESOUCHES CHRISTOPHE</h3>
-                                        <button
-                                            className="logout-icon-btn"
-                                            onClick={async () => {
-                                                await supabase.auth.signOut();
-                                                navigate('/login');
-                                            }}
-                                            style={{ background: 'transparent', border: 'none', color: 'var(--color-danger-500)', padding: 0, cursor: 'pointer' }}
-                                        >
-                                            <LogOut size={18} />
-                                        </button>
+                        <>
+                            <div className="mobile-profile-card-new">
+                                <div className="mobile-profile-left">
+                                    <img src={practitionerAvatar} alt="Dr. Christophe Desouches" className="mobile-profile-img" />
+                                </div>
+                                <div className="mobile-profile-right">
+                                    <div className="mobile-profile-identity">
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', width: '100%' }}>
+                                            <h3>DESOUCHES CHRISTOPHE</h3>
+                                            <button
+                                                className="logout-icon-btn"
+                                                onClick={async () => {
+                                                    await supabase.auth.signOut();
+                                                    navigate('/login');
+                                                }}
+                                                style={{ background: 'transparent', border: 'none', color: 'var(--color-danger-500)', padding: 0, cursor: 'pointer' }}
+                                            >
+                                                <LogOut size={18} />
+                                            </button>
+                                        </div>
+                                        <div className="badge-admin">ADMIN PRO</div>
+                                        <span className="profile-role">Praticien</span>
                                     </div>
-                                    <div className="badge-admin">ADMIN PRO</div>
-                                    <span className="profile-role">Praticien</span>
-                                </div>
-                                <div className="mobile-profile-metier">
-                                    <span className="metier-label">CORPS DE MÉTIER</span>
-                                    <span className="metier-value">CHIRURGIE ESTHÉTIQUE</span>
-                                    <span className="metier-value">PLASTIQUE RECONSTRUCTRICE</span>
+                                    <div className="mobile-profile-metier">
+                                        <span className="metier-label">CORPS DE MÉTIER</span>
+                                        <span className="metier-value">CHIRURGIE ESTHÉTIQUE</span>
+                                        <span className="metier-value">PLASTIQUE RECONSTRUCTRICE</span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                            <button
+                                className="mobile-call-btn"
+                                onClick={() => window.location.href = 'tel:0491550000'}
+                            >
+                                <Phone size={18} />
+                                Appeler le Cabinet
+                            </button>
+                        </>
                     )}
 
                     {/* Stats Cards Grid */}
