@@ -122,7 +122,7 @@ export default function CategoryReview() {
                             <div className="welcome-banner-content">
                                 <div></div>
                                 <div>
-                                    <div className="welcome-banner-welcome" style={{ marginBottom: '4px' }}>Bienvenue,</div>
+                                    <div className="welcome-banner-welcome">Bienvenue,</div>
                                     <div className="welcome-banner-name" style={{
                                         fontSize: 'var(--font-size-2xl)',
                                         fontWeight: '800',
@@ -130,9 +130,10 @@ export default function CategoryReview() {
                                         color: 'white',
                                         minHeight: '80px',
                                         display: 'flex',
-                                        alignItems: 'center'
+                                        alignItems: 'center',
+                                        textTransform: 'none'
                                     }}>
-                                        ESPACE INFIRMIER
+                                        Espace infirmier
                                     </div>
                                     <div className="welcome-banner-greeting">Ravi de vous revoir !</div>
                                     <div className="welcome-banner-instruction">Consultez votre Espace Suivi</div>
