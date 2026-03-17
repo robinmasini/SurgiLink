@@ -1834,7 +1834,7 @@ textarea.input {
     padding: var(--spacing-5);
     min-height: auto;
     gap: var(--spacing-4);
-    margin-bottom: var(--spacing-2);
+    margin-bottom: 0;
   }
 
   .welcome-banner-welcome {
