@@ -161,9 +161,13 @@ export default function CategoryReview() {
                             <button
                                 className="mobile-call-btn"
                                 onClick={() => window.location.href = 'tel:0491550000'}
-                                style={{ marginTop: '0' }}
+                                style={{
+                                    marginTop: '0',
+                                    padding: 'var(--spacing-4) var(--spacing-6)',
+                                    fontSize: 'var(--font-size-base)'
+                                }}
                             >
-                                <Phone size={18} />
+                                <Phone size={20} />
                                 Appeler le Cabinet
                             </button>
                         )}
