@@ -88,6 +88,7 @@ export default function CategoryReview() {
                         <Header
                             title="Tableau de Bord"
                             subtitle="Vue d'ensemble de vos patients et indicateurs clés"
+                            hideTitleMobile={true}
                             actions={
                                 <button className="btn btn-secondary">
                                     <Phone size={18} />

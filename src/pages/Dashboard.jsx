@@ -134,6 +134,7 @@ export default function Dashboard() {
                 <Header
                     title="Tableau de Bord"
                     subtitle="Vue d'ensemble de vos patients et indicateurs clés"
+                    hideTitleMobile={true}
                     actions={
                         <button
                             className="btn btn-secondary hide-mobile"
