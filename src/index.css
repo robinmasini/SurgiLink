@@ -1294,7 +1294,7 @@ textarea.input {
 /* Floating Mobile Navbar */
 .mobile-navbar {
   position: fixed;
-  bottom: 12px;
+  bottom: 6px;
   left: 0;
   right: 0;
   display: flex;
@@ -1359,7 +1359,7 @@ textarea.input {
   background: var(--color-white);
   border-radius: var(--radius-2xl);
   padding: var(--spacing-6);
-  margin: var(--spacing-6) 0;
+  margin: var(--spacing-4) 0;
   display: flex;
   gap: var(--spacing-6);
   box-shadow: var(--shadow-sm);
@@ -1828,7 +1828,7 @@ textarea.input {
     padding: var(--spacing-5);
     min-height: auto;
     gap: var(--spacing-4);
-    margin-bottom: var(--spacing-8);
+    margin-bottom: var(--spacing-2);
   }
 
   .welcome-banner-welcome {
