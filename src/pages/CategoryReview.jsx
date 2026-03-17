@@ -28,8 +28,16 @@ export default function CategoryReview() {
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
     const [patients, setPatients] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
     const config = categoryConfigs[category] || categoryConfigs['active'];
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= 1024);
+        };
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     useEffect(() => {
         const loadPatients = async () => {
@@ -80,9 +88,9 @@ export default function CategoryReview() {
     });
 
     return (
-        <div style={{ display: 'flex' }}>
+        <div style={{ display: 'flex' }} data-mobile={isMobile}>
             <Sidebar />
-            <main className="main-content">
+            <main className="main-content" data-mobile={isMobile}>
                 <div style={{ marginBottom: 'var(--spacing-8)' }}>
                     {category === 'active' ? (
                         <Header
@@ -90,7 +98,7 @@ export default function CategoryReview() {
                             subtitle="Vue d'ensemble de vos patients et indicateurs clés"
                             hideTitleMobile={true}
                             actions={
-                                <button className="btn btn-secondary">
+                                <button className="btn btn-secondary hide-mobile">
                                     <Phone size={18} />
                                     Appeler le Cabinet
                                 </button>
@@ -110,9 +118,9 @@ export default function CategoryReview() {
                 </div>
 
                 {category === 'active' && (
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-6)', marginBottom: 'var(--spacing-8)' }}>
+                    <div className="dashboard-grid-top">
                         {/* Welcome Banner */}
-                        <div className="welcome-banner welcome-banner-clean fade-in">
+                        <div className="welcome-banner fade-in">
                             <div className="welcome-banner-content">
                                 <div></div>
                                 <div>
@@ -142,8 +150,19 @@ export default function CategoryReview() {
                             />
                         </div>
 
+                        {isMobile && (
+                            <button
+                                className="mobile-call-btn"
+                                onClick={() => window.location.href = 'tel:0491550000'}
+                                style={{ marginTop: '0' }}
+                            >
+                                <Phone size={18} />
+                                Appeler le Cabinet
+                            </button>
+                        )}
+
                         {/* Stats Grid - Matching Dashboard dimensions */}
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-4)' }}>
+                        <div className="stat-grid">
                             <div className="stat-card">
                                 <div className="stat-card-icon" style={{ background: 'var(--color-primary-50)' }}>
                                     <Users size={24} style={{ color: 'var(--color-primary-500)' }} />
