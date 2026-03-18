@@ -266,7 +266,7 @@ export const pathwayConfig = {
                 icon: "💬",
                 title: "6. Commentaire (facultatif)",
                 items: [
-                    { id: "comment", type: "text", label: "Commentaire ou suggestion pour nous améliorer", multiline: true }
+                    { id: "comment", type: "text", label: "Commentaire ou suggestion pour nous améliorer", multiline: true, required: false }
                 ]
             }
         ]
