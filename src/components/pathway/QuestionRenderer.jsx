@@ -209,6 +209,66 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
                         ))}
                     </select>
                 );
+            case 'rating':
+                return (
+                    <div style={{ marginTop: 'var(--spacing-2)' }}>
+                        <div style={{
+                            position: 'relative',
+                            padding: 'var(--spacing-4) 0'
+                        }}>
+                            <input
+                                type="range"
+                                min="1"
+                                max="10"
+                                step="1"
+                                value={value || 5}
+                                onChange={(e) => handleChange(parseInt(e.target.value))}
+                                style={{
+                                    width: '100%',
+                                    height: '12px',
+                                    borderRadius: '6px',
+                                    appearance: 'none',
+                                    background: `linear-gradient(to right, 
+                                        var(--color-danger-500) 0%, 
+                                        var(--color-warning-500) 50%, 
+                                        var(--color-success-500) 100%)`,
+                                    cursor: 'pointer',
+                                    outline: 'none'
+                                }}
+                            />
+                            {/* Value Display */}
+                            <div style={{
+                                position: 'absolute',
+                                left: `${((value || 5) - 1) * (100 / 9)}%`,
+                                top: '-10px',
+                                transform: 'translateX(-50%)',
+                                background: 'white',
+                                border: '2px solid var(--color-primary-500)',
+                                color: 'var(--color-primary-700)',
+                                padding: '2px 8px',
+                                borderRadius: '12px',
+                                fontSize: 'var(--font-size-sm)',
+                                fontWeight: 'bold',
+                                boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                                pointerEvents: 'none',
+                                transition: 'left 0.1s ease-out'
+                            }}>
+                                {value || 5}/10
+                            </div>
+                        </div>
+                        <div style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            fontSize: 'var(--font-size-xs)',
+                            color: 'var(--color-gray-500)',
+                            marginTop: '4px',
+                            fontWeight: '500'
+                        }}>
+                            <span>1 (Pas du tout satisfait)</span>
+                            <span>10 (Très satisfait)</span>
+                        </div>
+                    </div>
+                );
 
             default:
                 return <div>Type de question non supporté: {item.type}</div>;
