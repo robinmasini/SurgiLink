@@ -28,6 +28,7 @@ export default function CategoryReview() {
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
     const [patients, setPatients] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
     const config = categoryConfigs[category] || categoryConfigs['active'];
 
