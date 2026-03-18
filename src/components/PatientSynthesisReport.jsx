@@ -8,7 +8,8 @@ export default function PatientSynthesisReport({
     clinicalResponses,
     smsData = [],
     medicalHistory = [],
-    documents = []
+    documents = [],
+    customQuestions = []
 }) {
     if (!patient) return null;
 
@@ -118,6 +119,27 @@ export default function PatientSynthesisReport({
                     );
                 })}
             </div>
+
+            {/* Custom Questions */}
+            {customQuestions.length > 0 && (
+                <div style={{ marginBottom: '30px' }}>
+                    <h2 style={{ fontSize: '16px', borderBottom: '2px solid #8D6E63', paddingBottom: '8px', marginBottom: '15px', color: '#8D6E63' }}>
+                        Questions Personnalisées du Praticien
+                    </h2>
+                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                        <tbody>
+                            {customQuestions.map(q => (
+                                <tr key={q.id} style={{ borderBottom: '1px solid #EEE' }}>
+                                    <td style={{ padding: '8px 0', width: '60%', color: '#555' }}>{q.question_text}</td>
+                                    <td style={{ padding: '8px 0', textAlign: 'right', fontWeight: '600', color: q.response ? '#1A1A1A' : '#AAA', fontStyle: q.response ? 'normal' : 'italic' }}>
+                                        {q.response || 'En attente de réponse'}
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
 
             {/* SMS History */}
             {smsData.length > 0 && (

@@ -36,6 +36,9 @@ export default function PatientPortal({ patient: initialPatient }) {
     const [patient, setPatient] = useState(initialPatient);
     const [medicalHistory, setMedicalHistory] = useState([]);
     const [responses, setResponses] = useState({});
+    const [clinicalResponses, setClinicalResponses] = useState({
+        J7: {}, J2: {}, J1_PreOp: {}, J1: {}, J4_Satisfaction: {}
+    });
     const [documents, setDocuments] = useState([]);
     const [customQuestions, setCustomQuestions] = useState([]);
     const [answeringQuestionId, setAnsweringQuestionId] = useState(null);
@@ -88,15 +91,28 @@ export default function PatientPortal({ patient: initialPatient }) {
         try {
             const { data, error } = await supabase
                 .from('pathway_responses')
-                .select('item_id, response')
+                .select('screen, item_id, response')
                 .eq('patient_id', patientId);
 
             if (!error && data) {
+                // Flat map for portal UI (badge logic, etc.)
                 const aggregated = {};
+                // Nested map for PDF report (grouped by screen)
+                const nested = {
+                    J7: {},
+                    J2: {},
+                    J1_PreOp: {},
+                    J1: {},
+                    J4_Satisfaction: {}
+                };
                 data.forEach(row => {
                     aggregated[row.item_id] = row.response?.value;
+                    if (row.screen && nested[row.screen] !== undefined) {
+                        nested[row.screen][row.item_id] = row.response?.value;
+                    }
                 });
                 setResponses(aggregated);
+                setClinicalResponses(nested);
             }
         } catch (err) {
             console.error('Error loading responses:', err);
@@ -498,10 +514,11 @@ export default function PatientPortal({ patient: initialPatient }) {
                 <div ref={reportRef}>
                     <PatientSynthesisReport
                         patient={patient}
-                        clinicalResponses={responses}
+                        clinicalResponses={clinicalResponses}
                         smsData={smsData}
                         medicalHistory={medicalHistory}
                         documents={documents}
+                        customQuestions={customQuestions}
                     />
                 </div>
             </div>

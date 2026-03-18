@@ -1341,6 +1341,7 @@ export default function PatientReview() {
                         smsData={medicalHistory.filter(h => h.type === 'sms_log')}
                         medicalHistory={medicalHistory.filter(h => h.type === 'history')}
                         documents={documents}
+                        customQuestions={customQuestions}
                     />
                 </div>
             </div>

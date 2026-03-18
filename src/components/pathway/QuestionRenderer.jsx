@@ -1,5 +1,5 @@
 import { Info, AlertTriangle } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 /**
  * QuestionRenderer - Generic question component based on pathway config
@@ -136,14 +136,23 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
                     </div>
                 );
 
-            case 'slider_0_10':
+            case 'slider_0_10': {
+                // Ensure the default value (5) is saved on first render
+                // so the protocol progresses even if the patient never moves the slider
+                const sliderVal = value !== undefined && value !== null ? value : 5;
+                // eslint-disable-next-line react-hooks/rules-of-hooks
+                useEffect(() => {
+                    if (value === undefined || value === null) {
+                        handleChange(5);
+                    }
+                }, []); // run once on mount
                 return (
                     <div>
                         <input
                             type="range"
                             min="0"
                             max="10"
-                            value={value || 0}
+                            value={sliderVal}
                             onChange={(e) => handleChange(parseInt(e.target.value))}
                             style={{
                                 width: '100%',
@@ -161,12 +170,13 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
                         }}>
                             <span>0 (Aucune)</span>
                             <span style={{ fontWeight: 'var(--font-weight-bold)', fontSize: 'var(--font-size-xl)', color: 'var(--color-gray-900)' }}>
-                                {value || 0}
+                                {sliderVal}
                             </span>
                             <span>10 (Insupportable)</span>
                         </div>
                     </div>
                 );
+            }
 
             case 'text':
                 return (
@@ -187,28 +197,35 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
                     />
                 );
 
-            case 'select':
-                return (
-                    <select
-                        value={value || ''}
-                        onChange={(e) => handleChange(e.target.value)}
-                        style={{
-                            width: '100%',
-                            padding: 'var(--spacing-3)',
-                            border: '1px solid var(--color-gray-300)',
-                            borderRadius: 'var(--border-radius-lg)',
-                            fontSize: 'var(--font-size-base)',
-                            fontFamily: 'inherit'
-                        }}
-                    >
-                        <option value="">Sélectionner...</option>
-                        {item.options.map(option => (
-                            <option key={option.value} value={option.value}>
-                                {option.label}
-                            </option>
-                        ))}
-                    </select>
+            case 'select': {
+                // Options may be plain strings OR objects { value, label }
+                const normalizedOptions = (item.options || []).map(opt =>
+                    typeof opt === 'string' ? { value: opt, label: opt } : opt
                 );
+                return (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-3)', marginTop: 'var(--spacing-4)' }}>
+                        {normalizedOptions.map(option => (
+                            <button
+                                key={option.value}
+                                type="button"
+                                className={`btn btn-lg ${value === option.value ? 'btn-primary' : 'btn-secondary'}`}
+                                onClick={() => handleChange(option.value)}
+                                style={{
+                                    height: '64px',
+                                    fontSize: 'var(--font-size-base)',
+                                    fontWeight: 'var(--font-weight-semibold)',
+                                    borderRadius: 'var(--border-radius-xl)',
+                                    border: value === option.value ? '2px solid var(--color-primary-600)' : '2px solid var(--color-gray-200)',
+                                    justifyContent: 'center',
+                                    transition: 'all 0.2s'
+                                }}
+                            >
+                                {option.label}
+                            </button>
+                        ))}
+                    </div>
+                );
+            }
             case 'rating':
                 return (
                     <div style={{ marginTop: 'var(--spacing-2)' }}>
