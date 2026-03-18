@@ -243,7 +243,7 @@ export default function Dashboard() {
 
                     {/* Stats Cards Grid */}
                     <div className="stat-grid">
-                        <div className="stat-card" style={{ cursor: 'pointer' }} onClick={() => navigate('/review/active')}>
+                        <div className="stat-card" style={{ cursor: 'pointer' }} onClick={() => navigate('/patients')}>
                             <div className="stat-card-icon" style={{ background: 'var(--color-primary-50)' }}>
                                 <Users size={24} style={{ color: 'var(--color-primary-500)' }} />
                             </div>
@@ -262,10 +262,12 @@ export default function Dashboard() {
                         </div>
 
                         <div className="stat-card" style={{ cursor: 'pointer' }} onClick={() => navigate('/review/required')}>
-                            <div className="stat-card-icon" style={{ background: 'var(--color-warning-50)' }}>
-                                <AlertTriangle size={24} style={{ color: 'var(--color-warning-500)' }} />
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--spacing-3)' }}>
+                                <div className="stat-card-icon" style={{ background: 'var(--color-warning-50)', marginBottom: 0 }}>
+                                    <AlertTriangle size={24} style={{ color: 'var(--color-warning-500)' }} />
+                                </div>
+                                <span className="badge badge-danger">Priorité</span>
                             </div>
-                            <span className="badge badge-danger stat-card-badge">Priorité</span>
                             <div className="stat-card-value">{stats.required}</div>
                             <div className="stat-card-label">Actions requises</div>
                             <div className="stat-card-meta" style={{ color: 'var(--color-danger-500)' }}>
