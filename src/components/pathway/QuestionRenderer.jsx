@@ -469,14 +469,15 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
                         left: 0,
                         right: 0,
                         bottom: 0,
-                        background: 'rgba(0,0,0,0.5)',
+                        background: 'rgba(255, 255, 255, 0.4)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         zIndex: 1000,
                         padding: 'var(--spacing-6)',
-                        backdropFilter: 'blur(4px)',
-                        animation: 'fadeIn 0.2s ease'
+                        backdropFilter: 'blur(12px)',
+                        WebkitBackdropFilter: 'blur(12px)',
+                        animation: 'fadeIn 0.3s ease'
                     }}
                     onClick={() => setShowInfo(false)}
                 >
