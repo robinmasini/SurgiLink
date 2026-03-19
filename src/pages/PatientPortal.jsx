@@ -39,6 +39,7 @@ export default function PatientPortal({ patient: initialPatient }) {
     const [clinicalResponses, setClinicalResponses] = useState({
         J7: {}, J2: {}, J1_PreOp: {}, J1: {}, J4_Satisfaction: {}
     });
+    const [responsesMeta, setResponsesMeta] = useState({});
     const [documents, setDocuments] = useState([]);
     const [customQuestions, setCustomQuestions] = useState([]);
     const [answeringQuestionId, setAnsweringQuestionId] = useState(null);
@@ -91,7 +92,7 @@ export default function PatientPortal({ patient: initialPatient }) {
         try {
             const { data, error } = await supabase
                 .from('pathway_responses')
-                .select('screen, item_id, response')
+                .select('screen, item_id, response, updated_at, user_id')
                 .eq('patient_id', patientId);
 
             if (!error && data) {
@@ -105,14 +106,22 @@ export default function PatientPortal({ patient: initialPatient }) {
                     J1: {},
                     J4_Satisfaction: {}
                 };
+                // Meta map for PDF timestamps
+                const meta = {};
                 data.forEach(row => {
                     aggregated[row.item_id] = row.response?.value;
                     if (row.screen && nested[row.screen] !== undefined) {
                         nested[row.screen][row.item_id] = row.response?.value;
+                        if (!meta[row.screen]) meta[row.screen] = {};
+                        meta[row.screen][row.item_id] = {
+                            updated_at: row.updated_at,
+                            user_id: row.user_id
+                        };
                     }
                 });
                 setResponses(aggregated);
                 setClinicalResponses(nested);
+                setResponsesMeta(meta);
             }
         } catch (err) {
             console.error('Error loading responses:', err);
@@ -515,6 +524,7 @@ export default function PatientPortal({ patient: initialPatient }) {
                     <PatientSynthesisReport
                         patient={patient}
                         clinicalResponses={clinicalResponses}
+                        responsesMeta={responsesMeta}
                         smsData={smsData}
                         medicalHistory={medicalHistory}
                         documents={documents}

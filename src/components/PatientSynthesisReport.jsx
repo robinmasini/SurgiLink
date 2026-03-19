@@ -6,6 +6,7 @@ import logoSurgilink from '../assets/logo_surgilink_brown.png';
 export default function PatientSynthesisReport({
     patient,
     clinicalResponses,
+    responsesMeta = {},
     smsData = [],
     medicalHistory = [],
     documents = [],
@@ -27,180 +28,266 @@ export default function PatientSynthesisReport({
         return labels[status] || status;
     };
 
-    return (
-        <div id="patient-synthesis-report" style={{
-            width: '210mm', // A4 Width
-            padding: '20mm',
-            background: 'white',
-            fontFamily: "'Inter', 'Segoe UI', sans-serif",
-            color: '#333',
-            fontSize: '12px',
-            lineHeight: '1.5'
+    // Format a timestamp nicely
+    const formatMeta = (screen, itemId) => {
+        const m = responsesMeta?.[screen]?.[itemId];
+        if (!m?.updated_at) return null;
+        const dateStr = formatDateTimeFR(m.updated_at);
+        // user_id null = patient via portal, otherwise = practitioner
+        const author = m.user_id ? 'Praticien' : 'Patient (portail)';
+        return { dateStr, author };
+    };
+
+    // Page styles
+    const pageStyle = {
+        width: '210mm',
+        minHeight: '297mm',
+        padding: '16mm 18mm',
+        background: 'white',
+        fontFamily: "'Inter', 'Segoe UI', sans-serif",
+        color: '#333',
+        fontSize: '11px',
+        lineHeight: '1.5',
+        boxSizing: 'border-box'
+    };
+
+    const pageBreakStyle = {
+        pageBreakAfter: 'always',
+        breakAfter: 'page'
+    };
+
+    const h2Style = {
+        fontSize: '13px',
+        borderBottom: '2px solid #8D6E63',
+        paddingBottom: '5px',
+        marginTop: '16px',
+        marginBottom: '10px',
+        color: '#8D6E63',
+        fontWeight: '700'
+    };
+
+    const h3Style = {
+        fontSize: '11px',
+        fontWeight: '700',
+        marginBottom: '6px',
+        marginTop: '10px',
+        color: '#1A1A1A',
+        textTransform: 'uppercase',
+        letterSpacing: '0.4px'
+    };
+
+    const tdLabelStyle = {
+        padding: '5px 0',
+        width: '58%',
+        color: '#555',
+        verticalAlign: 'top'
+    };
+
+    const tdValueStyle = {
+        padding: '5px 0',
+        textAlign: 'right',
+        fontWeight: '600',
+        color: '#1A1A1A',
+        verticalAlign: 'top'
+    };
+
+    const metaStyle = {
+        fontSize: '9px',
+        color: '#999',
+        fontWeight: '400',
+        fontStyle: 'italic',
+        marginTop: '1px'
+    };
+
+    // Shared header block
+    const ReportHeader = () => (
+        <div style={{ textAlign: 'center', marginBottom: '12px' }}>
+            <img src={logoSurgilink} alt="SurgiLink" style={{ height: '80px', marginBottom: '6px' }} />
+            <h1 style={{ fontSize: '20px', fontWeight: '800', color: '#1A1A1A', margin: 0, letterSpacing: '1px' }}>
+                Synthèse du Dossier Patient
+            </h1>
+            <div style={{ color: '#888', marginTop: '4px', fontSize: '10px' }}>
+                Généré le {new Date().toLocaleDateString('fr-FR')} à {new Date().toLocaleTimeString('fr-FR')} — Document confidentiel à usage médical
+            </div>
+        </div>
+    );
+
+    // Patient identity block
+    const PatientBlock = () => (
+        <div style={{
+            display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px',
+            marginBottom: '14px', padding: '14px',
+            background: '#F8F9FA', borderRadius: '10px', border: '1px solid #E9ECEF'
         }}>
-            {/* Header */}
-            <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-                <img src={logoSurgilink} alt="SurgiLink" style={{ height: '120px', marginBottom: '10px' }} />
-                <h1 style={{
-                    fontSize: '24px',
-                    fontWeight: '800',
-                    color: '#1A1A1A',
-                    margin: 0,
-                    textTransform: 'uppercase',
-                    letterSpacing: '1px'
-                }}>
-                    Synthèse du Dossier Patient
-                </h1>
-                <div style={{ color: '#666', marginTop: '5px' }}>
-                    Document généré le {new Date().toLocaleDateString('fr-FR')} à {new Date().toLocaleTimeString('fr-FR')}
+            <div>
+                <div style={{ fontSize: '9px', color: '#888', textTransform: 'uppercase', fontWeight: '700', marginBottom: '3px' }}>Identité du Patient</div>
+                <div style={{ fontSize: '15px', fontWeight: '800', color: '#1A1A1A' }}>{patient.name}</div>
+                <div style={{ color: '#444' }}>Né(e) le : {patient.birth_date ? formatDateFR(patient.birth_date) : 'Non renseigné'}</div>
+                <div style={{ color: '#444' }}>Tél : {patient.phone || 'Non renseigné'}</div>
+            </div>
+            <div>
+                <div style={{ fontSize: '9px', color: '#888', textTransform: 'uppercase', fontWeight: '700', marginBottom: '3px' }}>Intervention</div>
+                <div style={{ fontSize: '13px', fontWeight: '700', color: '#8D6E63' }}>{patient.operation}</div>
+                <div style={{ color: '#444' }}>Date : {patient.date ? formatDateFR(patient.date) : 'Non définie'}</div>
+                <div style={{ fontWeight: '600', marginTop: '4px' }}>
+                    Statut : <span style={{ color: patient.status === 'critique' ? '#D32F2F' : patient.status === 'ready' ? '#2E7D32' : '#E65100' }}>
+                        {getStatusLabel(patient.status)} ({patient.progress}%)
+                    </span>
+                </div>
+            </div>
+        </div>
+    );
+
+    return (
+        <div id="patient-synthesis-report">
+
+            {/* ═══════════════════ PAGE 1 ═══════════════════ */}
+            <div style={{ ...pageStyle, ...pageBreakStyle }}>
+                <ReportHeader />
+                <PatientBlock />
+
+                {/* Clinical Responses */}
+                <div>
+                    <h2 style={h2Style}>Données Cliniques (Protocoles)</h2>
+                    {screens.map(screenKey => {
+                        const config = pathwayConfig[screenKey];
+                        const responses = clinicalResponses?.[screenKey] || {};
+                        if (Object.keys(responses).length === 0) return null;
+
+                        const allItems = config.sections.flatMap(s => s.items);
+                        const answeredItems = allItems.filter(item => {
+                            const val = responses[item.id];
+                            return val !== undefined && val !== null && val !== '';
+                        });
+
+                        if (answeredItems.length === 0) return null;
+
+                        return (
+                            <div key={screenKey} style={{ marginBottom: '8px' }}>
+                                <h3 style={h3Style}>{config.title}</h3>
+                                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                                    <tbody>
+                                        {answeredItems.map(item => {
+                                            const val = responses[item.id];
+                                            let displayVal = val;
+                                            if (typeof val === 'boolean') displayVal = val ? 'Oui' : 'Non';
+
+                                            const meta = formatMeta(screenKey, item.id);
+
+                                            return (
+                                                <tr key={item.id} style={{ borderBottom: '1px solid #F0F0F0' }}>
+                                                    <td style={tdLabelStyle}>{item.label}</td>
+                                                    <td style={tdValueStyle}>
+                                                        <div>{String(displayVal)}</div>
+                                                        {meta && (
+                                                            <div style={metaStyle}>
+                                                                {meta.dateStr} · {meta.author}
+                                                            </div>
+                                                        )}
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
+                                    </tbody>
+                                </table>
+                            </div>
+                        );
+                    })}
                 </div>
             </div>
 
-            {/* Patient Header Section */}
-            <div style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr 1fr',
-                gap: '20px',
-                marginBottom: '30px',
-                padding: '20px',
-                background: '#F8F9FA',
-                borderRadius: '12px',
-                border: '1px solid #E9ECEF'
-            }}>
-                <div>
-                    <div style={{ fontSize: '10px', color: '#888', textTransform: 'uppercase', fontWeight: '700', marginBottom: '4px' }}>Identité du Patient</div>
-                    <div style={{ fontSize: '18px', fontWeight: '800', color: '#1A1A1A' }}>{patient.name}</div>
-                    <div style={{ color: '#444' }}>Né(e) le : {patient.birth_date ? formatDateFR(patient.birth_date) : 'Non renseigné'}</div>
-                    <div style={{ color: '#444' }}>Tél : {patient.phone || 'Non renseigné'}</div>
-                </div>
-                <div>
-                    <div style={{ fontSize: '10px', color: '#888', textTransform: 'uppercase', fontWeight: '700', marginBottom: '4px' }}>Détails de l'Intervention</div>
-                    <div style={{ fontSize: '16px', fontWeight: '700', color: '#8D6E63' }}>{patient.operation}</div>
-                    <div style={{ color: '#444' }}>Date : {patient.date ? formatDateFR(patient.date) : 'Non définie'}</div>
-                    <div style={{ fontWeight: '600', marginTop: '5px' }}>
-                        Statut : <span style={{ color: patient.status === 'critique' ? '#D32F2F' : patient.status === 'ready' ? '#2E7D32' : '#E65100' }}>
-                            {getStatusLabel(patient.status)} ({patient.progress}%)
-                        </span>
+            {/* ═══════════════════ PAGE 2 ═══════════════════ */}
+            <div style={pageStyle}>
+                <ReportHeader />
+
+                {/* Custom Questions */}
+                {customQuestions.length > 0 && (
+                    <div style={{ marginBottom: '16px' }}>
+                        <h2 style={h2Style}>Questions Personnalisées du Praticien</h2>
+                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                            <tbody>
+                                {customQuestions.map(q => {
+                                    const hasResponse = !!q.response;
+                                    return (
+                                        <tr key={q.id} style={{ borderBottom: '1px solid #F0F0F0' }}>
+                                            <td style={tdLabelStyle}>{q.question_text}</td>
+                                            <td style={tdValueStyle}>
+                                                <div style={{ color: hasResponse ? '#1A1A1A' : '#AAA', fontStyle: hasResponse ? 'normal' : 'italic' }}>
+                                                    {q.response || 'En attente de réponse'}
+                                                </div>
+                                                {q.answered_at && (
+                                                    <div style={metaStyle}>
+                                                        {formatDateTimeFR(q.answered_at)} · Patient (portail)
+                                                    </div>
+                                                )}
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
+                            </tbody>
+                        </table>
                     </div>
-                </div>
-            </div>
+                )}
 
-            {/* Clinical Responses */}
-            <div style={{ marginBottom: '30px' }}>
-                <h2 style={{ fontSize: '16px', borderBottom: '2px solid #8D6E63', paddingBottom: '8px', marginBottom: '15px', color: '#8D6E63' }}>
-                    Données Cliniques (Protocoles)
-                </h2>
-                {screens.map(screenKey => {
-                    const config = pathwayConfig[screenKey];
-                    const responses = clinicalResponses?.[screenKey] || {};
-                    if (Object.keys(responses).length === 0) return null;
-
-                    return (
-                        <div key={screenKey} style={{ marginBottom: '20px' }}>
-                            <h3 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '10px', color: '#1A1A1A' }}>{config.title}</h3>
-                            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                                <tbody>
-                                    {config.sections.flatMap(section => section.items).map(item => {
-                                        const val = responses[item.id];
-                                        if (val === undefined || val === null) return null;
-
-                                        let displayVal = val;
-                                        if (typeof val === 'boolean') displayVal = val ? 'Oui' : 'Non';
-
-                                        return (
-                                            <tr key={item.id} style={{ borderBottom: '1px solid #EEE' }}>
-                                                <td style={{ padding: '8px 0', width: '60%', color: '#555' }}>{item.label}</td>
-                                                <td style={{ padding: '8px 0', textAlign: 'right', fontWeight: '600' }}>{displayVal}</td>
-                                            </tr>
-                                        );
-                                    })}
-                                </tbody>
-                            </table>
-                        </div>
-                    );
-                })}
-            </div>
-
-            {/* Custom Questions */}
-            {customQuestions.length > 0 && (
-                <div style={{ marginBottom: '30px' }}>
-                    <h2 style={{ fontSize: '16px', borderBottom: '2px solid #8D6E63', paddingBottom: '8px', marginBottom: '15px', color: '#8D6E63' }}>
-                        Questions Personnalisées du Praticien
-                    </h2>
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                        <tbody>
-                            {customQuestions.map(q => (
-                                <tr key={q.id} style={{ borderBottom: '1px solid #EEE' }}>
-                                    <td style={{ padding: '8px 0', width: '60%', color: '#555' }}>{q.question_text}</td>
-                                    <td style={{ padding: '8px 0', textAlign: 'right', fontWeight: '600', color: q.response ? '#1A1A1A' : '#AAA', fontStyle: q.response ? 'normal' : 'italic' }}>
-                                        {q.response || 'En attente de réponse'}
-                                    </td>
+                {/* SMS History */}
+                {smsData.length > 0 && (
+                    <div style={{ marginBottom: '16px' }}>
+                        <h2 style={h2Style}>Traçabilité des Communications (SMS)</h2>
+                        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '10px' }}>
+                            <thead>
+                                <tr style={{ textAlign: 'left', borderBottom: '1px solid #DDD', background: '#F8F8F8' }}>
+                                    <th style={{ padding: '5px 6px', fontWeight: '700' }}>Date / Heure</th>
+                                    <th style={{ padding: '5px 6px', fontWeight: '700' }}>Type</th>
+                                    <th style={{ padding: '5px 6px', fontWeight: '700' }}>Message</th>
+                                    <th style={{ padding: '5px 6px', fontWeight: '700' }}>Statut</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            )}
-
-            {/* SMS History */}
-            {smsData.length > 0 && (
-                <div style={{ marginBottom: '30px' }}>
-                    <h2 style={{ fontSize: '16px', borderBottom: '2px solid #8D6E63', paddingBottom: '8px', marginBottom: '15px', color: '#8D6E63' }}>
-                        Traçabilité des Communications (SMS)
-                    </h2>
-                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '11px' }}>
-                        <thead>
-                            <tr style={{ textAlign: 'left', borderBottom: '2px solid #EEE' }}>
-                                <th style={{ padding: '8px' }}>Date/Heure</th>
-                                <th style={{ padding: '8px' }}>Type / Screen</th>
-                                <th style={{ padding: '8px' }}>Message</th>
-                                <th style={{ padding: '8px' }}>Statut</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {smsData.map(sms => (
-                                <tr key={sms.id} style={{ borderBottom: '1px solid #EEE' }}>
-                                    <td style={{ padding: '8px', whiteSpace: 'nowrap' }}>{formatDateTimeFR(sms.sent_at || sms.created_at)}</td>
-                                    <td style={{ padding: '8px' }}>{sms.screen || sms.template_key || 'Manuel'}</td>
-                                    <td style={{ padding: '8px' }}>
-                                        <div style={{ maxWidth: '250px', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            </thead>
+                            <tbody>
+                                {smsData.map(sms => (
+                                    <tr key={sms.id} style={{ borderBottom: '1px solid #F0F0F0' }}>
+                                        <td style={{ padding: '5px 6px', whiteSpace: 'nowrap' }}>{formatDateTimeFR(sms.sent_at || sms.created_at)}</td>
+                                        <td style={{ padding: '5px 6px' }}>{sms.screen || sms.template_key || 'Manuel'}</td>
+                                        <td style={{ padding: '5px 6px', maxWidth: '220px', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                             {sms.message}
-                                        </div>
-                                    </td>
-                                    <td style={{ padding: '8px' }}>{sms.status === 'delivered' ? 'Délivré' : sms.status === 'sent' ? 'Envoyé' : sms.status}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            )}
+                                        </td>
+                                        <td style={{ padding: '5px 6px' }}>
+                                            {sms.status === 'delivered' ? '✓ Délivré' : sms.status === 'sent' ? '→ Envoyé' : sms.status}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
 
-            {/* Documents */}
-            {documents.length > 0 && (
-                <div style={{ marginBottom: '30px' }}>
-                    <h2 style={{ fontSize: '16px', borderBottom: '2px solid #8D6E63', paddingBottom: '8px', marginBottom: '15px', color: '#8D6E63' }}>
-                        Documents du Dossier
-                    </h2>
-                    <ul style={{ paddingLeft: '20px' }}>
-                        {documents.map(doc => (
-                            <li key={doc.id} style={{ marginBottom: '5px' }}>
-                                <strong>{doc.name}</strong> (Uploadé le {formatDateFR(doc.created_at)})
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-            )}
+                {/* Documents */}
+                {documents.length > 0 && (
+                    <div style={{ marginBottom: '16px' }}>
+                        <h2 style={h2Style}>Documents du Dossier</h2>
+                        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '10px' }}>
+                            <tbody>
+                                {documents.map(doc => (
+                                    <tr key={doc.id} style={{ borderBottom: '1px solid #F0F0F0' }}>
+                                        <td style={{ padding: '5px 0', fontWeight: '600' }}>{doc.name}</td>
+                                        <td style={{ padding: '5px 0', textAlign: 'right', color: '#888' }}>Ajouté le {formatDateFR(doc.created_at)}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
 
-            {/* Footer */}
-            <div style={{
-                marginTop: '50px',
-                paddingTop: '20px',
-                borderTop: '1px solid #EEE',
-                textAlign: 'center',
-                color: '#999',
-                fontSize: '10px'
-            }}>
-                SurgiLink - Solution de suivi patient pré et post-opératoire.<br />
-                Document confidentiel à usage médical uniquement.
+                {/* Footer */}
+                <div style={{
+                    marginTop: 'auto',
+                    paddingTop: '16px',
+                    borderTop: '1px solid #EEE',
+                    textAlign: 'center',
+                    color: '#AAA',
+                    fontSize: '9px'
+                }}>
+                    SurgiLink — Solution de suivi patient pré et post-opératoire · Document confidentiel à usage médical uniquement
+                </div>
             </div>
         </div>
     );

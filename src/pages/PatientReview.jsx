@@ -64,6 +64,7 @@ export default function PatientReview() {
         J1: {},
         J4_Satisfaction: {}
     });
+    const [responsesMeta, setResponsesMeta] = useState({});
     const [riskStatus, setRiskStatus] = useState('NORMAL'); // NORMAL, VIGILANCE, URGENT
     const [activeTab, setActiveTab] = useState('overview'); // Not used but kept for logic if needed
     const [documents, setDocuments] = useState([]);
@@ -127,6 +128,24 @@ export default function PatientReview() {
                 J1: respJ1 || {},
                 J4_Satisfaction: respJ4 || {}
             });
+
+            // Fetch response metadata (timestamps + user_id) for PDF
+            const { data: metaRows } = await supabase
+                .from('pathway_responses')
+                .select('screen, item_id, updated_at, user_id')
+                .eq('patient_id', id);
+
+            if (metaRows) {
+                const meta = {};
+                metaRows.forEach(r => {
+                    if (!meta[r.screen]) meta[r.screen] = {};
+                    meta[r.screen][r.item_id] = {
+                        updated_at: r.updated_at,
+                        user_id: r.user_id
+                    };
+                });
+                setResponsesMeta(meta);
+            }
 
             setPatient({
                 ...patientData,
@@ -1338,6 +1357,7 @@ export default function PatientReview() {
                     <PatientSynthesisReport
                         patient={patient}
                         clinicalResponses={clinicalResponses}
+                        responsesMeta={responsesMeta}
                         smsData={medicalHistory.filter(h => h.type === 'sms_log')}
                         medicalHistory={medicalHistory.filter(h => h.type === 'history')}
                         documents={documents}
