@@ -37,7 +37,7 @@ export default function PatientPortal({ patient: initialPatient }) {
     const [medicalHistory, setMedicalHistory] = useState([]);
     const [responses, setResponses] = useState({});
     const [clinicalResponses, setClinicalResponses] = useState({
-        J7: {}, J2: {}, J1_PreOp: {}, J1: {}, J4_Satisfaction: {}
+        J7: {}, J2: {}, J1_PreOp: {}, J1: {}, J4_Satisfaction: {}, ESATIS: {}
     });
     const [responsesMeta, setResponsesMeta] = useState({});
     const [documents, setDocuments] = useState([]);
@@ -104,7 +104,8 @@ export default function PatientPortal({ patient: initialPatient }) {
                     J2: {},
                     J1_PreOp: {},
                     J1: {},
-                    J4_Satisfaction: {}
+                    J4_Satisfaction: {},
+                    ESATIS: {}
                 };
                 // Meta map for PDF timestamps
                 const meta = {};
@@ -403,7 +404,8 @@ export default function PatientPortal({ patient: initialPatient }) {
                             { to: `j2`, emoji: '📄', label: 'Questionnaire J-2', desc: 'Documents, jeûne et consignes du jour J' },
                             { to: `j1-preop`, emoji: '🚿', label: 'Confirmation J-1', desc: 'Dernière vérification avant votre venue' },
                             { to: `j1`, emoji: '🌡️', label: 'Suivi J+1', desc: 'Bilan post-opératoire du lendemain' },
-                            { to: `j4`, emoji: '⭐', label: 'Satisfaction J+4', desc: 'Votre avis sur votre prise en charge' },
+                            { to: `j4`, emoji: '⭐', label: 'Satisfaction J+4', desc: 'Votre avis sur notre prise en charge' },
+                            { to: `e-satis`, emoji: '🇫🇷', label: 'Enquête e-Satis', desc: 'Questionnaire national' },
                         ].map(step => (
                             step.disabled ? (
                                 <div

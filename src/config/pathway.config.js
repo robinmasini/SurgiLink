@@ -270,6 +270,33 @@ export const pathwayConfig = {
                 ]
             }
         ]
+    },
+
+    // E-SATIS: National Survey (Separate config to avoid collision)
+    ESATIS: {
+        title: "Enquête Nationale e-Satis",
+        subtitle: "Votre avis sur votre séjour",
+        sections: [
+            {
+                id: "esatis_global",
+                icon: "⭐",
+                title: "Satisfaction Globale",
+                items: [
+                    {
+                        id: "global_experience",
+                        type: "rating",
+                        label: "Sur une échelle de 1 à 10, quel est votre niveau de satisfaction globale concernant votre séjour ?",
+                        required: true
+                    },
+                    {
+                        id: "recommend",
+                        type: "yes_no",
+                        label: "Recommanderiez-vous cet établissement à vos proches ?",
+                        required: true
+                    }
+                ]
+            }
+        ]
     }
 };
 

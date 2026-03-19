@@ -13,6 +13,7 @@ import PatientJ4 from './pages/PatientJ4';
 import PatientJ2 from './pages/PatientJ2';
 import PatientJ1PreOp from './pages/PatientJ1PreOp';
 import PatientJ1 from './pages/PatientJ1';
+import PatientESatis from './pages/PatientESatis';
 import PatientPathwayTracker from './components/PatientPathwayTracker';
 import PatientPortal from './pages/PatientPortal';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -57,6 +58,7 @@ function App() {
         <Route path="/patient-portal/:token/j2" element={<PatientTokenRoute><PatientJ2 /></PatientTokenRoute>} />
         <Route path="/patient-portal/:token/j1-preop" element={<PatientTokenRoute><PatientJ1PreOp /></PatientTokenRoute>} />
         <Route path="/patient-portal/:token/j1" element={<PatientTokenRoute><PatientJ1 /></PatientTokenRoute>} />
+        <Route path="/patient-portal/:token/e-satis" element={<PatientTokenRoute><PatientESatis /></PatientTokenRoute>} />
         <Route path="/patient-portal/:token/success" element={<PatientTokenRoute><PatientSuccess /></PatientTokenRoute>} />
       </Routes>
     </Router>

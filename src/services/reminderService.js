@@ -185,7 +185,7 @@ export async function sendManualReminder(patientId, screen, itemId, templateKey,
                 'J-1': 'j1-preop',
                 'J+1': 'j1',
                 'J+4': 'j4',
-                'E-SATIS': 'j4',
+                'E-SATIS': 'e-satis',
                 'Bienvenue': ''
             };
             return mapping[screen] || '';

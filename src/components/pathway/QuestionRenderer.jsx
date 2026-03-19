@@ -139,15 +139,7 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
                 );
 
             case 'slider_0_10': {
-                // Ensure the default value (5) is saved on first render
-                // so the protocol progresses even if the patient never moves the slider
                 const sliderVal = value !== undefined && value !== null ? value : 5;
-                // eslint-disable-next-line react-hooks/rules-of-hooks
-                useEffect(() => {
-                    if (value === undefined || value === null) {
-                        handleChange(5);
-                    }
-                }, []); // run once on mount
                 return (
                     <div>
                         <input
@@ -155,7 +147,10 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
                             min="0"
                             max="10"
                             value={sliderVal}
-                            onChange={(e) => handleChange(parseInt(e.target.value))}
+                            onChange={(e) => {
+                                const val = parseInt(e.target.value);
+                                handleChange(val);
+                            }}
                             style={{
                                 width: '100%',
                                 height: '8px',

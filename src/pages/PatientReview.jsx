@@ -1315,7 +1315,7 @@ export default function PatientReview() {
                                                                                 'J-1': 'j1-preop',
                                                                                 'J+1': 'j1',
                                                                                 'J+4': 'j4',
-                                                                                'E-SATIS': 'j4'
+                                                                                'E-SATIS': 'e-satis'
                                                                             };
                                                                             const path = mapping[item.screen] || '';
                                                                             const url = `${window.location.origin}/patient-portal/${tokenData.token}${path ? '/' + path : ''}`;

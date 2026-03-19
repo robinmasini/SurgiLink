@@ -9,7 +9,7 @@ import { usePatientId } from '../hooks/usePatientId';
 import { supabase } from '../lib/supabase';
 import { calculateDaysUntilSurgery } from '../utils/dateUtils';
 
-export default function PatientJ4({ patient: propPatient, token: propToken }) {
+export default function PatientESatis({ patient: propPatient, token: propToken }) {
     const navigate = useNavigate();
     const { token: urlToken } = useParams();
     const token = propToken || urlToken;
@@ -24,7 +24,7 @@ export default function PatientJ4({ patient: propPatient, token: propToken }) {
     const [saving, setSaving] = useState(false);
     const [patient, setPatient] = useState(propPatient || null);
 
-    const config = pathwayConfig.J4_Satisfaction;
+    const config = pathwayConfig.ESATIS;
 
     useEffect(() => {
         if (resolvedPatientId) {
@@ -41,7 +41,7 @@ export default function PatientJ4({ patient: propPatient, token: propToken }) {
     const loadResponses = async () => {
         if (!resolvedPatientId) return;
         setLoading(true);
-        const data = await getResponses(resolvedPatientId, 'J4_Satisfaction');
+        const data = await getResponses(resolvedPatientId, 'ESATIS');
         setResponses(data);
         setLoading(false);
     };
@@ -49,14 +49,14 @@ export default function PatientJ4({ patient: propPatient, token: propToken }) {
     const handleChange = async (itemId, value) => {
         setResponses(prev => ({ ...prev, [itemId]: value }));
         if (resolvedPatientId) {
-            await saveResponse(resolvedPatientId, 'J4_Satisfaction', itemId, value, false);
+            await saveResponse(resolvedPatientId, 'ESATIS', itemId, value, false);
         }
     };
 
     const handleSubmit = async () => {
         setSaving(true);
         if (resolvedPatientId) {
-            await markScreenCompleted(resolvedPatientId, 'J4_Satisfaction');
+            await markScreenCompleted(resolvedPatientId, 'ESATIS');
         }
         setSaving(false);
         navigate(`/patient-portal/${token}/success`);
@@ -85,8 +85,8 @@ export default function PatientJ4({ patient: propPatient, token: propToken }) {
     return (
         <div className="patient-view">
             <div className="patient-header" style={{ padding: 'var(--spacing-6) var(--spacing-4)', textAlign: 'center', display: 'block' }}>
-                <h2 style={{ fontSize: 'var(--font-size-2xl)', marginBottom: 'var(--spacing-1)' }}>Bilan Satisfaction</h2>
-                <div style={{ color: 'var(--color-primary-600)', fontWeight: 'var(--font-weight-semibold)' }}>Votre avis J+4</div>
+                <h2 style={{ fontSize: 'var(--font-size-2xl)', marginBottom: 'var(--spacing-1)' }}>Enquête e-Satis</h2>
+                <div style={{ color: 'var(--color-primary-600)', fontWeight: 'var(--font-weight-semibold)' }}>Votre avis national</div>
             </div>
 
             <div className="patient-content fade-in">
@@ -107,7 +107,7 @@ export default function PatientJ4({ patient: propPatient, token: propToken }) {
                     onChange={handleChange}
                     onComplete={handleSubmit}
                     saving={saving}
-                    screen="J4_Satisfaction"
+                    screen="ESATIS"
                 />
             </div>
 
