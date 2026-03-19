@@ -8,28 +8,47 @@ import html2canvas from 'html2canvas';
  */
 export async function generateSynthesisPDF(element, fileName = 'Synthese_Patient.pdf') {
     try {
-        // Ensure the element is visible for html2canvas (though it can be hidden via styles)
-        // Set specific scale for better quality
-        const canvas = await html2canvas(element, {
-            scale: 2,
-            useCORS: true,
-            logging: false,
-            backgroundColor: '#ffffff'
-        });
-
-        const imgData = canvas.toDataURL('image/png');
+        const pages = element.querySelectorAll('.pdf-page');
         const pdf = new jsPDF('p', 'mm', 'a4');
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfHeight = pdf.internal.pageSize.getHeight();
-        const imgWidth = canvas.width;
-        const imgHeight = canvas.height;
-        const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
-        const imgX = (pdfWidth - imgWidth * ratio) / 2;
-        const imgY = 10; // Margin top
 
-        pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
+        // Helper to add a single element to PDF
+        const addElementToPdf = async (el, isFirstPage) => {
+            const canvas = await html2canvas(el, {
+                scale: 2,
+                useCORS: true,
+                logging: false,
+                backgroundColor: '#ffffff'
+            });
+
+            const imgData = canvas.toDataURL('image/png');
+            const imgWidth = canvas.width;
+            const imgHeight = canvas.height;
+
+            // Calculate ratio to fit width
+            const ratio = pdfWidth / imgWidth;
+            const imgTargetWidth = pdfWidth;
+            const imgTargetHeight = imgHeight * ratio;
+
+            if (!isFirstPage) {
+                pdf.addPage();
+            }
+
+            pdf.addImage(imgData, 'PNG', 0, 0, imgTargetWidth, imgTargetHeight);
+        };
+
+        if (pages.length > 0) {
+            // Multi-page rendering
+            for (let i = 0; i < pages.length; i++) {
+                await addElementToPdf(pages[i], i === 0);
+            }
+        } else {
+            // Fallback for single legacy element
+            await addElementToPdf(element, true);
+        }
+
         pdf.save(fileName);
-
         return { success: true };
     } catch (error) {
         console.error('Error generating PDF:', error);

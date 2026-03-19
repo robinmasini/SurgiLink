@@ -142,7 +142,7 @@ export default function PatientSynthesisReport({
         <div id="patient-synthesis-report">
 
             {/* ═══════════════════ PAGE 1 ═══════════════════ */}
-            <div style={{ ...pageStyle, ...pageBreakStyle }}>
+            <div className="pdf-page" style={pageStyle}>
                 <ReportHeader />
                 <PatientBlock />
 
@@ -197,7 +197,7 @@ export default function PatientSynthesisReport({
             </div>
 
             {/* ═══════════════════ PAGE 2 ═══════════════════ */}
-            <div style={pageStyle}>
+            <div className="pdf-page" style={pageStyle}>
                 <ReportHeader />
 
                 {/* Custom Questions */}
