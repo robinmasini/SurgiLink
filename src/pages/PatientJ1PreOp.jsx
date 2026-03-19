@@ -5,6 +5,7 @@ import { pathwayConfig } from '../config/pathway.config';
 import { saveResponse, getResponses, markScreenCompleted } from '../services/pathwayService';
 import { scheduleStateBasedReminders } from '../services/reminderService';
 import QuestionRenderer from '../components/pathway/QuestionRenderer';
+import QuestionnaireFlow from '../components/pathway/QuestionnaireFlow';
 import AlertBanner from '../components/pathway/AlertBanner';
 import CompactAppointmentCard from '../components/CompactAppointmentCard';
 
@@ -127,41 +128,15 @@ export default function PatientJ1PreOp({ patient: propPatient, token: propToken 
                     message="Effectuez votre douche antiseptique et l'épilation ce soir. Préparez votre sac pour demain matin."
                 />
 
-                {/* Sections */}
-                {config.sections.map((section) => (
-                    <div key={section.id}>
-                        <div className="step-section" style={{ marginTop: 'var(--spacing-6)' }}>
-                            <div className="step-header">
-                                <span className="step-header-icon">{section.icon}</span>
-                                <div>
-                                    <div className="step-header-title">{section.title}</div>
-                                    {section.subtitle && <div className="step-header-subtitle">{section.subtitle}</div>}
-                                </div>
-                            </div>
-                        </div>
-                        {section.items.map((item) => (
-                            <QuestionRenderer
-                                key={item.id}
-                                item={item}
-                                value={responses[item.id]?.main ?? responses[item.id]}
-                                onChange={handleChange}
-                                screen="J1_PreOp"
-                            />
-                        ))}
-                    </div>
-                ))}
-
-
-
-                {/* Submit Button */}
-                <button
-                    className="btn btn-primary btn-lg"
-                    style={{ width: '100%', marginTop: 'var(--spacing-6)' }}
-                    onClick={handleSubmit}
-                    disabled={saving}
-                >
-                    {saving ? 'Enregistrement...' : 'Valider la préparation J-1'}
-                </button>
+                {/* Questionnaire Flow */}
+                <QuestionnaireFlow
+                    config={config}
+                    responses={responses}
+                    onChange={handleChange}
+                    onComplete={handleSubmit}
+                    saving={saving}
+                    screen="J1PreOp"
+                />
             </div>
 
             {/* FAB */}

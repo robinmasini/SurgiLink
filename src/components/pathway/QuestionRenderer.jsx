@@ -46,7 +46,7 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
                                 height: '80px',
                                 fontSize: 'var(--font-size-xl)',
                                 fontWeight: 'var(--font-weight-bold)',
-                                borderRadius: 'var(--border-radius-xl)',
+                                borderRadius: 'var(--radius-full)',
                                 border: value === true ? '2px solid var(--color-primary-600)' : '2px solid var(--color-gray-200)',
                                 boxShadow: value === true ? '0 10px 15px -3px rgba(var(--color-primary-rgb), 0.3)' : 'none',
                                 transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
@@ -61,7 +61,7 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
                                 height: '80px',
                                 fontSize: 'var(--font-size-xl)',
                                 fontWeight: 'var(--font-weight-bold)',
-                                borderRadius: 'var(--border-radius-xl)',
+                                borderRadius: 'var(--radius-full)',
                                 border: value === false ? '2px solid var(--color-danger-600)' : '2px solid var(--color-gray-200)',
                                 background: value === false ? 'var(--color-danger-500)' : 'white',
                                 color: value === false ? 'white' : 'var(--color-gray-700)',

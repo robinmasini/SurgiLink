@@ -4,6 +4,7 @@ import { LogOut, Sparkles, AlertCircle } from 'lucide-react';
 import { pathwayConfig } from '../config/pathway.config';
 import { saveResponse, getResponses, markScreenCompleted } from '../services/pathwayService';
 import QuestionRenderer from '../components/pathway/QuestionRenderer';
+import QuestionnaireFlow from '../components/pathway/QuestionnaireFlow';
 import AlertBanner from '../components/pathway/AlertBanner';
 import CompactAppointmentCard from '../components/CompactAppointmentCard';
 
@@ -195,44 +196,15 @@ export default function PatientJ1({ patient: propPatient, token: propToken }) {
                     </div>
                 )}
 
-                {/* Sections */}
-                {config.sections.map((section) => (
-                    <div key={section.id}>
-                        {/* Section Header */}
-                        <div className="step-section" style={{ marginTop: 'var(--spacing-6)' }}>
-                            <div className="step-header">
-                                <span className="step-header-icon">{section.icon}</span>
-                                <div>
-                                    <div className="step-header-title">{section.title}</div>
-                                    {section.subtitle && <div className="step-header-subtitle">{section.subtitle}</div>}
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Items */}
-                        {section.items.map((item) => (
-                            <QuestionRenderer
-                                key={item.id}
-                                item={item}
-                                value={responses[item.id]?.main ?? responses[item.id]}
-                                onChange={handleChange}
-                                screen="J1"
-                            />
-                        ))}
-                    </div>
-                ))}
-
-
-
-                {/* Submit Button */}
-                <button
-                    className="btn btn-primary btn-lg"
-                    style={{ width: '100%', marginTop: 'var(--spacing-6)' }}
-                    onClick={handleSubmit}
-                    disabled={saving}
-                >
-                    {saving ? 'Enregistrement...' : 'Valider mon suivi J+1'}
-                </button>
+                {/* Questionnaire Flow */}
+                <QuestionnaireFlow
+                    config={config}
+                    responses={responses}
+                    onChange={handleChange}
+                    onComplete={handleSubmit}
+                    saving={saving}
+                    screen="J1"
+                />
             </div>
 
             {/* FAB */}

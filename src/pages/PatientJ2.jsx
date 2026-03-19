@@ -5,6 +5,7 @@ import { pathwayConfig } from '../config/pathway.config';
 import { saveResponse, getResponses, markScreenCompleted, calculateRiskFlags } from '../services/pathwayService';
 import { scheduleStateBasedReminders } from '../services/reminderService';
 import QuestionRenderer from '../components/pathway/QuestionRenderer';
+import QuestionnaireFlow from '../components/pathway/QuestionnaireFlow';
 import AlertBanner from '../components/pathway/AlertBanner';
 import CompactAppointmentCard from '../components/CompactAppointmentCard';
 
@@ -166,54 +167,15 @@ export default function PatientJ2({ patient: propPatient, token: propToken }) {
                 </div>
 
 
-                {/* Sections */}
-                {config.sections.map((section) => (
-                    <div key={section.id}>
-                        {/* Section Header */}
-                        <div className="step-section" style={{ marginTop: 'var(--spacing-6)' }}>
-                            <div className="step-header">
-                                <span className="step-header-icon">{section.icon}</span>
-                                <div>
-                                    <div className="step-header-title">{section.title}</div>
-                                    {section.subtitle && <div className="step-header-subtitle">{section.subtitle}</div>}
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Items */}
-                        {section.items.map((item) => (
-                            <QuestionRenderer
-                                key={item.id}
-                                item={item}
-                                value={responses[item.id]?.main ?? responses[item.id]}
-                                onChange={handleChange}
-                                screen="J2"
-                            />
-                        ))}
-                    </div>
-                ))}
-
-                {/* Partial Completion Notice */}
-                {(riskFlags.soft.length > 0 || riskFlags.hard.length > 0) && (
-                    <div style={{ marginTop: 'var(--spacing-6)' }}>
-                        <AlertBanner
-                            type="info"
-                            message="Vous pouvez valider même si certains points ne sont pas encore complétés. L'équipe vous contactera pour les éléments manquants."
-                        />
-                    </div>
-                )}
-
-
-
-                {/* Submit Button */}
-                <button
-                    className="btn btn-primary btn-lg"
-                    style={{ width: '100%', marginTop: 'var(--spacing-6)' }}
-                    onClick={handleSubmit}
-                    disabled={saving}
-                >
-                    {saving ? 'Enregistrement...' : 'Valider mes consignes J-2'}
-                </button>
+                {/* Questionnaire Flow */}
+                <QuestionnaireFlow
+                    config={config}
+                    responses={responses}
+                    onChange={handleChange}
+                    onComplete={handleSubmit}
+                    saving={saving}
+                    screen="J2"
+                />
             </div>
 
             {/* FAB */}
