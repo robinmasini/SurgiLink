@@ -7,7 +7,7 @@ import { scheduleStateBasedReminders } from '../services/reminderService';
 import QuestionRenderer from '../components/pathway/QuestionRenderer';
 import AlertBanner from '../components/pathway/AlertBanner';
 import CompactAppointmentCard from '../components/CompactAppointmentCard';
-import DoctolibButton from '../components/pathway/DoctolibButton';
+
 import { usePatientId } from '../hooks/usePatientId';
 import { supabase } from '../lib/supabase';
 import { calculateDaysUntilSurgery } from '../utils/dateUtils';
@@ -203,8 +203,7 @@ export default function PatientJ2({ patient: propPatient, token: propToken }) {
                     </div>
                 )}
 
-                {/* Doctolib Integration */}
-                <DoctolibButton />
+
 
                 {/* Submit Button */}
                 <button

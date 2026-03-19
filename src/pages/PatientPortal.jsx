@@ -23,7 +23,7 @@ import ClinicAppointmentCard from '../components/ClinicAppointmentCard';
 import CompactAppointmentCard from '../components/CompactAppointmentCard';
 import ProtocolStatus from '../components/ProtocolStatus';
 import PatientTraceability from '../components/PatientTraceability';
-import DoctolibButton from '../components/pathway/DoctolibButton';
+
 import { HelpCircle, Send, RefreshCw, Download } from 'lucide-react';
 import { generateSynthesisPDF } from '../services/pdfService';
 import PatientSynthesisReport from '../components/PatientSynthesisReport';
@@ -321,10 +321,7 @@ export default function PatientPortal({ patient: initialPatient }) {
                     />
                 </div>
 
-                {/* Doctolib Integration */}
-                <div style={{ marginBottom: 'var(--spacing-8)' }}>
-                    <DoctolibButton />
-                </div>
+
 
                 {/* Care Pathway Section */}
                 <div className="card" style={{
@@ -382,22 +379,7 @@ export default function PatientPortal({ patient: initialPatient }) {
                             <h3 style={{ fontSize: '18px', fontWeight: '800', color: '#1A1A1A' }}>Votre Parcours de Soins</h3>
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <button
-                                onClick={handleDownloadSynthesis}
-                                disabled={isGeneratingPDF}
-                                className="btn btn-secondary btn-sm"
-                                style={{
-                                    padding: '6px 12px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '6px',
-                                    background: 'rgba(255,255,255,0.8)',
-                                    borderRadius: '12px'
-                                }}
-                            >
-                                {isGeneratingPDF ? <RefreshCw size={14} className="animate-spin" /> : <Download size={14} />}
-                                <span style={{ fontSize: '12px', fontWeight: '600' }}>Synthèse PDF</span>
-                            </button>
+
                             <div style={{
                                 background: '#37474F',
                                 color: 'white',

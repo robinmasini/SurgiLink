@@ -1,11 +1,13 @@
-import { Info, AlertTriangle } from 'lucide-react';
+import { Info, AlertTriangle, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import DoctolibButton from './DoctolibButton';
 
 /**
  * QuestionRenderer - Generic question component based on pathway config
  */
 export default function QuestionRenderer({ item, value, onChange, screen }) {
     const [conditionalValue, setConditionalValue] = useState({});
+    const [showInfo, setShowInfo] = useState(false);
 
     const handleChange = (newValue) => {
         onChange(item.id, newValue);
@@ -434,24 +436,117 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
             {/* Conditional fields */}
             {renderConditionalFields()}
 
-            {/* Why important + Action */}
+            {/* Why important + Action Button */}
             {(item.why || item.action) && (
-                <div className="info-box" style={{ marginTop: 'var(--spacing-4)' }}>
-                    <Info size={16} className="info-box-icon" />
-                    <div>
+                <div style={{ marginTop: 'var(--spacing-4)', display: 'flex', justifyContent: 'flex-end' }}>
+                    <button
+                        onClick={() => setShowInfo(true)}
+                        style={{
+                            background: 'var(--color-primary-50)',
+                            border: 'none',
+                            borderRadius: '50%',
+                            width: '32px',
+                            height: '32px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: 'var(--color-primary-600)',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s ease'
+                        }}
+                    >
+                        <Info size={18} />
+                    </button>
+                </div>
+            )}
+
+            {/* Info Popup Overlay */}
+            {showInfo && (
+                <div
+                    style={{
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        background: 'rgba(0,0,0,0.5)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        zIndex: 1000,
+                        padding: 'var(--spacing-6)',
+                        backdropFilter: 'blur(4px)',
+                        animation: 'fadeIn 0.2s ease'
+                    }}
+                    onClick={() => setShowInfo(false)}
+                >
+                    <div
+                        style={{
+                            background: 'white',
+                            borderRadius: '24px',
+                            padding: 'var(--spacing-6)',
+                            width: '100%',
+                            maxWidth: '400px',
+                            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
+                            position: 'relative',
+                            animation: 'slideUp 0.3s ease'
+                        }}
+                        onClick={e => e.stopPropagation()}
+                    >
+                        <button
+                            onClick={() => setShowInfo(false)}
+                            style={{
+                                position: 'absolute',
+                                top: '16px',
+                                right: '16px',
+                                border: 'none',
+                                background: 'var(--color-gray-100)',
+                                borderRadius: '50%',
+                                width: '30px',
+                                height: '30px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                color: 'var(--color-gray-500)'
+                            }}
+                        >
+                            <X size={18} />
+                        </button>
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: 'var(--spacing-4)', color: 'var(--color-primary-600)' }}>
+                            <Info size={24} />
+                            <h4 style={{ margin: 0, fontSize: '18px', fontWeight: '800' }}>Informations</h4>
+                        </div>
+
                         {item.why && (
-                            <>
-                                <div className="info-box-title">Pourquoi est-ce important ?</div>
-                                <div className="info-box-text">{item.why}</div>
-                            </>
+                            <div style={{ marginBottom: 'var(--spacing-4)' }}>
+                                <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--color-gray-400)', textTransform: 'uppercase', marginBottom: '4px' }}>Pourquoi est-ce important ?</div>
+                                <div style={{ fontSize: '15px', lineHeight: '1.5', color: 'var(--color-gray-700)' }}>{item.why}</div>
+                            </div>
                         )}
+
                         {item.action && (
-                            <>
-                                <div className="info-box-title" style={{ marginTop: item.why ? 'var(--spacing-2)' : 0 }}>À faire maintenant</div>
-                                <div className="info-box-text">{item.action}</div>
-                            </>
+                            <div>
+                                <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--color-gray-400)', textTransform: 'uppercase', marginBottom: '4px' }}>À faire maintenant</div>
+                                <div style={{ fontSize: '15px', lineHeight: '1.5', color: 'var(--color-gray-700)' }}>{item.action}</div>
+                            </div>
                         )}
+
+                        <button
+                            className="btn btn-primary"
+                            style={{ width: '100%', marginTop: 'var(--spacing-6)', borderRadius: '14px' }}
+                            onClick={() => setShowInfo(false)}
+                        >
+                            J'ai compris
+                        </button>
                     </div>
+                </div>
+            )}
+
+            {/* Special Doctolib Integration for Anesthesia question */}
+            {item.id === 'anesthesia_consultation' && value === false && (
+                <div style={{ marginTop: 'var(--spacing-4)' }}>
+                    <DoctolibButton />
                 </div>
             )}
         </div>

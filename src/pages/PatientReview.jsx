@@ -844,10 +844,7 @@ export default function PatientReview() {
                                         <Plus size={18} style={{ marginRight: '8px' }} />
                                         Ajouter une question
                                     </button>
-                                    <button className="btn btn-secondary btn-xs" style={{ color: 'var(--color-orange-600)', background: 'var(--color-orange-50)', border: 'none', padding: '6px 12px' }}>
-                                        <Edit2 size={14} style={{ marginRight: '6px' }} />
-                                        Corriger
-                                    </button>
+
                                 </div>
                             </div>
 

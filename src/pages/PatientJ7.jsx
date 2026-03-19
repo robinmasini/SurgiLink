@@ -212,8 +212,7 @@ export default function PatientJ7({ patient: propPatient, token: propToken }) {
                     </div>
                 ))}
 
-                {/* Doctolib Integration */}
-                <DoctolibButton />
+
 
                 {/* Submit Button */}
                 <button

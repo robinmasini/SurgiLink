@@ -1,6 +1,6 @@
 import { Link, useParams } from 'react-router-dom';
 import { CheckCircle, ArrowLeft } from 'lucide-react';
-import DoctolibButton from '../components/pathway/DoctolibButton';
+
 
 export default function PatientSuccess() {
     const { token } = useParams();
@@ -18,9 +18,7 @@ export default function PatientSuccess() {
                 Vous pouvez maintenant fermer cette fenêtre.
             </p>
 
-            <div style={{ marginBottom: 'var(--spacing-8)' }}>
-                <DoctolibButton />
-            </div>
+
 
             {token && (
                 <Link
