@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from 'react';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import EditPatientModal from '../components/EditPatientModal';
-import PatientPreviewModal from '../components/PatientPreviewModal';
 import EditSMSModal from '../components/EditSMSModal';
 import CustomSMSModal from '../components/CustomSMSModal';
 import AddQuestionModal from '../components/AddQuestionModal';
@@ -56,8 +55,6 @@ export default function PatientReview() {
     const [medicalHistory, setMedicalHistory] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-    const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
-    const [previewScreen, setPreviewScreen] = useState(null);
     const [clinicalResponses, setClinicalResponses] = useState({
         J7: {},
         J2: {},
@@ -1169,15 +1166,6 @@ export default function PatientReview() {
                                             Copier le lien
                                         </button>
                                         <button
-                                            onClick={() => window.open(`${window.location.origin}/patient-portal/${tokenData.token}`, '_blank')}
-                                            className="btn btn-secondary btn-sm"
-                                            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px 12px' }}
-                                            title="Ouvrir le lien"
-                                        >
-                                            <Eye size={16} />
-                                            Ouvrir
-                                        </button>
-                                        <button
                                             onClick={handleGenerateToken}
                                             disabled={isGeneratingToken}
                                             className="btn btn-secondary btn-sm"
@@ -1225,12 +1213,24 @@ export default function PatientReview() {
                                                             Gérer / Envoyer
                                                         </button>
                                                         <button
-                                                            onClick={() => { setPreviewScreen(rem.screen); setIsPreviewModalOpen(true); }}
+                                                            onClick={() => {
+                                                                const mapping = {
+                                                                    'J-7': 'j7',
+                                                                    'J-2': 'j2',
+                                                                    'J-1': 'j1-preop',
+                                                                    'J+1': 'j1',
+                                                                    'J+4': 'j4',
+                                                                    'E-SATIS': 'j4'
+                                                                };
+                                                                const path = mapping[rem.screen] || '';
+                                                                const url = `${window.location.origin}/patient-portal/${tokenData.token}${path ? '/' + path : ''}`;
+                                                                window.open(url, '_blank');
+                                                            }}
                                                             className="btn btn-primary btn-sm"
                                                             style={{ width: '100%', fontSize: '11px', padding: '4px 8px', marginTop: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}
                                                         >
                                                             <Activity size={12} />
-                                                            Ouvrir
+                                                            Ouvrir Questionnaire
                                                         </button>
                                                     </div>
                                                 ))}
@@ -1307,12 +1307,24 @@ export default function PatientReview() {
                                                             {isSystemSms && item.screen && (
                                                                 <div style={{ marginTop: '8px', borderTop: '1px solid var(--color-gray-200)', paddingTop: '8px' }}>
                                                                     <button
-                                                                        onClick={() => { setPreviewScreen(item.screen); setIsPreviewModalOpen(true); }}
+                                                                        onClick={() => {
+                                                                            const mapping = {
+                                                                                'J-7': 'j7',
+                                                                                'J-2': 'j2',
+                                                                                'J-1': 'j1-preop',
+                                                                                'J+1': 'j1',
+                                                                                'J+4': 'j4',
+                                                                                'E-SATIS': 'j4'
+                                                                            };
+                                                                            const path = mapping[item.screen] || '';
+                                                                            const url = `${window.location.origin}/patient-portal/${tokenData.token}${path ? '/' + path : ''}`;
+                                                                            window.open(url, '_blank');
+                                                                        }}
                                                                         className="btn btn-secondary btn-xs"
                                                                         style={{ fontSize: '10px', padding: '4px 8px', background: 'white' }}
                                                                     >
                                                                         <Activity size={10} style={{ marginRight: '4px' }} />
-                                                                        Ouvrir l'étape {item.screen}
+                                                                        Ouvrir Questionnaire {item.screen}
                                                                     </button>
                                                                 </div>
                                                             )}
@@ -1362,13 +1374,12 @@ export default function PatientReview() {
                 onSave={handleAddCustomQuestion}
             />
 
-            <PatientPreviewModal
-                isOpen={isPreviewModalOpen}
-                onClose={() => setIsPreviewModalOpen(false)}
+            <EditSMSModal
+                isOpen={isSMSModalOpen}
+                onClose={() => setIsSMSModalOpen(false)}
+                reminder={editingReminder}
                 patient={patient}
-                onResponseSaved={handleModalResponseSaved}
-                onStatusChange={loadPatientData}
-                initialScreen={previewScreen}
+                onUpdate={loadPatientData}
             />
             {/* Hidden Report for PDF Generation */}
             <div style={{ position: 'absolute', left: '-9999px', top: '-9999px' }}>
