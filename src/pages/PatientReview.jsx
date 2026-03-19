@@ -1114,7 +1114,7 @@ export default function PatientReview() {
                                 <div className="card-icon card-icon-success">
                                     <Activity size={20} />
                                 </div>
-                                <h3>État du suivi</h3>
+                                <h3>État du Suivi</h3>
                             </div>
                             <div style={{ textAlign: 'center' }}>
                                 <div style={{ fontSize: 'var(--font-size-4xl)', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-primary-500)', marginBottom: 'var(--spacing-2)' }}>

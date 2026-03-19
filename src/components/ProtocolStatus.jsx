@@ -29,7 +29,7 @@ export default function ProtocolStatus({ progress = 0, status = 'neutre', status
                 }}>
                     <Activity size={16} />
                 </div>
-                <span style={{ fontWeight: '700', fontSize: '14px', color: '#1A1A1A' }}>État du suivi</span>
+                <span style={{ fontWeight: '700', fontSize: '14px', color: '#1A1A1A' }}>État du Suivi</span>
             </div>
 
             <div style={{ textAlign: 'center' }}>
