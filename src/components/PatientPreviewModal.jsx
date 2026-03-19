@@ -14,8 +14,26 @@ const ALL_TABS = [
     { key: 'J4_Satisfaction', label: 'J+4', sublabel: 'Avis', color: 'orange' },
 ];
 
-export default function PatientPreviewModal({ isOpen, onClose, patient, onResponseSaved, onStatusChange }) {
+export default function PatientPreviewModal({ isOpen, onClose, patient, onResponseSaved, onStatusChange, initialScreen }) {
     const [activeTab, setActiveTab] = useState('J7');
+
+    useEffect(() => {
+        if (isOpen && initialScreen) {
+            // Map common labels to the key if needed
+            const mapping = {
+                'J-7': 'J7',
+                'J-2': 'J2',
+                'J-1': 'J1_PreOp',
+                'J+1': 'J1',
+                'J+4': 'J4_Satisfaction',
+                'E-SATIS': 'J4_Satisfaction'
+            };
+            const target = mapping[initialScreen] || initialScreen;
+            if (ALL_TABS.some(t => t.key === target)) {
+                setActiveTab(target);
+            }
+        }
+    }, [isOpen, initialScreen]);
     const [responses, setResponses] = useState({});
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(null);

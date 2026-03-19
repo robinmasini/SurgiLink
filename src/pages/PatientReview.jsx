@@ -57,6 +57,7 @@ export default function PatientReview() {
     const [isLoading, setIsLoading] = useState(true);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
+    const [previewScreen, setPreviewScreen] = useState(null);
     const [clinicalResponses, setClinicalResponses] = useState({
         J7: {},
         J2: {},
@@ -1223,6 +1224,14 @@ export default function PatientReview() {
                                                             <Edit2 size={12} />
                                                             Gérer / Envoyer
                                                         </button>
+                                                        <button
+                                                            onClick={() => { setPreviewScreen(rem.screen); setIsPreviewModalOpen(true); }}
+                                                            className="btn btn-primary btn-sm"
+                                                            style={{ width: '100%', fontSize: '11px', padding: '4px 8px', marginTop: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}
+                                                        >
+                                                            <Activity size={12} />
+                                                            Ouvrir
+                                                        </button>
                                                     </div>
                                                 ))}
                                             </div>
@@ -1295,6 +1304,18 @@ export default function PatientReview() {
                                                     {item.description && (
                                                         <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-600)', marginTop: '4px', background: 'var(--color-gray-50)', padding: 'var(--spacing-3)', borderRadius: 'var(--border-radius-md)', whiteSpace: 'pre-wrap' }}>
                                                             {item.description}
+                                                            {isSystemSms && item.screen && (
+                                                                <div style={{ marginTop: '8px', borderTop: '1px solid var(--color-gray-200)', paddingTop: '8px' }}>
+                                                                    <button
+                                                                        onClick={() => { setPreviewScreen(item.screen); setIsPreviewModalOpen(true); }}
+                                                                        className="btn btn-secondary btn-xs"
+                                                                        style={{ fontSize: '10px', padding: '4px 8px', background: 'white' }}
+                                                                    >
+                                                                        <Activity size={10} style={{ marginRight: '4px' }} />
+                                                                        Ouvrir l'étape {item.screen}
+                                                                    </button>
+                                                                </div>
+                                                            )}
                                                         </div>
                                                     )}
                                                 </div>
@@ -1347,6 +1368,7 @@ export default function PatientReview() {
                 patient={patient}
                 onResponseSaved={handleModalResponseSaved}
                 onStatusChange={loadPatientData}
+                initialScreen={previewScreen}
             />
             {/* Hidden Report for PDF Generation */}
             <div style={{ position: 'absolute', left: '-9999px', top: '-9999px' }}>
