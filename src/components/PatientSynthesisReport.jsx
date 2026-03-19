@@ -99,15 +99,35 @@ export default function PatientSynthesisReport({
         marginTop: '1px'
     };
 
+    const ReportFooter = () => (
+        <div style={{
+            marginTop: 'auto',
+            paddingTop: '16px',
+            borderTop: '1px solid #EEE',
+            textAlign: 'center',
+            color: '#AAA',
+            fontSize: '9px'
+        }}>
+            SurgiLink — Solution de suivi patient pré et post-opératoire · Document confidentiel
+        </div>
+    );
+
     // Shared header block
-    const ReportHeader = () => (
-        <div style={{ textAlign: 'center', marginBottom: '12px' }}>
-            <img src={logoSurgilink} alt="SurgiLink" style={{ height: '80px', marginBottom: '6px' }} />
-            <h1 style={{ fontSize: '20px', fontWeight: '800', color: '#1A1A1A', margin: 0, letterSpacing: '1px' }}>
-                Synthèse du Dossier Patient
-            </h1>
-            <div style={{ color: '#888', marginTop: '4px', fontSize: '10px' }}>
-                Généré le {new Date().toLocaleDateString('fr-FR')} à {new Date().toLocaleTimeString('fr-FR')} — Document confidentiel à usage médical
+    const ReportHeader = ({ pageNumber, totalPages }) => (
+        <div style={{ marginBottom: '12px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <img src={logoSurgilink} alt="SurgiLink" style={{ height: '60px' }} />
+                <div style={{ textAlign: 'right', fontSize: '10px', color: '#888', fontWeight: '600' }}>
+                    Page {pageNumber} / {totalPages}
+                </div>
+            </div>
+            <div style={{ textAlign: 'center' }}>
+                <h1 style={{ fontSize: '18px', fontWeight: '800', color: '#1A1A1A', margin: '4px 0 0 0', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
+                    Synthèse du Dossier Patient
+                </h1>
+                <div style={{ color: '#888', marginTop: '2px', fontSize: '9px' }}>
+                    Généré le {new Date().toLocaleDateString('fr-FR')} à {new Date().toLocaleTimeString('fr-FR')} — Document confidentiel
+                </div>
             </div>
         </div>
     );
@@ -143,13 +163,13 @@ export default function PatientSynthesisReport({
 
             {/* ═══════════════════ PAGE 1 ═══════════════════ */}
             <div className="pdf-page" style={pageStyle}>
-                <ReportHeader />
+                <ReportHeader pageNumber={1} totalPages={2} />
                 <PatientBlock />
 
-                {/* Clinical Responses */}
+                {/* Clinical Responses - Part 1 (Pre-op & Early Post-op) */}
                 <div>
-                    <h2 style={h2Style}>Données Cliniques (Protocoles)</h2>
-                    {screens.map(screenKey => {
+                    <h2 style={h2Style}>Pré-opératoire & J+1</h2>
+                    {['J7', 'J2', 'J1_PreOp', 'J1'].map(screenKey => {
                         const config = pathwayConfig[screenKey];
                         const responses = clinicalResponses?.[screenKey] || {};
                         if (Object.keys(responses).length === 0) return null;
@@ -194,11 +214,57 @@ export default function PatientSynthesisReport({
                         );
                     })}
                 </div>
+                <ReportFooter />
             </div>
 
             {/* ═══════════════════ PAGE 2 ═══════════════════ */}
             <div className="pdf-page" style={pageStyle}>
-                <ReportHeader />
+                <ReportHeader pageNumber={2} totalPages={2} />
+
+                {/* Clinical Responses - Part 2 (Satisfaction) */}
+                {['J4_Satisfaction'].map(screenKey => {
+                    const config = pathwayConfig[screenKey];
+                    const responses = clinicalResponses?.[screenKey] || {};
+                    if (Object.keys(responses).length === 0) return null;
+
+                    const allItems = config.sections.flatMap(s => s.items);
+                    const answeredItems = allItems.filter(item => {
+                        const val = responses[item.id];
+                        return val !== undefined && val !== null && val !== '';
+                    });
+
+                    if (answeredItems.length === 0) return null;
+
+                    return (
+                        <div key={screenKey} style={{ marginBottom: '16px' }}>
+                            <h2 style={h2Style}>Enquêtes de Satisfaction</h2>
+                            <h3 style={h3Style}>{config.title}</h3>
+                            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                                <tbody>
+                                    {answeredItems.map(item => {
+                                        const val = responses[item.id];
+                                        let displayVal = val;
+                                        if (typeof val === 'boolean') displayVal = val ? 'Oui' : 'Non';
+                                        const meta = formatMeta(screenKey, item.id);
+                                        return (
+                                            <tr key={item.id} style={{ borderBottom: '1px solid #F0F0F0' }}>
+                                                <td style={tdLabelStyle}>{item.label}</td>
+                                                <td style={tdValueStyle}>
+                                                    <div>{String(displayVal)}</div>
+                                                    {meta && (
+                                                        <div style={metaStyle}>
+                                                            {meta.dateStr} · {meta.author}
+                                                        </div>
+                                                    )}
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
+                    );
+                })}
 
                 {/* Custom Questions */}
                 {customQuestions.length > 0 && (
@@ -277,17 +343,7 @@ export default function PatientSynthesisReport({
                     </div>
                 )}
 
-                {/* Footer */}
-                <div style={{
-                    marginTop: 'auto',
-                    paddingTop: '16px',
-                    borderTop: '1px solid #EEE',
-                    textAlign: 'center',
-                    color: '#AAA',
-                    fontSize: '9px'
-                }}>
-                    SurgiLink — Solution de suivi patient pré et post-opératoire · Document confidentiel à usage médical uniquement
-                </div>
+                <ReportFooter />
             </div>
         </div>
     );

@@ -15,14 +15,32 @@ export default function EditSMSModal({ isOpen, onClose, patient, reminder, onSen
                 setMessage(reminder.custom_message);
             } else {
                 try {
+                    const getScreenPath = (screen) => {
+                        const mapping = {
+                            'J-7': 'j7',
+                            'J-2': 'j2',
+                            'J-1': 'j1-preop',
+                            'J+1': 'j1',
+                            'J+4': 'j4',
+                            'E-SATIS': 'j4',
+                            'Bienvenue': ''
+                        };
+                        return mapping[screen] || '';
+                    };
+
+                    const screenPath = getScreenPath(reminder.screen);
+                    const baseUrl = `https://surgilink.eu/patient-portal/${patient.token || ''}`;
+                    const directLink = screenPath ? `${baseUrl}/${screenPath}` : baseUrl;
+
                     const variables = {
                         first_name: patient.name?.split(' ')[0] || 'Patient',
                         procedure_date: patient.date || 'bientôt',
                         arrival_time: patient.surgery_time || '07:30',
                         clinic_name: 'SurgiLink',
                         clinic_phone: '01 44 44 44 44',
-                        checklist_link: `https://surgilink.eu/patient-portal/${patient.token || ''}`,
-                        consignes_link: `https://surgilink.eu/patient-portal/${patient.token || ''}`,
+                        checklist_link: directLink,
+                        consignes_link: directLink,
+                        esatis_link: directLink,
                         item_name: reminder.item_id ? reminder.item_id.replace(/_/g, ' ') : ''
                     };
                     const interpolated = interpolateTemplate(reminder.template_key, variables);
