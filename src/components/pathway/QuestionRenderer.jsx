@@ -545,7 +545,7 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
             )}
 
             {/* Special Doctolib Integration for Anesthesia question */}
-            {item.id === 'anesthesia_consultation' && value === false && (
+            {item.id === 'anesthesia_consultation' && value !== true && (
                 <div style={{ marginTop: 'var(--spacing-4)' }}>
                     <DoctolibButton />
                 </div>
