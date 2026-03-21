@@ -8,13 +8,14 @@ import { supabase } from '../lib/supabase';
 /**
  * Create a new custom question for a patient
  */
-export async function addCustomQuestion(patientId, questionText) {
+export async function addCustomQuestion(patientId, questionText, screen = null) {
     try {
         const { data, error } = await supabase
             .from('custom_questions')
             .insert([{
                 patient_id: patientId,
-                question_text: questionText
+                question_text: questionText,
+                screen: screen
             }])
             .select()
             .single();

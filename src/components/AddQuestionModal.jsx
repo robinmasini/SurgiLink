@@ -3,15 +3,26 @@ import { X, HelpCircle, Send, Loader } from 'lucide-react';
 
 export default function AddQuestionModal({ isOpen, onClose, onSave }) {
     const [question, setQuestion] = useState('');
+    const [screen, setScreen] = useState('ALL');
     const [isSaving, setIsSaving] = useState(false);
 
     if (!isOpen) return null;
+
+    const milestones = [
+        { id: 'ALL', label: 'Toutes les étapes' },
+        { id: 'J7', label: 'J-7 Administratif' },
+        { id: 'J2', label: 'J-2 Logistique' },
+        { id: 'J1_PreOp', label: 'J-1 Confirmation' },
+        { id: 'J1', label: 'J+1 Post-opératoire' },
+        { id: 'J4_Satisfaction', label: 'J+4 Satisfaction' },
+        { id: 'ESATIS', label: 'Enquête e-Satis' }
+    ];
 
     const handleSave = async () => {
         if (!question.trim()) return;
         setIsSaving(true);
         try {
-            await onSave(question);
+            await onSave(question, screen === 'ALL' ? null : screen);
             setQuestion('');
         } finally {
             setIsSaving(false);
@@ -36,6 +47,27 @@ export default function AddQuestionModal({ isOpen, onClose, onSave }) {
                 <div style={{ padding: 'var(--spacing-6)' }}>
                     <div style={{ marginBottom: 'var(--spacing-6)' }}>
                         <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '8px', textTransform: 'uppercase' }}>
+                            Étape du parcours
+                        </label>
+                        <select
+                            className="input"
+                            value={screen}
+                            onChange={(e) => setScreen(e.target.value)}
+                            style={{
+                                width: '100%',
+                                padding: 'var(--spacing-3)',
+                                background: 'white',
+                                marginBottom: 'var(--spacing-4)',
+                                border: '1px solid var(--color-gray-200)',
+                                borderRadius: 'var(--radius-lg)'
+                            }}
+                        >
+                            {milestones.map(m => (
+                                <option key={m.id} value={m.id}>{m.label}</option>
+                            ))}
+                        </select>
+
+                        <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '8px', textTransform: 'uppercase' }}>
                             Votre question
                         </label>
                         <textarea
@@ -43,10 +75,9 @@ export default function AddQuestionModal({ isOpen, onClose, onSave }) {
                             value={question}
                             onChange={(e) => setQuestion(e.target.value)}
                             placeholder="Ex: Avez-vous bien arrêté de fumer depuis 1 mois ?"
-                            autoFocus
                             style={{
                                 width: '100%',
-                                minHeight: '120px',
+                                minHeight: '100px',
                                 padding: 'var(--spacing-4)',
                                 resize: 'vertical',
                                 fontSize: 'var(--font-size-sm)',
@@ -55,7 +86,9 @@ export default function AddQuestionModal({ isOpen, onClose, onSave }) {
                             }}
                         />
                         <p style={{ fontSize: '11px', color: 'var(--color-gray-400)', marginTop: '8px' }}>
-                            Cette question apparaîtra directement sur le portail du patient.
+                            {screen === 'ALL'
+                                ? "Cette question apparaîtra sur l'accueil du portail."
+                                : `Cette question s'ajoutera à l'étape ${milestones.find(m => m.id === screen)?.label}.`}
                         </p>
                     </div>
 

@@ -108,6 +108,7 @@ export default function PatientESatis({ patient: propPatient, token: propToken }
                     onComplete={handleSubmit}
                     saving={saving}
                     screen="ESATIS"
+                    patientId={resolvedPatientId}
                 />
             </div>
 

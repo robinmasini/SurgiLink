@@ -308,8 +308,8 @@ export default function PatientReview() {
         }
     };
 
-    const handleAddCustomQuestion = async (text) => {
-        const res = await addCustomQuestion(id, text);
+    const handleAddCustomQuestion = async (text, screen) => {
+        const res = await addCustomQuestion(id, text, screen);
         if (res.success) {
             setIsAddQuestionModalOpen(false);
             const questions = await getCustomQuestions(id);

@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import QuestionRenderer from './QuestionRenderer';
 import { ChevronRight, ChevronLeft, CheckCircle2 } from 'lucide-react';
+import { getCustomQuestions, answerCustomQuestion } from '../../services/customQuestionService';
 
 export default function QuestionnaireFlow({
     config,
@@ -8,16 +9,48 @@ export default function QuestionnaireFlow({
     onChange,
     onComplete,
     saving,
-    screen
+    screen,
+    patientId // added patientId prop
 }) {
-    // Flatten all items from sections
-    const allItems = config.sections.flatMap(section =>
+    const [customQuestions, setCustomQuestions] = useState([]);
+    const [loadingCustom, setLoadingCustom] = useState(false);
+
+    useEffect(() => {
+        if (patientId && screen) {
+            loadCustomQuestions();
+        }
+    }, [patientId, screen]);
+
+    const loadCustomQuestions = async () => {
+        setLoadingCustom(true);
+        const allCustom = await getCustomQuestions(patientId);
+        // Filter questions for this screen OR general questions (screen === null)
+        const relevant = allCustom.filter(q => q.screen === screen || !q.screen);
+        setCustomQuestions(relevant);
+        setLoadingCustom(false);
+    };
+
+    // Flatten all items from sections + custom questions
+    const staticItems = config.sections.flatMap(section =>
         section.items.map(item => ({
             ...item,
             sectionTitle: section.title,
             sectionIcon: section.icon
         }))
     );
+
+    const dynamicItems = customQuestions.map(q => ({
+        id: `custom_${q.id}`,
+        type: 'textarea', // Custom questions are usually textual
+        label: q.question_text,
+        required: true,
+        sectionTitle: "Question complémentaire",
+        sectionIcon: "💡",
+        isCustom: true,
+        originalId: q.id
+    }));
+
+    const allItems = [...staticItems, ...dynamicItems];
 
     const [currentIndex, setCurrentIndex] = useState(0);
     const [direction, setDirection] = useState('in'); // 'in' or 'out'
@@ -69,8 +102,15 @@ export default function QuestionnaireFlow({
     };
 
     // When answer changes, we might want a slight delay before auto-advancing if it's a simple choice
-    const onQuestionAnswer = (itemId, value) => {
-        onChange(itemId, value);
+    const onQuestionAnswer = async (itemId, value) => {
+        if (currentItem.isCustom) {
+            // Save to custom_questions table
+            await answerCustomQuestion(currentItem.originalId, value);
+            // Update local responses state via parent
+            onChange(itemId, value);
+        } else {
+            onChange(itemId, value);
+        }
 
         // Ludic: If it's a yes_no or select, we can auto-advance after 500ms
         if (currentItem.type === 'yes_no' || currentItem.type === 'select' || currentItem.type === 'tri_state' || currentItem.type === 'rating') {

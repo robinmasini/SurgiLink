@@ -192,6 +192,7 @@ export default function PatientJ7({ patient: propPatient, token: propToken }) {
                     onComplete={handleSubmit}
                     saving={saving}
                     screen="J7"
+                    patientId={resolvedPatientId}
                 />
             </div>
 

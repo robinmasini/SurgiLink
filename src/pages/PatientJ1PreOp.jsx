@@ -135,7 +135,8 @@ export default function PatientJ1PreOp({ patient: propPatient, token: propToken 
                     onChange={handleChange}
                     onComplete={handleSubmit}
                     saving={saving}
-                    screen="J1PreOp"
+                    screen="J1_PreOp"
+                    patientId={resolvedPatientId}
                 />
             </div>
 
