@@ -175,6 +175,7 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
                 );
             }
 
+            case 'textarea':
             case 'text':
                 return (
                     <textarea
