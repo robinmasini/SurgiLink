@@ -68,6 +68,11 @@ export async function calculateGlobalProgress(patientId) {
         (responses || []).forEach(r => {
             const key = `${r.screen}:${r.item_id}`;
             responseMap[key] = r.response?.value;
+
+            // Handle legacy screen names for progress calculation
+            if (r.screen === 'J1PreOp') {
+                responseMap[`J1_PreOp:${r.item_id}`] = r.response?.value;
+            }
         });
 
         // 2. Count total required items and completed items + Calculate risks
