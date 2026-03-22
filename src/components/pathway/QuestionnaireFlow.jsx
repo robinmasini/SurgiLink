@@ -24,8 +24,8 @@ export default function QuestionnaireFlow({
     const loadCustomQuestions = async () => {
         setLoadingCustom(true);
         const allCustom = await getCustomQuestions(patientId);
-        // Filter questions for this screen OR general questions (screen === null)
-        const relevant = allCustom.filter(q => q.screen === screen || !q.screen);
+        // Filter strictly for this specific screen/milestone
+        const relevant = allCustom.filter(q => q.screen === screen);
         setCustomQuestions(relevant);
         setLoadingCustom(false);
     };

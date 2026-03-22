@@ -3,13 +3,12 @@ import { X, HelpCircle, Send, Loader } from 'lucide-react';
 
 export default function AddQuestionModal({ isOpen, onClose, onSave }) {
     const [question, setQuestion] = useState('');
-    const [screen, setScreen] = useState('ALL');
+    const [screen, setScreen] = useState('J7'); // Default to J7 instead of ALL
     const [isSaving, setIsSaving] = useState(false);
 
     if (!isOpen) return null;
 
     const milestones = [
-        { id: 'ALL', label: 'Toutes les étapes' },
         { id: 'J7', label: 'J-7 Administratif' },
         { id: 'J2', label: 'J-2 Logistique' },
         { id: 'J1_PreOp', label: 'J-1 Confirmation' },
@@ -86,9 +85,7 @@ export default function AddQuestionModal({ isOpen, onClose, onSave }) {
                             }}
                         />
                         <p style={{ fontSize: '11px', color: 'var(--color-gray-400)', marginTop: '8px' }}>
-                            {screen === 'ALL'
-                                ? "Cette question apparaîtra sur l'accueil du portail."
-                                : `Cette question s'ajoutera à l'étape ${milestones.find(m => m.id === screen)?.label}.`}
+                            Cette question s'ajoutera à l'étape <strong>{milestones.find(m => m.id === screen)?.label}</strong>.
                         </p>
                     </div>
 
