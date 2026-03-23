@@ -195,7 +195,8 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
                     />
                 );
 
-            case 'select': {
+            case 'select':
+            case 'scale': {
                 // Options may be plain strings OR objects { value, label }
                 const normalizedOptions = (item.options || []).map(opt =>
                     typeof opt === 'string' ? { value: opt, label: opt } : opt
@@ -215,7 +216,8 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
                                     borderRadius: 'var(--border-radius-xl)',
                                     border: value === option.value ? '2px solid var(--color-primary-600)' : '2px solid var(--color-gray-200)',
                                     justifyContent: 'center',
-                                    transition: 'all 0.2s'
+                                    transition: 'all 0.2s',
+                                    boxShadow: value === option.value ? '0 4px 6px -1px rgba(var(--color-primary-rgb), 0.2)' : 'none'
                                 }}
                             >
                                 {option.label}

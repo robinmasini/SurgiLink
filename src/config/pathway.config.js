@@ -100,9 +100,9 @@ export const pathwayConfig = {
                 title: "2. Hygiène et préparation de la peau",
                 items: [
                     {
-                        id: "hygiene_understood",
+                        id: "shower_understood",
                         type: "yes_no",
-                        label: "Avez-vous bien compris les consignes d’hygiène (2 douches au savon) et de préparation opératoire ?",
+                        label: "Avez-vous réalisé votre douche pré-opératoire (savon doux ou antiseptique) ?",
                         required: true,
                         risk_flag_rule: { type: "soft", condition: "no" }
                     }
@@ -253,7 +253,7 @@ export const pathwayConfig = {
                 title: "5. Votre avis global",
                 items: [
                     {
-                        id: "recommendation",
+                        id: "recommandation",
                         type: "select",
                         label: "Recommanderiez-vous la clinique à un proche ?",
                         options: ["Oui tout à fait", "Oui probablement", "Plutôt non", "Non"],
@@ -266,7 +266,7 @@ export const pathwayConfig = {
                 icon: "💬",
                 title: "6. Commentaire (facultatif)",
                 items: [
-                    { id: "comment", type: "text", label: "Commentaire ou suggestion pour nous améliorer", multiline: true, required: false }
+                    { id: "verbatim", type: "text", label: "Commentaire ou suggestion pour nous améliorer", multiline: true, required: false }
                 ]
             }
         ]

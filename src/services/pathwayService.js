@@ -83,7 +83,11 @@ export async function calculateGlobalProgress(patientId) {
 
         screens.forEach(screen => {
             const items = getScreenItems(screen);
-            const requiredItems = items.filter(item => item.required !== false);
+            const requiredItems = items.filter(item =>
+                item.required !== false &&
+                item.type !== 'text' &&
+                item.type !== 'verbatim'
+            );
 
             totalRequired += requiredItems.length;
 
@@ -212,7 +216,11 @@ export async function getResponses(patientId, screen) {
  */
 export async function getCompletionStatus(patientId, screen) {
     const items = getScreenItems(screen);
-    const requiredItems = items.filter(item => item.required !== false);
+    const requiredItems = items.filter(item =>
+        item.required !== false &&
+        item.type !== 'text' &&
+        item.type !== 'verbatim'
+    );
     const responses = await getResponses(patientId, screen);
 
     const completed = requiredItems.filter(item => {
