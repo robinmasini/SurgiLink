@@ -30,7 +30,8 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
     };
 
     const renderInput = () => {
-        switch (item.type) {
+        const type = (item.type || '').trim().toLowerCase();
+        switch (type) {
             case 'yes_no':
                 return (
                     <div style={{
@@ -288,7 +289,7 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
                 );
 
             default:
-                return <div>Type de question non supporté: {item.type}</div>;
+                return <div>Type de question [{item.type}] non supporté par le système.</div>;
         }
     };
 
