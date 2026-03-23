@@ -97,10 +97,12 @@ export default function CategoryReview() {
                         title="Tableau de Bord"
                         subtitle="Vue d'ensemble de vos patients et indicateurs clés"
                         hideTitleMobile={true}
+                        actions={
                             <button className="btn btn-secondary hide-mobile" onClick={() => window.location.href = 'tel:0491550000'}>
                                 <Phone size={18} />
                                 Appeler le Cabinet
                             </button>
+                        }
                     />
                 ) : (
                     <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-4)', marginBottom: 'var(--spacing-6)' }}>
