@@ -97,12 +97,10 @@ export default function CategoryReview() {
                         title="Tableau de Bord"
                         subtitle="Vue d'ensemble de vos patients et indicateurs clés"
                         hideTitleMobile={true}
-                        actions={
-                            <button className="btn btn-secondary hide-mobile">
+                            <button className="btn btn-secondary hide-mobile" onClick={() => window.location.href = 'tel:0491550000'}>
                                 <Phone size={18} />
                                 Appeler le Cabinet
                             </button>
-                        }
                     />
                 ) : (
                     <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-4)', marginBottom: 'var(--spacing-6)' }}>
@@ -171,7 +169,7 @@ export default function CategoryReview() {
 
                         {/* Stats Grid - Matching Dashboard dimensions */}
                         <div className="stat-grid">
-                            <div className="stat-card">
+                            <div className="stat-card" style={{ cursor: 'pointer' }} onClick={() => navigate('/patients')}>
                                 <div className="stat-card-icon" style={{ background: 'var(--color-primary-50)' }}>
                                     <Users size={24} style={{ color: 'var(--color-primary-500)' }} />
                                 </div>
@@ -180,7 +178,7 @@ export default function CategoryReview() {
                                 <div className="stat-card-meta">Base active</div>
                             </div>
 
-                            <div className="stat-card">
+                            <div className="stat-card" style={{ cursor: 'pointer' }} onClick={() => navigate('/review/complete')}>
                                 <div className="stat-card-icon" style={{ background: 'var(--color-success-50)' }}>
                                     <CheckCircle size={24} style={{ color: 'var(--color-success-500)' }} />
                                 </div>
@@ -191,7 +189,7 @@ export default function CategoryReview() {
                                 <div className="stat-card-meta">Dossiers OK</div>
                             </div>
 
-                            <div className="stat-card">
+                            <div className="stat-card" style={{ cursor: 'pointer' }} onClick={() => navigate('/review/required')}>
                                 <div className="stat-card-icon" style={{ background: 'var(--color-warning-50)' }}>
                                     <AlertTriangle size={24} style={{ color: 'var(--color-warning-500)' }} />
                                 </div>
@@ -202,7 +200,7 @@ export default function CategoryReview() {
                                 <div className="stat-card-meta" style={{ color: 'var(--color-danger-500)' }}>Attention requise</div>
                             </div>
 
-                            <div className="stat-card">
+                            <div className="stat-card" style={{ cursor: 'pointer' }} onClick={() => navigate('/review/weekly')}>
                                 <div className="stat-card-icon" style={{ background: 'var(--color-info-50)' }}>
                                     <Calendar size={24} style={{ color: 'var(--color-info-500)' }} />
                                 </div>
@@ -257,7 +255,12 @@ export default function CategoryReview() {
                         </thead>
                         <tbody>
                             {filteredPatients.map((patient) => (
-                                <tr key={patient.id} style={{ borderBottom: '1px solid var(--color-gray-50)' }}>
+                                <tr
+                                    key={patient.id}
+                                    style={{ borderBottom: '1px solid var(--color-gray-50)', cursor: 'pointer' }}
+                                    className="table-row-hover"
+                                    onClick={() => navigate(`/patient/${patient.id}`)}
+                                >
                                     <td style={{ padding: 'var(--spacing-4)' }}>
                                         <div style={{ fontWeight: 'var(--font-weight-medium)' }}>{patient.name}</div>
                                         <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-400)' }}>{patient.date}</div>
