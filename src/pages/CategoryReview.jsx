@@ -10,11 +10,14 @@ import {
     ChevronLeft,
     Search,
     Filter,
-    Phone
+    Phone,
+    Plus
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import welcomeCardInfirmier from '../assets/welcomecard-infirmier.png';
 import StatusBolt from '../components/StatusBolt';
+import AddPatientModal from '../components/AddPatientModal';
+import { calculateDaysUntilSurgery } from '../utils/dateUtils';
 
 const categoryConfigs = {
     'active': { title: 'Patients Actifs', icon: <Users size={24} />, color: 'var(--color-primary-500)', bg: 'var(--color-primary-50)' },
@@ -30,6 +33,7 @@ export default function CategoryReview() {
     const [patients, setPatients] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const config = categoryConfigs[category] || categoryConfigs['active'];
 
     useEffect(() => {
@@ -50,7 +54,19 @@ export default function CategoryReview() {
                     .order('created_at', { ascending: false });
 
                 if (error) throw error;
-                setPatients(data || []);
+
+                // Format patients same as Dashboard.jsx
+                const formatted = (data || []).map(patient => ({
+                    ...patient,
+                    daysUntil: calculateDaysUntilSurgery(patient.date),
+                    displayDate: patient.date ? new Date(patient.date).toLocaleDateString('fr-FR', {
+                        day: 'numeric',
+                        month: 'short',
+                        year: 'numeric'
+                    }) : 'Non définie'
+                }));
+
+                setPatients(formatted);
             } catch (err) {
                 console.error('Error loading patients:', err);
             } finally {
@@ -60,6 +76,11 @@ export default function CategoryReview() {
 
         loadPatients();
     }, []);
+
+    const handlePatientAdded = () => {
+        // Trigger reload by re-running the effect or manually calling the function if exported
+        window.location.reload(); // Simple way to ensure everything stays in sync
+    };
 
     // Filtering logic
     const filteredPatients = patients.filter(p => {
@@ -246,13 +267,29 @@ export default function CategoryReview() {
                 </div>
 
                 <div className="card">
+                    <div className="section-header-mobile">
+                        <div>
+                            <h3 style={{ marginBottom: 'var(--spacing-1)' }}>Patients en suivi</h3>
+                            <p style={{ fontSize: 'var(--font-size-sm)' }} className="hide-mobile">Liste des patients avec leur statut actuel</p>
+                        </div>
+                        <div className="section-actions-mobile">
+                            <button className="btn-outline-mobile" onClick={() => navigate('/patients')}>
+                                Voir tout
+                            </button>
+                            <button className="btn-primary-mobile" onClick={() => setIsModalOpen(true)}>
+                                <Plus size={18} /> Ajouter un patient
+                            </button>
+                        </div>
+                    </div>
+
                     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                         <thead>
                             <tr style={{ borderBottom: '1px solid var(--color-gray-100)' }}>
                                 <th style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', fontWeight: 'var(--font-weight-medium)', textTransform: 'uppercase' }}>Patient</th>
                                 <th style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', fontWeight: 'var(--font-weight-medium)', textTransform: 'uppercase' }}>Intervention</th>
+                                <th style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', fontWeight: 'var(--font-weight-medium)', textTransform: 'uppercase' }}>Date</th>
                                 <th style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', fontWeight: 'var(--font-weight-medium)', textTransform: 'uppercase' }}>Statut</th>
-                                <th style={{ textAlign: 'right', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', fontWeight: 'var(--font-weight-medium)', textTransform: 'uppercase' }}>Action</th>
+                                <th className="hide-mobile" style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', fontWeight: 'var(--font-weight-medium)', textTransform: 'uppercase' }}>Progression</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -264,28 +301,48 @@ export default function CategoryReview() {
                                     onClick={() => navigate(`/patient/${patient.id}`)}
                                 >
                                     <td style={{ padding: 'var(--spacing-4)' }}>
-                                        <div style={{ fontWeight: 'var(--font-weight-medium)' }}>{patient.name}</div>
-                                        <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-400)' }}>{patient.date}</div>
-                                    </td>
-                                    <td style={{ padding: 'var(--spacing-4)' }}>{patient.operation}</td>
-                                    <td style={{ padding: 'var(--spacing-4)' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-4)' }}>
-                                            <StatusBolt status={patient.status} />
-                                            <div className="progress-bar" style={{ width: '100px', flex: 1 }}>
-                                                <div className="progress-fill progress-fill-primary" style={{ width: `${patient.progress}%` }}></div>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)' }}>
+                                            <div style={{
+                                                width: '32px',
+                                                height: '32px',
+                                                borderRadius: '50%',
+                                                background: 'var(--color-primary-50)',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                fontSize: 'var(--font-size-xs)',
+                                                fontWeight: 'var(--font-weight-bold)',
+                                                color: 'var(--color-primary-600)'
+                                            }}>
+                                                {patient.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+                                            </div>
+                                            <div>
+                                                <div style={{ fontWeight: 'var(--font-weight-medium)' }}>{patient.name}</div>
+                                                <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-primary-600)', fontWeight: 'var(--font-weight-semibold)' }}>{patient.daysUntil}</div>
                                             </div>
                                         </div>
                                     </td>
-                                    <td style={{ padding: 'var(--spacing-4)', textAlign: 'right' }}>
-                                        <button onClick={() => navigate(`/patient/${patient.id}`)} className="btn btn-secondary btn-sm">
-                                            Consulter
-                                        </button>
+                                    <td style={{ padding: 'var(--spacing-4)', fontSize: 'var(--font-size-sm)' }}>{patient.operation}</td>
+                                    <td style={{ padding: 'var(--spacing-4)', fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-600)' }}>{patient.displayDate}</td>
+                                    <td style={{ padding: 'var(--spacing-4)' }}>
+                                        <StatusBolt status={patient.status} showLabel={true} />
+                                    </td>
+                                    <td className="hide-mobile" style={{ padding: 'var(--spacing-4)' }}>
+                                        <div className="progress-bar">
+                                            <div className={`progress-fill ${patient.progress === 100 ? 'progress-fill-success' : 'progress-fill-primary'}`} style={{ width: `${patient.progress}%` }}></div>
+                                        </div>
                                     </td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
                 </div>
+
+                <AddPatientModal
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    onSuccess={handlePatientAdded}
+                />
             </main >
         </div >
     );
