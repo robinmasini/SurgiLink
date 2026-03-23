@@ -1486,6 +1486,13 @@ textarea.input {
   border-radius: var(--radius-lg);
   font-weight: var(--font-weight-semibold);
   font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.btn-outline-mobile:hover {
+  background: var(--color-gray-50);
+  border-color: var(--color-gray-300);
 }
 
 .btn-primary-mobile {
@@ -1501,6 +1508,15 @@ textarea.input {
   align-items: center;
   justify-content: center;
   gap: var(--spacing-2);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.btn-primary-mobile:hover {
+  background: #967A5D;
+  /* Darker shade for hover */
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(166, 142, 115, 0.3);
 }
 
 /* Compact toggle for recovery section */
