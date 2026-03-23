@@ -213,9 +213,9 @@ export const pathwayConfig = {
                 icon: "🤝",
                 title: "1. L’accueil à la clinique",
                 items: [
-                    { id: "accueil_qualite", type: "rating", label: "Qualité de l’accueil et courtoisie de l’équipe" },
-                    { id: "accueil_attente", type: "rating", label: "Délai d’attente lors de votre admission" },
-                    { id: "accueil_infos", type: "rating", label: "Informations reçues à votre arrivée" }
+                    { id: "accueil_qualite", type: "rating", label: "Qualité de l’accueil et courtoisie de l’équipe", required: false },
+                    { id: "accueil_attente", type: "rating", label: "Délai d’attente lors de votre admission", required: false },
+                    { id: "accueil_infos", type: "rating", label: "Informations reçues à votre arrivée", required: false }
                 ]
             },
             {
@@ -223,10 +223,10 @@ export const pathwayConfig = {
                 icon: "🩺",
                 title: "2. Votre prise en charge médicale",
                 items: [
-                    { id: "soins_qualite", type: "rating", label: "La qualité des soins reçus" },
-                    { id: "medecins_ecoute", type: "rating", label: "L’écoute et la disponibilité des médecins" },
-                    { id: "soignant_ecoute", type: "rating", label: "L’écoute et l’accompagnement des soignants" },
-                    { id: "douleur_prise_en_charge", type: "rating", label: "La prise en charge de votre douleur" }
+                    { id: "soins_qualite", type: "rating", label: "La qualité des soins reçus", required: false },
+                    { id: "medecins_ecoute", type: "rating", label: "L’écoute et la disponibilité des médecins", required: false },
+                    { id: "soignant_ecoute", type: "rating", label: "L’écoute et l’accompagnement des soignants", required: false },
+                    { id: "douleur_prise_en_charge", type: "rating", label: "La prise en charge de votre douleur", required: false }
                 ]
             },
             {
@@ -234,8 +234,8 @@ export const pathwayConfig = {
                 icon: "🛏️",
                 title: "3. Votre confort pendant le séjour",
                 items: [
-                    { id: "confort_chambre", type: "rating", label: "Le confort de votre chambre/espace de repos" },
-                    { id: "confort_repas", type: "rating", label: "La qualité des repas ou collations" }
+                    { id: "confort_chambre", type: "rating", label: "Le confort de votre chambre/espace de repos", required: false },
+                    { id: "confort_repas", type: "rating", label: "La qualité des repas ou collations", required: false }
                 ]
             },
             {
@@ -243,8 +243,8 @@ export const pathwayConfig = {
                 icon: "📋",
                 title: "4. Organisation de votre sortie",
                 items: [
-                    { id: "sortie_explications", type: "rating", label: "Les explications concernant la suite du traitement" },
-                    { id: "sortie_clarte_docs", type: "rating", label: "La clarté des documents remis" }
+                    { id: "sortie_explications", type: "rating", label: "Les explications concernant la suite du traitement", required: false },
+                    { id: "sortie_clarte_docs", type: "rating", label: "La clarté des documents remis", required: false }
                 ]
             },
             {
@@ -286,13 +286,13 @@ export const pathwayConfig = {
                         id: "global_experience",
                         type: "rating",
                         label: "Sur une échelle de 1 à 10, quel est votre niveau de satisfaction globale concernant votre séjour ?",
-                        required: true
+                        required: false
                     },
                     {
                         id: "recommend",
                         type: "yes_no",
                         label: "Recommanderiez-vous cet établissement à vos proches ?",
-                        required: true
+                        required: false
                     }
                 ]
             }

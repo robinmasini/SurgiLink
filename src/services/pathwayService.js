@@ -69,9 +69,18 @@ export async function calculateGlobalProgress(patientId) {
             const key = `${r.screen}:${r.item_id}`;
             responseMap[key] = r.response?.value;
 
-            // Handle legacy screen names for progress calculation
+            // Handle legacy screen/item IDs for backward compatibility and 100% reachability
             if (r.screen === 'J1PreOp') {
                 responseMap[`J1_PreOp:${r.item_id}`] = r.response?.value;
+            }
+            if (r.item_id === 'hygiene_understood') {
+                responseMap[`${r.screen}:shower_understood`] = r.response?.value;
+            }
+            if (r.item_id === 'recommendation') {
+                responseMap[`${r.screen}:recommandation`] = r.response?.value;
+            }
+            if (r.item_id === 'comment') {
+                responseMap[`${r.screen}:verbatim`] = r.response?.value;
             }
         });
 

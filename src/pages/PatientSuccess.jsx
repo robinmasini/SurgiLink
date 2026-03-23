@@ -1,5 +1,5 @@
 import { Link, useParams } from 'react-router-dom';
-import { CheckCircle, ArrowLeft, Trophy, Sparkles, Loader } from 'lucide-react';
+import { CheckCircle, ArrowLeft, Trophy, Sparkles, Loader2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { usePatientId } from '../hooks/usePatientId';
 import { supabase } from '../lib/supabase';
@@ -41,9 +41,9 @@ export default function PatientSuccess() {
 
     if (loadingId || (patientId && loading)) {
         return (
-            <div className="success-page">
-                <Loader className="animate-spin" size={48} style={{ color: 'var(--color-primary-500)' }} />
-                <p style={{ marginTop: '16px', color: 'var(--color-gray-500)' }}>Calcul de votre progression...</p>
+            <div className="success-page" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+                <Loader2 className="animate-spin" size={48} style={{ color: 'var(--color-primary-500)' }} />
+                <p style={{ marginTop: '16px', color: 'var(--color-gray-500)', fontWeight: '600' }}>Calcul de votre progression...</p>
             </div>
         );
     }
