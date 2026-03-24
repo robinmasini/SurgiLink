@@ -61,7 +61,8 @@ export default function PatientReview() {
         J2: {},
         J1_PreOp: {},
         J1: {},
-        J4_Satisfaction: {}
+        J4_Satisfaction: {},
+        ESATIS: {}
     });
     const [responsesMeta, setResponsesMeta] = useState({});
     const [riskStatus, setRiskStatus] = useState('NORMAL'); // NORMAL, VIGILANCE, URGENT
@@ -96,28 +97,30 @@ export default function PatientReview() {
             setPatient(patientData);
 
             // Calculate risk status
-            const [riskJ7, riskJ2, riskJ1Pre, riskJ1, riskJ4] = await Promise.all([
+            const [riskJ7, riskJ2, riskJ1Pre, riskJ1, riskJ4, riskESatis] = await Promise.all([
                 calculateRiskFlags(id, 'J7'),
                 calculateRiskFlags(id, 'J2'),
                 calculateRiskFlags(id, 'J1_PreOp'),
                 calculateRiskFlags(id, 'J1'),
-                calculateRiskFlags(id, 'J4_Satisfaction')
+                calculateRiskFlags(id, 'J4_Satisfaction'),
+                calculateRiskFlags(id, 'ESATIS')
             ]);
 
-            const hasHardRisk = riskJ7.hard?.length > 0 || riskJ2.hard?.length > 0 || riskJ1Pre.hard?.length > 0 || riskJ1.hard?.length > 0 || riskJ4.hard?.length > 0;
-            const hasSoftRisk = riskJ7.soft?.length > 0 || riskJ2.soft?.length > 0 || riskJ1Pre.soft?.length > 0 || riskJ1.soft?.length > 0 || riskJ4.soft?.length > 0;
+            const hasHardRisk = riskJ7.hard?.length > 0 || riskJ2.hard?.length > 0 || riskJ1Pre.hard?.length > 0 || riskJ1.hard?.length > 0 || riskJ4.hard?.length > 0 || riskESatis?.hard?.length > 0;
+            const hasSoftRisk = riskJ7.soft?.length > 0 || riskJ2.soft?.length > 0 || riskJ1Pre.soft?.length > 0 || riskJ1.soft?.length > 0 || riskJ4.soft?.length > 0 || riskESatis?.soft?.length > 0;
 
             if (hasHardRisk) setRiskStatus('URGENT');
             else if (hasSoftRisk) setRiskStatus('VIGILANCE');
             else setRiskStatus('NORMAL');
 
             // Load clinical responses for all steps
-            const [respJ7, respJ2, respJ1Pre, respJ1, respJ4] = await Promise.all([
+            const [respJ7, respJ2, respJ1Pre, respJ1, respJ4, respESatis] = await Promise.all([
                 getResponses(id, 'J7'),
                 getResponses(id, 'J2'),
                 getResponses(id, 'J1_PreOp'),
                 getResponses(id, 'J1'),
-                getResponses(id, 'J4_Satisfaction')
+                getResponses(id, 'J4_Satisfaction'),
+                getResponses(id, 'ESATIS')
             ]);
 
             setClinicalResponses({
@@ -125,7 +128,8 @@ export default function PatientReview() {
                 J2: respJ2 || {},
                 J1_PreOp: respJ1Pre || {},
                 J1: respJ1 || {},
-                J4_Satisfaction: respJ4 || {}
+                J4_Satisfaction: respJ4 || {},
+                ESATIS: respESatis || {}
             });
 
             // Fetch response metadata (timestamps + user_id) for PDF
@@ -1077,32 +1081,60 @@ export default function PatientReview() {
                             </div>
 
                             {/* Satisfaction Section */}
-                            <div>
-                                <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-gray-400)', textTransform: 'uppercase', marginBottom: 'var(--spacing-4)', letterSpacing: '0.05em' }}>
-                                    Satisfaction (J+4)
-                                </div>
-                                <div className="grid-3" style={{ gap: 'var(--spacing-4)' }}>
-                                    {[
-                                        { id: 'soins_qualite', label: 'Prise en charge' },
-                                        { id: 'recommandation', label: 'Recommandation' },
-                                        { id: 'verbatim', label: 'Commentaire', fullWidth: true }
-                                    ].map(item => (
-                                        <div key={item.id} className="card" style={{
-                                            padding: 'var(--spacing-4)',
-                                            background: 'rgba(255,255,255,0.4)',
-                                            border: '1px solid var(--color-gray-100)',
-                                            gridColumn: item.fullWidth ? '1 / span 3' : 'auto'
-                                        }}>
-                                            <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', marginBottom: '4px' }}>{item.label}</div>
-                                            <div style={{
-                                                fontWeight: 'var(--font-weight-semibold)',
-                                                color: clinicalResponses.J4_Satisfaction[item.id] !== undefined ? 'var(--color-primary-600)' : 'var(--color-gray-300)',
-                                                fontStyle: clinicalResponses.J4_Satisfaction[item.id] === undefined ? 'italic' : 'normal'
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-8)' }}>
+                                <div>
+                                    <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-gray-400)', textTransform: 'uppercase', marginBottom: 'var(--spacing-4)', letterSpacing: '0.05em' }}>
+                                        Satisfaction (J+4)
+                                    </div>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-4)' }}>
+                                        {[
+                                            { id: 'soins_qualite', label: 'Prise en charge' },
+                                            { id: 'recommandation', label: 'Recommandation' },
+                                            { id: 'verbatim', label: 'Commentaire' }
+                                        ].map(item => (
+                                            <div key={item.id} className="card" style={{
+                                                padding: 'var(--spacing-4)',
+                                                background: 'rgba(255,255,255,0.4)',
+                                                border: '1px solid var(--color-gray-100)'
                                             }}>
-                                                {clinicalResponses.J4_Satisfaction[item.id] || 'Non renseigné'}
+                                                <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', marginBottom: '4px' }}>{item.label}</div>
+                                                <div style={{
+                                                    fontWeight: 'var(--font-weight-semibold)',
+                                                    color: clinicalResponses.J4_Satisfaction[item.id] !== undefined ? 'var(--color-primary-600)' : 'var(--color-gray-300)',
+                                                    fontStyle: clinicalResponses.J4_Satisfaction[item.id] === undefined ? 'italic' : 'normal'
+                                                }}>
+                                                    {clinicalResponses.J4_Satisfaction[item.id] || 'Non renseigné'}
+                                                </div>
                                             </div>
-                                        </div>
-                                    ))}
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-gray-400)', textTransform: 'uppercase', marginBottom: 'var(--spacing-4)', letterSpacing: '0.05em' }}>
+                                        Enquête e-Satis (National)
+                                    </div>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-4)' }}>
+                                        {[
+                                            { id: 'global_experience', label: 'Satisfaction Globale (1-10)' },
+                                            { id: 'recommend', label: 'Recommanderait l’établissement' }
+                                        ].map(item => (
+                                            <div key={item.id} className="card" style={{
+                                                padding: 'var(--spacing-4)',
+                                                background: 'rgba(255,255,255,0.4)',
+                                                border: '1px solid var(--color-gray-100)'
+                                            }}>
+                                                <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', marginBottom: '4px' }}>{item.label}</div>
+                                                <div style={{
+                                                    fontWeight: 'var(--font-weight-semibold)',
+                                                    color: clinicalResponses.ESATIS[item.id] !== undefined ? 'var(--color-primary-600)' : 'var(--color-gray-300)',
+                                                    fontStyle: clinicalResponses.ESATIS[item.id] === undefined ? 'italic' : 'normal'
+                                                }}>
+                                                    {clinicalResponses.ESATIS[item.id] === true ? 'OUI' : clinicalResponses.ESATIS[item.id] === false ? 'NON' : (clinicalResponses.ESATIS[item.id] || 'Non renseigné')}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1373,14 +1405,6 @@ export default function PatientReview() {
                 isOpen={isAddQuestionModalOpen}
                 onClose={() => setIsAddQuestionModalOpen(false)}
                 onSave={handleAddCustomQuestion}
-            />
-
-            <EditSMSModal
-                isOpen={isSMSModalOpen}
-                onClose={() => setIsSMSModalOpen(false)}
-                reminder={editingReminder}
-                patient={patient}
-                onUpdate={loadPatientData}
             />
             {/* Hidden Report for PDF Generation */}
             <div style={{ position: 'absolute', left: '-9999px', top: '-9999px' }}>

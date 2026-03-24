@@ -55,6 +55,18 @@ export const smsTemplates = {
         name: "Generic Item Reminder",
         message: "Bonjour {first_name}, il manque une information importante : {item_name}. Complétez votre dossier : {checklist_link}. {clinic_name}",
         variables: ['first_name', 'item_name', 'checklist_link', 'clinic_name']
+    },
+    // Custom Punctual Message (Message Libre)
+    custom_punctual: {
+        name: "Message Libre",
+        message: "Bonjour {first_name}, {manualMessage}. {clinic_name}",
+        variables: ['first_name', 'manualMessage', 'clinic_name']
+    },
+    // Custom Targeted Reminder
+    custom_reminder: {
+        name: "Rappel Personnalisé",
+        message: "Bonjour {first_name}, {manualMessage}. Lien : {checklist_link}",
+        variables: ['first_name', 'manualMessage', 'checklist_link']
     }
 };
 
