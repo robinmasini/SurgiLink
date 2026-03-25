@@ -59,7 +59,7 @@ export default function PatientTokenRoute({ children }) {
                 background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)'
             }}>
                 <div style={{ textAlign: 'center' }}>
-                    <Loader2 className="animate-spin" size={48} style={{ margin: '0 auto var(--spacing-4)', color: 'var(--color-primary-500)' }} />
+                    <Loader className="animate-spin" size={48} style={{ margin: '0 auto var(--spacing-4)', color: 'var(--color-primary-500)' }} />
                     <p style={{ color: 'var(--color-gray-600)' }}>
                         Chargement de l'accès sécurisé...
                     </p>

@@ -30,14 +30,19 @@ export default function QuestionnaireFlow({
         setLoadingCustom(false);
     };
 
-    // Flatten all items from sections + custom questions
-    const staticItems = config.sections.flatMap(section =>
-        section.items.map(item => ({
+    // Flatten all items from sections OR questions + custom questions
+    const staticItems = config.sections ?
+        config.sections.flatMap(section =>
+            section.items.map(item => ({
+                ...item,
+                sectionTitle: section.title,
+                sectionIcon: section.icon
+            }))
+        ) : (config.questions || []).map(item => ({
             ...item,
-            sectionTitle: section.title,
-            sectionIcon: section.icon
-        }))
-    );
+            sectionTitle: config.title,
+            sectionIcon: config.icon
+        }));
 
     const dynamicItems = customQuestions.map(q => ({
         id: `custom_${q.id}`,
