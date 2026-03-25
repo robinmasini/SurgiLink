@@ -657,7 +657,7 @@ export default function PatientReview() {
                                             {(patient.operation || '').split(', ').filter(Boolean).map((op, i) => (
                                                 <span key={i} className="badge" style={{
                                                     background: '#FDF7F2',
-                                                    color: '#8D6E63',
+                                                    color: '#7C3AED',
                                                     padding: '8px 24px',
                                                     border: '1px solid #EEDDCC',
                                                     fontSize: '14px',

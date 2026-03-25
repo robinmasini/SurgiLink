@@ -101,7 +101,7 @@ export default function CompactAppointmentCard({
                         border: '1px solid #EEDDCC',
                         padding: '10px 24px',
                         borderRadius: '25px',
-                        color: '#8D6E63',
+                        color: '#7C3AED',
                         fontWeight: '700',
                         fontSize: '14px',
                         display: 'flex',

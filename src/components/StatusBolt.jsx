@@ -3,70 +3,78 @@ import { Zap } from 'lucide-react';
 
 const statusConfigs = {
     'neutre': {
-        color: '#BDBDBD',
-        bg: '#F5F5F5',
-        label: 'Neutre',
-        description: 'En attente de démarrage'
+        color: 'var(--color-gray-400)',
+        bg: 'var(--color-gray-50)',
+        label: 'En attente',
+        description: 'En attente de données'
+    },
+    'stable': {
+        color: 'var(--color-success-500)',
+        bg: 'var(--color-success-50)',
+        label: 'Vigilance Standard',
+        description: 'Tout est normal'
     },
     'alerte': {
-        color: '#FF9100', // Vibrant Orange
-        bg: '#FFF3E0',
-        label: 'Alerte',
-        description: 'Non-réponse ou retard'
+        color: 'var(--color-warning-500)',
+        bg: 'var(--color-warning-50)',
+        label: 'Vigilance Particulière',
+        description: 'Attention requise'
     },
     'critique': {
-        color: '#FF1744', // Vibrant Red
-        bg: '#FFEBEE',
-        label: 'Critique',
-        description: 'Dossier critique / Retard important'
+        color: 'var(--color-danger-500)',
+        bg: 'var(--color-danger-50)',
+        label: 'Vigilance Prioritaire',
+        description: 'Action urgente requise'
     },
     'ready': {
-        color: '#00C853', // Deep Green
-        bg: '#E8F5E9',
+        color: 'var(--color-success-600)',
+        bg: 'var(--color-success-50)',
         label: 'Prêt',
         description: 'Protocole complété'
     },
     'incomplete': {
-        color: '#8D6E63', // Solid Brown (distinct from orange)
+        color: '#7C3AED', // Violet (Primary 600)
         bg: '#EFEBE9',
         label: 'En cours',
         description: 'Protocole en cours'
     }
 };
 
-export default function StatusBolt({ status, size = 20, showLabel = false, className = "" }) {
-    const config = statusConfigs[status] || statusConfigs['neutre'];
+export default function StatusBolt({ status = 'neutre', showLabel = false, showDescription = false }) {
+    const config = statusConfigs[status] || statusConfigs.neutre;
 
     return (
-        <div
-            className={`status-bolt-container ${className}`}
-            style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 'var(--spacing-2)',
-                padding: showLabel ? '4px 12px' : '6px',
-                borderRadius: 'var(--radius-full)',
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--spacing-2)' }}>
+            <div style={{
+                width: '24px',
+                height: '24px',
+                borderRadius: '50%',
                 background: config.bg,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
                 color: config.color,
-                transition: 'all 0.2s ease',
-                cursor: 'help'
-            }}
-            title={`${config.label}: ${config.description}`}
-        >
-            <Zap
-                size={size}
-                fill={status === 'neutre' ? 'none' : 'currentColor'}
-                strokeWidth={2.5}
-            />
+                boxShadow: `0 0 10px ${config.bg}`
+            }}>
+                <Zap size={14} fill="currentColor" strokeWidth={3} />
+            </div>
             {showLabel && (
-                <span style={{
-                    fontSize: 'var(--font-size-xs)',
-                    fontWeight: 'var(--font-weight-bold)',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.05em'
-                }}>
-                    {config.label}
-                </span>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <span style={{
+                        fontSize: 'var(--font-size-xs)',
+                        fontWeight: 'var(--font-weight-bold)',
+                        color: config.color,
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.025em'
+                    }}>
+                        {config.label}
+                    </span>
+                    {showDescription && (
+                        <span style={{ fontSize: '10px', color: 'var(--color-gray-500)' }}>
+                            {config.description}
+                        </span>
+                    )}
+                </div>
             )}
         </div>
     );
