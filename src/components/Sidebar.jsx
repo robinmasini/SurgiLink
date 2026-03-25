@@ -6,6 +6,7 @@ import LogoIcon from './LogoIcon';
 import practitionerAvatar from '../assets/practitioner-avatar.png';
 import {
     LayoutDashboard,
+    Stethoscope,
     Users,
     MessageSquare,
     BarChart3,
@@ -16,6 +17,7 @@ import {
 
 const navItems = [
     { path: '/dashboard', label: 'Tableau de bord', icon: LayoutDashboard },
+    { path: '/review/active', label: 'Dashboard Infirmier', icon: Stethoscope },
     { path: '/patients', label: 'Listes patients', icon: Users },
     { path: '/comments', label: 'Commentaires Patients', icon: MessageSquare },
     { path: '/stats', label: 'Statistiques', icon: BarChart3 },
