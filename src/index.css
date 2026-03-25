@@ -135,6 +135,11 @@
   --transition-normal: 200ms ease;
   --transition-slow: 300ms ease;
 
+  /* RGB Values for shadows */
+  --color-primary-rgb: 124, 58, 237;
+  --color-success-rgb: 16, 185, 129;
+  --color-danger-rgb: 239, 68, 68;
+
   /* Sidebar width */
   --sidebar-width: 260px;
   --sidebar-width-mobile: 80px;

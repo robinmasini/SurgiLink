@@ -41,15 +41,15 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
                         marginTop: 'var(--spacing-4)'
                     }}>
                         <button
-                            className={`btn btn-lg ${value === true ? 'btn-primary' : 'btn-secondary'}`}
+                            className={`btn btn-lg ${value === true ? 'btn-success' : 'btn-secondary'}`}
                             onClick={() => handleChange(true)}
                             style={{
                                 height: '80px',
                                 fontSize: 'var(--font-size-xl)',
                                 fontWeight: 'var(--font-weight-bold)',
                                 borderRadius: 'var(--radius-full)',
-                                border: value === true ? '2px solid var(--color-primary-600)' : '2px solid var(--color-gray-200)',
-                                boxShadow: value === true ? '0 10px 15px -3px rgba(var(--color-primary-rgb), 0.3)' : 'none',
+                                border: value === true ? '2px solid var(--color-success-600)' : '2px solid var(--color-gray-200)',
+                                boxShadow: value === true ? '0 10px 15px -3px rgba(var(--color-success-rgb), 0.3)' : 'none',
                                 transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
                             }}
                         >
@@ -83,24 +83,30 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
                         gap: 'var(--spacing-3)',
                         marginTop: 'var(--spacing-4)'
                     }}>
-                        {item.options.map(option => (
-                            <button
-                                key={option.value}
-                                className={`btn btn-lg ${value === option.value ? 'btn-primary' : 'btn-secondary'}`}
-                                onClick={() => handleChange(option.value)}
-                                style={{
-                                    height: '70px',
-                                    fontSize: 'var(--font-size-lg)',
-                                    fontWeight: 'var(--font-weight-semibold)',
-                                    borderRadius: 'var(--border-radius-xl)',
-                                    border: value === option.value ? '2px solid var(--color-primary-600)' : '2px solid var(--color-gray-200)',
-                                    justifyContent: 'center',
-                                    transition: 'all 0.2s'
-                                }}
-                            >
-                                {option.label}
-                            </button>
-                        ))}
+                        {item.options.map(option => {
+                            const isOui = option.label?.toLowerCase() === 'oui';
+                            return (
+                                <button
+                                    key={option.value}
+                                    className={`btn btn-lg ${value === option.value ? (isOui ? 'btn-success' : 'btn-primary') : 'btn-secondary'}`}
+                                    onClick={() => handleChange(option.value)}
+                                    style={{
+                                        height: '70px',
+                                        fontSize: 'var(--font-size-lg)',
+                                        fontWeight: 'var(--font-weight-semibold)',
+                                        borderRadius: 'var(--border-radius-xl)',
+                                        border: value === option.value
+                                            ? `2px solid var(--color-${isOui ? 'success' : 'primary'}-600)`
+                                            : '2px solid var(--color-gray-200)',
+                                        justifyContent: 'center',
+                                        transition: 'all 0.2s',
+                                        boxShadow: value === option.value ? `0 4px 6px -1px rgba(var(--color-${isOui ? 'success' : 'primary'}-rgb), 0.2)` : 'none'
+                                    }}
+                                >
+                                    {option.label}
+                                </button>
+                            );
+                        })}
                     </div>
                 );
 
@@ -204,26 +210,31 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
                 );
                 return (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-3)', marginTop: 'var(--spacing-4)' }}>
-                        {normalizedOptions.map(option => (
-                            <button
-                                key={option.value}
-                                type="button"
-                                className={`btn btn-lg ${value === option.value ? 'btn-primary' : 'btn-secondary'}`}
-                                onClick={() => handleChange(option.value)}
-                                style={{
-                                    height: '64px',
-                                    fontSize: 'var(--font-size-base)',
-                                    fontWeight: 'var(--font-weight-semibold)',
-                                    borderRadius: 'var(--border-radius-xl)',
-                                    border: value === option.value ? '2px solid var(--color-primary-600)' : '2px solid var(--color-gray-200)',
-                                    justifyContent: 'center',
-                                    transition: 'all 0.2s',
-                                    boxShadow: value === option.value ? '0 4px 6px -1px rgba(var(--color-primary-rgb), 0.2)' : 'none'
-                                }}
-                            >
-                                {option.label}
-                            </button>
-                        ))}
+                        {normalizedOptions.map(option => {
+                            const isOui = option.label?.toLowerCase() === 'oui';
+                            return (
+                                <button
+                                    key={option.value}
+                                    type="button"
+                                    className={`btn btn-lg ${value === option.value ? (isOui ? 'btn-success' : 'btn-primary') : 'btn-secondary'}`}
+                                    onClick={() => handleChange(option.value)}
+                                    style={{
+                                        height: '64px',
+                                        fontSize: 'var(--font-size-base)',
+                                        fontWeight: 'var(--font-weight-semibold)',
+                                        borderRadius: 'var(--border-radius-xl)',
+                                        border: value === option.value
+                                            ? `2px solid var(--color-${isOui ? 'success' : 'primary'}-600)`
+                                            : '2px solid var(--color-gray-200)',
+                                        justifyContent: 'center',
+                                        transition: 'all 0.2s',
+                                        boxShadow: value === option.value ? `0 4px 6px -1px rgba(var(--color-${isOui ? 'success' : 'primary'}-rgb), 0.2)` : 'none'
+                                    }}
+                                >
+                                    {option.label}
+                                </button>
+                            );
+                        })}
                     </div>
                 );
             }
