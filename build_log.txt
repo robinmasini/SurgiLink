@@ -1,0 +1,31 @@
+
+> surgilink@0.0.0 build
+> vite build
+
+vite v5.4.21 building for production...
+transforming...
+✓ 1957 modules transformed.
+rendering chunks...
+[plugin:vite:reporter] [plugin vite:reporter] 
+(!) /Users/robinmasini/Desktop/SurgiLink/src/services/reminderService.js is dynamically imported by /Users/robinmasini/Desktop/SurgiLink/src/pages/PatientReview.jsx but also statically imported by /Users/robinmasini/Desktop/SurgiLink/src/components/AddPatientModal.jsx, /Users/robinmasini/Desktop/SurgiLink/src/components/PatientPathwayTracker.jsx, /Users/robinmasini/Desktop/SurgiLink/src/pages/PatientJ1PreOp.jsx, /Users/robinmasini/Desktop/SurgiLink/src/pages/PatientJ2.jsx, /Users/robinmasini/Desktop/SurgiLink/src/pages/PatientJ7.jsx, /Users/robinmasini/Desktop/SurgiLink/src/pages/PatientReview.jsx, dynamic import will not move module into another chunk.
+
+computing gzip size...
+dist/index.html                                     0.67 kB │ gzip:   0.40 kB
+dist/assets/doctolib-logo-NaLDbqPQ.jpg             44.01 kB
+dist/assets/logo_surgilink_brown-DjX8xK5r.png      64.21 kB
+dist/assets/christophe-signature-CxApdkuL.png      67.58 kB
+dist/assets/welcome-card-v4-BMhUJgtO.jpg          298.75 kB
+dist/assets/practitioner-avatar-MFMMWl9d.png      433.01 kB
+dist/assets/welcomecard-infirmier-DKffGgIy.png    788.85 kB
+dist/assets/clinic_new-cDdDGu81.png             1,037.33 kB
+dist/assets/clinic-BF0efETm.png                 1,429.96 kB
+dist/assets/index-BxAoPmUV.css                     39.52 kB │ gzip:   7.11 kB
+dist/assets/purify.es-CFh60W_8.js                  22.77 kB │ gzip:   8.75 kB
+dist/assets/index.es-C5hfRbY-.js                  150.47 kB │ gzip:  51.26 kB
+dist/assets/index-BAjb8qV4.js                   1,192.56 kB │ gzip: 333.75 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 2.62s

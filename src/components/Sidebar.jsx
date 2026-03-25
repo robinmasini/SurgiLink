@@ -6,18 +6,21 @@ import LogoIcon from './LogoIcon';
 import practitionerAvatar from '../assets/practitioner-avatar.png';
 import {
     LayoutDashboard,
-    Stethoscope,
     Users,
-    TrendingUp,
-    Eye,
+    MessageSquare,
+    BarChart3,
+    UserCog,
+    User,
     LogOut
 } from 'lucide-react';
 
 const navItems = [
-    { path: '/dashboard', label: 'Dashboard Cabinet', icon: LayoutDashboard },
-    { path: '/review/active', label: 'Dashboard Infirmier', icon: Stethoscope },
-    { path: '/patients', label: 'Patients Actifs', icon: Users },
-    { path: '/rentabilite', label: 'Rentabilité & ROI', icon: TrendingUp },
+    { path: '/dashboard', label: 'Tableau de bord', icon: LayoutDashboard },
+    { path: '/patients', label: 'Listes patients', icon: Users },
+    { path: '/comments', label: 'Commentaires Patients', icon: MessageSquare },
+    { path: '/stats', label: 'Statistiques', icon: BarChart3 },
+    { path: '/users', label: 'Utilisateurs', icon: UserCog },
+    { path: '/account', label: 'Mon compte', icon: User },
 ];
 
 export default function Sidebar() {

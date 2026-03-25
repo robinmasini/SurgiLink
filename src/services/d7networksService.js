@@ -2,7 +2,7 @@ import { supabase } from '../lib/supabase';
 import { smsTemplates, interpolateTemplate } from '../config/smsTemplates';
 
 const D7_API_TOKEN = import.meta.env.VITE_D7_API_TOKEN;
-const D7_SENDER_ID = import.meta.env.VITE_D7_SENDER_ID || 'SurgiLink';
+const D7_SENDER_ID = import.meta.env.VITE_D7_SENDER_ID || 'SMS';
 
 export async function sendSMS(templateKey, to, variables, metadata = {}) {
     try {

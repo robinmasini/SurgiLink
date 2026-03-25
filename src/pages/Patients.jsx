@@ -4,34 +4,34 @@ import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import AddPatientModal from '../components/AddPatientModal';
 import EditPatientModal from '../components/EditPatientModal';
-import { Users, Search, Filter, Plus, Edit2, Trash2 } from 'lucide-react';
+import {
+    Users,
+    Search,
+    Filter,
+    Plus,
+    ChevronDown,
+    MoreHorizontal,
+    Phone,
+    Calendar,
+    MessageSquare,
+    AlertCircle,
+    Check
+} from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { calculateDaysUntilSurgery } from '../utils/dateUtils';
-import StatusBolt from '../components/StatusBolt';
-
-const getStatusBadge = (status) => {
-    return <StatusBolt status={status} showLabel={true} />;
-};
-
-const getDaysStyle = (daysUntil) => {
-    if (daysUntil.startsWith('J+')) {
-        return { color: 'var(--color-info-500)', fontWeight: 'var(--font-weight-semibold)' };
-    }
-    if (daysUntil === 'J-1' || daysUntil === 'J-0') {
-        return { color: 'var(--color-success-500)', fontWeight: 'var(--font-weight-semibold)' };
-    }
-    return { color: 'var(--color-primary-500)', fontWeight: 'var(--font-weight-semibold)' };
-};
 
 export default function Patients() {
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
+    const [activeTab, setActiveTab] = useState('Tous');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [selectedPatient, setSelectedPatient] = useState(null);
     const [patientsList, setPatientsList] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
+
+    const tabs = ['J-3', 'J-2', 'J-1', 'Interventions du jour', 'J+1', 'J+2', 'J+3', 'Tous', 'Archivés'];
 
     // Load patients from Supabase
     useEffect(() => {
@@ -42,25 +42,40 @@ export default function Patients() {
         setIsLoading(true);
         setError(null);
         try {
-            const { data, error } = await supabase
+            const { data, error: pError } = await supabase
                 .from('patients')
                 .select('*')
-                .order('created_at', { ascending: false });
+                .order('date', { ascending: true });
 
-            if (error) throw error;
+            if (pError) throw pError;
 
-            // Format dates and calculate days until surgery
-            const formattedPatients = (data || []).map(patient => ({
-                ...patient,
-                daysUntil: calculateDaysUntilSurgery(patient.date),
-                date: patient.date ? new Date(patient.date).toLocaleDateString('fr-FR', {
-                    day: 'numeric',
-                    month: 'short',
-                    year: 'numeric'
-                }) : 'Non définie'
+            // Enrich patients with last SMS and risk data
+            const enrichedData = await Promise.all((data || []).map(async (patient) => {
+                const daysUntil = calculateDaysUntilSurgery(patient.date);
+
+                // Get last SMS
+                const { data: smsData } = await supabase
+                    .from('sms_logs')
+                    .select('sent_at')
+                    .eq('patient_id', patient.id)
+                    .order('sent_at', { ascending: false })
+                    .limit(1);
+
+                // Get risk flags / responses for tags
+                const { data: respData } = await supabase
+                    .from('pathway_responses')
+                    .select('item_id, response_value')
+                    .eq('patient_id', patient.id);
+
+                return {
+                    ...patient,
+                    daysUntil,
+                    lastSMS: smsData?.[0]?.sent_at || null,
+                    responses: respData || []
+                };
             }));
 
-            setPatientsList(formattedPatients);
+            setPatientsList(enrichedData);
         } catch (err) {
             console.error('Error loading patients:', err);
             setError(err.message);
@@ -69,228 +84,229 @@ export default function Patients() {
         }
     };
 
-    const handlePatientAdded = (newPatient) => {
-        // Reload patients to get the freshest data
-        loadPatients();
+    const getPatientTags = (patient) => {
+        const tags = [];
+        const resps = patient.responses || [];
+
+        // Logic for tags based on responses (simulated from screenshot)
+        const visionFlag = resps.find(r => r.item_id === 'vision_status' && r.response_value === 'degraded');
+        if (visionFlag) tags.push({ label: 'Vision dégradée', type: 'danger' });
+
+        const painFlag = resps.find(r => r.item_id === 'pain_level' && parseInt(r.response_value) >= 7);
+        if (painFlag) tags.push({ label: 'Douleur déclarée', type: 'warning' });
+
+        const needContact = resps.length > 0 && !resps.find(r => r.item_id === 'contacted');
+        if (needContact && tags.length > 0) tags.push({ label: 'À contacter', type: 'info' });
+
+        const noPain = resps.find(r => r.item_id === 'pain_level' && parseInt(r.response_value) <= 2);
+        if (noPain) tags.push({ label: 'Pas de douleur', type: 'success' });
+
+        return tags;
     };
 
-    const handlePatientUpdated = (updatedPatient) => {
-        // Reload patients to get the freshest data
-        loadPatients();
-    };
+    const filteredPatients = patientsList.filter(p => {
+        const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            p.operation.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const handleEditClick = (e, patient) => {
-        e.stopPropagation(); // Prevent navigation to patient details
-        setSelectedPatient(patient);
-        setIsEditModalOpen(true);
-    };
+        if (activeTab === 'Tous') return matchesSearch;
+        if (activeTab === 'Archivés') return matchesSearch && p.status === 'archived';
+        if (activeTab === 'Interventions du jour') return matchesSearch && p.daysUntil === 'J-0';
 
-    const handleDeletePatient = async (e, patientId, patientName) => {
-        e.stopPropagation(); // Prevent navigation
-        if (!confirm(`Supprimer le patient ${patientName} ? Cette action supprimera également tout son historique et ses documents.`)) {
-            return;
-        }
-
-        try {
-            const { error } = await supabase
-                .from('patients')
-                .delete()
-                .eq('id', patientId);
-
-            if (error) throw error;
-
-            alert('Patient supprimé');
-            setPatientsList(prev => prev.filter(p => p.id !== patientId));
-        } catch (err) {
-            console.error('Error deleting patient:', err);
-            alert(`Erreur: ${err.message}`);
-        }
-    };
-
-    const filteredPatients = patientsList.filter(p =>
-        p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.operation.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-
+        return matchesSearch && p.daysUntil === activeTab;
+    });
 
     return (
-        <div style={{ display: 'flex' }}>
+        <div style={{ display: 'flex', minHeight: '100vh', background: '#F8FAFC' }}>
             <Sidebar />
-            <main className="main-content">
-                <Header
-                    title="Patients"
-                    subtitle="Gestion et suivi de vos patients"
-                />
-
-                {/* Search and Filters */}
-                <div style={{ display: 'flex', gap: 'var(--spacing-4)', marginBottom: 'var(--spacing-6)' }}>
-                    <div style={{ flex: 1, position: 'relative' }}>
-                        <Search
-                            size={18}
-                            style={{
-                                position: 'absolute',
-                                left: '14px',
-                                top: '50%',
-                                transform: 'translateY(-50%)',
-                                color: 'var(--color-gray-400)'
-                            }}
-                        />
-                        <input
-                            type="text"
-                            className="input"
-                            placeholder="Rechercher un patient..."
-                            style={{ paddingLeft: '44px' }}
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
+            <main style={{ flex: 1, padding: 'var(--spacing-8)', marginLeft: 'var(--sidebar-width)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-8)' }}>
+                    <div>
+                        <h1 style={{ fontSize: '28px', fontWeight: '800', color: '#1E293B', marginBottom: '4px' }}>Liste patients</h1>
+                        <p style={{ color: '#64748B', fontSize: '14px' }}>Nombre de patient: {patientsList.length}</p>
                     </div>
-                    <button className="btn btn-secondary" onClick={() => alert('Filtres bientôt disponibles')}>
-                        <Filter size={16} />
-                        Filtres
-                    </button>
-                    <button className="btn btn-primary" onClick={() => setIsModalOpen(true)}>
-                        <Plus size={16} />
-                        Nouveau patient
+                    <button
+                        className="btn"
+                        onClick={() => setIsModalOpen(true)}
+                        style={{
+                            background: 'var(--color-accent-600)',
+                            color: 'white',
+                            borderRadius: '12px',
+                            padding: '12px 20px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            fontWeight: '600',
+                            boxShadow: '0 4px 12px rgba(124, 58, 237, 0.2)'
+                        }}
+                    >
+                        <Plus size={18} />
+                        Ajouter un patient
                     </button>
                 </div>
 
-                {/* Loading State */}
-                {isLoading && (
-                    <div style={{ textAlign: 'center', padding: 'var(--spacing-12)', color: 'var(--color-gray-400)' }}>
-                        <div className="spinner" style={{ margin: '0 auto var(--spacing-4)' }}></div>
-                        <p>Chargement des patients...</p>
-                    </div>
-                )}
+                {/* Tabs */}
+                <div style={{
+                    display: 'flex',
+                    gap: 'var(--spacing-2)',
+                    marginBottom: 'var(--spacing-6)',
+                    borderBottom: '1px solid #E2E8F0',
+                    paddingBottom: '2px',
+                    overflowX: 'auto'
+                }}>
+                    {tabs.map(tab => (
+                        <button
+                            key={tab}
+                            onClick={() => setActiveTab(tab)}
+                            style={{
+                                padding: '12px 20px',
+                                fontSize: '14px',
+                                fontWeight: activeTab === tab ? '700' : '500',
+                                color: activeTab === tab ? 'var(--color-accent-600)' : '#64748B',
+                                borderBottom: activeTab === tab ? '3px solid var(--color-accent-600)' : '3px solid transparent',
+                                background: 'none',
+                                borderTop: 'none',
+                                borderLeft: 'none',
+                                borderRight: 'none',
+                                transition: 'all 0.2s ease',
+                                whiteSpace: 'nowrap',
+                                cursor: 'pointer'
+                            }}
+                        >
+                            {tab}
+                        </button>
+                    ))}
+                </div>
 
-                {/* Error State */}
-                {error && !isLoading && (
-                    <div className="card" style={{ padding: 'var(--spacing-6)', textAlign: 'center', border: '1px solid var(--color-danger-200)', background: 'var(--color-danger-50)' }}>
-                        <p style={{ color: 'var(--color-danger-600)', marginBottom: 'var(--spacing-4)' }}>
-                            ❌ Erreur lors du chargement des patients
-                        </p>
-                        <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-600)', marginBottom: 'var(--spacing-4)' }}>
-                            {error}
-                        </p>
-                        <button className="btn btn-primary" onClick={loadPatients}>Réessayer</button>
-                    </div>
-                )}
+                {/* Search */}
+                <div style={{ position: 'relative', marginBottom: 'var(--spacing-6)' }}>
+                    <Search size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
+                    <input
+                        type="text"
+                        placeholder="Rechercher par nom ou opération..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        style={{
+                            width: '100%',
+                            padding: '14px 14px 14px 48px',
+                            borderRadius: '12px',
+                            border: '1px solid #E2E8F0',
+                            fontSize: '15px',
+                            background: 'white',
+                            outline: 'none',
+                            transition: 'border-color 0.2s',
+                        }}
+                    />
+                </div>
 
-                {/* Patients Grid */}
-                {!isLoading && !error && (
-                    <div className="grid-3">
-                        {filteredPatients.length > 0 ? filteredPatients.map((patient) => (
-                            <div
-                                key={patient.id}
-                                className="card glass-effect animate-scale"
-                                style={{
-                                    cursor: 'pointer',
-                                    padding: 'var(--spacing-5)',
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    transition: 'all 0.3s ease',
-                                    height: '100%'
-                                }}
-                                onClick={() => navigate(`/patient/${patient.id}`)}
-                            >
-                                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--spacing-4)', marginBottom: 'var(--spacing-4)' }}>
-                                    <div style={{
-                                        width: '48px',
-                                        height: '48px',
-                                        borderRadius: '50%',
-                                        background: 'linear-gradient(135deg, var(--color-primary-100), var(--color-primary-200))',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        fontWeight: 'var(--font-weight-black)',
-                                        color: 'var(--color-primary-600)',
-                                        fontSize: 'var(--font-size-md)',
-                                        flexShrink: 0
-                                    }}>
-                                        {patient.name.split(' ').map(n => n[0]).join('')}
-                                    </div>
-                                    <div style={{ flex: 1, minWidth: 0 }}>
-                                        <h4 style={{
-                                            marginBottom: 'var(--spacing-1)',
-                                            fontSize: 'var(--font-size-lg)',
-                                            fontWeight: 'var(--font-weight-black)',
-                                            whiteSpace: 'nowrap',
-                                            overflow: 'hidden',
-                                            textOverflow: 'ellipsis'
-                                        }}>{patient.name}</h4>
-                                        <div style={{ ...getDaysStyle(patient.daysUntil), fontSize: 'var(--font-size-xs)' }}>{patient.daysUntil} • {patient.operation}</div>
-                                    </div>
-                                </div>
-
-                                <div style={{ marginBottom: 'var(--spacing-4)' }}>
-                                    {getStatusBadge(patient.status)}
-                                </div>
-
-                                <div style={{
-                                    padding: 'var(--spacing-4)',
-                                    background: 'var(--color-gray-50)',
-                                    borderRadius: 'var(--radius-lg)',
-                                    fontSize: 'var(--font-size-sm)',
-                                    color: 'var(--color-gray-600)',
-                                    flex: 1,
-                                    marginBottom: 'var(--spacing-4)'
-                                }}>
-                                    <div style={{ marginBottom: 'var(--spacing-2)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                        📅 {patient.date}
-                                    </div>
-                                    <div style={{ marginBottom: 'var(--spacing-2)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                        📱 {patient.phone}
-                                    </div>
-                                    <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                        ✉️ {patient.email}
-                                    </div>
-                                </div>
-
-                                <div style={{
-                                    display: 'flex',
-                                    gap: 'var(--spacing-2)',
-                                    borderTop: '1px solid var(--color-gray-100)',
-                                    paddingTop: 'var(--spacing-4)',
-                                    marginTop: 'auto'
-                                }}>
-                                    <button
-                                        onClick={(e) => handleEditClick(e, patient)}
-                                        className="btn btn-secondary btn-sm"
-                                        style={{ flex: 1, height: '36px' }}
-                                    >
-                                        <Edit2 size={14} style={{ marginRight: '6px' }} />
-                                        Modifier
-                                    </button>
-                                    <button
-                                        onClick={(e) => handleDeletePatient(e, patient.id, patient.name)}
-                                        className="btn btn-secondary btn-sm btn-hover-danger"
-                                        style={{ width: '36px', height: '36px', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                                        title="Supprimer"
-                                    >
-                                        <Trash2 size={14} />
-                                    </button>
-                                </div>
-                            </div>
-                        )) : (
-                            <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: 'var(--spacing-12)', color: 'var(--color-gray-400)' }}>
-                                <Users size={48} style={{ marginBottom: 'var(--spacing-4)', opacity: 0.2 }} />
-                                <p style={{ marginBottom: 'var(--spacing-4)' }}>
-                                    {searchTerm ? 'Aucun patient ne correspond à votre recherche.' : 'Aucun patient pour le moment.'}
-                                </p>
-                                {!searchTerm && (
-                                    <button className="btn btn-primary" onClick={() => setIsModalOpen(true)}>
-                                        <Plus size={16} />
-                                        Créer votre premier patient
-                                    </button>
-                                )}
-                            </div>
-                        )}
-                    </div>
-                )}
+                {/* Table */}
+                <div className="card" style={{ padding: 0, overflow: 'hidden', border: '1px solid #E2E8F0', borderRadius: '16px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                        <thead>
+                            <tr style={{ background: '#F8FAFC', borderBottom: '1px solid #E2E8F0' }}>
+                                <th style={{ padding: '16px 20px', fontSize: '13px', color: '#64748B', fontWeight: '700', textTransform: 'uppercase' }}>ID <ChevronDown size={14} /></th>
+                                <th style={{ padding: '16px 20px', fontSize: '13px', color: '#64748B', fontWeight: '700', textTransform: 'uppercase' }}>Patient <ChevronDown size={14} /></th>
+                                <th style={{ padding: '16px 20px', fontSize: '13px', color: '#64748B', fontWeight: '700', textTransform: 'uppercase' }}>Suivis actifs <ChevronDown size={14} /></th>
+                                <th style={{ padding: '16px 20px', fontSize: '13px', color: '#64748B', fontWeight: '700', textTransform: 'uppercase' }}>Rendez-vous à venir <ChevronDown size={14} /></th>
+                                <th style={{ padding: '16px 20px', fontSize: '13px', color: '#64748B', fontWeight: '700', textTransform: 'uppercase' }}>Dernier envoi <ChevronDown size={14} /></th>
+                                <th style={{ padding: '16px 20px', fontSize: '13px', color: '#64748B', fontWeight: '700', textTransform: 'uppercase' }}>Retours patient <ChevronDown size={14} /></th>
+                                <th style={{ padding: '16px 20px', fontSize: '13px', color: '#64748B', fontWeight: '700', textTransform: 'uppercase' }}>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {isLoading ? (
+                                <tr><td colSpan="7" style={{ padding: '40px', textAlign: 'center', color: '#64748B' }}>Chargement...</td></tr>
+                            ) : filteredPatients.length === 0 ? (
+                                <tr><td colSpan="7" style={{ padding: '40px', textAlign: 'center', color: '#64748B' }}>Aucun patient trouvé.</td></tr>
+                            ) : filteredPatients.map((p, idx) => (
+                                <tr
+                                    key={p.id}
+                                    style={{ borderBottom: '1px solid #F1F5F9', cursor: 'pointer', transition: 'background 0.2s' }}
+                                    onClick={() => navigate(`/patient/${p.id}`)}
+                                >
+                                    <td style={{ padding: '20px', fontSize: '14px', color: '#64748B' }}>{String(idx + 1).padStart(3, '0')}</td>
+                                    <td style={{ padding: '20px' }}>
+                                        <div style={{ fontWeight: '700', color: '#1E293B', fontSize: '15px' }}>{p.name}</div>
+                                        <div style={{ color: '#64748B', fontSize: '13px', marginTop: '4px' }}>{p.phone}</div>
+                                    </td>
+                                    <td style={{ padding: '20px', fontSize: '14px', color: '#475569' }}>
+                                        {p.operation}
+                                    </td>
+                                    <td style={{ padding: '20px' }}>
+                                        <div style={{ fontSize: '14px', color: '#475569' }}>{new Date(p.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
+                                        <div style={{ fontSize: '13px', color: '#94A3B8', marginTop: '4px' }}>{p.surgery_time || '08:00'}</div>
+                                        {p.status === 'treated' && (
+                                            <div style={{
+                                                display: 'inline-flex',
+                                                alignItems: 'center',
+                                                gap: '4px',
+                                                background: '#DCFCE7',
+                                                color: '#166534',
+                                                fontSize: '11px',
+                                                fontWeight: '700',
+                                                padding: '2px 8px',
+                                                borderRadius: '6px',
+                                                marginTop: '6px'
+                                            }}>
+                                                <Check size={12} /> Traité
+                                            </div>
+                                        )}
+                                    </td>
+                                    <td style={{ padding: '20px', fontSize: '14px', color: '#475569' }}>
+                                        {p.lastSMS ? new Date(p.lastSMS).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-'}
+                                    </td>
+                                    <td style={{ padding: '20px' }}>
+                                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                                            {getPatientTags(p).map((tag, i) => (
+                                                <span
+                                                    key={i}
+                                                    style={{
+                                                        padding: '4px 10px',
+                                                        borderRadius: '8px',
+                                                        fontSize: '12px',
+                                                        fontWeight: '700',
+                                                        background: tag.type === 'danger' ? '#FEE2E2' : tag.type === 'warning' ? '#FFEDD5' : tag.type === 'info' ? '#E0E7FF' : '#DCFCE7',
+                                                        color: tag.type === 'danger' ? '#B91C1C' : tag.type === 'warning' ? '#C2410C' : tag.type === 'info' ? '#4338CA' : '#15803D',
+                                                        display: 'inline-flex',
+                                                        alignItems: 'center',
+                                                        gap: '6px'
+                                                    }}
+                                                >
+                                                    {tag.label} <span style={{ opacity: 0.6 }}>✕</span>
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </td>
+                                    <td style={{ padding: '20px' }}>
+                                        <button
+                                            className="btn"
+                                            onClick={(e) => { e.stopPropagation(); navigate(`/patient/${p.id}`); }}
+                                            style={{
+                                                background: '#334155',
+                                                color: 'white',
+                                                padding: '8px 16px',
+                                                borderRadius: '20px',
+                                                fontSize: '13px',
+                                                fontWeight: '700',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '6px',
+                                                border: 'none',
+                                                cursor: 'pointer'
+                                            }}
+                                        >
+                                            Action <ChevronDown size={14} style={{ transform: 'rotate(-90deg)' }} />
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
 
                 <AddPatientModal
                     isOpen={isModalOpen}
                     onClose={() => setIsModalOpen(false)}
-                    onPatientAdded={handlePatientAdded}
+                    onPatientAdded={loadPatients}
                 />
 
                 <EditPatientModal
@@ -300,7 +316,7 @@ export default function Patients() {
                         setSelectedPatient(null);
                     }}
                     patient={selectedPatient}
-                    onPatientUpdated={handlePatientUpdated}
+                    onPatientUpdated={loadPatients}
                 />
             </main>
         </div>

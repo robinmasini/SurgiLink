@@ -23,15 +23,15 @@
   --color-gray-800: #1F2937;
   --color-gray-900: #111827;
 
-  /* Primary - Lighter Premium Brown */
-  --color-primary-50: #FCFBF9;
-  --color-primary-100: #F7F3EF;
-  --color-primary-200: #EDE6DF;
-  --color-primary-300: #DECFC0;
-  --color-primary-400: #CEB8A1;
-  --color-primary-500: #B3967A;
-  --color-primary-600: #967A5D;
-  --color-primary-700: #7A614A;
+  /* Primary - Medical Premium Palette (Blue-Violet Rebrand) */
+  --color-primary-50: #F5F3FF;
+  --color-primary-100: #EDE9FE;
+  --color-primary-200: #DDD6FE;
+  --color-primary-300: #C4B5FD;
+  --color-primary-400: #A78BFA;
+  --color-primary-500: #8B5CF6;
+  --color-primary-600: #7C3AED;
+  --color-primary-700: #6D28D9;
 
   /* Success - Soft Green */
   --color-success-50: #ECFDF5;
@@ -61,6 +61,21 @@
   --color-info-100: #CFFAFE;
   --color-info-400: #22D3EE;
   --color-info-500: #06B6D4;
+
+  /* New Accent Palette - Blue-Violet (AllianceLAB style) */
+  --color-accent-50: #F5F3FF;
+  --color-accent-100: #EDE9FE;
+  --color-accent-200: #DDD6FE;
+  --color-accent-300: #C4B5FD;
+  --color-accent-400: #A78BFA;
+  --color-accent-500: #8B5CF6;
+  --color-accent-600: #7C3AED;
+  --color-accent-700: #6D28D9;
+  --color-accent-800: #5B21B6;
+  --color-accent-900: #4C1D95;
+
+  --gradient-accent: linear-gradient(135deg, #7C3AED 0%, #6366F1 100%);
+  --gradient-sidebar: linear-gradient(180deg, #7C3AED 0%, #4C1D95 100%);
 
   /* Brown/Bronze accent */
   --color-purple-500: #A67C52;
@@ -750,14 +765,12 @@ textarea.input {
   top: 0;
   bottom: 0;
   width: var(--sidebar-width);
-  background: rgba(243, 244, 246, 0.75);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: var(--gradient-sidebar);
   padding: var(--spacing-6);
   display: flex;
   flex-direction: column;
   z-index: 100;
-  border-right: 1px solid rgba(0, 0, 0, 0.05);
+  border-right: none;
 }
 
 .sidebar-close-btn {
@@ -771,7 +784,7 @@ textarea.input {
   justify-content: center;
   padding: var(--spacing-4) 0 var(--spacing-8);
   margin-bottom: var(--spacing-6);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .sidebar-logo-img {
@@ -794,7 +807,7 @@ textarea.input {
   align-items: center;
   gap: var(--spacing-3);
   padding: var(--spacing-3) var(--spacing-4);
-  color: var(--color-gray-600);
+  color: rgba(255, 255, 255, 0.7);
   border-radius: var(--radius-lg);
   cursor: pointer;
   transition: all var(--transition-fast);
@@ -804,14 +817,13 @@ textarea.input {
 }
 
 .sidebar-item:hover {
-  background: rgba(0, 0, 0, 0.05);
-  color: var(--color-primary-600);
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--color-white);
 }
 
 .sidebar-item.active {
-  background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-600));
+  background: rgba(255, 255, 255, 0.2);
   color: var(--color-white);
-  box-shadow: 0 4px 12px rgba(179, 150, 122, 0.2);
 }
 
 .sidebar-item-icon {
