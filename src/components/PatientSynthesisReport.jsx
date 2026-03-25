@@ -1,7 +1,7 @@
 import React from 'react';
 import { pathwayConfig } from '../config/pathway.config';
 import { formatDateFR, formatDateTimeFR } from '../utils/dateUtils';
-import logoSurgilink from '../assets/logo_surgilink_brown.png';
+import logoSurgilink from '../assets/logo_surgilink.png';
 
 export default function PatientSynthesisReport({
     patient,
@@ -58,11 +58,11 @@ export default function PatientSynthesisReport({
 
     const h2Style = {
         fontSize: '13px',
-        borderBottom: '2px solid #8D6E63',
+        borderBottom: '2px solid #7C3AED',
         paddingBottom: '5px',
         marginTop: '16px',
         marginBottom: '10px',
-        color: '#8D6E63',
+        color: '#7C3AED',
         fontWeight: '700'
     };
 
@@ -147,7 +147,7 @@ export default function PatientSynthesisReport({
             </div>
             <div>
                 <div style={{ fontSize: '9px', color: '#888', textTransform: 'uppercase', fontWeight: '700', marginBottom: '3px' }}>Intervention</div>
-                <div style={{ fontSize: '13px', fontWeight: '700', color: '#8D6E63' }}>{patient.operation}</div>
+                <div style={{ fontSize: '13px', fontWeight: '700', color: '#7C3AED' }}>{patient.operation}</div>
                 <div style={{ color: '#444' }}>Date : {patient.date ? formatDateFR(patient.date) : 'Non définie'}</div>
                 <div style={{ fontWeight: '600', marginTop: '4px' }}>
                     Statut : <span style={{ color: patient.status === 'critique' ? '#D32F2F' : patient.status === 'ready' ? '#2E7D32' : '#E65100' }}>

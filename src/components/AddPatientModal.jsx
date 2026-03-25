@@ -96,8 +96,8 @@ export default function AddPatientModal({ isOpen, onClose, onPatientAdded }) {
 
     return (
         <div className="modal-backdrop" onClick={onClose}>
-            <div className="liquid-glass-modal" style={{ width: '100%', maxWidth: '500px' }} onClick={e => e.stopPropagation()}>
-                <div style={{ padding: 'var(--spacing-6)', borderBottom: '1px solid rgba(0,0,0,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div className="liquid-glass-modal" style={{ width: '100%', maxWidth: '440px' }} onClick={e => e.stopPropagation()}>
+                <div style={{ padding: 'var(--spacing-5)', borderBottom: '1px solid rgba(0,0,0,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)' }}>
                         <div className="card-icon card-icon-primary" style={{ width: '32px', height: '32px' }}>
                             <Plus size={18} />
@@ -109,8 +109,8 @@ export default function AddPatientModal({ isOpen, onClose, onPatientAdded }) {
                     </button>
                 </div>
 
-                <div style={{ padding: 'var(--spacing-6)' }}>
-                    <div style={{ display: 'grid', gap: 'var(--spacing-4)' }}>
+                <div style={{ padding: '0 var(--spacing-5) var(--spacing-5) var(--spacing-5)' }}>
+                    <div style={{ display: 'grid', gap: 'var(--spacing-3)' }}>
                         <div className="grid-2">
                             <div>
                                 <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Prénom</label>
