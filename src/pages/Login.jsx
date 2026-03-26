@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import LogoWhite from '../components/LogoWhite';
-import favicon from '/favicon.png';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Mail, Lock, ArrowRight, User, Activity } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
@@ -10,7 +9,7 @@ export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [userType, setUserType] = useState('practitioner'); // practitioner or nurse
-    const [isLoading, setIsLoading] = useState(true); // Preloader
+    const [isLoading, setIsLoading] = useState(false); // Disable preloader for debugging
     const [isAuthenticating, setIsAuthenticating] = useState(false); // Login process
 
     useEffect(() => {
