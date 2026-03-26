@@ -8,60 +8,49 @@ export default function ProtectedRoute({ children, requiredRole }) {
     const [userRole, setUserRole] = useState(null);
 
     useEffect(() => {
-        let mounted = true;
+        let isMounted = true;
 
         const checkAuth = async () => {
-            if (!supabase) {
-                console.error('Supabase client not initialized in ProtectedRoute');
-                setIsLoading(false);
-                return;
-            }
             try {
-                const { data: { session: currentSession } } = await supabase.auth.getSession();
-                if (!mounted) return;
+                const { data: { session } } = await supabase.auth.getSession();
+                if (!isMounted) return;
 
-                setSession(currentSession);
+                setSession(session);
 
-                if (currentSession) {
-                    const { data: profile, error: profileError } = await supabase
+                if (session) {
+                    const { data: profile } = await supabase
                         .from('profiles')
                         .select('role')
-                        .eq('id', currentSession.user.id)
+                        .eq('id', session.user.id)
                         .single();
 
-                    if (!profileError && profile && mounted) {
+                    if (isMounted && profile) {
                         setUserRole(profile.role);
                     }
                 }
             } catch (err) {
                 console.error('Auth check error:', err);
             } finally {
-                if (mounted) setIsLoading(false);
+                if (isMounted) setIsLoading(false);
             }
         };
 
         checkAuth();
 
-        if (supabase) {
-            const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-                if (mounted) {
-                    setSession(session);
-                    if (!session) {
-                        setUserRole(null);
-                        setIsLoading(false);
-                    } else {
-                        checkAuth();
-                    }
-                }
-            });
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+            if (!isMounted) return;
+            setSession(session);
+            if (!session) {
+                setUserRole(null);
+            } else {
+                checkAuth();
+            }
+        });
 
-            return () => {
-                mounted = false;
-                subscription.unsubscribe();
-            };
-        } else {
-            return () => { mounted = false; };
-        }
+        return () => {
+            isMounted = false;
+            subscription.unsubscribe();
+        };
     }, []);
 
     if (isLoading) {
@@ -71,8 +60,8 @@ export default function ProtectedRoute({ children, requiredRole }) {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                background: '#F8F9FB',
-                color: '#7C3AED',
+                background: 'var(--color-gray-50)',
+                color: 'var(--color-primary-600)',
                 fontSize: '1.2rem',
                 fontWeight: 500
             }}>
@@ -85,7 +74,8 @@ export default function ProtectedRoute({ children, requiredRole }) {
         return <Navigate to="/login" replace />;
     }
 
-    if (requiredRole && userRole && userRole !== requiredRole) {
+    if (requiredRole && userRole !== requiredRole) {
+        // Redirect to dashboard if they don't have the required role
         return <Navigate to="/dashboard" replace />;
     }
 

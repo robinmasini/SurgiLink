@@ -22,6 +22,7 @@ import PatientTokenRoute from './components/PatientTokenRoute';
 import MobileNavbar from './components/MobileNavbar';
 import './index.css';
 
+// Force deploy trigger - 2026-02-02
 function App() {
   return (
     <Router>
@@ -61,9 +62,6 @@ function App() {
         <Route path="/patient-portal/:token/j1" element={<PatientTokenRoute><PatientJ1 /></PatientTokenRoute>} />
         <Route path="/patient-portal/:token/e-satis" element={<PatientTokenRoute><PatientESatis /></PatientTokenRoute>} />
         <Route path="/patient-portal/:token/success" element={<PatientTokenRoute><PatientSuccess /></PatientTokenRoute>} />
-
-        {/* Catch-all redirect */}
-        <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </Router>
   );

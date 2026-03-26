@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import LogoWhite from '../components/LogoWhite';
-import { useNavigate, Link } from 'react-router-dom';
+import favicon from '/favicon.png';
+import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, ArrowRight, User, Activity } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
@@ -11,168 +12,167 @@ export default function Login() {
     const [userType, setUserType] = useState('practitioner'); // practitioner or nurse
     const [isLoading, setIsLoading] = useState(true); // Preloader
     const [isAuthenticating, setIsAuthenticating] = useState(false); // Login process
-    const [error, setError] = useState(null);
 
     useEffect(() => {
-        // Simple preloader simulation
+        // Simulation d'un chargement premium
         const timer = setTimeout(() => {
             setIsLoading(false);
-        }, 1500);
+        }, 800); // Snappier feel
         return () => clearTimeout(timer);
     }, []);
 
-    const handleLogin = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!supabase) {
-            setError("Erreur de connexion au serveur.");
+
+        const cleanEmail = email.trim();
+        const cleanPassword = password.trim();
+
+        if (!cleanEmail || !cleanPassword) {
+            alert('Veuillez saisir vos identifiants.');
             return;
         }
 
         setIsAuthenticating(true);
-        setError(null);
 
         try {
-            const { data, error: loginError } = await supabase.auth.signInWithPassword({
-                email,
-                password,
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email: cleanEmail,
+                password: cleanPassword,
             });
 
-            if (loginError) throw loginError;
+            if (error) {
+                alert(`Erreur d'authentification : ${error.message}`);
+                setIsAuthenticating(false);
+                return;
+            }
 
-            if (data.user) {
-                // FORCE role verification
-                const { data: profile, error: profileError } = await supabase
-                    .from('profiles')
-                    .select('role')
-                    .eq('id', data.user.id)
-                    .single();
-
-                // If profiles table exists and role is defined, we MUST enforce it
-                if (!profileError && profile) {
-                    if (profile.role !== userType) {
-                        await supabase.auth.signOut();
-                        setError(`Ce compte est enregistré en tant que ${profile.role === 'practitioner' ? 'Praticien' : 'Infirmier'}. Veuillez sélectionner le bon type de compte.`);
-                        setIsAuthenticating(false);
-                        return;
-                    }
-                } else if (profileError && profileError.code !== 'PGRST116') {
-                    // PGRST116 is "no rows returned", which is fine if table is missing or empty
-                    // but other errors (like table not found) might mean we should use a fallback
-                    // based on email for safety during this transition
-                    const email = data.user.email;
-                    let detectedRole = 'practitioner';
-                    if (email === 'infirmier.desouches@gmail.com') detectedRole = 'nurse';
-
-                    if (detectedRole !== userType) {
-                        await supabase.auth.signOut();
-                        setError(`Ce compte est réservé aux ${detectedRole === 'practitioner' ? 'Praticiens' : 'Infirmiers'}.`);
-                        setIsAuthenticating(false);
-                        return;
-                    }
-                }
-
+            if (data?.user) {
+                // Both roles go to dashboard, the layout will adapt based on the role in the 'profiles' table
                 navigate('/dashboard');
             }
-        } catch (err) {
-            console.error('Login error:', err);
-            setError(err.message || 'Erreur lors de la connexion');
-        } finally {
+        } catch (error) {
+            console.error('Login error:', error);
+            alert('Une erreur est survenue lors de la connexion.');
             setIsAuthenticating(false);
         }
     };
 
-    if (isLoading) {
-        return (
-            <div className="login-preloader">
-                <div className="preloader-content">
-                    <LogoWhite width="180px" className="preloader-logo" />
-                    <div className="preloader-spinner"></div>
-                </div>
-            </div>
-        );
-    }
-
     return (
         <div className="login-page">
-            <div className="login-video-container">
-                <video autoPlay loop muted playsInline className="login-bg-video">
-                    <source src="/login-bg.mp4" type="video/mp4" />
-                </video>
-                <div className="login-video-overlay"></div>
+            {/* Preloader */}
+            <div className={`preloader ${!isLoading ? 'fade-out' : ''}`}>
+                <img src={favicon} alt="Loading" className="preloader-icon" />
             </div>
 
-            <div className="login-container">
-                <div className="login-card fade-in">
-                    <div className="login-header">
-                        <LogoWhite width="140px" className="login-logo" />
-                        <h1>BIENVENUE</h1>
-                        <p>Consultez et gérez vos synthèses post-opératoires</p>
+            {/* Background Video */}
+            <video
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="login-bg-video"
+                style={{ background: '#000' }} // Solid background during load
+            >
+                <source src="/login-bg.mp4" type="video/mp4" />
+            </video>
+
+            {/* Dark Overlay for contrast */}
+            <div className="login-overlay"></div>
+
+            {/* Centered Login Card */}
+            <div className="login-card">
+                <div className="login-brand">
+                    <div className="login-brand-logo">
+                        <LogoWhite width="140px" />
+                    </div>
+                </div>
+
+                {/* Role Selector */}
+                <div className="login-type-selector">
+                    <button
+                        className={`login-type-btn ${userType === 'practitioner' ? 'active' : ''}`}
+                        onClick={() => setUserType('practitioner')}
+                    >
+                        <User size={18} />
+                        Praticien
+                    </button>
+                    <button
+                        className={`login-type-btn ${userType === 'nurse' ? 'active' : ''}`}
+                        onClick={() => setUserType('nurse')}
+                    >
+                        <Activity size={18} />
+                        Infirmier
+                    </button>
+                </div>
+
+                <form onSubmit={handleSubmit}>
+                    <div className="form-group">
+                        <div style={{ position: 'relative' }}>
+                            <Mail
+                                size={18}
+                                style={{
+                                    position: 'absolute',
+                                    left: '16px',
+                                    top: '50%',
+                                    transform: 'translateY(-50%)',
+                                    color: 'var(--color-gray-400)'
+                                }}
+                            />
+                            <input
+                                type="email"
+                                className="input"
+                                placeholder={userType === 'practitioner' ? "Email praticien" : "Email infirmier"}
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                style={{ paddingLeft: '48px' }}
+                                required
+                            />
+                        </div>
                     </div>
 
-                    <div className="login-type-selector">
-                        <button
-                            className={`login-type-btn ${userType === 'practitioner' ? 'active' : ''}`}
-                            onClick={() => setUserType('practitioner')}
-                        >
-                            <User size={18} />
-                            <span>Praticien</span>
-                        </button>
-                        <button
-                            className={`login-type-btn ${userType === 'nurse' ? 'active' : ''}`}
-                            onClick={() => setUserType('nurse')}
-                        >
-                            <Activity size={18} />
-                            <span>Infirmier</span>
-                        </button>
+                    <div className="form-group">
+                        <div style={{ position: 'relative' }}>
+                            <Lock
+                                size={18}
+                                style={{
+                                    position: 'absolute',
+                                    left: '16px',
+                                    top: '50%',
+                                    transform: 'translateY(-50%)',
+                                    color: 'var(--color-gray-400)'
+                                }}
+                            />
+                            <input
+                                type="password"
+                                className="input"
+                                placeholder="Mot de passe"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                style={{ paddingLeft: '48px' }}
+                                required
+                            />
+                        </div>
                     </div>
 
-                    <form className="login-form" onSubmit={handleLogin}>
-                        {error && <div className="login-error">{error}</div>}
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1.5rem' }}>
+                        <a href="#" style={{ fontSize: '0.875rem', color: '#FFFFFF', fontWeight: 500 }}>
+                            Mot de passe oublié ?
+                        </a>
+                    </div>
 
-                        <div className="form-group">
-                            <div className="input-with-icon">
-                                <Mail className="input-icon" size={20} />
-                                <input
-                                    type="email"
-                                    placeholder="Adresse email"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    required
-                                />
-                            </div>
-                        </div>
+                    <button
+                        type="submit"
+                        className={`btn btn-primary btn-lg ${isAuthenticating ? 'loading' : ''}`}
+                        disabled={isAuthenticating}
+                    >
+                        {isAuthenticating ? 'Connexion en cours...' : 'Se connecter'}
+                        {!isAuthenticating && <ArrowRight size={18} />}
+                    </button>
+                </form>
 
-                        <div className="form-group">
-                            <div className="input-with-icon">
-                                <Lock className="input-icon" size={20} />
-                                <input
-                                    type="password"
-                                    placeholder="Mot de passe"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    required
-                                />
-                            </div>
-                        </div>
-
-                        <button
-                            type="submit"
-                            className="btn btn-primary login-btn"
-                            disabled={isAuthenticating}
-                        >
-                            {isAuthenticating ? (
-                                <span className="spinner-small"></span>
-                            ) : (
-                                <>
-                                    <span>Se connecter</span>
-                                    <ArrowRight size={18} />
-                                </>
-                            )}
-                        </button>
-                    </form>
-
-                    <div className="login-footer">
-                        <p>© 2024 SurgiLink • Solution de Suivi Connectée</p>
+                <div style={{ textAlign: 'center', marginTop: '2rem', borderTop: '1px solid rgba(255, 255, 255, 0.1)', paddingTop: '1.5rem' }}>
+                    <div style={{ textAlign: 'center' }}>
+                        <span style={{ fontSize: '0.7rem', color: 'rgba(255, 255, 255, 0.5)', opacity: 0.5 }}>v1.3 - Role Gates Active</span>
                     </div>
                 </div>
             </div>
