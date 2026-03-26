@@ -106,61 +106,60 @@ export default function Rentabilite() {
                 />
 
                 {/* Title Section */}
-                <div style={{ marginBottom: 'var(--spacing-8)' }}>
-                    <h2 style={{ marginBottom: 'var(--spacing-2)' }}>Tableau de Bord de Rentabilité (ROI)</h2>
-                    <p>Analyse de l'efficacité opérationnelle et de l'impact financier de SurgiLink.</p>
+                <div style={{ marginBottom: 'var(--spacing-5)' }}>
+                    <h2 style={{ fontSize: '20px' }}>Tableau de Bord de Rentabilité (ROI)</h2>
                 </div>
 
                 {/* Stats Cards */}
-                <div className="grid-3" style={{ marginBottom: 'var(--spacing-8)' }}>
-                    <div className="stat-card" style={{ cursor: 'pointer' }} onClick={() => alert('Détails des appels économisés bientôt disponibles')}>
-                        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 'var(--spacing-4)' }}>
-                            <div className="stat-card-icon" style={{ background: 'var(--color-primary-50)' }}>
-                                <Phone size={24} style={{ color: 'var(--color-primary-500)' }} />
+                <div className="grid-3" style={{ marginBottom: 'var(--spacing-5)' }}>
+                    <div className="stat-card" style={{ cursor: 'pointer', padding: 'var(--spacing-4)' }} onClick={() => alert('Détails des appels économisés bientôt disponibles')}>
+                        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 'var(--spacing-2)' }}>
+                            <div className="stat-card-icon" style={{ background: 'var(--color-primary-50)', padding: '6px' }}>
+                                <Phone size={20} style={{ color: 'var(--color-primary-500)' }} />
                             </div>
-                            <span className="badge badge-success">+25% vs M-1</span>
+                            <span className="badge badge-success" style={{ fontSize: '10px' }}>+25%</span>
                         </div>
-                        <div className="stat-card-value">2</div>
-                        <div className="stat-card-label">Appels infirmiers économisés</div>
-                        <div className="stat-card-meta">~ 20 min gagnées (11€)</div>
+                        <div className="stat-card-value" style={{ fontSize: '24px' }}>2</div>
+                        <div className="stat-card-label" style={{ fontSize: '13px' }}>Appels économisés</div>
+                        <div className="stat-card-meta" style={{ fontSize: '11px' }}>~ 20 min gagnées (11€)</div>
                     </div>
 
-                    <div className="stat-card" style={{ cursor: 'pointer' }} onClick={() => alert('Détails des annulations évitées bientôt disponibles')}>
-                        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 'var(--spacing-4)' }}>
-                            <div className="stat-card-icon" style={{ background: 'var(--color-warning-50)' }}>
-                                <Ban size={24} style={{ color: 'var(--color-warning-500)' }} />
+                    <div className="stat-card" style={{ cursor: 'pointer', padding: 'var(--spacing-4)' }} onClick={() => alert('Détails des annulations évitées bientôt disponibles')}>
+                        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 'var(--spacing-2)' }}>
+                            <div className="stat-card-icon" style={{ background: 'var(--color-warning-50)', padding: '6px' }}>
+                                <Ban size={20} style={{ color: 'var(--color-warning-500)' }} />
                             </div>
-                            <span className="badge badge-danger">Priorité</span>
+                            <span className="badge badge-danger" style={{ fontSize: '10px' }}>Priorité</span>
                         </div>
-                        <div className="stat-card-value">2</div>
-                        <div className="stat-card-label">Annulations potentielles évitées</div>
-                        <div className="stat-card-meta" style={{ color: 'var(--color-success-500)' }}>Économie estimée : 3000€</div>
+                        <div className="stat-card-value" style={{ fontSize: '24px' }}>2</div>
+                        <div className="stat-card-label" style={{ fontSize: '13px' }}>Annulations évitées</div>
+                        <div className="stat-card-meta" style={{ color: 'var(--color-success-500)', fontSize: '11px' }}>Économie : 3000€</div>
                     </div>
 
-                    <div className="stat-card">
-                        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 'var(--spacing-4)' }}>
-                            <div className="stat-card-icon" style={{ background: 'var(--color-success-50)' }}>
-                                <TrendingUp size={24} style={{ color: 'var(--color-success-500)' }} />
+                    <div className="stat-card" style={{ padding: 'var(--spacing-4)' }}>
+                        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 'var(--spacing-2)' }}>
+                            <div className="stat-card-icon" style={{ background: 'var(--color-success-50)', padding: '6px' }}>
+                                <TrendingUp size={20} style={{ color: 'var(--color-success-500)' }} />
                             </div>
                         </div>
-                        <div className="stat-card-value" style={{ color: 'var(--color-success-600)' }}>3 011€</div>
-                        <div className="stat-card-label">Gain total estimé (semaine)</div>
-                        <div className="stat-card-meta">↗ ROI Projet : 4.5x</div>
+                        <div className="stat-card-value" style={{ color: 'var(--color-success-600)', fontSize: '24px' }}>3 011€</div>
+                        <div className="stat-card-label" style={{ fontSize: '13px' }}>Gain total (semaine)</div>
+                        <div className="stat-card-meta" style={{ fontSize: '11px' }}>↗ ROI : 4.5x</div>
                     </div>
                 </div>
 
                 {/* Clinical Section */}
-                <div style={{ marginBottom: 'var(--spacing-8)' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)', marginBottom: 'var(--spacing-4)' }}>
-                        <Activity size={20} style={{ color: 'var(--color-primary-500)' }} />
-                        <h3 style={{ fontSize: '18px', fontWeight: '700' }}>Suivi Clinique (Temps Réel)</h3>
+                <div style={{ marginBottom: 'var(--spacing-5)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)', marginBottom: 'var(--spacing-3)' }}>
+                        <Activity size={18} style={{ color: 'var(--color-primary-500)' }} />
+                        <h3 style={{ fontSize: '16px', fontWeight: '700' }}>Suivi Clinique (Temps Réel)</h3>
                     </div>
 
                     <div className="grid-3">
                         {/* Pain Distribution */}
-                        <div className="card" style={{ padding: 'var(--spacing-6)' }}>
-                            <h4 style={{ fontSize: '14px', color: 'var(--color-gray-500)', marginBottom: 'var(--spacing-6)' }}>Distribution de la Douleur</h4>
-                            <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-around', height: '140px', paddingBottom: 'var(--spacing-4)', borderBottom: '1px solid var(--color-gray-100)' }}>
+                        <div className="card" style={{ padding: 'var(--spacing-4)' }}>
+                            <h4 style={{ fontSize: '13px', color: 'var(--color-gray-500)', marginBottom: 'var(--spacing-4)' }}>Distribution de la Douleur</h4>
+                            <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-around', height: '110px', paddingBottom: 'var(--spacing-3)', borderBottom: '1px solid var(--color-gray-100)' }}>
                                 {clinicalData.painDistribution.map((bar, i) => (
                                     <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'var(--spacing-2)', width: '30%' }}>
                                         <div
@@ -186,9 +185,9 @@ export default function Rentabilite() {
                         </div>
 
                         {/* Engagement Trend */}
-                        <div className="card" style={{ padding: 'var(--spacing-6)' }}>
-                            <h4 style={{ fontSize: '14px', color: 'var(--color-gray-500)', marginBottom: 'var(--spacing-6)' }}>Engagement au Portail (7j)</h4>
-                            <div style={{ position: 'relative', height: '140px' }}>
+                        <div className="card" style={{ padding: 'var(--spacing-4)' }}>
+                            <h4 style={{ fontSize: '13px', color: 'var(--color-gray-500)', marginBottom: 'var(--spacing-4)' }}>Engagement au Portail (7j)</h4>
+                            <div style={{ position: 'relative', height: '110px' }}>
                                 <svg width="100%" height="100%" viewBox="0 0 200 100" preserveAspectRatio="none">
                                     <path
                                         d={`M 0 100 ${clinicalData.engagementTrend.map((p, i) => `L ${(i * 200) / 6} ${100 - (p.value / 40) * 100}`).join(' ')} L 200 100 Z`}
@@ -219,8 +218,8 @@ export default function Rentabilite() {
                         </div>
 
                         {/* Completion Rates */}
-                        <div className="card" style={{ padding: 'var(--spacing-6)' }}>
-                            <h4 style={{ fontSize: '14px', color: 'var(--color-gray-500)', marginBottom: 'var(--spacing-4)' }}>Complétude par Étape</h4>
+                        <div className="card" style={{ padding: 'var(--spacing-4)' }}>
+                            <h4 style={{ fontSize: '13px', color: 'var(--color-gray-500)', marginBottom: 'var(--spacing-3)' }}>Complétude par Étape</h4>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-3)' }}>
                                 {clinicalData.completionRates.map((item, i) => (
                                     <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
@@ -239,16 +238,16 @@ export default function Rentabilite() {
                 </div>
 
                 {/* Bottom Section */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)', marginBottom: 'var(--spacing-4)' }}>
-                    <TrendingUp size={20} style={{ color: 'var(--color-primary-500)' }} />
-                    <h3 style={{ fontSize: '18px', fontWeight: '700' }}>Impact & ROI</h3>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)', marginBottom: 'var(--spacing-3)' }}>
+                    <TrendingUp size={18} style={{ color: 'var(--color-primary-500)' }} />
+                    <h3 style={{ fontSize: '16px', fontWeight: '700' }}>Impact & ROI</h3>
                 </div>
                 <div className="grid-2">
                     {/* Non-Conformity Causes */}
-                    <div className="card">
-                        <div className="card-header">
-                            <AlertCircle size={20} style={{ color: 'var(--color-gray-500)' }} />
-                            <h4>Causes de Non-Conformité (Top 4)</h4>
+                    <div className="card" style={{ padding: 'var(--spacing-4)' }}>
+                        <div className="card-header" style={{ marginBottom: 'var(--spacing-2)' }}>
+                            <AlertCircle size={18} style={{ color: 'var(--color-gray-500)' }} />
+                            <h4 style={{ fontSize: '13px' }}>Non-Conformité (Top 4)</h4>
                         </div>
 
                         <div className="progress-list">
@@ -271,41 +270,41 @@ export default function Rentabilite() {
                     </div>
 
                     {/* Digitalization Rate */}
-                    <div className="card">
-                        <div className="card-header">
-                            <RefreshCw size={20} style={{ color: 'var(--color-gray-500)' }} />
-                            <h4>Taux de Digitalisation</h4>
+                    <div className="card" style={{ padding: 'var(--spacing-4)' }}>
+                        <div className="card-header" style={{ marginBottom: 'var(--spacing-2)' }}>
+                            <RefreshCw size={18} style={{ color: 'var(--color-gray-500)' }} />
+                            <h4 style={{ fontSize: '13px' }}>Digitalisation</h4>
                         </div>
 
-                        <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 'var(--spacing-4)' }}>
+                        <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 'var(--spacing-2)' }}>
                             <div className="circular-progress">
-                                <svg width="180" height="180">
+                                <svg width="140" height="140">
                                     {/* Background circle */}
                                     <circle
-                                        cx="90"
-                                        cy="90"
-                                        r="75"
+                                        cx="70"
+                                        cy="70"
+                                        r="58"
                                         fill="none"
                                         stroke="var(--color-gray-100)"
-                                        strokeWidth="12"
+                                        strokeWidth="10"
                                     />
                                     {/* Progress circle */}
                                     <circle
-                                        cx="90"
-                                        cy="90"
-                                        r="75"
+                                        cx="70"
+                                        cy="70"
+                                        r="58"
                                         fill="none"
                                         stroke="var(--color-info-500)"
-                                        strokeWidth="12"
+                                        strokeWidth="10"
                                         strokeLinecap="round"
-                                        strokeDasharray={2 * Math.PI * 75}
-                                        strokeDashoffset={2 * Math.PI * 75 * (1 - 0.85)}
+                                        strokeDasharray={2 * Math.PI * 58}
+                                        strokeDashoffset={2 * Math.PI * 58 * (1 - 0.85)}
                                         style={{ transition: 'stroke-dashoffset 1s ease' }}
                                     />
                                 </svg>
                                 <div className="circular-progress-value">
-                                    <div className="circular-progress-percent">85%</div>
-                                    <div className="circular-progress-label">Taux d'usage</div>
+                                    <div className="circular-progress-percent" style={{ fontSize: '24px' }}>85%</div>
+                                    <div className="circular-progress-label" style={{ fontSize: '10px' }}>Usage</div>
                                 </div>
                             </div>
                         </div>
