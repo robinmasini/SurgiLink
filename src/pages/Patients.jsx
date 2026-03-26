@@ -30,6 +30,10 @@ export default function Patients() {
     const tabs = ['J-10', 'J-7', 'J-2', 'J-1', 'Jour J', 'J+1', 'J+4', 'Tous', 'Archivés'];
 
     useEffect(() => {
+        loadPatients();
+    }, []);
+
+    useEffect(() => {
         filterPatients();
     }, [allPatients, activeTab, searchTerm]);
 
