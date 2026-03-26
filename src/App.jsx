@@ -1,11 +1,15 @@
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import Login from './pages/Login';
 import './index.css';
 
 function App() {
   return (
-    <div style={{ padding: '100px', fontSize: '32px', color: 'red', textAlign: 'center', background: 'white', minHeight: '100vh' }}>
-      <h1>SurgiLink Debug MODE</h1>
-      <p>If you see this, the core app is working.</p>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/login" element={<Login />} />
+      </Routes>
+    </Router>
   );
 }
 
