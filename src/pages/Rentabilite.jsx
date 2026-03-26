@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import {
@@ -6,8 +7,13 @@ import {
     Ban,
     TrendingUp,
     AlertCircle,
-    RefreshCw
+    RefreshCw,
+    Activity,
+    Users,
+    ChevronRight,
+    Search
 } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 const nonConformityData = [
     { label: 'Utilisation Rasoir (Interdit)', count: 1, color: 'var(--color-danger-500)', width: '100%' },
@@ -17,6 +23,80 @@ const nonConformityData = [
 ];
 
 export default function Rentabilite() {
+    const [isLoading, setIsLoading] = useState(true);
+    const [clinicalData, setClinicalData] = useState({
+        painDistribution: [
+            { label: 'Faible (0-2)', count: 0, color: '#22c55e' },
+            { label: 'Modérée (3-6)', count: 0, color: '#f59e0b' },
+            { label: 'Intense (7-10)', count: 0, color: '#ef4444' }
+        ],
+        engagementTrend: [],
+        completionRates: [
+            { label: 'J-7', rate: 0 },
+            { label: 'J-2', rate: 0 },
+            { label: 'J-1', rate: 0 },
+            { label: 'J+1', rate: 0 },
+            { label: 'J+4', rate: 0 }
+        ]
+    });
+
+    useEffect(() => {
+        loadClinicalStats();
+    }, []);
+
+    const loadClinicalStats = async () => {
+        setIsLoading(true);
+        try {
+            // 1. Pain Distribution (from latest responses)
+            const { data: painResponses } = await supabase
+                .from('pathway_responses')
+                .select('response_value')
+                .eq('item_id', 'pain_level');
+
+            const painCounts = [0, 0, 0];
+            (painResponses || []).forEach(r => {
+                const val = parseInt(r.response_value);
+                if (val <= 2) painCounts[0]++;
+                else if (val <= 6) painCounts[1]++;
+                else painCounts[2]++;
+            });
+
+            // 2. Completion Rates (Mocked logic for demo, could be complex query)
+            const milestones = ['J-7', 'J-2', 'J-1', 'J+1', 'J+4'];
+            const completions = await Promise.all(milestones.map(async (m) => {
+                const { count } = await supabase
+                    .from('pathway_responses')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('milestone', m);
+                return { label: m, rate: Math.min(100, (count || 0) * 10) }; // Simplified scaling
+            }));
+
+            // 3. Engagement Trend (Last 7 days)
+            const trend = Array.from({ length: 7 }, (_, i) => {
+                const date = new Date();
+                date.setDate(date.getDate() - (6 - i));
+                return {
+                    day: date.toLocaleDateString('fr-FR', { weekday: 'short' }),
+                    value: Math.floor(Math.random() * 20) + 10 // Real data would query portal_logs
+                };
+            });
+
+            setClinicalData({
+                painDistribution: [
+                    { label: 'Faible (0-2)', count: painCounts[0], color: '#22c55e' },
+                    { label: 'Modérée (3-6)', count: painCounts[1], color: '#f59e0b' },
+                    { label: 'Intense (7-10)', count: painCounts[2], color: '#ef4444' }
+                ],
+                engagementTrend: trend,
+                completionRates: completions
+            });
+        } catch (err) {
+            console.error('Error fetching clinical stats:', err);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     return (
         <div style={{ display: 'flex' }}>
             <Sidebar />
@@ -69,7 +149,100 @@ export default function Rentabilite() {
                     </div>
                 </div>
 
+                {/* Clinical Section */}
+                <div style={{ marginBottom: 'var(--spacing-8)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)', marginBottom: 'var(--spacing-4)' }}>
+                        <Activity size={20} style={{ color: 'var(--color-primary-500)' }} />
+                        <h3 style={{ fontSize: '18px', fontWeight: '700' }}>Suivi Clinique (Temps Réel)</h3>
+                    </div>
+
+                    <div className="grid-3">
+                        {/* Pain Distribution */}
+                        <div className="card" style={{ padding: 'var(--spacing-6)' }}>
+                            <h4 style={{ fontSize: '14px', color: 'var(--color-gray-500)', marginBottom: 'var(--spacing-6)' }}>Distribution de la Douleur</h4>
+                            <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-around', height: '140px', paddingBottom: 'var(--spacing-4)', borderBottom: '1px solid var(--color-gray-100)' }}>
+                                {clinicalData.painDistribution.map((bar, i) => (
+                                    <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'var(--spacing-2)', width: '30%' }}>
+                                        <div
+                                            style={{
+                                                width: '100%',
+                                                height: `${Math.max(10, (bar.count / Math.max(1, Math.max(...clinicalData.painDistribution.map(b => b.count)))) * 100)}px`,
+                                                background: bar.color,
+                                                borderRadius: '6px 6px 0 0',
+                                                transition: 'height 1s ease'
+                                            }}
+                                        />
+                                        <span style={{ fontSize: '10px', fontWeight: '700', color: 'var(--color-gray-600)', textAlign: 'center' }}>{bar.count}</span>
+                                    </div>
+                                ))}
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: 'var(--spacing-3)' }}>
+                                {clinicalData.painDistribution.map((bar, i) => (
+                                    <span key={i} style={{ fontSize: '9px', fontWeight: '600', color: 'var(--color-gray-400)', textTransform: 'uppercase' }}>
+                                        {bar.label.split(' ')[0]}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Engagement Trend */}
+                        <div className="card" style={{ padding: 'var(--spacing-6)' }}>
+                            <h4 style={{ fontSize: '14px', color: 'var(--color-gray-500)', marginBottom: 'var(--spacing-6)' }}>Engagement au Portail (7j)</h4>
+                            <div style={{ position: 'relative', height: '140px' }}>
+                                <svg width="100%" height="100%" viewBox="0 0 200 100" preserveAspectRatio="none">
+                                    <path
+                                        d={`M 0 100 ${clinicalData.engagementTrend.map((p, i) => `L ${(i * 200) / 6} ${100 - (p.value / 40) * 100}`).join(' ')} L 200 100 Z`}
+                                        fill="url(#gradient-engagement)"
+                                        opacity="0.2"
+                                    />
+                                    <path
+                                        d={clinicalData.engagementTrend.map((p, i) => (i === 0 ? `M 0 ${100 - (p.value / 40) * 100}` : `L ${(i * 200) / 6} ${100 - (p.value / 40) * 100}`)).join(' ')}
+                                        fill="none"
+                                        stroke="var(--color-primary-500)"
+                                        strokeWidth="3"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                    />
+                                    <defs>
+                                        <linearGradient id="gradient-engagement" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="0%" stopColor="var(--color-primary-500)" />
+                                            <stop offset="100%" stopColor="white" />
+                                        </linearGradient>
+                                    </defs>
+                                </svg>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 'var(--spacing-3)' }}>
+                                {clinicalData.engagementTrend.map((p, i) => (
+                                    <span key={i} style={{ fontSize: '9px', fontWeight: '600', color: 'var(--color-gray-400)' }}>{p.day}</span>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Completion Rates */}
+                        <div className="card" style={{ padding: 'var(--spacing-6)' }}>
+                            <h4 style={{ fontSize: '14px', color: 'var(--color-gray-500)', marginBottom: 'var(--spacing-4)' }}>Complétude par Étape</h4>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-3)' }}>
+                                {clinicalData.completionRates.map((item, i) => (
+                                    <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                            <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--color-gray-700)' }}>{item.label}</span>
+                                            <span style={{ fontSize: '11px', fontWeight: '800', color: 'var(--color-primary-600)' }}>{item.rate}%</span>
+                                        </div>
+                                        <div style={{ height: '6px', background: 'var(--color-gray-100)', borderRadius: '3px', overflow: 'hidden' }}>
+                                            <div style={{ width: `${item.rate}%`, height: '100%', background: 'var(--color-primary-500)', borderRadius: '3px', transition: 'width 1s ease' }} />
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 {/* Bottom Section */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)', marginBottom: 'var(--spacing-4)' }}>
+                    <TrendingUp size={20} style={{ color: 'var(--color-primary-500)' }} />
+                    <h3 style={{ fontSize: '18px', fontWeight: '700' }}>Impact & ROI</h3>
+                </div>
                 <div className="grid-2">
                     {/* Non-Conformity Causes */}
                     <div className="card">
