@@ -4,6 +4,7 @@ import Header from '../components/Header';
 import MobileNavbar from '../components/MobileNavbar';
 import christopheSignature from '../assets/christophe-signature.png';
 import welcomeCardV4 from '../assets/welcome-card-v4.jpg';
+import welcomeCardInfirmier from '../assets/welcomecard-infirmier.png';
 import practitionerAvatar from '../assets/practitioner-avatar.png';
 import {
     User,
@@ -205,7 +206,7 @@ export default function Account() {
                             </div>
                         </div>
                         <img
-                            src={welcomeCardV4}
+                            src={profile?.role === 'nurse' ? welcomeCardInfirmier : welcomeCardV4}
                             alt="Espace Opératoire"
                             className="welcome-banner-image"
                         />

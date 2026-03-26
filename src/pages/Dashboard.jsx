@@ -5,6 +5,9 @@ import MobileNavbar from '../components/MobileNavbar';
 import Header from '../components/Header';
 import AddPatientModal from '../components/AddPatientModal';
 import practitionerAvatar from '../assets/practitioner-avatar.png';
+import welcomeCardV4 from '../assets/welcome-card-v4.jpg';
+import welcomeCardInfirmier from '../assets/welcomecard-infirmier.png';
+import christopheSignature from '../assets/christophe-signature.png';
 import {
     Users,
     AlertTriangle,
@@ -229,6 +232,42 @@ export default function Dashboard() {
                         </button>
                     }
                 />
+
+                {!isMobile && (
+                    <div className="welcome-banner" style={{ marginBottom: 'var(--spacing-8)', maxWidth: '1000px' }}>
+                        <div className="welcome-banner-content">
+                            <div></div>
+                            <div>
+                                <div className="welcome-banner-welcome">Bonjour,</div>
+                                {profile?.role === 'practitioner' ? (
+                                    <img src={christopheSignature} alt="Christophe DESOUCHES" className="welcome-banner-signature" style={{ filter: 'invert(1)', height: '40px', margin: '10px 0' }} />
+                                ) : (
+                                    <div className="welcome-banner-greeting" style={{ fontSize: '24px', fontWeight: '800', margin: '10px 0' }}>
+                                        {profile?.full_name || 'Infirmier Cabinet'}
+                                    </div>
+                                )}
+                                <div className="welcome-banner-greeting">Ravi de vous revoir !</div>
+                                <div className="welcome-banner-instruction">Votre espace {profile?.role === 'practitioner' ? 'praticien' : 'infirmier'} est à jour</div>
+                            </div>
+                            <div>
+                                <div className="welcome-banner-date-label">Date d'aujourd'hui</div>
+                                <div className="welcome-banner-date-value">
+                                    {new Date().toLocaleDateString('fr-FR', {
+                                        weekday: 'long',
+                                        day: 'numeric',
+                                        month: 'long',
+                                        year: 'numeric'
+                                    }).replace(/^\w/, (c) => c.toUpperCase())}
+                                </div>
+                            </div>
+                        </div>
+                        <img
+                            src={profile?.role === 'nurse' ? welcomeCardInfirmier : welcomeCardV4}
+                            alt="Espace Opératoire"
+                            className="welcome-banner-image"
+                        />
+                    </div>
+                )}
 
                 <div className="dashboard-grid-top" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: 'var(--spacing-6)' }}>
 
