@@ -7,7 +7,6 @@ import PatientChecklist from './pages/PatientChecklist';
 import PatientSuccess from './pages/PatientSuccess';
 import PatientPostOp from './pages/PatientPostOp';
 import PatientReview from './pages/PatientReview';
-import CategoryReview from './pages/CategoryReview';
 import PatientJ7 from './pages/PatientJ7';
 import PatientJ4 from './pages/PatientJ4';
 import PatientJ2 from './pages/PatientJ2';
@@ -35,7 +34,6 @@ function App() {
         <Route path="/patients" element={<ProtectedRoute><Patients /></ProtectedRoute>} />
         <Route path="/rentabilite" element={<ProtectedRoute><Rentabilite /></ProtectedRoute>} />
         <Route path="/patient/:id" element={<ProtectedRoute><PatientReview /></ProtectedRoute>} />
-        <Route path="/review/:category" element={<ProtectedRoute><CategoryReview /></ProtectedRoute>} />
         <Route path="/account" element={<ProtectedRoute><Account /></ProtectedRoute>} />
 
         {/* Patient Routes */}
