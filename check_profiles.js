@@ -1,29 +1,27 @@
+import { createClient } from '@supabase/supabase-js'
+import dotenv from 'dotenv'
+dotenv.config()
 
-import { createClient } from '@supabase/supabase-js';
-import dotenv from 'dotenv';
-dotenv.config();
-dotenv.config({ path: '.env.local', override: true });
-
-const supabase = createClient(process.env.VITE_SUPABASE_URL, process.env.VITE_SUPABASE_ANON_KEY);
+const supabase = createClient(process.env.VITE_SUPABASE_URL, process.env.VITE_SUPABASE_ANON_KEY)
 
 async function checkProfiles() {
-    console.log('--- Checking Profiles Table ---');
-    const { data: profiles, error } = await supabase
-        .from('profiles')
-        .select('*');
+    console.log('--- Profiles Check ---')
+    const { data: users, error: authError } = await supabase.auth.admin.listUsers()
 
-    if (error) {
-        console.error('Error fetching profiles:', error);
-        return;
+    if (authError) {
+        console.error('Auth User List Error:', authError.message)
+    } else {
+        console.log('Auth Users found:', users.users.length)
+        users.users.forEach(u => console.log(`- ${u.email} (ID: ${u.id})`))
     }
 
-    console.log(`Found ${profiles.length} profiles.`);
-    if (profiles.length > 0) {
-        console.log('Columns:', Object.keys(profiles[0]));
-        console.log('Data:', JSON.stringify(profiles, null, 2));
+    const { data: profiles, error: profError } = await supabase.from('profiles').select('*')
+    if (profError) {
+        console.error('Profiles Table Error:', profError.message)
     } else {
-        console.log('No profiles found in the table.');
+        console.log('Profiles found:', profiles.length)
+        profiles.forEach(p => console.log(`- ${p.id}: ${p.full_name} (${p.role})`))
     }
 }
 
-checkProfiles();
+checkProfiles()

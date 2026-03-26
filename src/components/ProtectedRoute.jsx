@@ -24,8 +24,21 @@ export default function ProtectedRoute({ children, requiredRole }) {
                         .eq('id', session.user.id)
                         .single();
 
-                    if (isMounted && profile) {
-                        setUserRole(profile.role);
+                    if (isMounted) {
+                        if (profile) {
+                            setUserRole(profile.role);
+                        } else {
+                            // Fallback based on email if profile table is missing or empty
+                            const email = session.user.email?.toLowerCase() || '';
+                            if (email.includes('infirmier') || email.includes('nurse')) {
+                                setUserRole('nurse');
+                            } else if (email.includes('desouches') || email.includes('practitioner')) {
+                                setUserRole('practitioner');
+                            } else {
+                                // Default fallback to practitioner if nothing matches, or stay null
+                                setUserRole('practitioner');
+                            }
+                        }
                     }
                 }
             } catch (err) {

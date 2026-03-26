@@ -47,7 +47,37 @@ export default function Login() {
             }
 
             if (data?.user) {
-                // Both roles go to dashboard, the layout will adapt based on the role in the 'profiles' table
+                // Verify role in profiles table
+                const { data: profile, error: profileError } = await supabase
+                    .from('profiles')
+                    .select('role')
+                    .eq('id', data.user.id)
+                    .single();
+
+                let effectiveRole = null;
+                if (profile && !profileError) {
+                    effectiveRole = profile.role;
+                } else {
+                    // Fallback based on email if profile not in table
+                    const email = data.user.email?.toLowerCase() || '';
+                    if (email.includes('infirmier') || email.includes('nurse')) {
+                        effectiveRole = 'nurse';
+                    } else if (email.includes('desouches') || email.includes('practitioner')) {
+                        effectiveRole = 'practitioner';
+                    } else {
+                        // Default fallback
+                        effectiveRole = 'practitioner';
+                    }
+                }
+
+                // Strict role enforcement
+                if (effectiveRole !== userType) {
+                    await supabase.auth.signOut();
+                    alert(`Accès refusé : Votre compte est enregistré en tant que ${effectiveRole === 'practitioner' ? 'Praticien' : 'Infirmier'}. Veuillez sélectionner le bon type de compte.`);
+                    setIsAuthenticating(false);
+                    return;
+                }
+
                 navigate('/dashboard');
             }
         } catch (error) {

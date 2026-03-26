@@ -36,7 +36,7 @@ export default function Users() {
                 setProfiles([
                     {
                         id: 'c512fc61-e751-4ea3-872e-8a04fee4da12',
-                        full_name: 'Christophe DESOUCHES',
+                        full_name: 'Dr. Christophe DESOUCHES',
                         role: 'practitioner',
                         email: 'christophe.desouches@gmail.com',
                         specialty: 'Chirurgien Esthétique'

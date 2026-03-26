@@ -52,8 +52,24 @@ export default function Sidebar() {
                     .eq('id', session.user.id)
                     .single();
 
-                if (isMounted && !error && data) {
-                    setProfile(data);
+                if (isMounted) {
+                    if (!error && data) {
+                        setProfile(data);
+                    } else {
+                        // Fallback based on email if profile not in table
+                        const email = session.user.email?.toLowerCase() || '';
+                        if (email.includes('infirmier') || email.includes('nurse')) {
+                            setProfile({
+                                full_name: 'Infirmier Cabinet',
+                                role: 'nurse'
+                            });
+                        } else {
+                            setProfile({
+                                full_name: 'Dr. Christophe DESOUCHES',
+                                role: 'practitioner'
+                            });
+                        }
+                    }
                 }
             }
         } catch (err) {
@@ -114,25 +130,35 @@ export default function Sidebar() {
                         <div className="sidebar-profile-info">
                             <div className="sidebar-profile-name">{profile?.full_name?.toUpperCase() || "CHARGEMENT..."}</div>
                             {profile?.role === 'practitioner' ? (
-                                <div className="badge badge-gold" style={{ fontSize: '9px', padding: '2px 8px', marginBottom: '4px', width: 'fit-content' }}>
-                                    Admin PRO
-                                </div>
+                                <>
+                                    <div className="badge badge-gold" style={{ fontSize: '9px', padding: '2px 8px', marginBottom: '4px', width: 'fit-content', fontWeight: '800' }}>
+                                        Admin PRO
+                                    </div>
+                                    <div className="badge badge-primary" style={{ fontSize: '9px', padding: '2px 8px', marginBottom: '4px', width: 'fit-content', background: 'rgba(20, 184, 166, 0.1)', color: 'var(--color-primary-600)', border: '1px solid var(--color-primary-200)' }}>
+                                        PRATICIEN
+                                    </div>
+                                    <div className="sidebar-profile-title">Praticien</div>
+                                    <div className="sidebar-profile-specialty">
+                                        <span className="sidebar-profile-specialty-label">Corps de métier</span>
+                                        <span className="sidebar-profile-specialty-text">
+                                            Chirurgie Esthétique<br />Plastique reconstructrice
+                                        </span>
+                                    </div>
+                                </>
                             ) : (
-                                <div className="badge badge-primary" style={{ fontSize: '9px', padding: '2px 8px', marginBottom: '4px', width: 'fit-content', background: 'var(--color-info-500)' }}>
-                                    INFIRMIER
-                                </div>
+                                <>
+                                    <div className="badge badge-primary" style={{ fontSize: '9px', padding: '2px 8px', marginBottom: '4px', width: 'fit-content', background: 'var(--color-info-500)', color: 'white', fontWeight: '800' }}>
+                                        INFIRMIER
+                                    </div>
+                                    <div className="sidebar-profile-title">Infirmier Cabinet</div>
+                                    <div className="sidebar-profile-specialty">
+                                        <span className="sidebar-profile-specialty-label">Corps de métier</span>
+                                        <span className="sidebar-profile-specialty-text">
+                                            Suivi Post-Opératoire<br />Prise en charge patient
+                                        </span>
+                                    </div>
+                                </>
                             )}
-                            <div className="sidebar-profile-title">{profile?.role === 'practitioner' ? 'Praticien' : 'Infirmier Cabinet'}</div>
-                            <div className="sidebar-profile-specialty">
-                                <span className="sidebar-profile-specialty-label">Corps de métier</span>
-                                <span className="sidebar-profile-specialty-text">
-                                    {profile?.role === 'practitioner' ? (
-                                        <>Chirurgie Esthétique<br />Plastique reconstructrice</>
-                                    ) : (
-                                        <>Suivi Post-Opératoire<br />Prise en charge patient</>
-                                    )}
-                                </span>
-                            </div>
                         </div>
                     )}
                 </div>
