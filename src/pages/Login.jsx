@@ -91,14 +91,14 @@ export default function Login() {
 
                     <div className="login-type-selector">
                         <button
-                            className={`type-btn ${userType === 'practitioner' ? 'active' : ''}`}
+                            className={`login-type-btn ${userType === 'practitioner' ? 'active' : ''}`}
                             onClick={() => setUserType('practitioner')}
                         >
                             <User size={18} />
                             <span>Praticien</span>
                         </button>
                         <button
-                            className={`type-btn ${userType === 'nurse' ? 'active' : ''}`}
+                            className={`login-type-btn ${userType === 'nurse' ? 'active' : ''}`}
                             onClick={() => setUserType('nurse')}
                         >
                             <Activity size={18} />
