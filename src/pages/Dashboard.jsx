@@ -236,7 +236,7 @@ export default function Dashboard() {
                         <>
                             <div className="mobile-profile-card-new">
                                 <div className="mobile-profile-left">
-                                    <img src={practitionerAvatar} alt={profile?.full_name || "Utilisateur"} className="mobile-profile-img" />
+                                    <img src={profile?.avatar_url || practitionerAvatar} alt={profile?.full_name || "Utilisateur"} className="mobile-profile-img" />
                                 </div>
                                 <div className="mobile-profile-right">
                                     <div className="mobile-profile-identity">

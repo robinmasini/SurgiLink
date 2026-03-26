@@ -121,7 +121,7 @@ export default function Sidebar() {
             <div className="sidebar-footer">
                 <div className="sidebar-profile-card">
                     <img
-                        src={practitionerAvatar}
+                        src={profile?.avatar_url || practitionerAvatar}
                         alt={profile?.full_name || "Utilisateur"}
                         className="sidebar-profile-avatar"
                         style={{ border: profile?.role === 'nurse' ? '2px solid var(--color-info-200)' : '2px solid var(--color-primary-200)' }}
