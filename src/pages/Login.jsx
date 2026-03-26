@@ -2,14 +2,14 @@ import { useState, useEffect } from 'react';
 import LogoWhite from '../components/LogoWhite';
 import favicon from '/favicon.png';
 import { Link, useNavigate } from 'react-router-dom';
-import { Sparkles, Mail, Lock, ArrowRight } from 'lucide-react';
+import { Mail, Lock, ArrowRight, User, Activity } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 export default function Login() {
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [userType, setUserType] = useState('professional');
+    const [userType, setUserType] = useState('practitioner'); // practitioner or nurse
     const [isLoading, setIsLoading] = useState(true); // Preloader
     const [isAuthenticating, setIsAuthenticating] = useState(false); // Login process
 
@@ -47,11 +47,8 @@ export default function Login() {
             }
 
             if (data?.user) {
-                if (userType === 'professional') {
-                    navigate('/dashboard');
-                } else {
-                    navigate('/patient/checklist');
-                }
+                // Both roles go to dashboard, the layout will adapt based on the role in the 'profiles' table
+                navigate('/dashboard');
             }
         } catch (error) {
             console.error('Login error:', error);
@@ -76,10 +73,6 @@ export default function Login() {
                 className="login-bg-video"
                 style={{ background: '#000' }} // Solid background during load
             >
-                {/* 
-                   PLACEHOLDER: Pour une vraie vidéo, déposez un fichier 'login-bg.mp4' dans le dossier 'public'.
-                   En attendant, j'ai mis une belle image de fallback.
-                */}
                 <source src="/login-bg.mp4" type="video/mp4" />
             </video>
 
@@ -92,6 +85,24 @@ export default function Login() {
                     <div className="login-brand-logo">
                         <LogoWhite width="140px" />
                     </div>
+                </div>
+
+                {/* Role Selector */}
+                <div className="login-type-selector">
+                    <button
+                        className={`login-type-btn ${userType === 'practitioner' ? 'active' : ''}`}
+                        onClick={() => setUserType('practitioner')}
+                    >
+                        <User size={18} />
+                        Praticien
+                    </button>
+                    <button
+                        className={`login-type-btn ${userType === 'nurse' ? 'active' : ''}`}
+                        onClick={() => setUserType('nurse')}
+                    >
+                        <Activity size={18} />
+                        Infirmier
+                    </button>
                 </div>
 
                 <form onSubmit={handleSubmit}>
@@ -110,7 +121,7 @@ export default function Login() {
                             <input
                                 type="email"
                                 className="input"
-                                placeholder={userType === 'professional' ? "Email professionnel" : "Email personnel"}
+                                placeholder={userType === 'practitioner' ? "Email praticien" : "Email infirmier"}
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 style={{ paddingLeft: '48px' }}
@@ -161,7 +172,7 @@ export default function Login() {
 
                 <div style={{ textAlign: 'center', marginTop: '2rem', borderTop: '1px solid rgba(255, 255, 255, 0.1)', paddingTop: '1.5rem' }}>
                     <div style={{ textAlign: 'center' }}>
-                        <span style={{ fontSize: '0.7rem', color: 'rgba(255, 255, 255, 0.5)', opacity: 0.5 }}>v1.2 - Secure Auth Active</span>
+                        <span style={{ fontSize: '0.7rem', color: 'rgba(255, 255, 255, 0.5)', opacity: 0.5 }}>v1.3 - Role Gates Active</span>
                     </div>
                 </div>
             </div>

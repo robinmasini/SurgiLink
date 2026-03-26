@@ -23,12 +23,31 @@ import { useNavigate } from 'react-router-dom';
 export default function Account() {
     const navigate = useNavigate();
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
+    const [profile, setProfile] = useState(null);
 
     useEffect(() => {
         const handleResize = () => setIsMobile(window.innerWidth <= 1024);
         window.addEventListener('resize', handleResize);
+
+        loadProfile();
+
         return () => window.removeEventListener('resize', handleResize);
     }, []);
+
+    const loadProfile = async () => {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+            const { data } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', session.user.id)
+                .single();
+
+            if (data) {
+                setProfile(data);
+            }
+        }
+    };
 
     return (
         <div className="dashboard-layout" data-mobile={isMobile}>
@@ -47,16 +66,22 @@ export default function Account() {
                             <div></div>
                             <div>
                                 <div className="welcome-banner-welcome">Bonjour,</div>
-                                <a
-                                    href="https://www.desouches-chirurgien-esthetique.com/"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="welcome-banner-signature-link"
-                                >
-                                    <img src={christopheSignature} alt="Christophe DESOUCHES" className="welcome-banner-signature" />
-                                </a>
+                                {profile?.role === 'practitioner' ? (
+                                    <a
+                                        href="https://www.desouches-chirurgien-esthetique.com/"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="welcome-banner-signature-link"
+                                    >
+                                        <img src={christopheSignature} alt="Christophe DESOUCHES" className="welcome-banner-signature" />
+                                    </a>
+                                ) : (
+                                    <div className="welcome-banner-greeting" style={{ fontSize: '24px', fontWeight: '800', margin: '10px 0' }}>
+                                        {profile?.full_name || 'Infirmier Cabinet'}
+                                    </div>
+                                )}
                                 <div className="welcome-banner-greeting">Ravi de vous revoir !</div>
-                                <div className="welcome-banner-instruction">Votre espace praticien est à jour</div>
+                                <div className="welcome-banner-instruction">Votre espace {profile?.role === 'practitioner' ? 'praticien' : 'infirmier'} est à jour</div>
                             </div>
                             <div>
                                 <div className="welcome-banner-date-label">Date d'aujourd'hui</div>
@@ -111,11 +136,17 @@ export default function Account() {
                                 </div>
                                 <div>
                                     <h2 style={{ fontSize: 'var(--font-size-2xl)', fontWeight: 'var(--font-weight-bold)', marginBottom: 'var(--spacing-1)' }}>
-                                        DESOUCHES Christophe
+                                        {profile?.full_name || 'Chargement...'}
                                     </h2>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)' }}>
-                                        <span className="badge badge-gold">ADMIN PRO</span>
-                                        <span style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-500)' }}>Praticien</span>
+                                        {profile?.role === 'practitioner' ? (
+                                            <span className="badge badge-gold">ADMIN PRO</span>
+                                        ) : (
+                                            <span className="badge badge-primary" style={{ background: 'var(--color-info-500)' }}>INFIRMIER</span>
+                                        )}
+                                        <span style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-500)' }}>
+                                            {profile?.role === 'practitioner' ? 'Praticien' : 'Personnel Médical'}
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -125,13 +156,15 @@ export default function Account() {
                                     <Briefcase size={20} style={{ color: 'var(--color-primary-500)', marginTop: '2px' }} />
                                     <div>
                                         <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-gray-400)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Spécialité</div>
-                                        <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-800)' }}>Chirurgie Esthétique, Plastique reconstructrice</div>
+                                        <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-800)' }}>
+                                            {profile?.specialty || (profile?.role === 'practitioner' ? 'Chirurgie Esthétique' : 'Suivi Post-Opératoire')}
+                                        </div>
                                     </div>
                                 </div>
 
                                 <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-4)', padding: 'var(--spacing-4)', border: '1px solid var(--color-gray-100)', borderRadius: 'var(--radius-lg)' }}>
                                     <Mail size={20} style={{ color: 'var(--color-gray-400)' }} />
-                                    <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-600)' }}>contact@desouches-chirurgien.com</div>
+                                    <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-600)' }}>{profile?.email || 'Chargement...'}</div>
                                 </div>
 
                                 <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-4)', padding: 'var(--spacing-4)', border: '1px solid var(--color-gray-100)', borderRadius: 'var(--radius-lg)' }}>

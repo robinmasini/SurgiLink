@@ -725,7 +725,7 @@ export default function PatientReview() {
                                                 Chirurgien
                                             </div>
                                             <div style={{ fontWeight: '700', color: 'var(--color-gray-900)', fontSize: '18px', lineHeight: '1.2' }}>
-                                                {patient.surgeon_name || 'Christophe DESOUCHES'}
+                                                {patient.surgeon_name || 'Non renseigné'}
                                             </div>
                                         </div>
 

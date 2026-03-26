@@ -28,16 +28,43 @@ export default function Sidebar() {
     const location = useLocation();
     const navigate = useNavigate();
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
+    const [profile, setProfile] = useState(null);
 
     useEffect(() => {
         const handleResize = () => {
             setIsMobile(window.innerWidth <= 1024);
         };
         window.addEventListener('resize', handleResize);
+
+        loadProfile();
+
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
+    const loadProfile = async () => {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+            const { data } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', session.user.id)
+                .single();
+
+            if (data) {
+                setProfile(data);
+            }
+        }
+    };
+
     if (isMobile) return null;
+
+    // Filter nav items based on role
+    const filteredNavItems = navItems.filter(item => {
+        if (item.path === '/users' && profile?.role !== 'practitioner') {
+            return false;
+        }
+        return true;
+    });
 
     return (
         <aside className="sidebar">
@@ -50,7 +77,7 @@ export default function Sidebar() {
             </div>
 
             <nav className="sidebar-nav">
-                {navItems.map((item) => {
+                {filteredNavItems.map((item) => {
                     const Icon = item.icon;
                     const isActive = location.pathname === item.path;
 
@@ -73,21 +100,31 @@ export default function Sidebar() {
                 <div className="sidebar-profile-card">
                     <img
                         src={practitionerAvatar}
-                        alt="Dr. Christophe Desouches"
+                        alt={profile?.full_name || "Utilisateur"}
                         className="sidebar-profile-avatar"
+                        style={{ border: profile?.role === 'nurse' ? '2px solid var(--color-info-200)' : '2px solid var(--color-primary-200)' }}
                     />
                     {!isMobile && (
                         <div className="sidebar-profile-info">
-                            <div className="sidebar-profile-name">DESOUCHES Christophe</div>
-                            <div className="badge badge-gold" style={{ fontSize: '9px', padding: '2px 8px', marginBottom: '4px', width: 'fit-content' }}>
-                                Admin PRO
-                            </div>
-                            <div className="sidebar-profile-title">Praticien</div>
+                            <div className="sidebar-profile-name">{profile?.full_name?.toUpperCase() || "CHARGEMENT..."}</div>
+                            {profile?.role === 'practitioner' ? (
+                                <div className="badge badge-gold" style={{ fontSize: '9px', padding: '2px 8px', marginBottom: '4px', width: 'fit-content' }}>
+                                    Admin PRO
+                                </div>
+                            ) : (
+                                <div className="badge badge-primary" style={{ fontSize: '9px', padding: '2px 8px', marginBottom: '4px', width: 'fit-content', background: 'var(--color-info-500)' }}>
+                                    INFIRMIER
+                                </div>
+                            )}
+                            <div className="sidebar-profile-title">{profile?.role === 'practitioner' ? 'Praticien' : 'Infirmier Cabinet'}</div>
                             <div className="sidebar-profile-specialty">
                                 <span className="sidebar-profile-specialty-label">Corps de métier</span>
                                 <span className="sidebar-profile-specialty-text">
-                                    Chirurgie Esthétique<br />
-                                    Plastique reconstructrice
+                                    {profile?.role === 'practitioner' ? (
+                                        <>Chirurgie Esthétique<br />Plastique reconstructrice</>
+                                    ) : (
+                                        <>Suivi Post-Opératoire<br />Prise en charge patient</>
+                                    )}
                                 </span>
                             </div>
                         </div>

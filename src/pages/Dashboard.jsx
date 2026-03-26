@@ -43,6 +43,7 @@ export default function Dashboard() {
         weekly: 0,
         recentActive: 0
     });
+    const [profile, setProfile] = useState(null);
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
 
     const tabs = ['J-10', 'J-7', 'J-2', 'J-1', 'Jour J', 'J+1', 'J+4', 'Tous', 'Archivés'];
@@ -149,6 +150,19 @@ export default function Dashboard() {
                 });
                 setResponses(respMap);
             }
+
+            // Fetch current user profile for mobile view
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) {
+                const { data: profileData } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', session.user.id)
+                    .single();
+                if (profileData) {
+                    setProfile(profileData);
+                }
+            }
         } catch (err) {
             console.error('Error loading patients:', err);
         } finally {
@@ -200,12 +214,12 @@ export default function Dashboard() {
                         <>
                             <div className="mobile-profile-card-new">
                                 <div className="mobile-profile-left">
-                                    <img src={practitionerAvatar} alt="Dr. Christophe Desouches" className="mobile-profile-img" />
+                                    <img src={practitionerAvatar} alt={profile?.full_name || "Utilisateur"} className="mobile-profile-img" />
                                 </div>
                                 <div className="mobile-profile-right">
                                     <div className="mobile-profile-identity">
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', width: '100%' }}>
-                                            <h3>DESOUCHES CHRISTOPHE</h3>
+                                            <h3>{(profile?.full_name || "CHARGEMENT...").toUpperCase()}</h3>
                                             <button
                                                 className="logout-icon-btn"
                                                 onClick={async () => {
@@ -217,13 +231,19 @@ export default function Dashboard() {
                                                 <LogOut size={18} />
                                             </button>
                                         </div>
-                                        <div className="badge-admin">ADMIN PRO</div>
-                                        <span className="profile-role">Praticien</span>
+                                        {profile?.role === 'practitioner' ? (
+                                            <div className="badge-admin">ADMIN PRO</div>
+                                        ) : (
+                                            <div className="badge-admin" style={{ background: 'var(--color-info-500)' }}>INFIRMIER</div>
+                                        )}
+                                        <span className="profile-role">{profile?.role === 'practitioner' ? 'Praticien' : 'Infirmier Cabinet'}</span>
                                     </div>
                                     <div className="mobile-profile-metier">
                                         <span className="metier-label">CORPS DE MÉTIER</span>
-                                        <span className="metier-value">CHIRURGIE ESTHÉTIQUE</span>
-                                        <span className="metier-value">PLASTIQUE RECONSTRUCTRICE</span>
+                                        <span className="metier-value">
+                                            {profile?.role === 'practitioner' ? 'CHIRURGIE ESTHÉTIQUE' : 'SUIVI POST-OPÉRATOIRE'}
+                                        </span>
+                                        {profile?.role === 'practitioner' && <span className="metier-value">PLASTIQUE RECONSTRUCTRICE</span>}
                                     </div>
                                 </div>
                             </div>

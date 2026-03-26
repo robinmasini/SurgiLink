@@ -38,14 +38,14 @@ export default function Users() {
                         id: 'c512fc61-e751-4ea3-872e-8a04fee4da12',
                         full_name: 'Christophe DESOUCHES',
                         role: 'practitioner',
-                        email: 'contact@desouches-chirurgien.com',
+                        email: 'christophe.desouches@gmail.com',
                         specialty: 'Chirurgien Esthétique'
                     },
                     {
                         id: 'fe1efb20-c915-41b1-9cbd-cbb18df43565',
                         full_name: 'Infirmier Cabinet',
                         role: 'nurse',
-                        email: 'infirmier@surgilink.fr',
+                        email: 'infirmier.desouches@gmail.com',
                         specialty: 'Suivi Post-Opératoire'
                     }
                 ]);

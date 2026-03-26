@@ -21,6 +21,27 @@ export default function AddPatientModal({ isOpen, onClose, onPatientAdded }) {
     });
     const [isSaving, setIsSaving] = useState(false);
 
+    useEffect(() => {
+        const loadProfile = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) {
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', session.user.id)
+                    .single();
+
+                if (profile && profile.role === 'practitioner') {
+                    setFormData(prev => ({
+                        ...prev,
+                        surgeonName: profile.full_name
+                    }));
+                }
+            }
+        };
+        loadProfile();
+    }, []);
+
     if (!isOpen) return null;
 
     const handleSave = async () => {

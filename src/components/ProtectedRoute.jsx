@@ -2,20 +2,39 @@ import { useState, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 
-export default function ProtectedRoute({ children }) {
+export default function ProtectedRoute({ children, requiredRole }) {
     const [isLoading, setIsLoading] = useState(true);
     const [session, setSession] = useState(null);
+    const [userRole, setUserRole] = useState(null);
 
     useEffect(() => {
-        // Initial check
-        supabase.auth.getSession().then(({ data: { session } }) => {
+        const checkAuth = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
             setSession(session);
-            setIsLoading(false);
-        });
 
-        // Listen for auth changes
+            if (session) {
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('role')
+                    .eq('id', session.user.id)
+                    .single();
+
+                if (profile) {
+                    setUserRole(profile.role);
+                }
+            }
+            setIsLoading(false);
+        };
+
+        checkAuth();
+
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
             setSession(session);
+            if (!session) {
+                setUserRole(null);
+            } else {
+                checkAuth();
+            }
         });
 
         return () => subscription.unsubscribe();
@@ -40,6 +59,11 @@ export default function ProtectedRoute({ children }) {
 
     if (!session) {
         return <Navigate to="/login" replace />;
+    }
+
+    if (requiredRole && userRole !== requiredRole) {
+        // Redirect to dashboard if they don't have the required role
+        return <Navigate to="/dashboard" replace />;
     }
 
     return children;

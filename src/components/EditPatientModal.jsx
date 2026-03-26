@@ -53,7 +53,7 @@ export default function EditPatientModal({ isOpen, onClose, patient, onPatientUp
                 email: patient.email || '',
                 clinicName: patient.clinic_name || '',
                 appointmentDatetime: patient.appointment_datetime ? new Date(patient.appointment_datetime).toISOString().slice(0, 16) : '',
-                surgeonName: patient.surgeon_name || 'Christophe DESOUCHES',
+                surgeonName: patient.surgeon_name || '',
                 surgeryTime: patient.surgery_time || '07:30',
                 stayType: patient.stay_type || 'Ambulatoire'
             });
