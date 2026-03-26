@@ -3,6 +3,7 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Patients from './pages/Patients';
 import Rentabilite from './pages/Rentabilite';
+import Users from './pages/Users';
 import PatientChecklist from './pages/PatientChecklist';
 import PatientSuccess from './pages/PatientSuccess';
 import PatientPostOp from './pages/PatientPostOp';
@@ -33,6 +34,7 @@ function App() {
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/patients" element={<ProtectedRoute><Patients /></ProtectedRoute>} />
         <Route path="/rentabilite" element={<ProtectedRoute><Rentabilite /></ProtectedRoute>} />
+        <Route path="/users" element={<ProtectedRoute><Users /></ProtectedRoute>} />
         <Route path="/patient/:id" element={<ProtectedRoute><PatientReview /></ProtectedRoute>} />
         <Route path="/account" element={<ProtectedRoute><Account /></ProtectedRoute>} />
 
