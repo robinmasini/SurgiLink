@@ -4,9 +4,7 @@ import Sidebar from '../components/Sidebar';
 import MobileNavbar from '../components/MobileNavbar';
 import Header from '../components/Header';
 import AddPatientModal from '../components/AddPatientModal';
-import christopheSignature from '../assets/christophe-signature.png';
 import practitionerAvatar from '../assets/practitioner-avatar.png';
-import welcomeCardV4 from '../assets/welcome-card-v4.jpg';
 import {
     Users,
     AlertTriangle,
@@ -156,49 +154,7 @@ export default function Dashboard() {
                     }
                 />
 
-                <div className="dashboard-grid-top">
-                    {/* Welcome Banner */}
-                    <div className="welcome-banner fade-in">
-                        <div className="welcome-banner-content">
-                            {/* Top Section - Empty for spacing */}
-                            <div>
-                            </div>
-
-                            {/* Middle Section */}
-                            <div>
-                                <div className="welcome-banner-welcome">Bonjour,</div>
-                                <a
-                                    href="https://www.desouches-chirurgien-esthetique.com/"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="welcome-banner-signature-link"
-                                >
-                                    <img src={christopheSignature} alt="Christophe DESOUCHES" className="welcome-banner-signature" />
-                                </a>
-                                <div className="welcome-banner-greeting">Ravi de vous revoir !</div>
-                                <div className="welcome-banner-instruction">Consultez votre Espace Praticien</div>
-                            </div>
-
-                            {/* Bottom Section - Date */}
-                            <div>
-                                <div className="welcome-banner-date-label">Date d'aujourd'hui</div>
-                                <div className="welcome-banner-date-value">
-                                    {new Date().toLocaleDateString('fr-FR', {
-                                        weekday: 'long',
-                                        day: 'numeric',
-                                        month: 'long',
-                                        year: 'numeric'
-                                    }).replace(/^\w/, (c) => c.toUpperCase())}
-                                </div>
-                            </div>
-                        </div>
-
-                        <img
-                            src={welcomeCardV4}
-                            alt="Espace Opératoire"
-                            className="welcome-banner-image"
-                        />
-                    </div>
+                <div className="dashboard-grid-top" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: 'var(--spacing-6)' }}>
 
                     {isMobile && (
                         <>
@@ -242,7 +198,7 @@ export default function Dashboard() {
                     )}
 
                     {/* Stats Cards Grid */}
-                    <div className="stat-grid">
+                    <div className="stat-grid" style={{ gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)' }}>
                         <div className="stat-card" style={{ cursor: 'pointer' }} onClick={() => navigate('/patients')}>
                             <div className="stat-card-icon" style={{ background: 'var(--color-primary-50)' }}>
                                 <Users size={24} style={{ color: 'var(--color-primary-500)' }} />

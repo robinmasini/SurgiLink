@@ -14,6 +14,7 @@ import PatientJ2 from './pages/PatientJ2';
 import PatientJ1PreOp from './pages/PatientJ1PreOp';
 import PatientJ1 from './pages/PatientJ1';
 import PatientESatis from './pages/PatientESatis';
+import Account from './pages/Account';
 import PatientPathwayTracker from './components/PatientPathwayTracker';
 import PatientPortal from './pages/PatientPortal';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -35,6 +36,7 @@ function App() {
         <Route path="/rentabilite" element={<ProtectedRoute><Rentabilite /></ProtectedRoute>} />
         <Route path="/patient/:id" element={<ProtectedRoute><PatientReview /></ProtectedRoute>} />
         <Route path="/review/:category" element={<ProtectedRoute><CategoryReview /></ProtectedRoute>} />
+        <Route path="/account" element={<ProtectedRoute><Account /></ProtectedRoute>} />
 
         {/* Patient Routes */}
         <Route path="/patient/:patientId/checklist" element={<PatientChecklist />} />

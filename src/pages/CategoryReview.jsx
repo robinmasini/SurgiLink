@@ -14,7 +14,6 @@ import {
     Plus
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import welcomeCardInfirmier from '../assets/welcomecard-infirmier.png';
 import StatusBolt from '../components/StatusBolt';
 import AddPatientModal from '../components/AddPatientModal';
 import { calculateDaysUntilSurgery } from '../utils/dateUtils';
@@ -138,46 +137,7 @@ export default function CategoryReview() {
                 )}
 
                 {category === 'active' && (
-                    <div className="dashboard-grid-top">
-                        {/* Welcome Banner */}
-                        <div className="welcome-banner fade-in">
-                            <div className="welcome-banner-content">
-                                <div></div>
-                                <div>
-                                    <div className="welcome-banner-welcome">Bienvenue,</div>
-                                    <div className="welcome-banner-name" style={{
-                                        fontSize: 'var(--font-size-2xl)',
-                                        fontWeight: '800',
-                                        marginBottom: 'var(--spacing-3)',
-                                        color: 'white',
-                                        minHeight: '80px',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        textTransform: 'none'
-                                    }}>
-                                        Espace infirmier
-                                    </div>
-                                    <div className="welcome-banner-greeting">Ravi de vous revoir !</div>
-                                    <div className="welcome-banner-instruction">Consultez votre Espace Suivi</div>
-                                </div>
-                                <div>
-                                    <div className="welcome-banner-date-label">Date d'aujourd'hui</div>
-                                    <div className="welcome-banner-date-value">
-                                        {new Date().toLocaleDateString('fr-FR', {
-                                            weekday: 'long',
-                                            day: 'numeric',
-                                            month: 'long',
-                                            year: 'numeric'
-                                        }).replace(/^\w/, (c) => c.toUpperCase())}
-                                    </div>
-                                </div>
-                            </div>
-                            <img
-                                src={welcomeCardInfirmier}
-                                alt="Espace Infirmier"
-                                className="welcome-banner-image"
-                            />
-                        </div>
+                    <div className="dashboard-grid-top" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: 'var(--spacing-6)' }}>
 
                         {isMobile && (
                             <button
@@ -191,7 +151,7 @@ export default function CategoryReview() {
                         )}
 
                         {/* Stats Grid - Matching Dashboard dimensions */}
-                        <div className="stat-grid">
+                        <div className="stat-grid" style={{ gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)' }}>
                             <div className="stat-card" style={{ cursor: 'pointer' }} onClick={() => navigate('/patients')}>
                                 <div className="stat-card-icon" style={{ background: 'var(--color-primary-50)' }}>
                                     <Users size={24} style={{ color: 'var(--color-primary-500)' }} />
