@@ -59,26 +59,6 @@ export default function Login() {
 
     return (
         <div className="login-page">
-            {/* Preloader */}
-            <div className={`preloader ${!isLoading ? 'fade-out' : ''}`}>
-                <img src={favicon} alt="Loading" className="preloader-icon" />
-            </div>
-
-            {/* Background Video */}
-            <video
-                autoPlay
-                loop
-                muted
-                playsInline
-                className="login-bg-video"
-                style={{ background: '#000' }} // Solid background during load
-            >
-                <source src="/login-bg.mp4" type="video/mp4" />
-            </video>
-
-            {/* Dark Overlay for contrast */}
-            <div className="login-overlay"></div>
-
             {/* Centered Login Card */}
             <div className="login-card">
                 <div className="login-brand">
