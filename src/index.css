@@ -792,13 +792,13 @@ textarea.input {
   top: 0;
   bottom: 0;
   width: var(--sidebar-width);
-  background: var(--gradient-sidebar);
+  background: var(--color-white);
   padding: var(--spacing-6);
   display: flex;
   flex-direction: column;
   z-index: 100;
-  border-right: none;
-  box-shadow: 4px 0 24px rgba(76, 29, 149, 0.2);
+  border-right: 1px solid var(--color-gray-100);
+  box-shadow: var(--shadow-sm);
 }
 
 .sidebar-close-btn {
@@ -812,7 +812,7 @@ textarea.input {
   justify-content: center;
   padding: var(--spacing-4) 0 var(--spacing-8);
   margin-bottom: var(--spacing-6);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid var(--color-gray-100);
 }
 
 .sidebar-logo-img {
@@ -835,7 +835,7 @@ textarea.input {
   align-items: center;
   gap: var(--spacing-3);
   padding: var(--spacing-3) var(--spacing-4);
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--color-gray-500);
   border-radius: var(--radius-lg);
   cursor: pointer;
   transition: all var(--transition-fast);
@@ -845,15 +845,15 @@ textarea.input {
 }
 
 .sidebar-item:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
+  background: var(--color-gray-50);
+  color: var(--color-primary-600);
   transform: translateX(4px);
 }
 
 .sidebar-item.active {
-  background: rgba(255, 255, 255, 0.15);
-  color: white;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background: var(--color-primary-50);
+  color: var(--color-primary-600);
+  box-shadow: none;
   position: relative;
 }
 
@@ -865,7 +865,7 @@ textarea.input {
   transform: translateY(-50%);
   width: 3px;
   height: 60%;
-  background: white;
+  background: var(--color-primary-500);
   border-radius: 0 4px 4px 0;
 }
 
@@ -879,7 +879,7 @@ textarea.input {
 
 .sidebar-footer {
   padding-top: var(--spacing-4);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid var(--color-gray-100);
   margin-top: auto;
 }
 
@@ -915,10 +915,8 @@ textarea.input {
 
 
 .sidebar-profile-card {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: var(--color-gray-50);
+  border: 1px solid var(--color-gray-100);
   border-radius: var(--radius-xl);
   padding: var(--spacing-3);
   display: flex;
@@ -930,8 +928,8 @@ textarea.input {
 }
 
 .sidebar-profile-card:hover {
-  background: rgba(255, 255, 255, 0.6);
-  border-color: rgba(255, 255, 255, 0.8);
+  background: var(--color-white);
+  border-color: var(--color-primary-200);
   transform: translateY(-1px);
   box-shadow: 0 6px 24px -5px rgba(0, 0, 0, 0.08);
 }
@@ -941,8 +939,8 @@ textarea.input {
   height: 44px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  border: 2px solid var(--color-white);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   flex-shrink: 0;
 }
 
@@ -954,7 +952,7 @@ textarea.input {
 .sidebar-profile-name {
   font-size: 11px;
   font-weight: var(--font-weight-bold);
-  color: white;
+  color: var(--color-gray-900);
   margin-bottom: 2px;
   text-transform: uppercase;
   line-height: 1.2;
@@ -963,8 +961,8 @@ textarea.input {
 .sidebar-profile-title {
   font-size: 10px;
   font-weight: var(--font-weight-semibold);
-  color: var(--color-primary-100);
-  background: rgba(255, 255, 255, 0.1);
+  color: var(--color-primary-600);
+  background: var(--color-primary-50);
   padding: 1px 6px;
   border-radius: var(--radius-full);
   display: inline-block;
@@ -978,7 +976,7 @@ textarea.input {
 
 .sidebar-profile-specialty-label {
   font-size: 9px;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--color-gray-400);
   text-transform: uppercase;
   letter-spacing: 0.3px;
   margin-bottom: 1px;
@@ -986,7 +984,7 @@ textarea.input {
 
 .sidebar-profile-specialty-text {
   font-size: 9px;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--color-gray-600);
   line-height: 1.3;
 }
 

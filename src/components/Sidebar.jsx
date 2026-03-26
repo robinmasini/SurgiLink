@@ -44,9 +44,9 @@ export default function Sidebar() {
         <aside className="sidebar">
             <div className="sidebar-logo">
                 {isMobile ? (
-                    <LogoIcon width="35px" className="sidebar-logo-img" white={true} />
+                    <LogoIcon width="35px" className="sidebar-logo-img" />
                 ) : (
-                    <LogoPremium width="120px" className="sidebar-logo-img" white={true} />
+                    <LogoPremium width="120px" className="sidebar-logo-img" />
                 )}
             </div>
 
