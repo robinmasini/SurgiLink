@@ -18,9 +18,7 @@ import {
 const navItems = [
     { path: '/dashboard', label: 'Tableau de bord', icon: LayoutDashboard },
     { path: '/patients', label: 'Listes patients', icon: Users },
-    { path: '/comments', label: 'Commentaires Patients', icon: MessageSquare },
-    { path: '/rentabilite', label: 'Rentabilité ROI', icon: BarChart3 },
-    { path: '/users', label: 'Utilisateurs', icon: UserCog },
+    { path: '/users', label: 'Gestion Utilisateurs', icon: UserCog },
     { path: '/account', label: 'Mon compte', icon: User },
 ];
 

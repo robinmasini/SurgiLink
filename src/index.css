@@ -1074,6 +1074,7 @@ textarea.input {
   gap: var(--spacing-4);
 }
 
+/* Dashboard Layout */
 .layout {
   display: flex;
   min-height: 100vh;
@@ -1088,10 +1089,10 @@ textarea.input {
 }
 
 .stats-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--spacing-6);
-  margin-bottom: var(--spacing-8);
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 24px;
+  margin-bottom: 32px;
 }
 
 @media (max-width: 1024px) {

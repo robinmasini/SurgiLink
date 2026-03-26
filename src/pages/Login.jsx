@@ -40,15 +40,35 @@ export default function Login() {
             if (loginError) throw loginError;
 
             if (data.user) {
-                // Verify role match (optional but good for UX)
-                const { data: profile } = await supabase
+                // FORCE role verification
+                const { data: profile, error: profileError } = await supabase
                     .from('profiles')
                     .select('role')
                     .eq('id', data.user.id)
                     .single();
 
-                if (profile && profile.role !== userType) {
-                    console.warn(`User role mismatch: expected ${userType}, got ${profile.role}`);
+                // If profiles table exists and role is defined, we MUST enforce it
+                if (!profileError && profile) {
+                    if (profile.role !== userType) {
+                        await supabase.auth.signOut();
+                        setError(`Ce compte est enregistré en tant que ${profile.role === 'practitioner' ? 'Praticien' : 'Infirmier'}. Veuillez sélectionner le bon type de compte.`);
+                        setIsAuthenticating(false);
+                        return;
+                    }
+                } else if (profileError && profileError.code !== 'PGRST116') {
+                    // PGRST116 is "no rows returned", which is fine if table is missing or empty
+                    // but other errors (like table not found) might mean we should use a fallback
+                    // based on email for safety during this transition
+                    const email = data.user.email;
+                    let detectedRole = 'practitioner';
+                    if (email === 'infirmier.desouches@gmail.com') detectedRole = 'nurse';
+
+                    if (detectedRole !== userType) {
+                        await supabase.auth.signOut();
+                        setError(`Ce compte est réservé aux ${detectedRole === 'practitioner' ? 'Praticiens' : 'Infirmiers'}.`);
+                        setIsAuthenticating(false);
+                        return;
+                    }
                 }
 
                 navigate('/dashboard');
