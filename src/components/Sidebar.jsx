@@ -18,7 +18,9 @@ import {
 const navItems = [
     { path: '/dashboard', label: 'Tableau de bord', icon: LayoutDashboard },
     { path: '/patients', label: 'Listes patients', icon: Users },
-    { path: '/users', label: 'Gestion Utilisateurs', icon: UserCog },
+    { path: '/comments', label: 'Commentaires Patients', icon: MessageSquare },
+    { path: '/rentabilite', label: 'Rentabilité ROI', icon: BarChart3 },
+    { path: '/users', label: 'Utilisateurs', icon: UserCog },
     { path: '/account', label: 'Mon compte', icon: User },
 ];
 
@@ -125,30 +127,27 @@ export default function Sidebar() {
                         src={practitionerAvatar}
                         alt={profile?.full_name || "Utilisateur"}
                         className="sidebar-profile-avatar"
-                        style={{ border: profile?.role === 'nurse' ? '2px solid var(--color-info-200)' : '2px solid var(--color-primary-200)' }}
                     />
                     {!isMobile && (
                         <div className="sidebar-profile-info">
-                            <div className="sidebar-profile-name">{profile?.full_name?.toUpperCase() || "CHARGEMENT..."}</div>
-                            {profile?.role === 'practitioner' ? (
-                                <div className="badge badge-gold" style={{ fontSize: '9px', padding: '2px 8px', marginBottom: '4px', width: 'fit-content' }}>
-                                    Admin PRO
-                                </div>
-                            ) : (
-                                <div className="badge badge-primary" style={{ fontSize: '9px', padding: '2px 8px', marginBottom: '4px', width: 'fit-content', background: 'var(--color-info-500)' }}>
-                                    INFIRMIER
-                                </div>
-                            )}
-                            <div className="sidebar-profile-title">{profile?.role === 'practitioner' ? 'Praticien' : 'Infirmier Cabinet'}</div>
-                            <div className="sidebar-profile-specialty">
-                                <span className="sidebar-profile-specialty-label">Corps de métier</span>
-                                <span className="sidebar-profile-specialty-text">
+                            <div className="sidebar-profile-name">
+                                {profile?.full_name?.split(' ').map((n, i) => i === 0 ? n : <><br />{n}</>) || "DESOUCHES<br />CHRISTOPHE"}
+                            </div>
+
+                            <div className="badge-row">
+                                <span className="badge-gold">ADMIN PRO</span>
+                                <span className="badge-role">{profile?.role === 'practitioner' ? 'Praticien' : 'Infirmier'}</span>
+                            </div>
+
+                            <div className="profile-meta">
+                                <div className="profile-meta-label">CORPS DE MÉTIER</div>
+                                <div className="profile-meta-value">
                                     {profile?.role === 'practitioner' ? (
-                                        <>Chirurgie Esthétique<br />Plastique reconstructrice</>
+                                        <>CHIRURGIE ESTHÉTIQUE<br />PLASTIQUE RECONSTRUCTRICE</>
                                     ) : (
-                                        <>Suivi Post-Opératoire<br />Prise en charge patient</>
+                                        <>SUIVI POST-OPÉRATOIRE<br />PRISE EN CHARGE PATIENT</>
                                     )}
-                                </span>
+                                </div>
                             </div>
                         </div>
                     )}
@@ -156,15 +155,29 @@ export default function Sidebar() {
 
                 <button
                     className="sidebar-logout-btn"
+                    style={{
+                        marginTop: 'var(--spacing-4)',
+                        width: '100%',
+                        padding: '12px',
+                        borderRadius: '12px',
+                        border: '1px solid #FEE2E2',
+                        color: '#EF4444',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '8px',
+                        background: 'transparent',
+                        fontWeight: '700',
+                        fontSize: '13px',
+                        cursor: 'pointer'
+                    }}
                     onClick={async () => {
                         await supabase.auth.signOut();
                         navigate('/login');
                     }}
                 >
-                    <span className="sidebar-item-icon">
-                        <LogOut size={isMobile ? 22 : 18} />
-                    </span>
-                    {!isMobile && <span className="sidebar-item-label">Déconnexion</span>}
+                    <LogOut size={18} />
+                    <span>Déconnexion</span>
                 </button>
             </div>
         </aside>

@@ -8,24 +8,27 @@ import {
     Calendar,
     Clock,
     Search,
-    Filter,
-    ChevronRight,
-    AlertCircle,
     Plus,
     Activity,
-    ClipboardCheck
+    ClipboardCheck,
+    AlertTriangle,
+    CheckCircle2,
+    CalendarDays,
+    PhoneCall,
+    Check
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import AddPatientModal from '../components/AddPatientModal';
-import practitionerAvatar from '../assets/practitioner-avatar.png';
 
 export default function Dashboard() {
     const navigate = useNavigate();
     const [patients, setPatients] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [searchTerm, setSearchTerm] = useState('');
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [profile, setProfile] = useState(null);
+    const [activeFilter, setActiveFilter] = useState('Tous');
+
+    const filters = ['J-10', 'J-7', 'J-2', 'J-1', 'Jour J', 'J+1', 'J+4', 'Tous', 'Archivés'];
 
     useEffect(() => {
         loadDashboard();
@@ -33,41 +36,22 @@ export default function Dashboard() {
 
     const loadDashboard = async () => {
         setIsLoading(true);
-        if (!supabase) {
-            setIsLoading(false);
-            return;
-        }
-
         try {
-            // Get user profile
             const { data: { session } } = await supabase.auth.getSession();
             if (session) {
-                const { data: profileData, error: profileError } = await supabase
+                const { data: profileData } = await supabase
                     .from('profiles')
                     .select('*')
                     .eq('id', session.user.id)
                     .single();
 
-                if (!profileError && profileData) {
+                if (profileData) {
                     setProfile(profileData);
                 } else {
-                    // Fallback based on email if profile fetch fails
+                    // Fallback
                     const email = session.user.email;
                     if (email === 'christophe.desouches@gmail.com') {
-                        setProfile({
-                            full_name: 'Dr. Christophe DESOUCHES',
-                            role: 'practitioner'
-                        });
-                    } else if (email === 'infirmier.desouches@gmail.com') {
-                        setProfile({
-                            full_name: 'Infirmier Cabinet',
-                            role: 'nurse'
-                        });
-                    } else {
-                        setProfile({
-                            full_name: email.split('@')[0].toUpperCase(),
-                            role: 'practitioner'
-                        });
+                        setProfile({ full_name: 'DESOUCHES CHRISTOPHE', role: 'practitioner' });
                     }
                 }
             }
@@ -87,114 +71,168 @@ export default function Dashboard() {
     };
 
     const stats = [
-        { label: 'Total Patients', value: patients.length, icon: Users, color: 'var(--color-primary-500)' },
-        { label: 'En attente J-7', value: patients.filter(p => p.status === 'PENDING').length, icon: Clock, color: 'var(--color-warning-500)' },
-        { label: 'Urgent/Vigilance', value: patients.filter(p => ['VIGILANCE', 'URGENT'].includes(p.risk_status)).length, icon: AlertCircle, color: 'var(--color-danger-500)' },
-        { label: 'Complétés', value: patients.filter(p => p.progress === 100).length, icon: ClipboardCheck, color: 'var(--color-success-500)' },
+        {
+            label: 'PATIENTS ACTIFS',
+            value: patients.length,
+            icon: Users,
+            variant: 'blue',
+            badge: 'Actif',
+            footer: '+2 cette semaine'
+        },
+        {
+            label: 'PROTOCOLES COMPLETS',
+            value: 0,
+            icon: CheckCircle2,
+            variant: 'green',
+            badge: 'À améliorer',
+            footer: '0% de conformité'
+        },
+        {
+            label: 'ACTIONS REQUISES',
+            value: 8,
+            icon: AlertTriangle,
+            variant: 'red',
+            badge: 'Priorité',
+            footer: 'Attention immédiate'
+        },
+        {
+            label: 'INTERVENTIONS / 7J',
+            value: 1,
+            icon: CalendarDays,
+            variant: 'cyan',
+            badge: 'Planning',
+            footer: 'Suivi planifié'
+        },
     ];
-
-    const filteredPatients = patients.filter(p =>
-        p.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.intervention?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
 
     return (
         <div className="layout">
             <Sidebar />
             <main className="main-content">
-                <Header
-                    title={profile?.role === 'nurse' ? "Espace Infirmier" : "Espace Praticien"}
-                    subtitle={profile?.full_name ? `Cabinet de ${profile.full_name}` : "Chargement..."}
-                    actions={
-                        <button className="btn btn-primary" onClick={() => setIsAddModalOpen(true)}>
-                            <Plus size={18} />
-                            <span>Ajouter un patient</span>
-                        </button>
-                    }
-                />
-
-                <div className="dashboard-mobile-profile">
-                    <div className="mobile-profile-card">
-                        <img src={practitionerAvatar} alt={profile?.full_name || "Utilisateur"} className="mobile-profile-img" />
-                        <div className="mobile-profile-info">
-                            <h3>{profile?.full_name || "Utilisateur"}</h3>
-                            <p>{profile?.role === 'practitioner' ? 'Praticien' : 'Infirmier Cabinet'}</p>
-                        </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 'var(--spacing-8)' }}>
+                    <div>
+                        <h1 style={{ fontSize: '28px', fontWeight: '800', margin: 0 }}>Tableau de Bord</h1>
+                        <p style={{ color: 'var(--color-gray-500)', fontSize: '14px' }}>Vue d'ensemble de vos patients et indicateurs clés</p>
                     </div>
+                    <button className="btn btn-secondary" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', borderRadius: '12px' }}>
+                        <PhoneCall size={18} />
+                        <span>Appeler la Clinique</span>
+                    </button>
                 </div>
 
                 <div className="stats-grid">
                     {stats.map((stat, i) => (
-                        <div key={i} className="stat-card fade-in" style={{ animationDelay: `${i * 0.1}s` }}>
-                            <div className="stat-icon" style={{ backgroundColor: `${stat.color}15`, color: stat.color }}>
-                                <stat.icon size={24} />
+                        <div key={i} className={`stat-card-premium stat-card-${stat.variant}`}>
+                            <div className="stat-card-header">
+                                <div className="stat-card-icon-wrapper">
+                                    <stat.icon size={20} />
+                                </div>
+                                <span className="stat-card-badge">{stat.badge}</span>
                             </div>
-                            <div className="stat-info">
-                                <span className="stat-label">{stat.label}</span>
-                                <span className="stat-value">{stat.value}</span>
+                            <div className="stat-card-main">
+                                <span className="stat-card-value">{stat.value}</span>
+                                <span className="stat-card-label">{stat.label}</span>
+                            </div>
+                            <div className="stat-card-footer">
+                                {stat.footer}
                             </div>
                         </div>
                     ))}
                 </div>
 
+                <div className="alert-banner-premium">
+                    <div className="alert-banner-content">
+                        <div className="alert-icon-wrapper">
+                            <AlertTriangle size={20} />
+                        </div>
+                        <div className="alert-text">
+                            <h3>Alerte : Créneaux à risque détectés</h3>
+                            <p>1 patients n'ont pas validé leur protocole pré-opératoire.</p>
+                        </div>
+                    </div>
+                    <div className="alert-financial">
+                        <span className="financial-label">IMPACT FINANCIER POTENTIEL</span>
+                        <span className="financial-value">-2450€</span>
+                    </div>
+                </div>
+
+                <div className="filter-bar-premium">
+                    <div className="filter-pills">
+                        {filters.map(f => (
+                            <button
+                                key={f}
+                                className={`filter-pill ${activeFilter === f ? 'active' : ''}`}
+                                onClick={() => setActiveFilter(f)}
+                            >
+                                {f}
+                            </button>
+                        ))}
+                    </div>
+                    <button className="btn btn-primary" onClick={() => setIsAddModalOpen(true)} style={{ borderRadius: '12px', padding: '10px 24px' }}>
+                        <Plus size={18} />
+                        <span>Ajouter un patient</span>
+                    </button>
+                </div>
+
                 <div className="section-card">
                     <div className="section-header">
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)' }}>
-                            <Activity size={20} color="var(--color-primary-500)" />
-                            <h2>Activité récente</h2>
-                        </div>
-                        <div className="search-bar">
-                            <Search size={18} />
-                            <input
-                                type="text"
-                                placeholder="Rechercher un patient..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                            />
-                        </div>
+                        <h2 style={{ fontSize: '18px', fontWeight: '800' }}>Liste des patients</h2>
+                        <span style={{ fontSize: '12px', color: 'var(--color-gray-400)' }}>{patients.length} patients</span>
                     </div>
 
                     <div className="table-container">
-                        <table className="data-table">
+                        <table className="patient-table-premium">
                             <thead>
                                 <tr>
-                                    <th>Patient</th>
-                                    <th>Intervention</th>
-                                    <th>Date</th>
-                                    <th>Status</th>
-                                    <th>Risque</th>
-                                    <th></th>
+                                    <th>PATIENT</th>
+                                    <th>RETOURS PATIENT</th>
+                                    <th>ÉTAPE</th>
+                                    <th>SMS ENVOYÉ</th>
+                                    <th>DATE</th>
+                                    <th>STATUT</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {isLoading ? (
                                     <tr><td colSpan="6" align="center">Chargement...</td></tr>
-                                ) : filteredPatients.length === 0 ? (
-                                    <tr><td colSpan="6" align="center">Aucun patient trouvé</td></tr>
                                 ) : (
-                                    filteredPatients.slice(0, 5).map((patient) => (
+                                    patients.slice(0, 5).map((patient) => (
                                         <tr key={patient.id} onClick={() => navigate(`/patient/${patient.id}`)} style={{ cursor: 'pointer' }}>
                                             <td>
-                                                <div className="patient-cell">
-                                                    <div className="patient-avatar">
-                                                        {patient.full_name?.charAt(0)}
+                                                <div className="patient-info-cell">
+                                                    <div className="patient-avatar-mini">
+                                                        {patient.full_name?.split(' ').map(n => n[0]).join('') || '??'}
                                                     </div>
-                                                    <span className="patient-name">{patient.full_name}</span>
+                                                    <div className="patient-details-mini">
+                                                        <span className="patient-name-mini">{patient.full_name}</span>
+                                                        <span className="patient-op-mini">{patient.intervention}</span>
+                                                    </div>
                                                 </div>
                                             </td>
-                                            <td>{patient.intervention}</td>
-                                            <td>{new Date(patient.surgery_date).toLocaleDateString()}</td>
                                             <td>
-                                                <span className={`status-badge status-${patient.status?.toLowerCase()}`}>
-                                                    {patient.status}
-                                                </span>
+                                                <div className="feedback-tags">
+                                                    <span className="feedback-tag red">Douleur signalée</span>
+                                                    <span className="feedback-tag gray">Gonflement important</span>
+                                                </div>
                                             </td>
                                             <td>
-                                                <span className={`risk-badge risk-${patient.risk_status?.toLowerCase() || 'normal'}`}>
-                                                    {patient.risk_status || 'NORMAL'}
-                                                </span>
+                                                <span className="step-label">J+15</span>
                                             </td>
-                                            <td><ChevronRight size={18} color="var(--color-gray-400)" /></td>
+                                            <td>
+                                                <div className="sms-status">
+                                                    <Check size={14} color="#10B981" />
+                                                    <span>Consulté</span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span style={{ fontSize: '13px', fontWeight: '600' }}>11 févr. 2024</span>
+                                            </td>
+                                            <td>
+                                                <div className="risk-status-text">
+                                                    <Activity size={14} />
+                                                    <span>VIGILANCE PRIORITAIRE</span>
+                                                </div>
+                                            </td>
                                         </tr>
                                     ))
                                 )}
