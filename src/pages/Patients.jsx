@@ -3,320 +3,327 @@ import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import AddPatientModal from '../components/AddPatientModal';
-import EditPatientModal from '../components/EditPatientModal';
 import {
     Users,
     Search,
-    Filter,
     Plus,
-    ChevronDown,
-    MoreHorizontal,
+    Clock,
     Phone,
-    Calendar,
-    MessageSquare,
-    AlertCircle,
-    Check
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { calculateDaysUntilSurgery } from '../utils/dateUtils';
+import StatusBolt from '../components/StatusBolt';
+import PatientStatusBadges from '../components/PatientStatusBadges';
+import PatientDetailPanel from '../components/PatientDetailPanel';
 
 export default function Patients() {
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
     const [activeTab, setActiveTab] = useState('Tous');
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-    const [selectedPatient, setSelectedPatient] = useState(null);
-    const [patientsList, setPatientsList] = useState([]);
+    const [allPatients, setAllPatients] = useState([]);
+    const [patients, setPatients] = useState([]);
+    const [responses, setResponses] = useState({});
     const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const [selectedPatientId, setSelectedPatientId] = useState(null);
 
-    const tabs = ['J-3', 'J-2', 'J-1', 'Interventions du jour', 'J+1', 'J+2', 'J+3', 'Tous', 'Archivés'];
+    const tabs = ['J-10', 'J-7', 'J-2', 'J-1', 'Jour J', 'J+1', 'J+4', 'Tous', 'Archivés'];
 
-    // Load patients from Supabase
     useEffect(() => {
-        loadPatients();
-    }, []);
+        filterPatients();
+    }, [allPatients, activeTab, searchTerm]);
+
+    const filterPatients = () => {
+        let filtered = [...allPatients];
+
+        if (activeTab === 'Archivés') {
+            filtered = filtered.filter(p => p.status === 'archived');
+        } else if (activeTab === 'Tous') {
+            filtered = filtered.filter(p => p.status !== 'archived');
+        } else {
+            filtered = filtered.filter(p => {
+                const daysUntil = calculateDaysUntilSurgery(p.date);
+                const tabDate = activeTab === 'Jour J' ? 'J-0' : activeTab;
+                return daysUntil === tabDate;
+            });
+        }
+
+        if (searchTerm) {
+            filtered = filtered.filter(p =>
+                p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                p.operation.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+        }
+
+        setPatients(filtered);
+    };
 
     const loadPatients = async () => {
         setIsLoading(true);
-        setError(null);
         try {
-            const { data, error: pError } = await supabase
+            const { data: allPatientsData, error: allPatientsError } = await supabase
                 .from('patients')
                 .select('*')
                 .order('date', { ascending: true });
 
-            if (pError) throw pError;
+            if (allPatientsError) throw allPatientsError;
 
-            // Enrich patients with last SMS and risk data
-            const enrichedData = await Promise.all((data || []).map(async (patient) => {
-                const daysUntil = calculateDaysUntilSurgery(patient.date);
-
-                // Get last SMS
-                const { data: smsData } = await supabase
-                    .from('sms_logs')
-                    .select('sent_at')
-                    .eq('patient_id', patient.id)
-                    .order('sent_at', { ascending: false })
-                    .limit(1);
-
-                // Get risk flags / responses for tags
-                const { data: respData } = await supabase
-                    .from('pathway_responses')
-                    .select('item_id, response_value')
-                    .eq('patient_id', patient.id);
-
-                return {
-                    ...patient,
-                    daysUntil,
-                    lastSMS: smsData?.[0]?.sent_at || null,
-                    responses: respData || []
-                };
+            const formattedPatients = allPatientsData.map(patient => ({
+                ...patient,
+                daysUntil: calculateDaysUntilSurgery(patient.date),
+                formattedDate: patient.date ? new Date(patient.date).toLocaleDateString('fr-FR', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric'
+                }) : 'Non définie'
             }));
 
-            setPatientsList(enrichedData);
+            setAllPatients(formattedPatients);
+
+            if (formattedPatients.length > 0) {
+                const { data: respData } = await supabase
+                    .from('pathway_responses')
+                    .select('*')
+                    .in('patient_id', formattedPatients.map(p => p.id));
+
+                const respMap = {};
+                (respData || []).forEach(r => {
+                    if (!respMap[r.patient_id]) respMap[r.patient_id] = [];
+                    respMap[r.patient_id].push(r);
+                });
+                setResponses(respMap);
+            }
         } catch (err) {
             console.error('Error loading patients:', err);
-            setError(err.message);
         } finally {
             setIsLoading(false);
         }
     };
 
-    const getPatientTags = (patient) => {
-        const tags = [];
-        const resps = patient.responses || [];
-
-        // Logic for tags based on responses (simulated from screenshot)
-        const visionFlag = resps.find(r => r.item_id === 'vision_status' && r.response_value === 'degraded');
-        if (visionFlag) tags.push({ label: 'Vision dégradée', type: 'danger' });
-
-        const painFlag = resps.find(r => r.item_id === 'pain_level' && parseInt(r.response_value) >= 7);
-        if (painFlag) tags.push({ label: 'Douleur déclarée', type: 'warning' });
-
-        const needContact = resps.length > 0 && !resps.find(r => r.item_id === 'contacted');
-        if (needContact && tags.length > 0) tags.push({ label: 'À contacter', type: 'info' });
-
-        const noPain = resps.find(r => r.item_id === 'pain_level' && parseInt(r.response_value) <= 2);
-        if (noPain) tags.push({ label: 'Pas de douleur', type: 'success' });
-
-        return tags;
+    const handlePatientAdded = () => {
+        loadPatients();
     };
 
-    const filteredPatients = patientsList.filter(p => {
-        const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            p.operation.toLowerCase().includes(searchTerm.toLowerCase());
-
-        if (activeTab === 'Tous') return matchesSearch;
-        if (activeTab === 'Archivés') return matchesSearch && p.status === 'archived';
-        if (activeTab === 'Interventions du jour') return matchesSearch && p.daysUntil === 'J-0';
-
-        return matchesSearch && p.daysUntil === activeTab;
-    });
+    const getStatusBadge = (status) => {
+        return <StatusBolt status={status} showLabel={true} />;
+    };
 
     return (
-        <div style={{ display: 'flex', minHeight: '100vh', background: '#F8FAFC' }}>
+        <div style={{ display: 'flex', minHeight: '100vh', background: 'white' }}>
             <Sidebar />
             <main style={{ flex: 1, padding: 'var(--spacing-8)', marginLeft: 'var(--sidebar-width)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-8)' }}>
-                    <div>
-                        <h1 style={{ fontSize: '28px', fontWeight: '800', color: '#1E293B', marginBottom: '4px' }}>Liste patients</h1>
-                        <p style={{ color: '#64748B', fontSize: '14px' }}>Nombre de patient: {patientsList.length}</p>
-                    </div>
-                    <button
-                        className="btn"
-                        onClick={() => setIsModalOpen(true)}
-                        style={{
-                            background: 'var(--color-accent-600)',
-                            color: 'white',
-                            borderRadius: '12px',
-                            padding: '12px 20px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px',
-                            fontWeight: '600',
-                            boxShadow: '0 4px 12px rgba(124, 58, 237, 0.2)'
-                        }}
-                    >
-                        <Plus size={18} />
-                        Ajouter un patient
-                    </button>
-                </div>
-
-                {/* Tabs */}
-                <div style={{
-                    display: 'flex',
-                    gap: 'var(--spacing-2)',
-                    marginBottom: 'var(--spacing-6)',
-                    borderBottom: '1px solid #E2E8F0',
-                    paddingBottom: '2px',
-                    overflowX: 'auto'
-                }}>
-                    {tabs.map(tab => (
+                <Header
+                    title="Liste des patients"
+                    subtitle={`Total: ${allPatients.length} patients au cabinet`}
+                    actions={
                         <button
-                            key={tab}
-                            onClick={() => setActiveTab(tab)}
+                            className="btn btn-secondary hide-mobile"
                             style={{
-                                padding: '12px 20px',
-                                fontSize: '14px',
-                                fontWeight: activeTab === tab ? '700' : '500',
-                                color: activeTab === tab ? 'var(--color-accent-600)' : '#64748B',
-                                borderBottom: activeTab === tab ? '3px solid var(--color-accent-600)' : '3px solid transparent',
-                                background: 'none',
-                                borderTop: 'none',
-                                borderLeft: 'none',
-                                borderRight: 'none',
-                                transition: 'all 0.2s ease',
-                                whiteSpace: 'nowrap',
-                                cursor: 'pointer'
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 'var(--spacing-2)',
+                                background: 'white',
+                                color: 'var(--color-primary-600)',
+                                border: '1px solid var(--color-primary-100)',
+                                fontWeight: '600',
+                                boxShadow: 'var(--shadow-sm)'
                             }}
+                            onClick={() => window.location.href = 'tel:0491550000'}
                         >
-                            {tab}
+                            <Phone size={18} />
+                            Appeler la Clinique
                         </button>
-                    ))}
+                    }
+                />
+
+                {/* Sub Header / Search & Tabs */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-6)', flexWrap: 'wrap', gap: 'var(--spacing-4)' }}>
+                    <div className="tabs" style={{ display: 'flex', gap: 'var(--spacing-2)', overflowX: 'auto', paddingBottom: 'var(--spacing-2)' }}>
+                        {tabs.map(tab => (
+                            <button
+                                key={tab}
+                                onClick={() => setActiveTab(tab)}
+                                style={{
+                                    padding: 'var(--spacing-2) var(--spacing-4)',
+                                    borderRadius: 'var(--radius-md)',
+                                    border: '1px solid var(--color-gray-100)',
+                                    background: activeTab === tab ? 'var(--color-primary-500)' : 'white',
+                                    color: activeTab === tab ? 'white' : 'var(--color-gray-600)',
+                                    fontSize: 'var(--font-size-sm)',
+                                    fontWeight: '600',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.2s',
+                                    whiteSpace: 'nowrap'
+                                }}
+                            >
+                                {tab}
+                            </button>
+                        ))}
+                    </div>
+
+                    <div style={{ display: 'flex', gap: 'var(--spacing-3)', flex: 1, minWidth: '300px', justifyContent: 'flex-end' }}>
+                        <div style={{ position: 'relative', flex: 1, maxWidth: '400px' }}>
+                            <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-gray-400)' }} />
+                            <input
+                                type="text"
+                                placeholder="Rechercher un patient..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                style={{
+                                    width: '100%',
+                                    padding: '10px 12px 10px 40px',
+                                    borderRadius: 'var(--radius-lg)',
+                                    border: '1px solid var(--color-gray-200)',
+                                    fontSize: 'var(--font-size-sm)',
+                                    outline: 'none',
+                                    transition: 'border-color 0.2s'
+                                }}
+                            />
+                        </div>
+                        <button
+                            className="btn btn-primary"
+                            onClick={() => setIsModalOpen(true)}
+                            style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)' }}
+                        >
+                            <Plus size={18} /> Ajouter un patient
+                        </button>
+                    </div>
                 </div>
 
-                {/* Search */}
-                <div style={{ position: 'relative', marginBottom: 'var(--spacing-6)' }}>
-                    <Search size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
-                    <input
-                        type="text"
-                        placeholder="Rechercher par nom ou opération..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        style={{
-                            width: '100%',
-                            padding: '14px 14px 14px 48px',
-                            borderRadius: '12px',
-                            border: '1px solid #E2E8F0',
-                            fontSize: '15px',
-                            background: 'white',
-                            outline: 'none',
-                            transition: 'border-color 0.2s',
-                        }}
-                    />
-                </div>
+                <div className="dashboard-content-split" style={{
+                    display: 'grid',
+                    gridTemplateColumns: selectedPatientId ? '1fr 380px' : '1fr',
+                    gap: 'var(--spacing-6)',
+                    alignItems: 'start',
+                    transition: 'all 0.3s'
+                }}>
+                    <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+                        <div style={{ padding: 'var(--spacing-4)', borderBottom: '1px solid var(--color-gray-100)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <h3 style={{ fontSize: 'var(--font-size-lg)' }}>Patients ({patients.length})</h3>
+                        </div>
 
-                {/* Table */}
-                <div className="card" style={{ padding: 0, overflow: 'hidden', border: '1px solid #E2E8F0', borderRadius: '16px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-                        <thead>
-                            <tr style={{ background: '#F8FAFC', borderBottom: '1px solid #E2E8F0' }}>
-                                <th style={{ padding: '16px 20px', fontSize: '13px', color: '#64748B', fontWeight: '700', textTransform: 'uppercase' }}>ID <ChevronDown size={14} /></th>
-                                <th style={{ padding: '16px 20px', fontSize: '13px', color: '#64748B', fontWeight: '700', textTransform: 'uppercase' }}>Patient <ChevronDown size={14} /></th>
-                                <th style={{ padding: '16px 20px', fontSize: '13px', color: '#64748B', fontWeight: '700', textTransform: 'uppercase' }}>Suivis actifs <ChevronDown size={14} /></th>
-                                <th style={{ padding: '16px 20px', fontSize: '13px', color: '#64748B', fontWeight: '700', textTransform: 'uppercase' }}>Rendez-vous à venir <ChevronDown size={14} /></th>
-                                <th style={{ padding: '16px 20px', fontSize: '13px', color: '#64748B', fontWeight: '700', textTransform: 'uppercase' }}>Dernier envoi <ChevronDown size={14} /></th>
-                                <th style={{ padding: '16px 20px', fontSize: '13px', color: '#64748B', fontWeight: '700', textTransform: 'uppercase' }}>Retours patient <ChevronDown size={14} /></th>
-                                <th style={{ padding: '16px 20px', fontSize: '13px', color: '#64748B', fontWeight: '700', textTransform: 'uppercase' }}>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {isLoading ? (
-                                <tr><td colSpan="7" style={{ padding: '40px', textAlign: 'center', color: '#64748B' }}>Chargement...</td></tr>
-                            ) : filteredPatients.length === 0 ? (
-                                <tr><td colSpan="7" style={{ padding: '40px', textAlign: 'center', color: '#64748B' }}>Aucun patient trouvé.</td></tr>
-                            ) : filteredPatients.map((p, idx) => (
-                                <tr
-                                    key={p.id}
-                                    style={{ borderBottom: '1px solid #F1F5F9', cursor: 'pointer', transition: 'background 0.2s' }}
-                                    onClick={() => navigate(`/patient/${p.id}`)}
-                                >
-                                    <td style={{ padding: '20px', fontSize: '14px', color: '#64748B' }}>{String(idx + 1).padStart(3, '0')}</td>
-                                    <td style={{ padding: '20px' }}>
-                                        <div style={{ fontWeight: '700', color: '#1E293B', fontSize: '15px' }}>{p.name}</div>
-                                        <div style={{ color: '#64748B', fontSize: '13px', marginTop: '4px' }}>{p.phone}</div>
-                                    </td>
-                                    <td style={{ padding: '20px', fontSize: '14px', color: '#475569' }}>
-                                        {p.operation}
-                                    </td>
-                                    <td style={{ padding: '20px' }}>
-                                        <div style={{ fontSize: '14px', color: '#475569' }}>{new Date(p.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
-                                        <div style={{ fontSize: '13px', color: '#94A3B8', marginTop: '4px' }}>{p.surgery_time || '08:00'}</div>
-                                        {p.status === 'treated' && (
-                                            <div style={{
-                                                display: 'inline-flex',
-                                                alignItems: 'center',
-                                                gap: '4px',
-                                                background: '#DCFCE7',
-                                                color: '#166534',
-                                                fontSize: '11px',
-                                                fontWeight: '700',
-                                                padding: '2px 8px',
-                                                borderRadius: '6px',
-                                                marginTop: '6px'
-                                            }}>
-                                                <Check size={12} /> Traité
-                                            </div>
+                        <div style={{ overflowX: 'auto' }}>
+                            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                                <thead>
+                                    <tr style={{ borderBottom: '1px solid var(--color-gray-100)', background: 'var(--color-gray-50)' }}>
+                                        <th style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-500)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Patient</th>
+                                        <th style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-500)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Retours patient</th>
+                                        <th className="hide-tablet" style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-500)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Étape</th>
+                                        <th className="hide-mobile" style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-500)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>SMS envoyé</th>
+                                        {!selectedPatientId && (
+                                            <>
+                                                <th className="hide-tablet" style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-500)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Date</th>
+                                                <th style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-500)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Statut</th>
+                                            </>
                                         )}
-                                    </td>
-                                    <td style={{ padding: '20px', fontSize: '14px', color: '#475569' }}>
-                                        {p.lastSMS ? new Date(p.lastSMS).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-'}
-                                    </td>
-                                    <td style={{ padding: '20px' }}>
-                                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                                            {getPatientTags(p).map((tag, i) => (
-                                                <span
-                                                    key={i}
-                                                    style={{
-                                                        padding: '4px 10px',
-                                                        borderRadius: '8px',
-                                                        fontSize: '12px',
-                                                        fontWeight: '700',
-                                                        background: tag.type === 'danger' ? '#FEE2E2' : tag.type === 'warning' ? '#FFEDD5' : tag.type === 'info' ? '#E0E7FF' : '#DCFCE7',
-                                                        color: tag.type === 'danger' ? '#B91C1C' : tag.type === 'warning' ? '#C2410C' : tag.type === 'info' ? '#4338CA' : '#15803D',
-                                                        display: 'inline-flex',
-                                                        alignItems: 'center',
-                                                        gap: '6px'
-                                                    }}
-                                                >
-                                                    {tag.label} <span style={{ opacity: 0.6 }}>✕</span>
-                                                </span>
-                                            ))}
-                                        </div>
-                                    </td>
-                                    <td style={{ padding: '20px' }}>
-                                        <button
-                                            className="btn"
-                                            onClick={(e) => { e.stopPropagation(); navigate(`/patient/${p.id}`); }}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {isLoading ? (
+                                        <tr>
+                                            <td colSpan="6" style={{ padding: 'var(--spacing-12)', textAlign: 'center', color: 'var(--color-gray-400)' }}>
+                                                Chargement des patients...
+                                            </td>
+                                        </tr>
+                                    ) : patients.length === 0 ? (
+                                        <tr>
+                                            <td colSpan="6" style={{ padding: 'var(--spacing-12)', textAlign: 'center', color: 'var(--color-gray-400)' }}>
+                                                Aucun patient trouvé.
+                                            </td>
+                                        </tr>
+                                    ) : patients.map((patient) => (
+                                        <tr
+                                            key={patient.id}
                                             style={{
-                                                background: '#334155',
-                                                color: 'white',
-                                                padding: '8px 16px',
-                                                borderRadius: '20px',
-                                                fontSize: '13px',
-                                                fontWeight: '700',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: '6px',
-                                                border: 'none',
-                                                cursor: 'pointer'
+                                                borderBottom: '1px solid var(--color-gray-50)',
+                                                cursor: 'pointer',
+                                                background: selectedPatientId === patient.id ? 'var(--color-primary-50)' : 'transparent',
+                                                borderLeft: selectedPatientId === patient.id ? '4px solid var(--color-primary-500)' : 'none'
                                             }}
+                                            className="table-row-hover"
+                                            onClick={() => setSelectedPatientId(patient.id === selectedPatientId ? null : patient.id)}
                                         >
-                                            Action <ChevronDown size={14} style={{ transform: 'rotate(-90deg)' }} />
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                                            <td style={{ padding: 'var(--spacing-3) var(--spacing-4)' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)' }}>
+                                                    <div style={{
+                                                        width: '36px',
+                                                        height: '36px',
+                                                        borderRadius: '50%',
+                                                        background: 'var(--color-primary-100)',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        fontSize: 'var(--font-size-sm)',
+                                                        fontWeight: 'var(--font-weight-bold)',
+                                                        color: 'var(--color-primary-700)'
+                                                    }}>
+                                                        {patient.name.split(' ').map(n => n[0]).join('')}
+                                                    </div>
+                                                    <div>
+                                                        <div style={{ fontWeight: '600', color: 'var(--color-gray-900)' }}>{patient.name}</div>
+                                                        <div style={{ fontSize: '11px', color: 'var(--color-gray-500)' }}>{patient.operation}</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td style={{ padding: 'var(--spacing-3) var(--spacing-4)' }}>
+                                                <PatientStatusBadges
+                                                    responses={responses[patient.id] || []}
+                                                    daysUntil={patient.daysUntil}
+                                                    patientStatus={patient.status}
+                                                />
+                                            </td>
+                                            <td className="hide-tablet" style={{ padding: 'var(--spacing-3) var(--spacing-4)' }}>
+                                                <span
+                                                    className={
+                                                        patient.daysUntil === 'J-1' || patient.daysUntil === 'J-2' ? 'deadline-red' :
+                                                            patient.daysUntil === 'J-7' || patient.daysUntil === 'J-10' ? 'deadline-green' :
+                                                                patient.daysUntil.includes('J+') ? 'deadline-orange' : 'deadline-green'
+                                                    }
+                                                    style={{ fontSize: '11px', fontWeight: '700' }}
+                                                >
+                                                    {patient.daysUntil}
+                                                </span>
+                                            </td>
+                                            <td className="hide-mobile" style={{ padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-500)' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-1)' }}>
+                                                    <Clock size={12} />
+                                                    {patient.daysUntil === 'J-0' ? 'Intervention du jour' : 'Consulté'}
+                                                </div>
+                                            </td>
+                                            {!selectedPatientId && (
+                                                <>
+                                                    <td className="hide-tablet" style={{ padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-600)' }}>
+                                                        {patient.formattedDate}
+                                                    </td>
+                                                    <td style={{ padding: 'var(--spacing-3) var(--spacing-4)' }}>
+                                                        {selectedPatientId === patient.id ? (
+                                                            <div style={{ width: '24px', height: '24px' }}></div>
+                                                        ) : (
+                                                            getStatusBadge(patient.status)
+                                                        )}
+                                                    </td>
+                                                </>
+                                            )}
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    {selectedPatientId && (
+                        <PatientDetailPanel
+                            patient={patients.find(p => p.id === selectedPatientId)}
+                            responses={responses[selectedPatientId] || []}
+                            onClose={() => setSelectedPatientId(null)}
+                        />
+                    )}
                 </div>
 
                 <AddPatientModal
                     isOpen={isModalOpen}
                     onClose={() => setIsModalOpen(false)}
-                    onPatientAdded={loadPatients}
-                />
-
-                <EditPatientModal
-                    isOpen={isEditModalOpen}
-                    onClose={() => {
-                        setIsEditModalOpen(false);
-                        setSelectedPatient(null);
-                    }}
-                    patient={selectedPatient}
-                    onPatientUpdated={loadPatients}
+                    onPatientAdded={handlePatientAdded}
                 />
             </main>
         </div>
