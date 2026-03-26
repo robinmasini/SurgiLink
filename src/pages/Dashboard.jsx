@@ -42,13 +42,33 @@ export default function Dashboard() {
             // Get user profile
             const { data: { session } } = await supabase.auth.getSession();
             if (session) {
-                const { data: profileData } = await supabase
+                const { data: profileData, error: profileError } = await supabase
                     .from('profiles')
                     .select('*')
                     .eq('id', session.user.id)
                     .single();
-                if (profileData) {
+
+                if (!profileError && profileData) {
                     setProfile(profileData);
+                } else {
+                    // Fallback based on email if profile fetch fails
+                    const email = session.user.email;
+                    if (email === 'christophe.desouches@gmail.com') {
+                        setProfile({
+                            full_name: 'Dr. Christophe DESOUCHES',
+                            role: 'practitioner'
+                        });
+                    } else if (email === 'infirmier.desouches@gmail.com') {
+                        setProfile({
+                            full_name: 'Infirmier Cabinet',
+                            role: 'nurse'
+                        });
+                    } else {
+                        setProfile({
+                            full_name: email.split('@')[0].toUpperCase(),
+                            role: 'practitioner'
+                        });
+                    }
                 }
             }
 
