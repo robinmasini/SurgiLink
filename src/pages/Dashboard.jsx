@@ -24,12 +24,18 @@ import {
 import { supabase } from '../lib/supabase';
 import { calculateDaysUntilSurgery } from '../utils/dateUtils';
 import StatusBolt from '../components/StatusBolt';
+import PatientStatusBadges from '../components/PatientStatusBadges';
+import PatientDetailPanel from '../components/PatientDetailPanel';
 
 export default function Dashboard() {
     const navigate = useNavigate();
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [allPatients, setAllPatients] = useState([]);
     const [patients, setPatients] = useState([]);
+    const [responses, setResponses] = useState({});
     const [isLoading, setIsLoading] = useState(true);
+    const [selectedPatientId, setSelectedPatientId] = useState(null);
+    const [activeTab, setActiveTab] = useState('Tous');
     const [stats, setStats] = useState({
         active: 0,
         complete: 0,
@@ -38,6 +44,8 @@ export default function Dashboard() {
         recentActive: 0
     });
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
+
+    const tabs = ['J-3', 'J-2', 'J-1', 'Jour J', 'J+1', 'J+2', 'J+3', 'Tous', 'Archivés'];
 
     useEffect(() => {
         const handleResize = () => {
@@ -50,6 +58,28 @@ export default function Dashboard() {
     useEffect(() => {
         loadPatients();
     }, []);
+
+    useEffect(() => {
+        filterPatients();
+    }, [allPatients, activeTab]);
+
+    const filterPatients = () => {
+        let filtered = [...allPatients];
+
+        if (activeTab === 'Archivés') {
+            filtered = filtered.filter(p => p.status === 'archived');
+        } else if (activeTab === 'Tous') {
+            filtered = filtered.filter(p => p.status !== 'archived');
+        } else {
+            filtered = filtered.filter(p => {
+                const daysUntil = calculateDaysUntilSurgery(p.date);
+                const tabDate = activeTab === 'Jour J' ? 'J-0' : activeTab;
+                return daysUntil === tabDate;
+            });
+        }
+
+        setPatients(filtered);
+    };
 
     const loadPatients = async () => {
         setIsLoading(true);
@@ -93,22 +123,32 @@ export default function Dashboard() {
                 recentActive: recentActiveCount
             });
 
-            // Format 5 most recent patients for display
-            const recentPatients = allPatients
-                .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-                .slice(0, 5);
-
-            const formattedPatients = recentPatients.map(patient => ({
+            const formattedPatients = allPatients.map(patient => ({
                 ...patient,
                 daysUntil: calculateDaysUntilSurgery(patient.date),
-                date: patient.date ? new Date(patient.date).toLocaleDateString('fr-FR', {
+                formattedDate: patient.date ? new Date(patient.date).toLocaleDateString('fr-FR', {
                     day: 'numeric',
                     month: 'short',
                     year: 'numeric'
                 }) : 'Non définie'
             }));
 
-            setPatients(formattedPatients);
+            setAllPatients(formattedPatients);
+
+            // Fetch responses for these patients to show pastilles
+            if (formattedPatients.length > 0) {
+                const { data: respData } = await supabase
+                    .from('pathway_responses')
+                    .select('*')
+                    .in('patient_id', formattedPatients.map(p => p.id));
+
+                const respMap = {};
+                (respData || []).forEach(r => {
+                    if (!respMap[r.patient_id]) respMap[r.patient_id] = [];
+                    respMap[r.patient_id].push(r);
+                });
+                setResponses(respMap);
+            }
         } catch (err) {
             console.error('Error loading patients:', err);
         } finally {
@@ -199,120 +239,276 @@ export default function Dashboard() {
 
                     {/* Stats Cards Grid */}
                     <div className="stat-grid" style={{ gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)' }}>
-                        <div className="stat-card" style={{ cursor: 'pointer' }} onClick={() => navigate('/patients')}>
-                            <div className="stat-card-icon" style={{ background: 'var(--color-primary-50)' }}>
-                                <Users size={24} style={{ color: 'var(--color-primary-500)' }} />
-                            </div>
-                            <div className="stat-card-value">{stats.active}</div>
-                            <div className="stat-card-label">Patients actifs</div>
-                            <div className="stat-card-meta">+{stats.recentActive} cette semaine</div>
-                        </div>
-
-                        <div className="stat-card" style={{ cursor: 'pointer' }} onClick={() => navigate('/review/complete')}>
-                            <div className="stat-card-icon" style={{ background: 'var(--color-success-50)' }}>
-                                <CheckCircle size={24} style={{ color: 'var(--color-success-500)' }} />
-                            </div>
-                            <div className="stat-card-value">{stats.complete}</div>
-                            <div className="stat-card-label">Protocoles complets</div>
-                            <div className="stat-card-meta">{stats.active > 0 ? Math.round((stats.complete / stats.active) * 100) : 0}% de conformité</div>
-                        </div>
-
-                        <div className="stat-card" style={{ cursor: 'pointer' }} onClick={() => navigate('/review/required')}>
+                        <div className="stat-card" style={{ cursor: 'pointer', transition: 'transform 0.2s' }} onClick={() => navigate('/patients')}>
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--spacing-3)' }}>
-                                <div className="stat-card-icon" style={{ background: 'var(--color-warning-50)', marginBottom: 0 }}>
-                                    <AlertTriangle size={24} style={{ color: 'var(--color-warning-500)' }} />
+                                <div className="stat-card-icon" style={{ background: 'var(--color-primary-50)', marginBottom: 0 }}>
+                                    <Users size={24} style={{ color: 'var(--color-primary-500)' }} />
                                 </div>
-                                <span className="badge badge-danger">Priorité</span>
+                                <span className="badge badge-primary">Actif</span>
                             </div>
-                            <div className="stat-card-value">{stats.required}</div>
-                            <div className="stat-card-label">Actions requises</div>
-                            <div className="stat-card-meta" style={{ color: 'var(--color-danger-500)' }}>
-                                {stats.required > 0 ? "Attention requise" : "Tout est à jour"}
+                            <div className="stat-card-value" style={{ fontSize: 'var(--font-size-3xl)' }}>{stats.active}</div>
+                            <div className="stat-card-label" style={{ fontWeight: '600', color: 'var(--color-gray-500)' }}>Patients actifs</div>
+                            <div className="stat-card-meta" style={{ color: 'var(--color-primary-600)', fontWeight: '600' }}>+{stats.recentActive} cette semaine</div>
+                        </div>
+
+                        <div className="stat-card" style={{
+                            cursor: 'pointer',
+                            background: stats.active > 0 && (stats.complete / stats.active) < 0.8 ? 'var(--color-warning-50)' : 'white',
+                            borderColor: stats.active > 0 && (stats.complete / stats.active) < 0.8 ? 'var(--color-warning-200)' : 'var(--color-gray-100)',
+                            transition: 'all 0.3s'
+                        }} onClick={() => navigate('/review/complete')}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--spacing-3)' }}>
+                                <div className="stat-card-icon" style={{ background: 'var(--color-success-50)', marginBottom: 0 }}>
+                                    <CheckCircle size={24} style={{ color: 'var(--color-success-500)' }} />
+                                </div>
+                                {stats.active > 0 && (stats.complete / stats.active) < 0.8 && (
+                                    <span className="badge badge-warning">À améliorer</span>
+                                )}
+                            </div>
+                            <div className="stat-card-value" style={{ fontSize: 'var(--font-size-3xl)' }}>{stats.complete}</div>
+                            <div className="stat-card-label" style={{ fontWeight: '600', color: 'var(--color-gray-500)' }}>Protocoles complets</div>
+                            <div className="stat-card-meta" style={{ color: 'var(--color-success-600)', fontWeight: '600' }}>
+                                {stats.active > 0 ? Math.round((stats.complete / stats.active) * 100) : 0}% de conformité
+                            </div>
+                        </div>
+
+                        <div className="stat-card" style={{
+                            cursor: 'pointer',
+                            background: stats.required > 0 ? 'var(--color-danger-50)' : 'white',
+                            borderColor: stats.required > 0 ? 'var(--color-danger-100)' : 'var(--color-gray-100)',
+                            transition: 'all 0.3s'
+                        }} onClick={() => navigate('/review/required')}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--spacing-3)' }}>
+                                <div className="stat-card-icon" style={{ background: 'var(--color-danger-50)', marginBottom: 0 }}>
+                                    <AlertTriangle size={24} style={{ color: 'var(--color-danger-500)' }} />
+                                </div>
+                                {stats.required > 0 && (
+                                    <span className="badge badge-danger badge-pulse">Priorité</span>
+                                )}
+                            </div>
+                            <div className="stat-card-value" style={{ fontSize: 'var(--font-size-3xl)', color: stats.required > 0 ? 'var(--color-danger-600)' : 'inherit' }}>{stats.required}</div>
+                            <div className="stat-card-label" style={{ fontWeight: '600', color: 'var(--color-gray-500)' }}>Actions requises</div>
+                            <div className="stat-card-meta" style={{ color: stats.required > 0 ? 'var(--color-danger-600)' : 'var(--color-success-600)', fontWeight: '600' }}>
+                                {stats.required > 0 ? "Attention immédiate" : "Tout est sécurisé"}
                             </div>
                         </div>
 
                         <div className="stat-card" style={{ cursor: 'pointer' }} onClick={() => navigate('/review/weekly')}>
-                            <div className="stat-card-icon" style={{ background: 'var(--color-info-50)' }}>
-                                <Calendar size={24} style={{ color: 'var(--color-info-500)' }} />
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--spacing-3)' }}>
+                                <div className="stat-card-icon" style={{ background: 'var(--color-info-50)', marginBottom: 0 }}>
+                                    <Calendar size={24} style={{ color: 'var(--color-info-500)' }} />
+                                </div>
+                                <span className="badge badge-info">Planning</span>
                             </div>
-                            <div className="stat-card-value">{stats.weekly}</div>
-                            <div className="stat-card-label">Interventions cette semaine</div>
-                            <div className="stat-card-meta">
-                                {stats.weekly > 0 ? "Suivi en cours" : "Aucune prévue"}
+                            <div className="stat-card-value" style={{ fontSize: 'var(--font-size-3xl)' }}>{stats.weekly}</div>
+                            <div className="stat-card-label" style={{ fontWeight: '600', color: 'var(--color-gray-500)' }}>Interventions / 7j</div>
+                            <div className="stat-card-meta" style={{ color: 'var(--color-info-600)', fontWeight: '600' }}>
+                                {stats.weekly > 0 ? "Suivi planifié" : "Aucune écheance"}
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Patients List */}
-                <div className="card">
-                    <div className="section-header-mobile">
-                        <div>
-                            <h3 style={{ marginBottom: 'var(--spacing-1)' }}>Patients en suivi</h3>
-                            <p style={{ fontSize: 'var(--font-size-sm)' }} className="hide-mobile">Liste des patients avec leur statut actuel</p>
+                {/* Risk Assessment Section - New */}
+                {allPatients.filter(p => (p.daysUntil === 'J-1' || p.daysUntil === 'J-0') && p.status !== 'ready').length > 0 && (
+                    <div className="card fade-in" style={{
+                        background: 'linear-gradient(135deg, #FFF5F5 0%, #FFF 100%)',
+                        border: '1px solid #FEB2B2',
+                        marginBottom: 'var(--spacing-6)',
+                        padding: 'var(--spacing-4)'
+                    }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)' }}>
+                                <div style={{
+                                    width: '40px',
+                                    height: '40px',
+                                    borderRadius: '10px',
+                                    background: '#FEE2E2',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    color: '#EF4444'
+                                }}>
+                                    <AlertTriangle size={24} />
+                                </div>
+                                <div>
+                                    <h4 style={{ color: '#9B1C1C', marginBottom: '2px' }}>Alerte : Créneaux à risque détectés</h4>
+                                    <p style={{ fontSize: 'var(--font-size-sm)', color: '#C53030' }}>
+                                        {allPatients.filter(p => (p.daysUntil === 'J-1' || p.daysUntil === 'J-0') && p.status !== 'ready').length} patients n'ont pas validé leur protocole pré-opératoire.
+                                    </p>
+                                </div>
+                            </div>
+                            <div style={{ textAlign: 'right' }}>
+                                <div style={{ fontSize: '10px', color: '#C53030', fontWeight: '700', textTransform: 'uppercase' }}>Impact financier potentiel</div>
+                                <div style={{ fontSize: 'var(--font-size-xl)', fontWeight: '800', color: '#EF4444' }}>
+                                    -{allPatients.filter(p => (p.daysUntil === 'J-1' || p.daysUntil === 'J-0') && p.status !== 'ready').length * 2450}€
+                                </div>
+                            </div>
                         </div>
-                        <div className="section-actions-mobile">
-                            <button className="btn-outline-mobile" onClick={() => navigate('/patients')}>
-                                Voir tout
+                    </div>
+                )}
+
+                {/* Main Action Bar & Risk Banner */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-6)' }}>
+                    <div className="tabs" style={{ display: 'flex', gap: 'var(--spacing-2)', overflowX: 'auto', paddingBottom: 'var(--spacing-2)' }}>
+                        {tabs.map(tab => (
+                            <button
+                                key={tab}
+                                onClick={() => setActiveTab(tab)}
+                                style={{
+                                    padding: 'var(--spacing-2) var(--spacing-4)',
+                                    borderRadius: 'var(--radius-md)',
+                                    border: '1px solid var(--color-gray-100)',
+                                    background: activeTab === tab ? 'var(--color-primary-500)' : 'white',
+                                    color: activeTab === tab ? 'white' : 'var(--color-gray-600)',
+                                    fontSize: 'var(--font-size-sm)',
+                                    fontWeight: '600',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.2s',
+                                    whiteSpace: 'nowrap'
+                                }}
+                            >
+                                {tab}
                             </button>
-                            <button className="btn-primary-mobile" onClick={() => setIsModalOpen(true)}>
-                                <Plus size={18} /> Ajouter un patient
-                            </button>
+                        ))}
+                    </div>
+                    <button
+                        className="btn btn-primary"
+                        onClick={() => setIsModalOpen(true)}
+                        style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)' }}
+                    >
+                        <Plus size={18} /> Ajouter un patient
+                    </button>
+                </div>
+
+                <div className="dashboard-content-split" style={{
+                    display: 'grid',
+                    gridTemplateColumns: selectedPatientId ? '1fr 380px' : '1fr',
+                    gap: 'var(--spacing-6)',
+                    alignItems: 'start',
+                    transition: 'all 0.3s'
+                }}>
+                    {/* Patients List */}
+                    <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+                        <div style={{ padding: 'var(--spacing-4)', borderBottom: '1px solid var(--color-gray-100)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <h3 style={{ fontSize: 'var(--font-size-lg)' }}>Liste des patients</h3>
+                            <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-500)' }}>
+                                {patients.length} patient{patients.length > 1 ? 's' : ''}
+                            </div>
+                        </div>
+
+                        <div style={{ overflowX: 'auto' }}>
+                            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                                <thead>
+                                    <tr style={{ borderBottom: '1px solid var(--color-gray-100)', background: 'var(--color-gray-50)' }}>
+                                        <th style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-500)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Patient</th>
+                                        <th style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-500)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Retours patient</th>
+                                        <th className="hide-tablet" style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-500)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Étape</th>
+                                        <th className="hide-mobile" style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-500)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>SMS Envoyé</th>
+                                        {!selectedPatientId && (
+                                            <>
+                                                <th className="hide-tablet" style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-500)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Date</th>
+                                                <th style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-500)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Statut</th>
+                                            </>
+                                        )}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {isLoading ? (
+                                        <tr>
+                                            <td colSpan="6" style={{ padding: 'var(--spacing-12)', textAlign: 'center', color: 'var(--color-gray-400)' }}>
+                                                Chargement des patients...
+                                            </td>
+                                        </tr>
+                                    ) : patients.length === 0 ? (
+                                        <tr>
+                                            <td colSpan="6" style={{ padding: 'var(--spacing-12)', textAlign: 'center', color: 'var(--color-gray-400)' }}>
+                                                Aucun patient trouvé pour cette catégorie.
+                                            </td>
+                                        </tr>
+                                    ) : patients.map((patient) => (
+                                        <tr
+                                            key={patient.id}
+                                            style={{
+                                                borderBottom: '1px solid var(--color-gray-50)',
+                                                cursor: 'pointer',
+                                                background: selectedPatientId === patient.id ? 'var(--color-primary-50)' : 'transparent',
+                                                borderLeft: selectedPatientId === patient.id ? '4px solid var(--color-primary-500)' : 'none'
+                                            }}
+                                            className="table-row-hover"
+                                            onClick={() => setSelectedPatientId(patient.id === selectedPatientId ? null : patient.id)}
+                                        >
+                                            <td style={{ padding: 'var(--spacing-3) var(--spacing-4)' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)' }}>
+                                                    <div style={{
+                                                        width: '36px',
+                                                        height: '36px',
+                                                        borderRadius: '50%',
+                                                        background: 'var(--color-primary-100)',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        fontSize: 'var(--font-size-sm)',
+                                                        fontWeight: 'var(--font-weight-bold)',
+                                                        color: 'var(--color-primary-700)'
+                                                    }}>
+                                                        {patient.name.split(' ').map(n => n[0]).join('')}
+                                                    </div>
+                                                    <div>
+                                                        <div style={{ fontWeight: '600', color: 'var(--color-gray-900)' }}>{patient.name}</div>
+                                                        <div style={{ fontSize: '11px', color: 'var(--color-gray-500)' }}>{patient.operation}</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td style={{ padding: 'var(--spacing-3) var(--spacing-4)' }}>
+                                                <PatientStatusBadges
+                                                    responses={responses[patient.id] || []}
+                                                    daysUntil={patient.daysUntil}
+                                                    patientStatus={patient.status}
+                                                />
+                                            </td>
+                                            <td className="hide-tablet" style={{ padding: 'var(--spacing-3) var(--spacing-4)' }}>
+                                                <span
+                                                    className={
+                                                        patient.daysUntil.includes('J-3') || patient.daysUntil.includes('J-2') || patient.daysUntil.includes('J-1') ? 'deadline-red' :
+                                                            patient.daysUntil.includes('J+') ? 'deadline-orange' : 'deadline-green'
+                                                    }
+                                                    style={{ fontSize: '11px', fontWeight: '700' }}
+                                                >
+                                                    {patient.daysUntil}
+                                                </span>
+                                            </td>
+                                            <td className="hide-mobile" style={{ padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-500)' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-1)' }}>
+                                                    <Clock size={12} />
+                                                    {patient.daysUntil === 'J-0' ? 'Intervention du jour' : 'Consulté'}
+                                                </div>
+                                            </td>
+                                            {!selectedPatientId && (
+                                                <>
+                                                    <td className="hide-tablet" style={{ padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-600)' }}>
+                                                        {patient.formattedDate}
+                                                    </td>
+                                                    <td style={{ padding: 'var(--spacing-3) var(--spacing-4)' }}>
+                                                        {getStatusBadge(patient.status)}
+                                                    </td>
+                                                </>
+                                            )}
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
 
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                        <thead>
-                            <tr style={{ borderBottom: '1px solid var(--color-gray-100)' }}>
-                                <th style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', fontWeight: 'var(--font-weight-medium)', textTransform: 'uppercase' }}>Patient</th>
-                                <th style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', fontWeight: 'var(--font-weight-medium)', textTransform: 'uppercase' }}>Intervention</th>
-                                <th style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', fontWeight: 'var(--font-weight-medium)', textTransform: 'uppercase' }}>Date</th>
-                                <th style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', fontWeight: 'var(--font-weight-medium)', textTransform: 'uppercase' }}>Statut</th>
-                                <th className="hide-mobile" style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', fontWeight: 'var(--font-weight-medium)', textTransform: 'uppercase' }}>Progression</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {patients.map((patient) => (
-                                <tr key={patient.id} style={{ borderBottom: '1px solid var(--color-gray-50)', cursor: 'pointer' }} className="table-row-hover" onClick={() => navigate(`/patient/${patient.id}`)}>
-                                    <td style={{ padding: 'var(--spacing-4)' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)' }}>
-                                            <div style={{
-                                                width: '32px',
-                                                height: '32px',
-                                                borderRadius: '50%',
-                                                background: 'var(--color-primary-50)',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                fontSize: 'var(--font-size-xs)',
-                                                fontWeight: 'var(--font-weight-bold)',
-                                                color: 'var(--color-primary-600)'
-                                            }}>
-                                                {patient.name.split(' ').map(n => n[0]).join('')}
-                                            </div>
-                                            <div>
-                                                <div style={{ fontWeight: 'var(--font-weight-medium)' }}>{patient.name}</div>
-                                                <div className={
-                                                    patient.daysUntil === 'J-1' ? 'deadline-red' :
-                                                        (patient.daysUntil === 'J+1' || patient.daysUntil === 'J+2') ? 'deadline-orange' :
-                                                            (patient.daysUntil === 'J-7' || patient.daysUntil === 'J-8') ? 'deadline-green' :
-                                                                ''
-                                                } style={{ fontSize: 'var(--font-size-xs)' }}>{patient.daysUntil}</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td style={{ padding: 'var(--spacing-4)', fontSize: 'var(--font-size-sm)' }}>{patient.operation}</td>
-                                    <td style={{ padding: 'var(--spacing-4)', fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-600)' }}>{patient.date}</td>
-                                    <td style={{ padding: 'var(--spacing-4)' }}>{getStatusBadge(patient.status)}</td>
-                                    <td className="hide-mobile" style={{ padding: 'var(--spacing-4)' }}>
-                                        <div className="progress-bar">
-                                            <div className={`progress-fill ${patient.progress === 100 ? 'progress-fill-success' : 'progress-fill-primary'}`} style={{ width: `${patient.progress}%` }}></div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                    {/* Side Detail Panel (Phase 3) */}
+                    {selectedPatientId && (
+                        <PatientDetailPanel
+                            patient={patients.find(p => p.id === selectedPatientId)}
+                            responses={responses[selectedPatientId] || []}
+                            onClose={() => setSelectedPatientId(null)}
+                        />
+                    )}
                 </div>
 
                 <AddPatientModal

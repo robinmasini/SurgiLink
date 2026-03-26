@@ -1,4 +1,4 @@
-export default function LogoPremium({ width = "120px", className = "" }) {
+export default function LogoPremium({ width = "120px", className = "", white = false }) {
     return (
         <svg
             width={width}
@@ -11,9 +11,9 @@ export default function LogoPremium({ width = "120px", className = "" }) {
         >
             <defs>
                 <linearGradient id="premiumAccentGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" style={{ stopColor: '#7C3AED', stopOpacity: 1 }} />
-                    <stop offset="50%" style={{ stopColor: '#8B5CF6', stopOpacity: 1 }} />
-                    <stop offset="100%" style={{ stopColor: '#6366F1', stopOpacity: 1 }} />
+                    <stop offset="0%" style={{ stopColor: white ? '#FFFFFF' : '#7C3AED', stopOpacity: 1 }} />
+                    <stop offset="50%" style={{ stopColor: white ? '#FFFFFF' : '#8B5CF6', stopOpacity: 1 }} />
+                    <stop offset="100%" style={{ stopColor: white ? '#F3E8FF' : '#6366F1', stopOpacity: 1 }} />
                 </linearGradient>
             </defs>
             <path

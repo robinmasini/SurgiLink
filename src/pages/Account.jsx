@@ -42,7 +42,7 @@ export default function Account() {
 
                 <div className="account-container fade-in">
                     {/* Welcome Banner - Relocated from Dashboard */}
-                    <div className="welcome-banner" style={{ marginBottom: 'var(--spacing-8)' }}>
+                    <div className="welcome-banner" style={{ marginBottom: 'var(--spacing-8)', maxWidth: '900px' }}>
                         <div className="welcome-banner-content">
                             <div></div>
                             <div>
