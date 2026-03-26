@@ -4,7 +4,16 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
 if (!supabaseUrl || !supabaseAnonKey) {
-    console.warn('Supabase credentials are missing. Please check your .env file.')
+    console.error('Supabase credentials are missing! Check your .env file.')
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+let supabaseInstance = null;
+try {
+    if (supabaseUrl && supabaseAnonKey) {
+        supabaseInstance = createClient(supabaseUrl, supabaseAnonKey)
+    }
+} catch (err) {
+    console.error('Failed to initialize Supabase client:', err)
+}
+
+export const supabase = supabaseInstance;

@@ -11,6 +11,11 @@ export default function ProtectedRoute({ children, requiredRole }) {
         let mounted = true;
 
         const checkAuth = async () => {
+            if (!supabase) {
+                console.error('Supabase client not initialized in ProtectedRoute');
+                setIsLoading(false);
+                return;
+            }
             try {
                 const { data: { session: currentSession } } = await supabase.auth.getSession();
                 if (!mounted) return;
@@ -37,22 +42,26 @@ export default function ProtectedRoute({ children, requiredRole }) {
 
         checkAuth();
 
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-            if (mounted) {
-                setSession(session);
-                if (!session) {
-                    setUserRole(null);
-                    setIsLoading(false);
-                } else {
-                    checkAuth();
+        if (supabase) {
+            const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+                if (mounted) {
+                    setSession(session);
+                    if (!session) {
+                        setUserRole(null);
+                        setIsLoading(false);
+                    } else {
+                        checkAuth();
+                    }
                 }
-            }
-        });
+            });
 
-        return () => {
-            mounted = false;
-            subscription.unsubscribe();
-        };
+            return () => {
+                mounted = false;
+                subscription.unsubscribe();
+            };
+        } else {
+            return () => { mounted = false; };
+        }
     }, []);
 
     if (isLoading) {
