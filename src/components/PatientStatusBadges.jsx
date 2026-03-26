@@ -25,7 +25,7 @@ export default function PatientStatusBadges({ responses = [], daysUntil = '', pa
     const isPreOp = days < 0;
     const isPostOp = days > 0;
 
-    if (!hasAnyResponse && isPreOp && days >= -7) {
+    if (!hasAnyResponse && isPreOp && days >= -10) {
         badges.push({ label: 'Portail non consulté', color: 'gray' });
     }
 
