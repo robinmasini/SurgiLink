@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Plus, X, User, Clipboard, Mail, Phone, Calendar, Clock } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import PhoneInput from './PhoneInput';
@@ -6,7 +6,7 @@ import InterventionSelect from './InterventionSelect';
 import { scheduleTimeBasedReminders, sendManualReminder } from '../services/reminderService';
 import { generatePatientToken } from '../services/tokenService';
 
-export default function AddPatientModal({ isOpen, onClose, onPatientAdded }) {
+export default function AddPatientModal({ isOpen, onClose, onSuccess }) {
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -91,7 +91,7 @@ export default function AddPatientModal({ isOpen, onClose, onPatientAdded }) {
                     await scheduleTimeBasedReminders(newPatient.id, surgeryDate);
 
                     alert(`Patient ${fullName} enregistré avec succès !`);
-                    if (onPatientAdded) onPatientAdded({ ...newPatient, token });
+                    if (onSuccess) onSuccess({ ...newPatient, token });
                     onClose();
                     setFormData({
                         firstName: '',
