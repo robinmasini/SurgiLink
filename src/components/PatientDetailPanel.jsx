@@ -186,30 +186,73 @@ export default function PatientDetailPanel({ patient, responses = [], onClose })
                 background: 'var(--color-gray-50)',
                 borderTop: '1px solid var(--color-gray-100)',
                 display: 'flex',
-                gap: 'var(--spacing-2)'
+                flexDirection: 'column',
+                gap: 'var(--spacing-3)'
             }}>
                 <button
                     className="btn btn-primary"
-                    style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--spacing-2)' }}
-                    onClick={() => window.location.href = `tel:${patient.phone}`}
-                >
-                    <Phone size={18} /> Appeler
-                </button>
-                <button
-                    className="btn btn-outline"
-                    style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--spacing-2)' }}
-                    onClick={() => window.location.href = `sms:${patient.phone}`}
-                >
-                    <MessageSquare size={18} /> SMS
-                </button>
-                <button
-                    className="btn btn-outline"
-                    style={{ width: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                    style={{
+                        width: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 'var(--spacing-2)',
+                        padding: 'var(--spacing-3)',
+                        fontSize: 'var(--font-size-sm)',
+                        fontWeight: '700',
+                        borderRadius: 'var(--radius-lg)',
+                        background: 'var(--color-primary-500)',
+                        color: 'white',
+                        border: 'none',
+                        cursor: 'pointer'
+                    }}
                     onClick={() => window.location.href = `/patient/${patient.id}`}
-                    title="Ouvrir la fiche complète"
                 >
-                    <ExternalLink size={18} />
+                    <ExternalLink size={18} /> Accéder à la fiche patient
                 </button>
+
+                <div style={{ display: 'flex', gap: 'var(--spacing-2)' }}>
+                    <button
+                        className="btn btn-outline"
+                        style={{
+                            flex: 1,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: 'var(--spacing-2)',
+                            background: '#f3f4f6',
+                            border: 'none',
+                            color: 'var(--color-gray-700)',
+                            padding: '10px',
+                            fontWeight: '600',
+                            borderRadius: 'var(--radius-lg)',
+                            cursor: 'pointer'
+                        }}
+                        onClick={() => window.location.href = `tel:${patient.phone}`}
+                    >
+                        <Phone size={18} /> Appeler
+                    </button>
+                    <button
+                        className="btn btn-outline"
+                        style={{
+                            flex: 1,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: 'var(--spacing-2)',
+                            background: '#f3f4f6',
+                            border: 'none',
+                            color: 'var(--color-gray-700)',
+                            padding: '10px',
+                            fontWeight: '600',
+                            borderRadius: 'var(--radius-lg)',
+                            cursor: 'pointer'
+                        }}
+                        onClick={() => window.location.href = `sms:${patient.phone}`}
+                    >
+                        <MessageSquare size={18} /> SMS
+                    </button>
+                </div>
             </div>
         </div>
     );

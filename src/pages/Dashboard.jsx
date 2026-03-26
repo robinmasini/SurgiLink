@@ -491,7 +491,11 @@ export default function Dashboard() {
                                                         {patient.formattedDate}
                                                     </td>
                                                     <td style={{ padding: 'var(--spacing-3) var(--spacing-4)' }}>
-                                                        {getStatusBadge(patient.status)}
+                                                        {selectedPatientId === patient.id ? (
+                                                            <div style={{ width: '24px', height: '24px' }}></div>
+                                                        ) : (
+                                                            getStatusBadge(patient.status)
+                                                        )}
                                                     </td>
                                                 </>
                                             )}
