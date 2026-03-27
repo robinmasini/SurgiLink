@@ -2188,6 +2188,40 @@ textarea.input {
   left: 150%;
 }
 
+/* Logo Container Shine Effect */
+.logo-container-shine {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border-radius: 12px;
+}
+
+.logo-container-shine::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(to right,
+      transparent,
+      rgba(255, 255, 255, 0.4),
+      transparent);
+  transform: skewX(-25deg);
+  transition: 0.75s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 10;
+  pointer-events: none;
+}
+
+.logo-container-shine:hover::before {
+  left: 150%;
+}
+
+.logo-container-shine:hover {
+  transform: translateY(-2px);
+}
+
 @media (min-width: 1025px) {
   .sidebar-profile-card:hover {
     transform: translateY(-4px);

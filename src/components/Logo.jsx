@@ -2,7 +2,7 @@ import logoSurgilinkPurple from '../assets/logo_surgilink_purple.png';
 
 export default function Logo({ width = "140px", className = "" }) {
     return (
-        <div className={className} style={{ width, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', padding: '10px 0' }}>
+        <div className={`logo-container-shine ${className}`} style={{ width, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', padding: '10px 0' }}>
             <img
                 src={logoSurgilinkPurple}
                 alt="SurgiLink Bolt"
