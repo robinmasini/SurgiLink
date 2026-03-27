@@ -15,7 +15,7 @@ import {
     Award,
     Settings,
     Shield,
-    Bell,
+    Send,
     LogOut
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
@@ -390,7 +390,7 @@ export default function Account() {
                                 </button>
 
                                 <button className="btn-sidebar-fake" style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)', padding: 'var(--spacing-4)', width: '100%', textAlign: 'left', border: 'none', background: 'transparent', borderRadius: 'var(--radius-lg)', cursor: 'pointer', transition: 'all 0.2s' }}>
-                                    <Bell size={20} />
+                                    <Send size={20} />
                                     <span style={{ flex: 1 }}>Notifications</span>
                                     <span className="badge badge-primary" style={{ fontSize: '10px' }}>Activé</span>
                                 </button>

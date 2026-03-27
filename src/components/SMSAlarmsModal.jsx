@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
     X,
-    Bell,
+    Send,
     Save,
     AlertTriangle,
     Clock,
@@ -142,7 +142,7 @@ export default function SMSAlarmsModal({ isOpen, onClose, onSuccess }) {
                             alignItems: 'center',
                             justifyContent: 'center'
                         }}>
-                            <Bell size={24} />
+                            <Send size={24} />
                         </div>
                         <div>
                             <h2 style={{ fontSize: 'var(--font-size-xl)', fontWeight: '800', margin: 0 }}>Alarmes & Pilotage SMS</h2>

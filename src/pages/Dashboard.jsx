@@ -17,14 +17,14 @@ import {
     TrendingUp,
     Activity,
     X,
-    Plus,
     User,
     Clipboard,
     Mail,
     Phone,
     LogOut,
-    Settings, // Added
-    Bell // Added
+    Settings,
+    Send,
+    Plus
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { calculateDaysUntilSurgery } from '../utils/dateUtils';
@@ -94,10 +94,34 @@ export default function Dashboard() {
         let isMounted = true;
         setIsLoading(true);
         try {
-            // Fetch all patients to calculate stats
-            const { data: allPatientsData, error: allPatientsError } = await supabase
-                .from('patients')
-                .select('*');
+            // 0. Get current session and profile
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                navigate('/login');
+                return;
+            }
+
+            const { data: curProfile } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', session.user.id)
+                .maybeSingle();
+
+            const userRole = curProfile?.role || (session.user.email?.toLowerCase().includes('infirmier') ? 'nurse' : 'practitioner');
+            const practitionerId = curProfile?.practitioner_id || (userRole === 'nurse' ? 'c512fc61-e751-4ea3-872e-8a04fee4da12' : session.user.id);
+
+            // Fetch patients based on role and affiliation
+            let query = supabase.from('patients').select('*');
+
+            if (userRole === 'nurse') {
+                // Nurse sees patients of their affiliated practitioner
+                query = query.eq('user_id', practitionerId);
+            } else {
+                // Practitioner sees their own patients
+                query = query.eq('user_id', session.user.id);
+            }
+
+            const { data: allPatientsData, error: allPatientsError } = await query;
 
             if (allPatientsError) throw allPatientsError;
             if (!isMounted) return;
@@ -133,7 +157,7 @@ export default function Dashboard() {
                     recentActive: recentActiveCount
                 });
 
-                const formattedPatients = allPatientsData.map(patient => ({
+                let formattedPatients = allPatientsData.map(patient => ({
                     ...patient,
                     daysUntil: calculateDaysUntilSurgery(patient.date),
                     formattedDate: patient.date ? new Date(patient.date).toLocaleDateString('fr-FR', {
@@ -142,6 +166,15 @@ export default function Dashboard() {
                         year: 'numeric'
                     }) : 'Non définie'
                 }));
+
+                // Apply Nurse Visibility Rule: Only J+1, J+2, etc.
+                if (userRole === 'nurse') {
+                    formattedPatients = formattedPatients.filter(p => {
+                        const days = parseInt(p.daysUntil.replace('J', '')) || 0;
+                        // J+1, J+2... means days < 0 in our calculateDaysUntilSurgery logic
+                        return p.daysUntil.startsWith('J+');
+                    });
+                }
 
                 // Fetch responses
                 const { data: respData } = await supabase
@@ -231,7 +264,7 @@ export default function Dashboard() {
                     actions={
                         <>
                             <button className="btn btn-secondary hide-mobile" onClick={() => setIsAlarmsModalOpen(true)} style={{ borderRadius: '12px', padding: '10px 20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                <Bell size={18} />
+                                <Send size={18} />
                                 <span>Alarmes SMS</span>
                             </button>
                             <button
