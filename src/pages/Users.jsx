@@ -13,6 +13,7 @@ import {
     Activity
 } from 'lucide-react';
 import practitionerAvatar from '../assets/practitioner-avatar.png';
+import nurseAvatar from '../assets/nurse-avatar.png';
 
 export default function Users() {
     const [profiles, setProfiles] = useState([]);
@@ -89,19 +90,11 @@ export default function Users() {
                             style={{ width: '52px', height: '52px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--color-primary-100)' }}
                         />
                     ) : (
-                        <div style={{
-                            width: '52px',
-                            height: '52px',
-                            borderRadius: '50%',
-                            background: profile.role === 'nurse' ? 'var(--color-info-50)' : 'var(--color-primary-50)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            color: profile.role === 'nurse' ? 'var(--color-info-600)' : 'var(--color-primary-600)',
-                            border: `2px solid ${profile.role === 'nurse' ? 'var(--color-info-100)' : 'var(--color-primary-100)'}`
-                        }}>
-                            <Icon size={24} />
-                        </div>
+                        <img
+                            src={nurseAvatar}
+                            alt={profile.full_name}
+                            style={{ width: '52px', height: '52px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--color-info-100)' }}
+                        />
                     )}
                     <div style={{
                         position: 'absolute',

@@ -6,6 +6,7 @@ import christopheSignature from '../assets/christophe-signature.png';
 import welcomeCardV4 from '../assets/welcome-card-v4.jpg';
 import welcomeCardInfirmier from '../assets/welcomecard-infirmier.png';
 import practitionerAvatar from '../assets/practitioner-avatar.png';
+import nurseAvatar from '../assets/nurse-avatar.png';
 import {
     User,
     Mail,
@@ -229,7 +230,7 @@ export default function Account() {
                             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-6)', marginBottom: 'var(--spacing-8)' }}>
                                 <div style={{ position: 'relative' }}>
                                     <img
-                                        src={profile?.avatar_url || practitionerAvatar}
+                                        src={profile?.avatar_url || (profile?.role === 'nurse' ? nurseAvatar : practitionerAvatar)}
                                         alt={profile?.full_name}
                                         style={{
                                             width: '100px',

@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase';
 import LogoPremium from './LogoPremium';
 import LogoIcon from './LogoIcon';
 import practitionerAvatar from '../assets/practitioner-avatar.png';
+import nurseAvatar from '../assets/nurse-avatar.png';
 import {
     LayoutDashboard,
     Stethoscope,
@@ -121,7 +122,7 @@ export default function Sidebar() {
             <div className="sidebar-footer">
                 <div className="sidebar-profile-card">
                     <img
-                        src={profile?.avatar_url || practitionerAvatar}
+                        src={profile?.avatar_url || (profile?.role === 'nurse' ? nurseAvatar : practitionerAvatar)}
                         alt={profile?.full_name || "Utilisateur"}
                         className="sidebar-profile-avatar"
                         style={{ border: profile?.role === 'nurse' ? '2px solid var(--color-info-200)' : '2px solid var(--color-primary-200)' }}
