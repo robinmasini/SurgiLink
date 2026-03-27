@@ -227,8 +227,9 @@ export default function Dashboard() {
                                 const email = session.user.email?.toLowerCase() || '';
                                 if (email.includes('infirmier') || email.includes('nurse')) {
                                     setProfile({
-                                        full_name: 'Infirmier Cabinet',
-                                        role: 'nurse'
+                                        full_name: 'Dr. Christophe DESOUCHES',
+                                        role: 'nurse',
+                                        practitioner_id: 'c512fc61-e751-4ea3-872e-8a04fee4da12'
                                     });
                                 } else {
                                     setProfile({
@@ -319,7 +320,7 @@ export default function Dashboard() {
                                         ) : (
                                             <div className="badge-admin" style={{ background: 'var(--color-info-500)' }}>INFIRMIER</div>
                                         )}
-                                        <span className="profile-role">{profile?.role === 'practitioner' ? 'Praticien' : 'Infirmier Cabinet'}</span>
+                                        <span className="profile-role">{profile?.role === 'practitioner' ? 'Praticien' : 'Infirmier Christophe Desouches'}</span>
                                     </div>
                                     <div className="mobile-profile-metier">
                                         <span className="metier-label">CORPS DE MÉTIER</span>

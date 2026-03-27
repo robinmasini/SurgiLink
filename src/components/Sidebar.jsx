@@ -61,8 +61,9 @@ export default function Sidebar() {
                         const email = session.user.email?.toLowerCase() || '';
                         if (email.includes('infirmier') || email.includes('nurse')) {
                             setProfile({
-                                full_name: 'Infirmier Cabinet',
-                                role: 'nurse'
+                                full_name: 'Dr. Christophe DESOUCHES',
+                                role: 'nurse',
+                                practitioner_id: 'c512fc61-e751-4ea3-872e-8a04fee4da12'
                             });
                         } else {
                             setProfile({
@@ -156,7 +157,7 @@ export default function Sidebar() {
                                     <div className="badge badge-primary" style={{ fontSize: '9px', padding: '2px 8px', marginBottom: '4px', width: 'fit-content', background: 'var(--color-info-500)', color: 'white', fontWeight: '800' }}>
                                         INFIRMIER
                                     </div>
-                                    <div className="sidebar-profile-title">Infirmier Cabinet</div>
+                                    <div className="sidebar-profile-title">Dr. Christophe DESOUCHES</div>
                                     <div className="sidebar-profile-specialty">
                                         <span className="sidebar-profile-specialty-label">Corps de métier</span>
                                         <span className="sidebar-profile-specialty-text">

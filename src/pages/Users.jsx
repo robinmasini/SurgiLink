@@ -44,10 +44,11 @@ export default function Users() {
                     },
                     {
                         id: 'fe1efb20-c915-41b1-9cbd-cbb18df43565',
-                        full_name: 'Infirmier Cabinet',
+                        full_name: 'Dr. Christophe DESOUCHES',
                         role: 'nurse',
                         email: 'infirmier.desouches@gmail.com',
-                        specialty: 'Suivi Post-Opératoire'
+                        specialty: 'Suivi Post-Opératoire',
+                        practitioner_id: 'c512fc61-e751-4ea3-872e-8a04fee4da12'
                     }
                 ]);
             } else {
@@ -118,7 +119,7 @@ export default function Users() {
                         </span>
                         <span style={{ fontSize: '11px', color: 'var(--color-gray-500)', fontWeight: '500' }}>{profile.specialty || 'Personnel Médical'}</span>
                     </div>
-                    {profile.role === 'nurse' && profile.practitioner_id && (
+                    {profile.role === 'nurse' && (
                         <div style={{
                             fontSize: '10px',
                             color: 'var(--color-primary-600)',
@@ -130,7 +131,7 @@ export default function Users() {
                             width: 'fit-content',
                             border: '1px solid var(--color-primary-100)'
                         }}>
-                            Affilié à : {profiles.find(p => p.id === profile.practitioner_id)?.full_name || '...'}
+                            Affilié à : {profiles.find(p => p.id === profile.practitioner_id)?.full_name || 'Dr. Christophe DESOUCHES'}
                         </div>
                     )}
                 </div>
