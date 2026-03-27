@@ -124,6 +124,21 @@ export default function Users() {
                         </span>
                         <span style={{ fontSize: '11px', color: 'var(--color-gray-500)', fontWeight: '500' }}>{profile.specialty || 'Personnel Médical'}</span>
                     </div>
+                    {profile.role === 'nurse' && profile.practitioner_id && (
+                        <div style={{
+                            fontSize: '10px',
+                            color: 'var(--color-primary-600)',
+                            fontWeight: '700',
+                            marginTop: '6px',
+                            background: 'var(--color-primary-50)',
+                            padding: '2px 8px',
+                            borderRadius: '4px',
+                            width: 'fit-content',
+                            border: '1px solid var(--color-primary-100)'
+                        }}>
+                            Affilié à : {profiles.find(p => p.id === profile.practitioner_id)?.full_name || '...'}
+                        </div>
+                    )}
                 </div>
             </div>
 
