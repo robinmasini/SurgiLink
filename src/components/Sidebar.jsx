@@ -125,6 +125,11 @@ export default function Sidebar() {
                         src={profile?.avatar_url || (profile?.role === 'nurse' ? nurseAvatar : practitionerAvatar)}
                         alt={profile?.full_name || "Utilisateur"}
                         className="sidebar-profile-avatar"
+                        onError={(e) => {
+                            if (profile?.role === 'nurse') {
+                                e.target.src = practitionerAvatar;
+                            }
+                        }}
                         style={{ border: profile?.role === 'nurse' ? '2px solid var(--color-info-200)' : '2px solid var(--color-primary-200)' }}
                     />
                     {!isMobile && (

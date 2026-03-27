@@ -539,6 +539,8 @@ export default function PatientReview() {
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-6)', position: 'relative' }}>
                                 <div style={{ flex: 1 }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)', marginBottom: 'var(--spacing-2)' }}>
+                                    </div>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)', marginBottom: 'var(--spacing-2)' }}>
                                         <div style={{
                                             width: '48px',
                                             height: '48px',
@@ -555,7 +557,27 @@ export default function PatientReview() {
                                             {patient.name?.split(' ').map(n => n?.[0]).join('') || '?'}
                                         </div>
                                         <h2 style={{ fontSize: 'var(--font-size-3xl)', margin: 0, fontWeight: 'var(--font-weight-black)' }}>{patient.name}</h2>
-                                        <button onClick={() => setIsEditModalOpen(true)} style={{ background: 'transparent', border: 'none', color: 'var(--color-gray-400)', cursor: 'pointer' }}>
+
+                                        {/* Critical Signal Badges */}
+                                        <div style={{ display: 'flex', gap: '8px', marginLeft: 'var(--spacing-2)' }}>
+                                            {clinicalResponses.J1?.pain_level > 3 && (
+                                                <span className="badge badge-danger" style={{ fontSize: '10px', padding: '4px 12px', fontWeight: '700', boxShadow: 'var(--shadow-sm)' }}>
+                                                    DOULEUR SIGNALÉE
+                                                </span>
+                                            )}
+                                            {clinicalResponses.J1?.site_check === true && (
+                                                <span className="badge badge-orange" style={{ fontSize: '10px', padding: '4px 12px', fontWeight: '700', boxShadow: 'var(--shadow-sm)' }}>
+                                                    GONFLEMENT IMPORTANT
+                                                </span>
+                                            )}
+                                            {(clinicalResponses.J1?.worry_check === true || clinicalResponses.J1?.general_state === 'Inquiétant') && (
+                                                <span className="badge badge-orange" style={{ fontSize: '10px', padding: '4px 12px', fontWeight: '700', boxShadow: 'var(--shadow-sm)' }}>
+                                                    À CONTACTER
+                                                </span>
+                                            )}
+                                        </div>
+
+                                        <button onClick={() => setIsEditModalOpen(true)} style={{ background: 'transparent', border: 'none', color: 'var(--color-gray-400)', cursor: 'pointer', marginLeft: 'auto' }}>
                                             <Edit2 size={18} />
                                         </button>
                                         <button

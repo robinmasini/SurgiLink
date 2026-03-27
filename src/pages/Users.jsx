@@ -93,6 +93,7 @@ export default function Users() {
                         <img
                             src={nurseAvatar}
                             alt={profile.full_name}
+                            onError={(e) => { e.target.src = practitionerAvatar; }}
                             style={{ width: '52px', height: '52px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--color-info-100)' }}
                         />
                     )}

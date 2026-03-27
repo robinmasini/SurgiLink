@@ -232,6 +232,11 @@ export default function Account() {
                                     <img
                                         src={profile?.avatar_url || (profile?.role === 'nurse' ? nurseAvatar : practitionerAvatar)}
                                         alt={profile?.full_name}
+                                        onError={(e) => {
+                                            if (profile?.role === 'nurse') {
+                                                e.target.src = practitionerAvatar;
+                                            }
+                                        }}
                                         style={{
                                             width: '100px',
                                             height: '100px',

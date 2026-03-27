@@ -8,6 +8,7 @@ import practitionerAvatar from '../assets/practitioner-avatar.png';
 import welcomeCardV4 from '../assets/welcome-card-v4.jpg';
 import welcomeCardInfirmier from '../assets/welcomecard-infirmier.png';
 import christopheSignature from '../assets/christophe-signature.png';
+import nurseAvatar from '../assets/nurse-avatar.png';
 import {
     Users,
     AlertTriangle,
@@ -287,7 +288,16 @@ export default function Dashboard() {
                         <>
                             <div className="mobile-profile-card-new">
                                 <div className="mobile-profile-left">
-                                    <img src={profile?.avatar_url || practitionerAvatar} alt={profile?.full_name || "Utilisateur"} className="mobile-profile-img" />
+                                    <img
+                                        src={profile?.avatar_url || (profile?.role === 'nurse' ? nurseAvatar : practitionerAvatar)}
+                                        alt={profile?.full_name || "Utilisateur"}
+                                        className="mobile-profile-img"
+                                        onError={(e) => {
+                                            if (profile?.role === 'nurse') {
+                                                e.target.src = practitionerAvatar;
+                                            }
+                                        }}
+                                    />
                                 </div>
                                 <div className="mobile-profile-right">
                                     <div className="mobile-profile-identity">

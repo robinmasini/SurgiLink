@@ -98,7 +98,7 @@ export default function PatientStatusBadges({ responses = [], daysUntil = '', pa
         const j1Site = responseMap['J1:site_check'];
         const j1General = responseMap['J1:general_state'];
 
-        if (j1Pain > 3 || j1Worry === true) {
+        if (j1Pain > 3) {
             badges.push({ label: 'Douleur signalée', color: 'danger' });
         }
 
@@ -106,7 +106,7 @@ export default function PatientStatusBadges({ responses = [], daysUntil = '', pa
             badges.push({ label: 'Gonflement important', color: 'orange' });
         }
 
-        if (j1General === 'Inquiétant') {
+        if (j1Worry === true || j1General === 'Inquiétant') {
             badges.push({ label: 'À contacter', color: 'orange' });
         }
 

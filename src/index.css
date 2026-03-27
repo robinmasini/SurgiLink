@@ -402,6 +402,12 @@ a:hover {
   color: var(--color-danger-600);
 }
 
+.badge-orange {
+  background: #FFF7ED;
+  color: #EA580C;
+  border: 1px solid #FFEDD5;
+}
+
 .badge-info {
   background: var(--color-info-100);
   color: var(--color-info-500);
