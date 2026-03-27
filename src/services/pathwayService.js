@@ -134,10 +134,32 @@ export async function calculateGlobalProgress(patientId) {
         const hoursSinceCreation = (now - createdAt) / (1000 * 60 * 60);
         const daysUntilSurgery = surgeryDate ? Math.ceil((surgeryDate - now) / (1000 * 60 * 60 * 24)) : 999;
 
-        // Check completion of specific critical screens
         const j7Status = await getCompletionStatus(patientId, 'J7');
         const j2Status = await getCompletionStatus(patientId, 'J2');
         const hasAcessedPortal = hoursSinceCreation > 0 && (responses || []).length > 0;
+
+        // --- DYNAMIC STATUS LOGIC ---
+        // 1. Fetch rules with fallback
+        let rules = {
+            no_portal_access_hours: 24,
+            j7_incomplete_days: 7,
+            j3_critical_upgrade: 3,
+            progress_critical_threshold: 80
+        };
+
+        try {
+            const { data: settingsData } = await supabase
+                .from('app_settings')
+                .select('value')
+                .eq('key', 'status_rules')
+                .maybeSingle();
+
+            if (settingsData?.value) {
+                rules = { ...rules, ...(typeof settingsData.value === 'string' ? JSON.parse(settingsData.value) : settingsData.value) };
+            }
+        } catch (e) {
+            console.warn('Using default status rules due to fetch error:', e);
+        }
 
         // Determine status based on risks, progress, and timing
         let status = 'neutre';
@@ -149,21 +171,21 @@ export async function calculateGlobalProgress(patientId) {
         } else if (hasSoftRisk) {
             status = 'alerte';
         } else {
-            // Timing-based Alerte/Critique
-            if (!hasAcessedPortal && hoursSinceCreation > 24) {
-                // Non-réponse au Bienvenue après 24h
+            // Timing-based Alerte/Critique using dynamic rules
+            if (!hasAcessedPortal && hoursSinceCreation > rules.no_portal_access_hours) {
+                // Non-réponse au Bienvenue après Xh (ex: 24h)
                 status = 'alerte';
-            } else if (!j7Status.isComplete && daysUntilSurgery <= 7) {
-                // J-7 non complété à J-7
+            } else if (!j7Status.isComplete && daysUntilSurgery <= rules.j7_incomplete_days) {
+                // J-7 non complété à J-(X)
                 status = 'alerte';
-            } else if (progress < 50 && daysUntilSurgery <= 7) {
-                // Moins de 50% à J-7
+            } else if (progress < 50 && daysUntilSurgery <= rules.j7_incomplete_days) {
+                // Moins de 50% à J-(X)
                 status = 'alerte';
             }
 
             // Upgrade logic
-            if ((status === 'alerte' || progress < 80) && daysUntilSurgery <= 3) {
-                // Pas fini à J-3
+            if ((status === 'alerte' || progress < rules.progress_critical_threshold) && daysUntilSurgery <= rules.j3_critical_upgrade) {
+                // Pas fini à J-(X) (ex: J-3)
                 status = 'critique';
             }
 
@@ -172,6 +194,7 @@ export async function calculateGlobalProgress(patientId) {
                 status = 'incomplete';
             }
         }
+        // --- END DYNAMIC STATUS LOGIC ---
 
         // 5. Update the patients table
         const { error: updateError } = await supabase

@@ -1,10 +1,48 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import {
+    AlertTriangle,
+    CheckCircle2,
+    Clock,
+    Info,
+    Activity,
+    AlertCircle,
+    UserX
+} from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 /**
  * PatientStatusBadges Component
  * Renders feedback pastilles based on pathway responses
  */
 export default function PatientStatusBadges({ responses = [], daysUntil = '', patientStatus = '' }) {
+    const [rules, setRules] = useState({
+        j7_incomplete_days: 7,
+        j2_incomplete_days: 2,
+        no_portal_access_hours: 24
+    });
+
+    useEffect(() => {
+        const loadRules = async () => {
+            try {
+                const { data } = await supabase
+                    .from('app_settings')
+                    .select('value')
+                    .eq('key', 'status_rules')
+                    .maybeSingle();
+
+                if (data?.value) {
+                    setRules(prevRules => ({
+                        ...prevRules,
+                        ...(typeof data.value === 'string' ? JSON.parse(data.value) : data.value)
+                    }));
+                }
+            } catch (e) {
+                console.warn('Error loading rules in PatientStatusBadges:', e);
+            }
+        };
+        loadRules();
+    }, []);
+
     if (!responses || !Array.isArray(responses)) return null;
 
     const badges = [];
@@ -31,8 +69,8 @@ export default function PatientStatusBadges({ responses = [], daysUntil = '', pa
 
     if (isPreOp) {
         // J-7 checks
-        if (!isJ7Complete && days >= -7) {
-            badges.push({ label: 'Questionnaire J-7 non rempli', color: 'orange' });
+        if (!isJ7Complete && days >= -rules.j7_incomplete_days) {
+            badges.push({ label: `Questionnaire J-${rules.j7_incomplete_days} non rempli`, color: 'orange' });
         }
 
         if (responseMap['J7:blood_work'] === false) {
@@ -44,8 +82,8 @@ export default function PatientStatusBadges({ responses = [], daysUntil = '', pa
         }
 
         // J-2 checks
-        if (!isJ2Complete && days >= -2) {
-            badges.push({ label: 'Questionnaire J-2 non rempli', color: 'danger' });
+        if (!isJ2Complete && days >= -rules.j2_incomplete_days) {
+            badges.push({ label: `Questionnaire J-${rules.j2_incomplete_days} non rempli`, color: 'danger' });
         }
 
         if (isJ7Complete && isJ2Complete && patientStatus === 'ready') {

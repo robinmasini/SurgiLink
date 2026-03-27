@@ -22,20 +22,25 @@ import {
     Clipboard,
     Mail,
     Phone,
-    LogOut
+    LogOut,
+    Settings, // Added
+    Bell // Added
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { calculateDaysUntilSurgery } from '../utils/dateUtils';
 import StatusBolt from '../components/StatusBolt';
 import PatientStatusBadges from '../components/PatientStatusBadges';
 import PatientDetailPanel from '../components/PatientDetailPanel';
+import SMSAlarmsModal from '../components/SMSAlarmsModal'; // Added
 
 export default function Dashboard() {
     const navigate = useNavigate();
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false); // Renamed from isModalOpen
+    const [isAlarmsModalOpen, setIsAlarmsModalOpen] = useState(false); // Added
     const [allPatients, setAllPatients] = useState([]);
     const [patients, setPatients] = useState([]);
     const [responses, setResponses] = useState({});
+    const [financialImpactUnit, setFinancialImpactUnit] = useState(2450);
     const [isLoading, setIsLoading] = useState(true);
     const [selectedPatientId, setSelectedPatientId] = useState(null);
     const [activeTab, setActiveTab] = useState('Tous');
@@ -60,7 +65,7 @@ export default function Dashboard() {
     }, []);
 
     useEffect(() => {
-        loadPatients();
+        loadDashboard(); // Renamed from loadPatients
     }, []);
 
     useEffect(() => {
@@ -85,7 +90,7 @@ export default function Dashboard() {
         setPatients(filtered);
     };
 
-    const loadPatients = async () => {
+    const loadDashboard = async () => { // Renamed from loadPatients
         let isMounted = true;
         setIsLoading(true);
         try {
@@ -138,50 +143,65 @@ export default function Dashboard() {
                     }) : 'Non définie'
                 }));
 
-                setAllPatients(formattedPatients);
-
                 // Fetch responses
-                if (formattedPatients.length > 0) {
-                    const { data: respData } = await supabase
-                        .from('pathway_responses')
-                        .select('*')
-                        .in('patient_id', formattedPatients.map(p => p.id));
+                const { data: respData } = await supabase
+                    .from('pathway_responses')
+                    .select('*')
+                    .in('patient_id', formattedPatients.map(p => p.id));
 
-                    if (isMounted) {
-                        const respMap = {};
-                        (respData || []).forEach(r => {
-                            if (!respMap[r.patient_id]) respMap[r.patient_id] = [];
-                            respMap[r.patient_id].push(r);
-                        });
-                        setResponses(respMap);
-                    }
+                if (isMounted) {
+                    const respMap = {};
+                    (respData || []).forEach(r => {
+                        if (!respMap[r.patient_id]) respMap[r.patient_id] = [];
+                        respMap[r.patient_id].push(r);
+                    });
+                    setResponses(respMap);
                 }
 
-                // Profile for mobile
-                const { data: { session } } = await supabase.auth.getSession();
-                if (session && isMounted) {
-                    const { data: profileData, error: profileError } = await supabase
-                        .from('profiles')
-                        .select('*')
-                        .eq('id', session.user.id)
-                        .single();
+                // 4. Fetch financial impact unit
+                try {
+                    const { data: settingsData } = await supabase
+                        .from('app_settings')
+                        .select('value')
+                        .eq('key', 'financial_impact_unit')
+                        .maybeSingle();
 
-                    if (isMounted) {
-                        if (profileData && !profileError) {
-                            setProfile(profileData);
-                        } else {
-                            // Fallback based on email
-                            const email = session.user.email?.toLowerCase() || '';
-                            if (email.includes('infirmier') || email.includes('nurse')) {
-                                setProfile({
-                                    full_name: 'Infirmier Cabinet',
-                                    role: 'nurse'
-                                });
+                    if (settingsData?.value) {
+                        setFinancialImpactUnit(parseInt(settingsData.value) || 2450);
+                    }
+                } catch (e) {
+                    console.warn('Error fetching financial impact setting:', e);
+                }
+
+                if (isMounted) {
+                    setAllPatients(formattedPatients);
+
+                    // Profile for mobile
+                    const { data: { session } } = await supabase.auth.getSession();
+                    if (session && isMounted) {
+                        const { data: profileData, error: profileError } = await supabase
+                            .from('profiles')
+                            .select('*')
+                            .eq('id', session.user.id)
+                            .single();
+
+                        if (isMounted) {
+                            if (profileData && !profileError) {
+                                setProfile(profileData);
                             } else {
-                                setProfile({
-                                    full_name: 'Dr. Christophe DESOUCHES',
-                                    role: 'practitioner'
-                                });
+                                // Fallback based on email
+                                const email = session.user.email?.toLowerCase() || '';
+                                if (email.includes('infirmier') || email.includes('nurse')) {
+                                    setProfile({
+                                        full_name: 'Infirmier Cabinet',
+                                        role: 'nurse'
+                                    });
+                                } else {
+                                    setProfile({
+                                        full_name: 'Dr. Christophe DESOUCHES',
+                                        role: 'practitioner'
+                                    });
+                                }
                             }
                         }
                     }
@@ -193,10 +213,6 @@ export default function Dashboard() {
             if (isMounted) setIsLoading(false);
         }
         return () => { isMounted = false; };
-    };
-
-    const handlePatientAdded = (newPatient) => {
-        loadPatients(); // Reload patients
     };
 
     const getStatusBadge = (status) => {
@@ -213,61 +229,24 @@ export default function Dashboard() {
                     subtitle="Vue d'ensemble de vos patients et indicateurs clés"
                     hideTitleMobile={true}
                     actions={
-                        <button
-                            className="btn btn-secondary hide-mobile"
-                            style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: 'var(--spacing-2)',
-                                background: 'white',
-                                color: 'var(--color-primary-600)',
-                                border: '1px solid var(--color-primary-100)',
-                                fontWeight: '600',
-                                boxShadow: 'var(--shadow-sm)'
-                            }}
-                            onClick={() => window.location.href = 'tel:0491550000'}
-                        >
-                            <Phone size={18} />
-                            Appeler la Clinique
-                        </button>
+                        <>
+                            <button className="btn btn-secondary hide-mobile" onClick={() => setIsAlarmsModalOpen(true)} style={{ borderRadius: '12px', padding: '10px 20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <Bell size={18} />
+                                <span>Alarmes SMS</span>
+                            </button>
+                            <button
+                                className="btn btn-primary"
+                                onClick={() => setIsAddModalOpen(true)}
+                                style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)' }}
+                            >
+                                <Plus size={18} /> Ajouter un patient
+                            </button>
+                        </>
                     }
                 />
 
-                {!isMobile && (
-                    <div className="welcome-banner" style={{ marginBottom: 'var(--spacing-8)', maxWidth: '1000px' }}>
-                        <div className="welcome-banner-content">
-                            <div></div>
-                            <div>
-                                <div className="welcome-banner-welcome">Bonjour,</div>
-                                {profile?.role === 'practitioner' ? (
-                                    <img src={christopheSignature} alt="Christophe DESOUCHES" className="welcome-banner-signature" style={{ filter: 'invert(1)', height: '40px', margin: '10px 0' }} />
-                                ) : (
-                                    <div className="welcome-banner-greeting" style={{ fontSize: '24px', fontWeight: '800', margin: '10px 0' }}>
-                                        {profile?.full_name || 'Infirmier Cabinet'}
-                                    </div>
-                                )}
-                                <div className="welcome-banner-greeting">Ravi de vous revoir !</div>
-                                <div className="welcome-banner-instruction">Votre espace {profile?.role === 'practitioner' ? 'praticien' : 'infirmier'} est à jour</div>
-                            </div>
-                            <div>
-                                <div className="welcome-banner-date-label">Date d'aujourd'hui</div>
-                                <div className="welcome-banner-date-value">
-                                    {new Date().toLocaleDateString('fr-FR', {
-                                        weekday: 'long',
-                                        day: 'numeric',
-                                        month: 'long',
-                                        year: 'numeric'
-                                    }).replace(/^\w/, (c) => c.toUpperCase())}
-                                </div>
-                            </div>
-                        </div>
-                        <img
-                            src={profile?.role === 'nurse' ? welcomeCardInfirmier : welcomeCardV4}
-                            alt="Espace Opératoire"
-                            className="welcome-banner-image"
-                        />
-                    </div>
-                )}
+                {/* Welcome Banner Removed from Dashboard as requested */}
+
 
                 <div className="dashboard-grid-top" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: 'var(--spacing-6)' }}>
 
@@ -422,7 +401,7 @@ export default function Dashboard() {
                             <div style={{ textAlign: 'right' }}>
                                 <div style={{ fontSize: '10px', color: '#C53030', fontWeight: '700', textTransform: 'uppercase' }}>Impact financier potentiel</div>
                                 <div style={{ fontSize: 'var(--font-size-xl)', fontWeight: '800', color: '#EF4444' }}>
-                                    -{allPatients.filter(p => (p.daysUntil === 'J-1' || p.daysUntil === 'J-0') && p.status !== 'ready').length * 2450}€
+                                    -{allPatients.filter(p => (p.daysUntil === 'J-1' || p.daysUntil === 'J-0') && p.status !== 'ready').length * financialImpactUnit}€
                                 </div>
                             </div>
                         </div>
@@ -453,13 +432,7 @@ export default function Dashboard() {
                             </button>
                         ))}
                     </div>
-                    <button
-                        className="btn btn-primary"
-                        onClick={() => setIsModalOpen(true)}
-                        style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)' }}
-                    >
-                        <Plus size={18} /> Ajouter un patient
-                    </button>
+                    {/* The "Ajouter un patient" button is now in the Header actions */}
                 </div>
 
                 <div className="dashboard-content-split" style={{
@@ -598,9 +571,14 @@ export default function Dashboard() {
                 </div>
 
                 <AddPatientModal
-                    isOpen={isModalOpen}
-                    onClose={() => setIsModalOpen(false)}
-                    onSuccess={handlePatientAdded}
+                    isOpen={isAddModalOpen}
+                    onClose={() => setIsAddModalOpen(false)}
+                    onSuccess={loadDashboard}
+                />
+                <SMSAlarmsModal
+                    isOpen={isAlarmsModalOpen}
+                    onClose={() => setIsAlarmsModalOpen(false)}
+                    onSuccess={loadDashboard}
                 />
             </main>
         </div>

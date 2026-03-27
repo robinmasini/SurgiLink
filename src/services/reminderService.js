@@ -276,41 +276,68 @@ export async function getReminderHistory(patientId, screen = null) {
 export async function scheduleTimeBasedReminders(patientId, interventionDate) {
     const reminders = [];
 
-    // Calculate reminder dates
+    // --- DYNAMIC OFFSET LOGIC ---
+    let offsets = {
+        welcome: -10,
+        j7: -7,
+        j2: -2,
+        j1: -1,
+        j0: 0,
+        j1_postop: 1,
+        j4_satisfaction: 4,
+        esatis: 4
+    };
+
+    try {
+        const { data: settingsData } = await supabase
+            .from('app_settings')
+            .select('value')
+            .eq('key', 'reminder_offsets')
+            .maybeSingle();
+
+        if (settingsData?.value) {
+            offsets = { ...offsets, ...(typeof settingsData.value === 'string' ? JSON.parse(settingsData.value) : settingsData.value) };
+        }
+    } catch (e) {
+        console.warn('Using default reminder offsets due to fetch error:', e);
+    }
+
+    // Calculate reminder dates using dynamic offsets
     const j7Date = new Date(interventionDate);
-    j7Date.setDate(j7Date.getDate() - 7);
-    j7Date.setHours(10, 0, 0, 0); // 10:00 AM
+    j7Date.setDate(j7Date.getDate() + offsets.j7);
+    j7Date.setHours(10, 0, 0, 0);
 
     const j2Date = new Date(interventionDate);
-    j2Date.setDate(j2Date.getDate() - 2);
+    j2Date.setDate(j2Date.getDate() + offsets.j2);
     j2Date.setHours(10, 0, 0, 0);
 
     const j1Date = new Date(interventionDate);
-    j1Date.setDate(j1Date.getDate() - 1);
+    j1Date.setDate(j1Date.getDate() + offsets.j1);
     j1Date.setHours(10, 0, 0, 0);
 
     const j0Date = new Date(interventionDate);
-    j0Date.setHours(6, 30, 0, 0); // Early morning for J-0
+    j0Date.setDate(j0Date.getDate() + offsets.j0);
+    j0Date.setHours(6, 30, 0, 0);
 
     const j1PostOpDate = new Date(interventionDate);
-    j1PostOpDate.setDate(j1PostOpDate.getDate() + 1);
+    j1PostOpDate.setDate(j1PostOpDate.getDate() + offsets.j1_postop);
     j1PostOpDate.setHours(10, 0, 0, 0);
 
     const j4SatisfactionDate = new Date(interventionDate);
-    j4SatisfactionDate.setDate(j4SatisfactionDate.getDate() + 4);
+    j4SatisfactionDate.setDate(j4SatisfactionDate.getDate() + offsets.j4_satisfaction);
     j4SatisfactionDate.setHours(11, 0, 0, 0);
 
     const j4EsatisDate = new Date(interventionDate);
-    j4EsatisDate.setDate(j4EsatisDate.getDate() + 4);
-    j4EsatisDate.setHours(11, 30, 0, 0); // Slightly after our internal survey
+    j4EsatisDate.setDate(j4EsatisDate.getDate() + offsets.esatis);
+    j4EsatisDate.setHours(11, 30, 0, 0);
 
-    const j10BeforeDate = new Date(interventionDate);
-    j10BeforeDate.setDate(j10BeforeDate.getDate() - 10);
-    j10BeforeDate.setHours(10, 0, 0, 0); // Welcome message
+    const welcomeDate = new Date(interventionDate);
+    welcomeDate.setDate(welcomeDate.getDate() + offsets.welcome);
+    welcomeDate.setHours(10, 0, 0, 0);
 
     // Queue reminders
     const remindersToQueue = [
-        { screen: 'Bienvenue', date: j10BeforeDate, template: 'welcome_accueil' },
+        { screen: 'Bienvenue', date: welcomeDate, template: 'welcome_accueil' },
         { screen: 'J-7', date: j7Date, template: 'j7_reminder' },
         { screen: 'J-2', date: j2Date, template: 'j2_reminder' },
         { screen: 'J-1', date: j1Date, template: 'j1_reminder_long' },
@@ -318,6 +345,7 @@ export async function scheduleTimeBasedReminders(patientId, interventionDate) {
         { screen: 'J+4', date: j4SatisfactionDate, template: 'j4_satisfaction' },
         { screen: 'E-SATIS', date: j4EsatisDate, template: 'j4_esatis' }
     ];
+    // --- END DYNAMIC OFFSET LOGIC ---
 
     for (const reminder of remindersToQueue) {
         const result = await queueReminder(
