@@ -297,11 +297,12 @@ export default function PatientPortal({ patient: initialPatient }) {
                 }}>
                     {/* Portail Banner Image */}
                     <div style={{
-                        marginBottom: 'var(--spacing-8)',
-                        borderRadius: '24px',
+                        maxWidth: '350px',
+                        margin: '0 auto var(--spacing-8) auto',
+                        borderRadius: '32px',
                         overflow: 'hidden',
-                        boxShadow: '0 15px 35px rgba(124, 58, 237, 0.12)',
-                        border: '1px solid rgba(124, 58, 237, 0.1)'
+                        boxShadow: '0 20px 40px rgba(124, 58, 237, 0.1)',
+                        border: '1px solid var(--color-primary-100)'
                     }}>
                         <img
                             src={portailCard}
