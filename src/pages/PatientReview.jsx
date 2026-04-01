@@ -506,25 +506,6 @@ export default function PatientReview() {
                         <ChevronLeft size={20} />
                         <span style={{ marginLeft: 'var(--spacing-2)' }}>Retour</span>
                     </button>
-
-                    <div style={{ marginLeft: 'auto', display: 'flex', gap: 'var(--spacing-3)' }}>
-                        <button
-                            onClick={() => setIsPreviewModalOpen(true)}
-                            className="btn btn-secondary btn-sm"
-                            style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: 'var(--spacing-2)',
-                                background: 'var(--color-primary-50)',
-                                color: 'var(--color-primary-600)',
-                                border: '1px solid var(--color-primary-100)',
-                                fontWeight: '600'
-                            }}
-                        >
-                            <Eye size={18} />
-                            Vue Patient
-                        </button>
-                    </div>
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 2fr) 1fr', gap: 'var(--spacing-8)' }}>
@@ -1411,7 +1392,7 @@ export default function PatientReview() {
                         </div>
                     </div>
                 </div>
-            </main>
+            </main >
 
             <EditPatientModal
                 isOpen={isEditModalOpen}
@@ -1420,16 +1401,18 @@ export default function PatientReview() {
                 onPatientUpdated={handlePatientUpdated}
             />
 
-            {isSMSModalOpen && (
-                <EditSMSModal
-                    isOpen={isSMSModalOpen}
-                    onClose={() => { setIsSMSModalOpen(false); setEditingReminder(null); }}
-                    patient={{ ...patient, token: tokenData?.token }}
-                    reminder={editingReminder || nextReminder}
-                    onSend={handleSendManualSMS}
-                    onUpdate={handleUpdateReminder}
-                />
-            )}
+            {
+                isSMSModalOpen && (
+                    <EditSMSModal
+                        isOpen={isSMSModalOpen}
+                        onClose={() => { setIsSMSModalOpen(false); setEditingReminder(null); }}
+                        patient={{ ...patient, token: tokenData?.token }}
+                        reminder={editingReminder || nextReminder}
+                        onSend={handleSendManualSMS}
+                        onUpdate={handleUpdateReminder}
+                    />
+                )
+            }
 
             <CustomSMSModal
                 isOpen={isCustomSMSModalOpen}
