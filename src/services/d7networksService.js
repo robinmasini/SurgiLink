@@ -4,10 +4,12 @@ import { smsTemplates, interpolateTemplate } from '../config/smsTemplates';
 const D7_API_TOKEN = import.meta.env.VITE_D7_API_TOKEN;
 const D7_SENDER_ID = import.meta.env.VITE_D7_SENDER_ID || 'SMS';
 
-export async function sendSMS(templateKey, to, variables, metadata = {}) {
+export async function sendSMS(templateKey, to, variables, metadata = {}, supabaseClient = null) {
+    const db = supabaseClient || supabase;
     try {
         let message;
-        if (metadata.manualMessage) {
+        let isManual = !!metadata.manualMessage;
+        if (isManual) {
             message = metadata.manualMessage;
         } else {
             if (!smsTemplates[templateKey]) throw new Error(`Invalid SMS template: ${templateKey}`);
@@ -54,12 +56,10 @@ export async function sendSMS(templateKey, to, variables, metadata = {}) {
                         recipients: [formattedPhone],
                         content: message,
                         msg_type: 'text',
-                        data_coding: 'auto'
+                        data_coding: 'auto',
+                        originator: D7_SENDER_ID
                     }
-                ],
-                message_globals: {
-                    originator: D7_SENDER_ID
-                }
+                ]
             })
         });
 
@@ -75,18 +75,20 @@ export async function sendSMS(templateKey, to, variables, metadata = {}) {
 
         if (!response.ok) {
             const errorMsg = typeof d7Data === 'string' ? d7Data : JSON.stringify(d7Data);
+            console.error(`[sendSMS] D7 API Error:`, d7Data);
             throw new Error(`D7 API Error (${response.status}): ${errorMsg}`);
         }
 
         const messageId = d7Data.request_id || `D7_${Date.now()}`;
 
         console.log(`[sendSMS] Insertion du log de succès dans Supabase...`);
-        const { error: dbError } = await supabase.from('sms_logs').insert({
+        const { error: dbError } = await db.from('sms_logs').insert({
             ...logEntry,
             message: message, // Store the actual message sent
             status: 'sent',
             sent_at: new Date().toISOString(),
-            provider_message_id: messageId
+            provider_message_id: messageId,
+            metadata: { ...logEntry.metadata, d7_response: d7Data }
         });
 
         if (dbError) {
@@ -109,7 +111,8 @@ export async function sendSMS(templateKey, to, variables, metadata = {}) {
 
         try {
             // Attempt to log failure to DB
-            await supabase.from('sms_logs').insert({
+            const db = supabaseClient || supabase;
+            await db.from('sms_logs').insert({
                 patient_id: metadata.patientId,
                 template_key: templateKey,
                 linked_item_id: metadata.linkedItemId || null,
@@ -127,8 +130,9 @@ export async function sendSMS(templateKey, to, variables, metadata = {}) {
     }
 }
 
-export async function getSMSHistory(patientId, filters = {}) {
-    let query = supabase.from('sms_logs').select('*').eq('patient_id', patientId).order('created_at', { ascending: false });
+export async function getSMSHistory(patientId, filters = {}, supabaseClient = null) {
+    const db = supabaseClient || supabase;
+    let query = db.from('sms_logs').select('*').eq('patient_id', patientId).order('created_at', { ascending: false });
     if (filters.screen) query = query.eq('screen', filters.screen);
     if (filters.linkedItemId) query = query.eq('linked_item_id', filters.linkedItemId);
     if (filters.status) query = query.eq('status', filters.status);
@@ -136,8 +140,8 @@ export async function getSMSHistory(patientId, filters = {}) {
     return error ? [] : data || [];
 }
 
-export async function canSendReminder(patientId, linkedItemId, minHoursBetween = 24, maxReminders = 3) {
-    const history = await getSMSHistory(patientId, { linkedItemId });
+export async function canSendReminder(patientId, linkedItemId, minHoursBetween = 24, maxReminders = 3, supabaseClient = null) {
+    const history = await getSMSHistory(patientId, { linkedItemId }, supabaseClient);
     const successfulSends = history.filter(log => log.status === 'sent' || log.status === 'delivered');
     if (successfulSends.length >= maxReminders) return { canSend: false, reason: `Maximum reminders reached (${maxReminders})` };
     if (successfulSends.length > 0) {

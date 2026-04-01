@@ -16,11 +16,13 @@ import PatientStatusBadges from './PatientStatusBadges';
 
 export default function PatientDetailPanel({ patient, responses = [], onClose }) {
     const [smsLogs, setSmsLogs] = useState([]);
+    const [pendingReminders, setPendingReminders] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         if (patient) {
             loadSmsLogs();
+            loadPendingReminders();
         }
     }, [patient]);
 
@@ -40,6 +42,23 @@ export default function PatientDetailPanel({ patient, responses = [], onClose })
             console.error('Error loading SMS logs:', err);
         } finally {
             setIsLoading(false);
+        }
+    };
+
+    const loadPendingReminders = async () => {
+        try {
+            const { data, error } = await supabase
+                .from('reminder_queue')
+                .select('*')
+                .eq('patient_id', patient.id)
+                .eq('status', 'pending')
+                .order('scheduled_for', { ascending: true })
+                .limit(3);
+
+            if (error) throw error;
+            setPendingReminders(data || []);
+        } catch (err) {
+            console.error('Error loading pending reminders:', err);
         }
     };
 
@@ -110,6 +129,30 @@ export default function PatientDetailPanel({ patient, responses = [], onClose })
                     </div>
                 </div>
 
+                {/* CTA: Patient Record */}
+                <button
+                    className="btn btn-primary"
+                    style={{
+                        width: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 'var(--spacing-2)',
+                        padding: 'var(--spacing-3)',
+                        fontSize: 'var(--font-size-sm)',
+                        fontWeight: '700',
+                        borderRadius: 'var(--radius-lg)',
+                        background: 'var(--color-primary-500)',
+                        color: 'white',
+                        border: 'none',
+                        cursor: 'pointer',
+                        marginBottom: 'var(--spacing-4)'
+                    }}
+                    onClick={() => window.location.href = `/patient/${patient.id}`}
+                >
+                    <ExternalLink size={18} /> Accéder à la fiche patient
+                </button>
+
                 {/* Patient Portal Access */}
                 <div style={{
                     padding: 'var(--spacing-4)',
@@ -128,6 +171,42 @@ export default function PatientDetailPanel({ patient, responses = [], onClose })
                     <button className="btn btn-sm btn-primary" style={{ width: '100%', fontSize: '11px', padding: '6px' }}>
                         Copier le lien
                     </button>
+                </div>
+
+                {/* Reminder Queue */}
+                <div style={{ marginBottom: 'var(--spacing-6)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-3)' }}>
+                        <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: '700', color: 'var(--color-gray-400)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                            Prochains Rappels
+                        </div>
+                        <Calendar size={14} style={{ color: 'var(--color-gray-400)' }} />
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-2)' }}>
+                        {pendingReminders.length === 0 ? (
+                            <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-400)', textAlign: 'center', padding: 'var(--spacing-2)', border: '1px dashed var(--color-gray-100)', borderRadius: 'var(--radius-md)' }}>
+                                Aucun rappel planifié
+                            </div>
+                        ) : pendingReminders.map((rem, idx) => (
+                            <div key={idx} style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 'var(--spacing-3)',
+                                padding: '10px',
+                                background: 'var(--color-primary-50)',
+                                borderRadius: 'var(--radius-md)',
+                                border: '1px solid var(--color-primary-100)'
+                            }}>
+                                <Clock size={14} style={{ color: 'var(--color-primary-600)' }} />
+                                <div>
+                                    <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--color-primary-700)' }}>{rem.screen}</div>
+                                    <div style={{ fontSize: '10px', color: 'var(--color-primary-600)' }}>
+                                        {new Date(rem.scheduled_for).toLocaleString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
 
                 {/* Recent Activity */}
@@ -189,27 +268,6 @@ export default function PatientDetailPanel({ patient, responses = [], onClose })
                 flexDirection: 'column',
                 gap: 'var(--spacing-3)'
             }}>
-                <button
-                    className="btn btn-primary"
-                    style={{
-                        width: '100%',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: 'var(--spacing-2)',
-                        padding: 'var(--spacing-3)',
-                        fontSize: 'var(--font-size-sm)',
-                        fontWeight: '700',
-                        borderRadius: 'var(--radius-lg)',
-                        background: 'var(--color-primary-500)',
-                        color: 'white',
-                        border: 'none',
-                        cursor: 'pointer'
-                    }}
-                    onClick={() => window.location.href = `/patient/${patient.id}`}
-                >
-                    <ExternalLink size={18} /> Accéder à la fiche patient
-                </button>
 
                 <div style={{ display: 'flex', gap: 'var(--spacing-2)' }}>
                     <button

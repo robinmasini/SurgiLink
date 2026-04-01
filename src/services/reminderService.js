@@ -8,6 +8,36 @@ import { getIncompleteItemsWithReminders } from './pathwayService';
  */
 
 /**
+ * Helper to set a date to a specific hour/minute in Paris time
+ * Accounts for CEST (UTC+2) or CET (UTC+1)
+ */
+function setParisTime(date, hours, minutes = 0) {
+    const d = new Date(date);
+
+    // Helper to determine if a date is in CEST (Summer Time)
+    // Last Sunday of March to Last Sunday of October
+    const isCEST = (d) => {
+        const year = d.getFullYear();
+        // Last Sunday of March
+        const march31 = new Date(year, 2, 31);
+        const startCEST = new Date(year, 2, 31 - march31.getDay());
+        startCEST.setHours(2, 0, 0, 0);
+
+        // Last Sunday of October
+        const oct31 = new Date(year, 9, 31);
+        const endCEST = new Date(year, 9, 31 - oct31.getDay());
+        endCEST.setHours(3, 0, 0, 0);
+
+        return d >= startCEST && d < endCEST;
+    };
+
+    const offset = isCEST(d) ? 2 : 1;
+    // Set UTC hours adjusted by offset
+    d.setUTCHours(hours - offset, minutes, 0, 0);
+    return d;
+}
+
+/**
  * Queue a reminder
  * @param {number} patientId - Patient ID
  * @param {string} screen - J7, J2, or J1
@@ -37,19 +67,21 @@ export async function queueReminder(patientId, screen, itemId, scheduledFor, rem
 
         return { success: true, data };
     } catch (error) {
-        console.error('Error queueing reminder:', error);
+        console.error(`[PDF] Error queueing reminder for Patient ${patientId} (Screen: ${screen}, Template: ${templateKey}):`, error);
         return { success: false, error: error.message };
     }
 }
 
 /**
  * Process pending reminders (to be called by scheduler/cron)
+ * @param {Object} supabaseClient - Optional privileged Supabase client
  * @returns {Promise<Object>} - { processed, sent, failed }
  */
-export async function processPendingReminders() {
+export async function processPendingReminders(supabaseClient = null) {
+    const db = supabaseClient || supabase;
     try {
         // Get pending reminders that are due
-        const { data: reminders, error } = await supabase
+        const { data: reminders, error } = await db
             .from('reminder_queue')
             .select('*, patients(*)')
             .eq('status', 'pending')
@@ -68,12 +100,13 @@ export async function processPendingReminders() {
                 reminder.patient_id,
                 reminder.item_id || reminder.screen,
                 reminderPolicy.minHoursBetween,
-                reminderPolicy.maxReminders
+                reminderPolicy.maxReminders,
+                db
             );
 
             if (!canSend.canSend) {
                 // Mark as cancelled
-                await supabase
+                await db
                     .from('reminder_queue')
                     .update({
                         status: 'cancelled',
@@ -124,11 +157,12 @@ export async function processPendingReminders() {
                     screen: reminder.screen,
                     linkedItemId: reminder.item_id,
                     manualMessage: reminder.custom_message // Use custom message if set
-                }
+                },
+                db
             );
 
             // Update reminder queue
-            await supabase
+            await db
                 .from('reminder_queue')
                 .update({
                     status: result.success ? 'sent' : 'failed',
@@ -302,38 +336,15 @@ export async function scheduleTimeBasedReminders(patientId, interventionDate) {
         console.warn('Using default reminder offsets due to fetch error:', e);
     }
 
-    // Calculate reminder dates using dynamic offsets
-    const j7Date = new Date(interventionDate);
-    j7Date.setDate(j7Date.getDate() + offsets.j7);
-    j7Date.setHours(10, 0, 0, 0);
-
-    const j2Date = new Date(interventionDate);
-    j2Date.setDate(j2Date.getDate() + offsets.j2);
-    j2Date.setHours(10, 0, 0, 0);
-
-    const j1Date = new Date(interventionDate);
-    j1Date.setDate(j1Date.getDate() + offsets.j1);
-    j1Date.setHours(10, 0, 0, 0);
-
-    const j0Date = new Date(interventionDate);
-    j0Date.setDate(j0Date.getDate() + offsets.j0);
-    j0Date.setHours(6, 30, 0, 0);
-
-    const j1PostOpDate = new Date(interventionDate);
-    j1PostOpDate.setDate(j1PostOpDate.getDate() + offsets.j1_postop);
-    j1PostOpDate.setHours(10, 0, 0, 0);
-
-    const j4SatisfactionDate = new Date(interventionDate);
-    j4SatisfactionDate.setDate(j4SatisfactionDate.getDate() + offsets.j4_satisfaction);
-    j4SatisfactionDate.setHours(11, 0, 0, 0);
-
-    const j4EsatisDate = new Date(interventionDate);
-    j4EsatisDate.setDate(j4EsatisDate.getDate() + offsets.esatis);
-    j4EsatisDate.setHours(11, 30, 0, 0);
-
-    const welcomeDate = new Date(interventionDate);
-    welcomeDate.setDate(welcomeDate.getDate() + offsets.welcome);
-    welcomeDate.setHours(10, 0, 0, 0);
+    // Calculate reminder dates using dynamic offsets and fixed Paris 10:00 AM
+    const j7Date = setParisTime(new Date(interventionDate).getTime() + (offsets.j7 * 86400000), 10, 0);
+    const j2Date = setParisTime(new Date(interventionDate).getTime() + (offsets.j2 * 86400000), 10, 0);
+    const j1Date = setParisTime(new Date(interventionDate).getTime() + (offsets.j1 * 86400000), 10, 0);
+    const j0Date = setParisTime(new Date(interventionDate).getTime() + (offsets.j0 * 86400000), 6, 30);
+    const j1PostOpDate = setParisTime(new Date(interventionDate).getTime() + (offsets.j1_postop * 86400000), 10, 0);
+    const j4SatisfactionDate = setParisTime(new Date(interventionDate).getTime() + (offsets.j4_satisfaction * 86400000), 11, 0);
+    const j4EsatisDate = setParisTime(new Date(interventionDate).getTime() + (offsets.esatis * 86400000), 11, 30);
+    const welcomeDate = setParisTime(new Date(interventionDate).getTime() + (offsets.welcome * 86400000), 10, 0);
 
     // Queue reminders
     const remindersToQueue = [
@@ -348,17 +359,26 @@ export async function scheduleTimeBasedReminders(patientId, interventionDate) {
     // --- END DYNAMIC OFFSET LOGIC ---
 
     for (const reminder of remindersToQueue) {
+        // Skip reminders that are more than 1 hour in the past to avoid "backlog bursts"
+        const isPast = reminder.date < new Date(Date.now() - 3600000);
+
         const result = await queueReminder(
             patientId,
             reminder.screen,
-            null, // No specific item for time-based reminders
+            null,
             reminder.date,
             'auto_time',
             reminder.template
         );
 
         if (result.success) {
-            reminders.push(result.data);
+            if (isPast) {
+                // If it was in the past, cancel it immediately so it doesn't get sent by the cron
+                await cancelReminder(result.data.id);
+                console.log(`[ReminderService] Auto-cancelled past reminder: ${reminder.screen} for Patient ${patientId}`);
+            } else {
+                reminders.push(result.data);
+            }
         }
     }
 
