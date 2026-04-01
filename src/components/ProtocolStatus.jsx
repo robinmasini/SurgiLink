@@ -3,13 +3,20 @@ import { Activity } from 'lucide-react';
 const statusConfigs = {
     'neutre': { color: '#BDBDBD', bg: '#F5F5F5' },
     'alerte': { color: '#FF9100', bg: '#FFF3E0' },
-    'critique': { color: '#FF1744', bg: '#FFEBEE' },
-    'ready': { color: '#00C853', bg: '#E8F5E9' },
-    'incomplete': { color: '#7C3AED', bg: '#EFEBE9' }
+    'critique': { color: '#EF4444', bg: '#FEF2F2' },
+    'ready': { color: '#10B981', bg: '#ECFDF5' },
+    'incomplete': { color: '#7C3AED', bg: '#F5F3FF' }
+};
+
+const getProgressColor = (progress) => {
+    if (progress >= 70) return '#10B981'; // Green for high progress
+    if (progress >= 30) return '#F59E0B'; // Orange for medium
+    return '#EF4444'; // Red for low
 };
 
 export default function ProtocolStatus({ progress = 0, status = 'neutre', statusLabel = "Protocole en cours d'exécution" }) {
     const config = statusConfigs[status] || statusConfigs['neutre'];
+    const barColor = getProgressColor(progress);
 
     return (
         <div className="card" style={{
@@ -36,7 +43,7 @@ export default function ProtocolStatus({ progress = 0, status = 'neutre', status
                 <div style={{
                     fontSize: '48px',
                     fontWeight: '800',
-                    color: config.color,
+                    color: barColor,
                     marginBottom: 'var(--spacing-4)',
                     lineHeight: 1
                 }}>
@@ -57,7 +64,7 @@ export default function ProtocolStatus({ progress = 0, status = 'neutre', status
                     <div style={{
                         width: `${Math.min(100, progress)}%`,
                         height: '100%',
-                        background: config.color,
+                        background: barColor,
                         borderRadius: '4px',
                         transition: 'width 0.5s ease-out'
                     }} />

@@ -45,35 +45,35 @@ export default function CompactAppointmentCard({
                 {/* Date/Time Pill */}
                 <div style={{
                     background: 'white',
-                    border: '1px solid #D7C4B0',
+                    border: '1px solid var(--color-primary-100)',
                     padding: '10px 24px',
                     borderRadius: '25px',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '12px',
-                    boxShadow: '0 2px 8px rgba(215, 196, 176, 0.15)'
+                    boxShadow: '0 2px 8px rgba(124, 58, 237, 0.08)'
                 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <Calendar size={18} style={{ color: '#6D4C41' }} />
-                        <span style={{ fontWeight: '700', color: '#6D4C41' }}>{formatLongDate(appointmentDate)}</span>
+                        <Calendar size={18} style={{ color: 'var(--color-primary-500)' }} />
+                        <span style={{ fontWeight: '700', color: 'var(--color-primary-700)' }}>{formatLongDate(appointmentDate)}</span>
                     </div>
-                    <div style={{ width: '1px', height: '16px', background: '#D7C4B0' }} />
+                    <div style={{ width: '1px', height: '16px', background: 'var(--color-primary-100)' }} />
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <Clock size={18} style={{ color: '#6D4C41' }} />
-                        <span style={{ fontWeight: '700', color: '#6D4C41' }}>{appointmentTime || '07:30'}</span>
+                        <Clock size={18} style={{ color: 'var(--color-primary-500)' }} />
+                        <span style={{ fontWeight: '700', color: 'var(--color-primary-700)' }}>{appointmentTime || '07:30'}</span>
                     </div>
                 </div>
 
                 {/* J-Condition Pill */}
                 <div style={{
-                    background: '#37474F',
+                    background: 'var(--color-primary-600)',
                     color: 'white',
                     padding: '10px 24px',
                     borderRadius: '25px',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '8px',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                    boxShadow: '0 4px 12px rgba(124, 58, 237, 0.2)'
                 }}>
                     <Zap size={18} fill="currentColor" />
                     <span style={{ fontWeight: '800', fontSize: '18px' }}>{jValue}</span>
@@ -117,23 +117,23 @@ export default function CompactAppointmentCard({
                         onClick={onDownloadPrescription}
                         style={{
                             background: 'white',
-                            border: '1px solid #D7C4B0',
+                            border: '1px solid var(--color-primary-100)',
                             padding: '10px 24px',
                             borderRadius: '25px',
                             display: 'flex',
                             alignItems: 'center',
                             gap: '12px',
-                            boxShadow: '0 2px 8px rgba(215, 196, 176, 0.15)',
+                            boxShadow: '0 2px 8px rgba(124, 58, 237, 0.08)',
                             cursor: 'pointer',
                             fontSize: '14px',
                             fontWeight: '700',
-                            color: '#6D4C41',
+                            color: 'var(--color-primary-700)',
                             transition: 'all 0.2s ease',
                             outline: 'none',
                             marginLeft: 'auto'
                         }}
                         onMouseOver={(e) => {
-                            e.currentTarget.style.background = '#FDFCFB';
+                            e.currentTarget.style.background = 'var(--color-primary-50)';
                             e.currentTarget.style.transform = 'translateY(-1px)';
                         }}
                         onMouseOut={(e) => {
@@ -141,7 +141,7 @@ export default function CompactAppointmentCard({
                             e.currentTarget.style.transform = 'translateY(0)';
                         }}
                     >
-                        <Download size={18} style={{ color: '#6D4C41' }} />
+                        <Download size={18} style={{ color: 'var(--color-primary-500)' }} />
                         <span>Télécharger mon ordonnance</span>
                     </button>
                 )}
@@ -175,7 +175,7 @@ export default function CompactAppointmentCard({
             {/* Info */}
             <div style={{ flex: 1 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                    <div style={{ background: '#F5F5F5', padding: '6px', borderRadius: '8px', color: '#D7C4B0' }}>
+                    <div style={{ background: 'var(--color-primary-50)', padding: '6px', borderRadius: '8px', color: 'var(--color-primary-500)' }}>
                         <MapPin size={14} />
                     </div>
                     <h3 style={{ fontSize: '18px', fontWeight: '800', color: '#1A1A1A', margin: 0 }}>{clinicName}</h3>

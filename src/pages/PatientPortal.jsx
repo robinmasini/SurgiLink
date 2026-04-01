@@ -224,7 +224,7 @@ export default function PatientPortal({ patient: initialPatient }) {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)'
+                background: 'white'
             }}>
                 <div style={{ textAlign: 'center' }}>
                     <Loader className="animate-spin" size={48} style={{ margin: '0 auto var(--spacing-4)', color: 'var(--color-primary-500)' }} />
@@ -241,7 +241,7 @@ export default function PatientPortal({ patient: initialPatient }) {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)'
+                background: 'white'
             }}>
                 <div className="card" style={{ maxWidth: '500px', textAlign: 'center' }}>
                     <AlertCircle size={64} style={{ margin: '0 auto var(--spacing-4)', color: 'var(--color-danger-500)' }} />
@@ -272,16 +272,16 @@ export default function PatientPortal({ patient: initialPatient }) {
     return (
         <div style={{
             minHeight: '100vh',
-            background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
-            padding: 'var(--spacing-6) var(--spacing-4)'
+            background: 'var(--color-primary-50)',
+            padding: 'var(--spacing-8) var(--spacing-4)'
         }}>
             <div style={{ maxWidth: '900px', margin: '0 auto' }}>
                 {/* Header Greeting */}
-                <div style={{ marginBottom: 'var(--spacing-8)' }}>
-                    <h1 style={{ fontSize: '32px', fontWeight: '800', marginBottom: 'var(--spacing-1)', color: '#1A1A1A' }}>
+                <div style={{ marginBottom: 'var(--spacing-10)', textAlign: 'center' }}>
+                    <h1 style={{ fontSize: '36px', fontWeight: '900', marginBottom: 'var(--spacing-2)', color: 'var(--color-gray-900)', letterSpacing: '-0.02em' }}>
                         Bonjour, {patient?.name || 'Patient'}
                     </h1>
-                    <p style={{ color: '#666', fontSize: '16px', fontWeight: '500' }}>Votre portail de suivi personnalisé</p>
+                    <p style={{ color: 'var(--color-gray-500)', fontSize: '18px', fontWeight: '500' }}>Votre portail de suivi personnalisé SurgiLink</p>
                 </div>
 
                 {/* Main Info Glass Container */}
