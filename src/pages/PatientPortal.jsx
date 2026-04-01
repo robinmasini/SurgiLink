@@ -23,6 +23,7 @@ import ClinicAppointmentCard from '../components/ClinicAppointmentCard';
 import CompactAppointmentCard from '../components/CompactAppointmentCard';
 import ProtocolStatus from '../components/ProtocolStatus';
 import PatientTraceability from '../components/PatientTraceability';
+import portailCard from '../assets/portail-card.png';
 
 import { HelpCircle, Send, RefreshCw, Download } from 'lucide-react';
 import { generateSynthesisPDF } from '../services/pdfService';
@@ -294,6 +295,26 @@ export default function PatientPortal({ patient: initialPatient }) {
                     marginBottom: 'var(--spacing-8)',
                     boxShadow: '0 10px 40px rgba(0,0,0,0.02)'
                 }}>
+                    {/* Portail Banner Image */}
+                    <div style={{
+                        marginBottom: 'var(--spacing-8)',
+                        borderRadius: '24px',
+                        overflow: 'hidden',
+                        boxShadow: '0 15px 35px rgba(124, 58, 237, 0.12)',
+                        border: '1px solid rgba(124, 58, 237, 0.1)'
+                    }}>
+                        <img
+                            src={portailCard}
+                            alt="SurgiLink Portail"
+                            style={{
+                                width: '100%',
+                                height: 'auto',
+                                display: 'block',
+                                objectFit: 'cover'
+                            }}
+                        />
+                    </div>
+
                     {/* Top Pills Row */}
                     <CompactAppointmentCard
                         variant="pill"
