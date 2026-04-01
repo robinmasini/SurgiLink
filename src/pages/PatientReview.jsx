@@ -1000,36 +1000,94 @@ export default function PatientReview() {
 
                             </div>
 
-                            {/* Custom Questions Section */}
-                            {customQuestions.length > 0 && (
-                                <div>
+                            {/* Patient Comments Section */}
+                            {(customQuestions.some(q => q.response) || clinicalResponses.J4_Satisfaction.verbatim) && (
+                                <div id="patient-comments-section">
                                     <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-gray-400)', textTransform: 'uppercase', marginBottom: 'var(--spacing-4)', letterSpacing: '0.05em' }}>
-                                        Questions Ponctuelle(s)
+                                        Commentaires Patient
                                     </div>
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-4)' }}>
+                                        {/* Verbatim J+4 */}
+                                        {clinicalResponses.J4_Satisfaction.verbatim && (
+                                            <div style={{
+                                                padding: 'var(--spacing-4)',
+                                                background: 'white',
+                                                borderRadius: '16px',
+                                                border: '1px solid var(--color-primary-100)',
+                                                boxShadow: '0 2px 8px rgba(124, 58, 237, 0.05)',
+                                                position: 'relative'
+                                            }}>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                        <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'var(--color-primary-600)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 'bold' }}>P</div>
+                                                        <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--color-gray-900)' }}>Patient</span>
+                                                        <span style={{ fontSize: '11px', color: 'var(--color-gray-400)', fontWeight: '500' }}>• Satisfaction J+4</span>
+                                                    </div>
+                                                    <div style={{ fontSize: '11px', color: 'var(--color-gray-400)' }}>
+                                                        {responsesMeta.J4_Satisfaction?.verbatim ? (
+                                                            `${new Date(responsesMeta.J4_Satisfaction.verbatim.updated_at).toLocaleDateString('fr-FR')} à ${new Date(responsesMeta.J4_Satisfaction.verbatim.updated_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`
+                                                        ) : ''}
+                                                    </div>
+                                                </div>
+                                                <div style={{ fontSize: '14px', color: 'var(--color-gray-700)', lineHeight: '1.5', fontStyle: 'italic', paddingLeft: '32px' }}>
+                                                    "{clinicalResponses.J4_Satisfaction.verbatim}"
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* Custom Questions Responses */}
+                                        {customQuestions.filter(q => q.response).map(q => (
+                                            <div key={q.id} style={{
+                                                padding: 'var(--spacing-4)',
+                                                background: 'white',
+                                                borderRadius: '16px',
+                                                border: '1px solid var(--color-primary-100)',
+                                                boxShadow: '0 2px 8px rgba(124, 58, 237, 0.05)',
+                                                position: 'relative'
+                                            }}>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                        <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'var(--color-primary-600)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 'bold' }}>P</div>
+                                                        <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--color-gray-900)' }}>Patient</span>
+                                                        <span style={{ fontSize: '11px', color: 'var(--color-gray-400)', fontWeight: '500' }}>• Question Ponctuelle</span>
+                                                    </div>
+                                                    <div style={{ fontSize: '11px', color: 'var(--color-gray-400)' }}>
+                                                        {q.updated_at ? (
+                                                            `${new Date(q.updated_at).toLocaleDateString('fr-FR')} à ${new Date(q.updated_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`
+                                                        ) : ''}
+                                                    </div>
+                                                </div>
+                                                <div style={{ fontSize: '12px', color: 'var(--color-gray-500)', marginBottom: '6px', paddingLeft: '32px', fontWeight: '600' }}>
+                                                    Q: {q.question_text}
+                                                </div>
+                                                <div style={{ fontSize: '14px', color: 'var(--color-gray-700)', lineHeight: '1.5', fontStyle: 'italic', paddingLeft: '32px' }}>
+                                                    "{q.response}"
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Custom Questions List (Admin side - remains for management) */}
+                            {customQuestions.length > 0 && (
+                                <div style={{ opacity: 0.8, marginTop: 'var(--spacing-4)' }}>
+                                    <div style={{ fontSize: '10px', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-gray-400)', textTransform: 'uppercase', marginBottom: 'var(--spacing-4)', letterSpacing: '0.05em' }}>
+                                        Gestion des Questions Ponctuelle(s)
+                                    </div>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                                         {customQuestions.map(q => (
-                                            <div key={q.id} className="card" style={{ padding: 'var(--spacing-4)', background: 'rgba(255,255,255,0.4)', border: '1px solid var(--color-gray-100)', position: 'relative' }}>
-                                                <button
-                                                    onClick={() => handleDeleteCustomQuestion(q.id)}
-                                                    style={{ position: 'absolute', top: '8px', right: '8px', background: 'transparent', border: 'none', color: 'var(--color-gray-300)', cursor: 'pointer' }}
-                                                    className="btn-hover-danger"
-                                                >
-                                                    <Trash2 size={14} />
-                                                </button>
-                                                <div style={{ fontSize: '13px', color: 'var(--color-gray-900)', fontWeight: '600', marginBottom: '8px', paddingRight: '24px' }}>
+                                            <div key={q.id} style={{ padding: '8px 12px', background: 'rgba(255,255,255,0.2)', borderRadius: '8px', border: '1px solid var(--color-gray-50)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                <div style={{ fontSize: '12px', color: 'var(--color-gray-600)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                                     {q.question_text}
                                                 </div>
-                                                <div style={{
-                                                    padding: '12px',
-                                                    background: q.response ? 'var(--color-primary-50)' : 'var(--color-gray-50)',
-                                                    borderRadius: '8px',
-                                                    fontSize: '13px',
-                                                    color: q.response ? 'var(--color-primary-700)' : 'var(--color-gray-400)',
-                                                    fontStyle: q.response ? 'normal' : 'italic',
-                                                    fontWeight: q.response ? '500' : 'normal'
-                                                }}>
-                                                    {q.response || 'En attente de réponse...'}
-                                                </div>
+                                                <button
+                                                    onClick={() => handleDeleteCustomQuestion(q.id)}
+                                                    style={{ background: 'transparent', border: 'none', color: 'var(--color-gray-300)', cursor: 'pointer' }}
+                                                    className="btn-hover-danger"
+                                                >
+                                                    <Trash2 size={12} />
+                                                </button>
                                             </div>
                                         ))}
                                     </div>
@@ -1069,8 +1127,7 @@ export default function PatientReview() {
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-4)' }}>
                                         {[
                                             { id: 'soins_qualite', label: 'Prise en charge' },
-                                            { id: 'recommandation', label: 'Recommandation' },
-                                            { id: 'verbatim', label: 'Commentaire' }
+                                            { id: 'recommandation', label: 'Recommandation' }
                                         ].map(item => (
                                             <div key={item.id} className="card" style={{
                                                 padding: 'var(--spacing-4)',
