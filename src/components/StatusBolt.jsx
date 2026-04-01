@@ -26,6 +26,12 @@ const statusConfigs = {
         label: 'Vigilance Prioritaire',
         description: 'Action urgente requise'
     },
+    'success': {
+        color: 'var(--color-success-600)',
+        bg: 'var(--color-success-50)',
+        label: 'Performance / Assiduité',
+        description: 'Patient à jour'
+    },
     'ready': {
         color: 'var(--color-success-600)',
         bg: 'var(--color-success-50)',

@@ -144,7 +144,9 @@ export async function calculateGlobalProgress(patientId) {
             no_portal_access_hours: 24,
             j7_incomplete_days: 7,
             j3_critical_upgrade: 3,
-            progress_critical_threshold: 80
+            progress_critical_threshold: 80,
+            progress_success_threshold: 100,
+            assiduité_success_enabled: true
         };
 
         try {
@@ -164,34 +166,45 @@ export async function calculateGlobalProgress(patientId) {
         // Determine status based on risks, progress, and timing
         let status = 'neutre';
 
+        // 1. Check for success (Green Bolt) - Assiduité or Progress Threshold
+        const isUpToDate = (
+            (daysUntilSurgery > rules.j7_incomplete_days) ||
+            (daysUntilSurgery <= rules.j7_incomplete_days && j7Status.isComplete)
+        ) && (
+                (daysUntilSurgery > 2) ||
+                (daysUntilSurgery <= 2 && j2Status.isComplete)
+            );
+
         if (progress === 100) {
-            status = 'ready';
+            status = 'success';
         } else if (hasHardRisk) {
             status = 'critique';
         } else if (hasSoftRisk) {
             status = 'alerte';
         } else {
-            // Timing-based Alerte/Critique using dynamic rules
-            if (!hasAcessedPortal && hoursSinceCreation > rules.no_portal_access_hours) {
-                // Non-réponse au Bienvenue après Xh (ex: 24h)
-                status = 'alerte';
-            } else if (!j7Status.isComplete && daysUntilSurgery <= rules.j7_incomplete_days) {
-                // J-7 non complété à J-(X)
-                status = 'alerte';
-            } else if (progress < 50 && daysUntilSurgery <= rules.j7_incomplete_days) {
-                // Moins de 50% à J-(X)
-                status = 'alerte';
-            }
+            // Success if up to date and enabled, OR threshold reached
+            if ((rules.assiduité_success_enabled && isUpToDate && progress > 0) ||
+                (progress >= rules.progress_success_threshold && progress > 0)) {
+                status = 'success';
+            } else {
+                // Timing-based Alerte/Critique using dynamic rules
+                if (!hasAcessedPortal && hoursSinceCreation > rules.no_portal_access_hours) {
+                    status = 'alerte';
+                } else if (!j7Status.isComplete && daysUntilSurgery <= rules.j7_incomplete_days) {
+                    status = 'alerte';
+                } else if (progress < 50 && daysUntilSurgery <= rules.j7_incomplete_days) {
+                    status = 'alerte';
+                }
 
-            // Upgrade logic
-            if ((status === 'alerte' || progress < rules.progress_critical_threshold) && daysUntilSurgery <= rules.j3_critical_upgrade) {
-                // Pas fini à J-(X) (ex: J-3)
-                status = 'critique';
-            }
+                // Upgrade logic
+                if ((status === 'alerte' || progress < rules.progress_critical_threshold) && daysUntilSurgery <= rules.j3_critical_upgrade) {
+                    status = 'critique';
+                }
 
-            // Default to incomplete or neutre
-            if (status === 'neutre' && progress > 0) {
-                status = 'incomplete';
+                // Default to incomplete or neutre
+                if (status === 'neutre' && progress > 0) {
+                    status = 'incomplete';
+                }
             }
         }
         // --- END DYNAMIC STATUS LOGIC ---

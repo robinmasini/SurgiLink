@@ -7,7 +7,8 @@ import {
     Clock,
     TrendingDown,
     RefreshCw,
-    CheckCircle2
+    CheckCircle2,
+    Zap
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
@@ -22,7 +23,9 @@ export default function SMSAlarmsModal({ isOpen, onClose, onSuccess }) {
             j2_incomplete_days: 2,
             j3_critical_upgrade: 3,
             progress_warning_threshold: 50,
-            progress_critical_threshold: 80
+            progress_critical_threshold: 80,
+            progress_success_threshold: 100,
+            assiduité_success_enabled: true
         },
         reminder_offsets: {
             welcome: -10,
@@ -279,6 +282,55 @@ export default function SMSAlarmsModal({ isOpen, onClose, onSuccess }) {
                                                         className="input"
                                                         value={settings.status_rules.progress_critical_threshold}
                                                         onChange={(e) => setSettings({ ...settings, status_rules: { ...settings.status_rules, progress_critical_threshold: parseInt(e.target.value) || 0 } })}
+                                                        style={{ padding: '4px 8px', width: '60px' }}
+                                                    />
+                                                    <span style={{ fontSize: '12px', fontWeight: '600' }}>%</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="card" style={{ padding: 'var(--spacing-4)', gridColumn: 'span 2' }}>
+                                        <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: 'var(--color-success-600)', marginBottom: '8px' }}>
+                                            PERFORMANCE (SUCCÈS)
+                                        </label>
+                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                                <div style={{
+                                                    width: '32px',
+                                                    height: '32px',
+                                                    borderRadius: '50%',
+                                                    background: 'var(--color-success-50)',
+                                                    color: 'var(--color-success-600)',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center'
+                                                }}>
+                                                    <Zap size={16} fill="currentColor" />
+                                                </div>
+                                                <div style={{ flex: 1 }}>
+                                                    <div style={{ fontSize: '11px', color: 'var(--color-gray-500)' }}>Éclair vert si assiduité à 100% :</div>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
+                                                        <label className="switch" style={{ display: 'inline-flex', alignItems: 'center', cursor: 'pointer' }}>
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={settings.status_rules.assiduité_success_enabled}
+                                                                onChange={(e) => setSettings({ ...settings, status_rules: { ...settings.status_rules, assiduité_success_enabled: e.target.checked } })}
+                                                                style={{ width: 'auto', marginRight: '8px' }}
+                                                            />
+                                                            <span style={{ fontSize: '12px', fontWeight: '600' }}>Activé</span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <span style={{ fontSize: '11px', color: 'var(--color-gray-500)' }}>OU Seuil de succès de complétion :</span>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
+                                                    <input
+                                                        type="number"
+                                                        className="input"
+                                                        value={settings.status_rules.progress_success_threshold}
+                                                        onChange={(e) => setSettings({ ...settings, status_rules: { ...settings.status_rules, progress_success_threshold: parseInt(e.target.value) || 0 } })}
                                                         style={{ padding: '4px 8px', width: '60px' }}
                                                     />
                                                     <span style={{ fontSize: '12px', fontWeight: '600' }}>%</span>
