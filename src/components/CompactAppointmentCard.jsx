@@ -185,37 +185,38 @@ export default function CompactAppointmentCard({
                 </div>
             </div>
 
-            {/* Side Pills (Date/Time) */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <div style={{
-                    background: '#F5F7FA',
-                    padding: '6px 12px',
-                    borderRadius: '8px',
-                    fontSize: '13px',
-                    fontWeight: '700',
-                    color: '#455A64',
+            {/* Action CTA */}
+            <a
+                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '8px'
-                }}>
-                    <Calendar size={14} />
-                    {formatShortDate(appointmentDate)}
-                </div>
-                <div style={{
-                    background: '#F5F7FA',
-                    padding: '6px 12px',
-                    borderRadius: '8px',
-                    fontSize: '13px',
+                    gap: '8px',
+                    padding: '10px 20px',
+                    borderRadius: '12px',
+                    background: 'var(--color-primary-50)',
+                    color: 'var(--color-primary-600)',
+                    border: '1px solid var(--color-primary-100)',
                     fontWeight: '700',
-                    color: '#455A64',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px'
-                }}>
-                    <Clock size={14} />
-                    {appointmentTime || '07:30'}
-                </div>
-            </div>
+                    fontSize: '14px',
+                    textDecoration: 'none',
+                    transition: 'all 0.2s ease',
+                    boxShadow: '0 2px 8px rgba(124, 58, 237, 0.05)'
+                }}
+                onMouseOver={(e) => {
+                    e.currentTarget.style.background = 'var(--color-primary-100)';
+                    e.currentTarget.style.transform = 'translateY(-1px)';
+                }}
+                onMouseOut={(e) => {
+                    e.currentTarget.style.background = 'var(--color-primary-50)';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                }}
+            >
+                <MapPin size={18} />
+                <span>M'y rendre</span>
+            </a>
         </div>
     );
 }
