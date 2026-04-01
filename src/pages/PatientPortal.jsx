@@ -295,46 +295,56 @@ export default function PatientPortal({ patient: initialPatient }) {
                     marginBottom: 'var(--spacing-8)',
                     boxShadow: '0 10px 40px rgba(0,0,0,0.02)'
                 }}>
-                    {/* Portail Banner Image */}
                     <div style={{
-                        maxWidth: '350px',
-                        margin: '0 auto var(--spacing-8) auto',
-                        borderRadius: '32px',
-                        overflow: 'hidden',
-                        boxShadow: '0 20px 40px rgba(124, 58, 237, 0.1)',
-                        border: '1px solid var(--color-primary-100)'
+                        display: 'flex',
+                        gap: 'var(--spacing-8)',
+                        alignItems: 'center',
+                        flexWrap: 'wrap' // For mobile responsiveness
                     }}>
-                        <img
-                            src={portailCard}
-                            alt="SurgiLink Portail"
-                            style={{
-                                width: '100%',
-                                height: 'auto',
-                                display: 'block',
-                                objectFit: 'cover'
-                            }}
-                        />
+                        {/* Left: Portail Banner Card */}
+                        <div style={{
+                            flex: '0 0 300px', // Fixed-ish width for the card
+                            borderRadius: '24px',
+                            overflow: 'hidden',
+                            boxShadow: '0 15px 35px rgba(124, 58, 237, 0.1)',
+                            border: '1px solid var(--color-primary-100)'
+                        }}>
+                            <img
+                                src={portailCard}
+                                alt="Portail Patient"
+                                style={{
+                                    width: '100%',
+                                    height: 'auto',
+                                    display: 'block',
+                                    objectFit: 'cover'
+                                }}
+                            />
+                        </div>
+
+                        {/* Right: Top Pills Row */}
+                        <div style={{ flex: 1, minWidth: '300px' }}>
+                            <CompactAppointmentCard
+                                variant="pill"
+                                appointmentDate={patient.date}
+                                appointmentTime={patient.surgery_time}
+                                jValue={calculateDaysUntilSurgery(patient.date)}
+                                hasPrescription={documents.length > 0}
+                                onDownloadPrescription={handleDownloadPrescription}
+                                stayType={patient.stay_type}
+                                operation={patient.operation}
+                            />
+                        </div>
                     </div>
 
-                    {/* Top Pills Row */}
-                    <CompactAppointmentCard
-                        variant="pill"
-                        appointmentDate={patient.date}
-                        appointmentTime={patient.surgery_time}
-                        jValue={calculateDaysUntilSurgery(patient.date)}
-                        hasPrescription={documents.length > 0}
-                        onDownloadPrescription={handleDownloadPrescription}
-                        stayType={patient.stay_type}
-                        operation={patient.operation}
-                    />
-
-                    {/* Clinic Card Row */}
-                    <CompactAppointmentCard
-                        variant="card"
-                        clinicName={patient.clinic_name || 'Clinique de Vitrolles'}
-                        appointmentDate={patient.date}
-                        appointmentTime={patient.surgery_time}
-                    />
+                    {/* Clinic Card Row (Full width below) */}
+                    <div style={{ marginTop: 'var(--spacing-8)' }}>
+                        <CompactAppointmentCard
+                            variant="card"
+                            clinicName={patient.clinic_name || 'Clinique de Vitrolles'}
+                            appointmentDate={patient.date}
+                            appointmentTime={patient.surgery_time}
+                        />
+                    </div>
 
                     {/* Protocol Status Row */}
                     <ProtocolStatus
