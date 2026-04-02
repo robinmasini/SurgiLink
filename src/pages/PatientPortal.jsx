@@ -18,7 +18,8 @@ import {
     Zap,
     Clock,
     ChevronRight,
-    Phone
+    Phone,
+    Lock
 } from 'lucide-react';
 import ClinicAppointmentCard from '../components/ClinicAppointmentCard';
 import CompactAppointmentCard from '../components/CompactAppointmentCard';
@@ -491,106 +492,136 @@ export default function PatientPortal({ patient: initialPatient }) {
                     </div>
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-3)' }}>
-                        {[
-                            { to: `bienvenue`, emoji: '👋', label: 'Bienvenue', desc: 'Commencez ici : activation de votre suivi' },
-                            { to: `j7`, emoji: '📋', label: 'Questionnaire J-7', desc: 'Préparation administrative (anesthésie, accompagnant)' },
-                            { to: `j2`, emoji: '📄', label: 'Questionnaire J-2', desc: 'Documents, jeûne et consignes du jour J' },
-                            { to: `j1-preop`, emoji: '🚿', label: 'Confirmation J-1', desc: 'Dernière vérification avant votre venue' },
-                            { to: `j1`, emoji: '🌡️', label: 'Suivi J+1', desc: 'Bilan post-opératoire du lendemain' },
-                            { to: `j4`, emoji: '⭐', label: 'Satisfaction J+4', desc: 'Votre avis sur notre prise en charge' },
-                            { to: `e-satis`, emoji: '🇫🇷', label: 'Enquête e-Satis', desc: 'Questionnaire national' },
-                        ].map(step => (
-                            step.disabled ? (
-                                <div
-                                    key={step.to}
-                                    className="card glass-effect"
-                                    style={{ textDecoration: 'none', display: 'block', border: '1px solid var(--color-gray-100)', opacity: 0.5, cursor: 'default' }}
-                                >
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-4)' }}>
-                                        <div style={{ fontSize: '32px' }}>{step.emoji}</div>
-                                        <div style={{ flex: 1 }}>
-                                            <h4 style={{ marginBottom: '4px' }}>{step.label}</h4>
-                                            <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-600)' }}>{step.desc}</p>
-                                        </div>
-                                        <div className="badge" style={{ background: 'var(--color-gray-200)', color: 'var(--color-gray-500)' }}>Bientôt</div>
-                                    </div>
-                                </div>
-                            ) : (
-                                <Link
-                                    key={step.to}
-                                    to={`/patient-portal/${token}/${step.to}`}
-                                    className="card"
-                                    style={{
-                                        textDecoration: 'none',
-                                        display: 'block',
-                                        transition: 'transform 0.2s',
-                                        cursor: 'pointer',
-                                        background: 'white',
-                                        borderRadius: '20px',
-                                        padding: 'var(--spacing-4) var(--spacing-6)',
-                                        border: 'none',
-                                        boxShadow: '0 4px 12px rgba(0,0,0,0.02)'
-                                    }}
-                                >
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-4)' }}>
-                                        <div style={{ fontSize: '32px', width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                            {step.emoji}
-                                        </div>
-                                        <div style={{ flex: 1 }}>
-                                            <h4 style={{ marginBottom: '2px', fontWeight: '700', color: '#1A1A1A' }}>{step.label}</h4>
-                                            <p style={{ fontSize: '12px', color: '#666', fontWeight: '500' }}>{step.desc}</p>
-                                        </div>
+                        {(() => {
+                            const today = new Date();
+                            today.setHours(0, 0, 0, 0);
+                            const surgeryDate = patient.date ? new Date(patient.date) : null;
+                            if (surgeryDate) surgeryDate.setHours(0, 0, 0, 0);
+                            const diffDays = surgeryDate ? Math.ceil((surgeryDate - today) / (1000 * 60 * 60 * 24)) : 999;
 
-                                        {/* Dynamic Requisition Badge */}
-                                        {(() => {
-                                            // Get numeric days for accurate comparison
-                                            const today = new Date();
-                                            today.setHours(0, 0, 0, 0);
-                                            const surgeryDate = patient.date ? new Date(patient.date) : null;
-                                            if (surgeryDate) surgeryDate.setHours(0, 0, 0, 0);
+                            return [
+                                { to: `bienvenue`, emoji: '👋', label: 'Bienvenue', desc: 'Commencez ici : activation de votre suivi', offset: 99 },
+                                { to: `j7`, emoji: '📋', label: 'Questionnaire J-7', desc: 'Préparation administrative (anesthésie, accompagnant)', offset: 7 },
+                                { to: `j2`, emoji: '📄', label: 'Questionnaire J-2', desc: 'Documents, jeûne et consignes du jour J', offset: 2 },
+                                { to: `j1-preop`, emoji: '🚿', label: 'Confirmation J-1', desc: 'Dernière vérification avant votre venue', offset: 1 },
+                                { to: `j1`, emoji: '🌡️', label: 'Suivi J+1', desc: 'Bilan post-opératoire du lendemain', offset: -1 },
+                                { to: `j4`, emoji: '⭐', label: 'Satisfaction J+4', desc: 'Votre avis sur notre prise en charge', offset: -4 },
+                                { to: `e-satis`, emoji: '🇫🇷', label: 'Enquête e-Satis', desc: 'Questionnaire national', offset: -4 },
+                            ].map(step => {
+                                const isLocked = diffDays > step.offset;
 
-                                            const diffDays = surgeryDate ? Math.ceil((surgeryDate - today) / (1000 * 60 * 60 * 24)) : 999;
-                                            let isRequired = false;
-
-                                            if (step.to === 'j7' && diffDays <= 7 && !responses['anesthesia_consultation']) isRequired = true;
-                                            if (step.to === 'j2' && diffDays <= 2 && !responses['fasting_understood']) isRequired = true;
-                                            if (step.to === 'j1-preop' && diffDays <= 1 && !responses['admission_confirmed']) isRequired = true;
-
-                                            if (!isRequired) return null;
-
-                                            return (
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginRight: 'var(--spacing-4)' }}>
-                                                    <div style={{ color: '#FF1744' }}><AlertCircle size={24} /></div>
-                                                    <div style={{
-                                                        background: '#FFEBEE',
-                                                        color: '#FF1744',
-                                                        padding: '4px 12px',
-                                                        borderRadius: '8px',
-                                                        fontSize: '11px',
-                                                        fontWeight: '800',
-                                                        textTransform: 'uppercase'
-                                                    }}>
-                                                        Requis
-                                                    </div>
+                                if (isLocked) {
+                                    return (
+                                        <div
+                                            key={step.to}
+                                            className="card glass-effect"
+                                            style={{
+                                                textDecoration: 'none',
+                                                display: 'block',
+                                                border: '1px solid var(--color-gray-100)',
+                                                opacity: 0.6,
+                                                cursor: 'not-allowed',
+                                                background: 'rgba(255,255,255,0.5)',
+                                                borderRadius: '20px',
+                                                padding: 'var(--spacing-4) var(--spacing-6)'
+                                            }}
+                                        >
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-4)' }}>
+                                                <div style={{ fontSize: '32px', width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center', filter: 'grayscale(1)' }}>
+                                                    {step.emoji}
                                                 </div>
-                                            );
-                                        })()}
-
-                                        <div style={{
-                                            color: '#BDBDBD',
-                                            fontSize: '13px',
-                                            fontWeight: '600',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            gap: '4px'
-                                        }}>
-                                            Ouvrir
-                                            <ChevronRight size={16} />
+                                                <div style={{ flex: 1 }}>
+                                                    <h4 style={{ marginBottom: '2px', fontWeight: '700', color: '#666' }}>{step.label}</h4>
+                                                    <p style={{ fontSize: '12px', color: '#999', fontWeight: '500' }}>{step.desc}</p>
+                                                </div>
+                                                <div style={{
+                                                    color: '#BDBDBD',
+                                                    fontSize: '13px',
+                                                    fontWeight: '600',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: '8px',
+                                                    background: 'var(--color-gray-50)',
+                                                    padding: '6px 12px',
+                                                    borderRadius: '10px'
+                                                }}>
+                                                    <Lock size={14} />
+                                                    Verrouillé
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                </Link>
-                            )
-                        ))}
+                                    );
+                                }
+
+                                return (
+                                    <Link
+                                        key={step.to}
+                                        to={`/patient-portal/${token}/${step.to}`}
+                                        className="card"
+                                        style={{
+                                            textDecoration: 'none',
+                                            display: 'block',
+                                            transition: 'transform 0.2s',
+                                            cursor: 'pointer',
+                                            background: 'white',
+                                            borderRadius: '20px',
+                                            padding: 'var(--spacing-4) var(--spacing-6)',
+                                            border: 'none',
+                                            boxShadow: '0 4px 12px rgba(0,0,0,0.02)'
+                                        }}
+                                    >
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-4)' }}>
+                                            <div style={{ fontSize: '32px', width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                {step.emoji}
+                                            </div>
+                                            <div style={{ flex: 1 }}>
+                                                <h4 style={{ marginBottom: '2px', fontWeight: '700', color: '#1A1A1A' }}>{step.label}</h4>
+                                                <p style={{ fontSize: '12px', color: '#666', fontWeight: '500' }}>{step.desc}</p>
+                                            </div>
+
+                                            {/* Dynamic Requisition Badge */}
+                                            {(() => {
+                                                let isRequired = false;
+                                                if (step.to === 'j7' && diffDays <= 7 && !responses['anesthesia_consultation']) isRequired = true;
+                                                if (step.to === 'j2' && diffDays <= 2 && !responses['fasting_understood']) isRequired = true;
+                                                if (step.to === 'j1-preop' && diffDays <= 1 && !responses['admission_confirmed']) isRequired = true;
+
+                                                if (!isRequired) return null;
+
+                                                return (
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginRight: 'var(--spacing-4)' }}>
+                                                        <div style={{ color: '#FF1744' }}><AlertCircle size={24} /></div>
+                                                        <div style={{
+                                                            background: '#FFEBEE',
+                                                            color: '#FF1744',
+                                                            padding: '4px 12px',
+                                                            borderRadius: '8px',
+                                                            fontSize: '11px',
+                                                            fontWeight: '800',
+                                                            textTransform: 'uppercase'
+                                                        }}>
+                                                            Requis
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })()}
+
+                                            <div style={{
+                                                color: '#BDBDBD',
+                                                fontSize: '13px',
+                                                fontWeight: '600',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '4px'
+                                            }}>
+                                                Ouvrir
+                                                <ChevronRight size={16} />
+                                            </div>
+                                        </div>
+                                    </Link>
+                                );
+                            });
+                        })()}
                     </div>
                 </div>
             </div>
