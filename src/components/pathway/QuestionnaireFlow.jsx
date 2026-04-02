@@ -153,6 +153,7 @@ export default function QuestionnaireFlow({
             {/* Question Container */}
             <div className={`question-flow-container ${direction === 'in' ? 'slide-in' : 'slide-out'}`}>
                 <QuestionRenderer
+                    key={currentItem.id}
                     item={currentItem}
                     value={responses[currentItem.id]?.main ?? responses[currentItem.id]}
                     onChange={onQuestionAnswer}

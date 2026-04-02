@@ -1,6 +1,6 @@
-import { supabase } from '../lib/supabase';
-import { sendSMS, canSendReminder } from './d7networksService';
-import { getIncompleteItemsWithReminders } from './pathwayService';
+import { supabase } from '../lib/supabase.js';
+import { sendSMS, canSendReminder } from './d7networksService.js';
+import { getIncompleteItemsWithReminders } from './pathwayService.js';
 
 /**
  * Reminder Service
@@ -310,6 +310,11 @@ export async function getReminderHistory(patientId, screen = null) {
 export async function scheduleTimeBasedReminders(patientId, interventionDate) {
     const reminders = [];
 
+    // Fetch patient info for late-registration logic
+    const { data: patient } = await supabase.from('patients').select('created_at').eq('id', patientId).single();
+    const patientCreatedRecently = patient ? (new Date() - new Date(patient.created_at)) < 86400000 : false; // 24h
+
+
     // --- DYNAMIC OFFSET LOGIC ---
     let offsets = {
         welcome: -10,
@@ -373,9 +378,17 @@ export async function scheduleTimeBasedReminders(patientId, interventionDate) {
 
         if (result.success) {
             if (isPast) {
-                // If it was in the past, cancel it immediately so it doesn't get sent by the cron
-                await cancelReminder(result.data.id);
-                console.log(`[ReminderService] Auto-cancelled past reminder: ${reminder.screen} for Patient ${patientId}`);
+                // For "late-created" patients (created in last 24h), keep Welcome and J-7 even if in the past
+                const isLateWelcomeOrJ7 = (reminder.screen === 'Bienvenue' || reminder.screen === 'J-7') && patientCreatedRecently;
+
+                if (isLateWelcomeOrJ7) {
+                    console.log(`[ReminderService] Keeping past reminder ${reminder.screen} for late-created Patient ${patientId}`);
+                    reminders.push(result.data);
+                } else {
+                    // Mark as cancelled immediately so it doesn't get sent by the cron
+                    await cancelReminder(result.data.id);
+                    console.log(`[ReminderService] Auto-cancelled past reminder: ${reminder.screen} for Patient ${patientId}`);
+                }
             } else {
                 reminders.push(result.data);
             }

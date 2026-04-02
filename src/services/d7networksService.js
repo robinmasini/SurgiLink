@@ -1,8 +1,11 @@
-import { supabase } from '../lib/supabase';
-import { smsTemplates, interpolateTemplate } from '../config/smsTemplates';
+import { supabase } from '../lib/supabase.js';
+import { smsTemplates, interpolateTemplate } from '../config/smsTemplates.js';
 
-const D7_API_TOKEN = import.meta.env.VITE_D7_API_TOKEN;
-const D7_SENDER_ID = import.meta.env.VITE_D7_SENDER_ID || 'SMS';
+const D7_API_TOKEN = (typeof process !== 'undefined' && process.env.VITE_D7_API_TOKEN) ||
+    (typeof import.meta.env !== 'undefined' && import.meta.env.VITE_D7_API_TOKEN);
+const D7_SENDER_ID = (typeof process !== 'undefined' && process.env.VITE_D7_SENDER_ID) ||
+    (typeof import.meta.env !== 'undefined' && import.meta.env.VITE_D7_SENDER_ID) ||
+    'SMS';
 
 export async function sendSMS(templateKey, to, variables, metadata = {}, supabaseClient = null) {
     const db = supabaseClient || supabase;

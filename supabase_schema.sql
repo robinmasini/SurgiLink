@@ -61,7 +61,7 @@ ALTER TABLE public.patient_documents ENABLE ROW LEVEL SECURITY;
 CREATE TABLE IF NOT EXISTS public.pathway_responses (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     patient_id BIGINT REFERENCES public.patients(id) ON DELETE CASCADE,
-    screen TEXT NOT NULL CHECK (screen IN ('J7', 'J3', 'J2', 'J1_PreOp', 'J0', 'J1', 'J2_Satisfaction')),
+    screen TEXT NOT NULL CHECK (screen IN ('Bienvenue', 'J7', 'J3', 'J2', 'J1_PreOp', 'J0', 'J1', 'J4_Satisfaction', 'ESATIS')),
     item_id TEXT NOT NULL,
     response JSONB NOT NULL,
     completed_at TIMESTAMPTZ,

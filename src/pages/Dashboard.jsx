@@ -24,7 +24,7 @@ import {
     Phone,
     LogOut,
     Settings,
-    Send,
+    Zap,
     Plus
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
@@ -266,8 +266,8 @@ export default function Dashboard() {
                     actions={
                         <>
                             <button className="btn btn-secondary hide-mobile" onClick={() => setIsAlarmsModalOpen(true)} style={{ borderRadius: '12px', padding: '10px 20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                <Send size={18} />
-                                <span>Alarmes SMS</span>
+                                <Zap size={18} style={{ color: '#8b5cf6' }} fill="#8b5cf6" />
+                                <span>Alarme vigilance</span>
                             </button>
                             <button
                                 className="btn btn-primary"

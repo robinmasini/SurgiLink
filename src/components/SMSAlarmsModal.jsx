@@ -145,10 +145,10 @@ export default function SMSAlarmsModal({ isOpen, onClose, onSuccess }) {
                             alignItems: 'center',
                             justifyContent: 'center'
                         }}>
-                            <Send size={24} />
+                            <Zap size={24} fill="currentColor" />
                         </div>
                         <div>
-                            <h2 style={{ fontSize: 'var(--font-size-xl)', fontWeight: '800', margin: 0 }}>Alarmes & Pilotage SMS</h2>
+                            <h2 style={{ fontSize: 'var(--font-size-xl)', fontWeight: '800', margin: 0 }}>Alarme vigilance & Pilotage</h2>
                             <p style={{ fontSize: '12px', opacity: 0.8, margin: 0 }}>Configurez les seuils de vigilance et l'impact économique</p>
                         </div>
                     </div>

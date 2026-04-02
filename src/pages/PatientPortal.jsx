@@ -17,7 +17,8 @@ import {
     Home,
     Zap,
     Clock,
-    ChevronRight
+    ChevronRight,
+    Phone
 } from 'lucide-react';
 import ClinicAppointmentCard from '../components/ClinicAppointmentCard';
 import CompactAppointmentCard from '../components/CompactAppointmentCard';
@@ -352,6 +353,65 @@ export default function PatientPortal({ patient: initialPatient }) {
                         status={patient?.status}
                         statusLabel="Protocole en cours d'exécution"
                     />
+
+                    {/* Contact Buttons */}
+                    <div style={{
+                        display: 'flex',
+                        gap: 'var(--spacing-4)',
+                        marginTop: 'var(--spacing-6)',
+                        flexWrap: 'wrap'
+                    }}>
+                        <a
+                            href="tel:0144444444"
+                            style={{
+                                flex: 1,
+                                minWidth: '200px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '12px',
+                                padding: '16px',
+                                borderRadius: '16px',
+                                background: 'white',
+                                color: 'var(--color-primary-600)',
+                                border: '1px solid var(--color-primary-100)',
+                                fontWeight: '700',
+                                textDecoration: 'none',
+                                boxShadow: '0 4px 12px rgba(0,0,0,0.02)',
+                                transition: 'all 0.2s'
+                            }}
+                            onMouseOver={(e) => e.currentTarget.style.background = 'var(--color-primary-50)'}
+                            onMouseOut={(e) => e.currentTarget.style.background = 'white'}
+                        >
+                            <Phone size={20} />
+                            Appeler la clinique
+                        </a>
+                        <a
+                            href="tel:0144444444"
+                            style={{
+                                flex: 1,
+                                minWidth: '200px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '12px',
+                                padding: '16px',
+                                borderRadius: '16px',
+                                background: 'white',
+                                color: 'var(--color-primary-600)',
+                                border: '1px solid var(--color-primary-100)',
+                                fontWeight: '700',
+                                textDecoration: 'none',
+                                boxShadow: '0 4px 12px rgba(0,0,0,0.02)',
+                                transition: 'all 0.2s'
+                            }}
+                            onMouseOver={(e) => e.currentTarget.style.background = 'var(--color-primary-50)'}
+                            onMouseOut={(e) => e.currentTarget.style.background = 'white'}
+                        >
+                            <Phone size={20} />
+                            Appeler le cabinet
+                        </a>
+                    </div>
                 </div>
 
 
@@ -432,6 +492,7 @@ export default function PatientPortal({ patient: initialPatient }) {
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-3)' }}>
                         {[
+                            { to: `bienvenue`, emoji: '👋', label: 'Bienvenue', desc: 'Commencez ici : activation de votre suivi' },
                             { to: `j7`, emoji: '📋', label: 'Questionnaire J-7', desc: 'Préparation administrative (anesthésie, accompagnant)' },
                             { to: `j2`, emoji: '📄', label: 'Questionnaire J-2', desc: 'Documents, jeûne et consignes du jour J' },
                             { to: `j1-preop`, emoji: '🚿', label: 'Confirmation J-1', desc: 'Dernière vérification avant votre venue' },

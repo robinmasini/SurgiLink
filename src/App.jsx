@@ -8,6 +8,7 @@ import PatientChecklist from './pages/PatientChecklist';
 import PatientSuccess from './pages/PatientSuccess';
 import PatientPostOp from './pages/PatientPostOp';
 import PatientReview from './pages/PatientReview';
+import Bienvenue from './pages/Bienvenue';
 import PatientJ7 from './pages/PatientJ7';
 import PatientJ4 from './pages/PatientJ4';
 import PatientJ2 from './pages/PatientJ2';
@@ -57,6 +58,7 @@ function App() {
 
         {/* Patient Portal Routes - Token-based access (no authentication required) */}
         <Route path="/patient-portal/:token" element={<PatientTokenRoute><PatientPortal /></PatientTokenRoute>} />
+        <Route path="/patient-portal/:token/bienvenue" element={<PatientTokenRoute><Bienvenue /></PatientTokenRoute>} />
         <Route path="/patient-portal/:token/j7" element={<PatientTokenRoute><PatientJ7 /></PatientTokenRoute>} />
         <Route path="/patient-portal/:token/j4" element={<PatientTokenRoute><PatientJ4 /></PatientTokenRoute>} />
         <Route path="/patient-portal/:token/j2" element={<PatientTokenRoute><PatientJ2 /></PatientTokenRoute>} />

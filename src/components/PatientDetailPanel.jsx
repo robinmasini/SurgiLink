@@ -129,6 +129,11 @@ export default function PatientDetailPanel({ patient, responses = [], onClose })
                     </div>
                 </div>
 
+                <div style={{ padding: 'var(--spacing-3)', background: 'var(--color-primary-50)', borderRadius: 'var(--radius-lg)', marginBottom: 'var(--spacing-6)', border: '1px solid var(--color-primary-100)' }}>
+                    <div style={{ fontSize: '10px', color: 'var(--color-primary-500)', textTransform: 'uppercase', fontWeight: '700' }}>Intervention</div>
+                    <div style={{ fontSize: 'var(--font-size-sm)', fontWeight: '700', color: 'var(--color-primary-900)' }}>{patient.operation || 'Non renseignée'}</div>
+                </div>
+
                 {/* CTA: Patient Record */}
                 <button
                     className="btn btn-primary"

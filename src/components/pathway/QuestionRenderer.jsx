@@ -146,7 +146,8 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
                 );
 
             case 'slider_0_10': {
-                const sliderVal = value !== undefined && value !== null ? value : 5;
+                const hasValue = value !== undefined && value !== null;
+                const sliderVal = hasValue ? value : 5;
                 return (
                     <div>
                         <input
@@ -162,7 +163,10 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
                                 width: '100%',
                                 height: '8px',
                                 borderRadius: '4px',
-                                background: `linear-gradient(to right, var(--color-success-500) 0%, var(--color-warning-500) 50%, var(--color-danger-500) 100%)`
+                                background: hasValue
+                                    ? `linear-gradient(to right, var(--color-success-500) 0%, var(--color-warning-500) 50%, var(--color-danger-500) 100%)`
+                                    : 'var(--color-gray-200)',
+                                opacity: hasValue ? 1 : 0.6
                             }}
                         />
                         <div style={{
@@ -173,8 +177,12 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
                             color: 'var(--color-gray-600)'
                         }}>
                             <span>0 (Aucune)</span>
-                            <span style={{ fontWeight: 'var(--font-weight-bold)', fontSize: 'var(--font-size-xl)', color: 'var(--color-gray-900)' }}>
-                                {sliderVal}
+                            <span style={{
+                                fontWeight: 'var(--font-weight-bold)',
+                                fontSize: 'var(--font-size-xl)',
+                                color: hasValue ? 'var(--color-gray-900)' : 'var(--color-gray-400)'
+                            }}>
+                                {hasValue ? sliderVal : '--'}
                             </span>
                             <span>10 (Insupportable)</span>
                         </div>
@@ -238,7 +246,9 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
                     </div>
                 );
             }
-            case 'rating':
+            case 'rating': {
+                const hasValue = value !== undefined && value !== null;
+                const ratingVal = hasValue ? value : 5;
                 return (
                     <div style={{ marginTop: 'var(--spacing-2)' }}>
                         <div style={{
@@ -250,30 +260,30 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
                                 min="1"
                                 max="10"
                                 step="1"
-                                value={value || 5}
+                                value={ratingVal}
                                 onChange={(e) => handleChange(parseInt(e.target.value))}
                                 style={{
                                     width: '100%',
                                     height: '12px',
                                     borderRadius: '6px',
                                     appearance: 'none',
-                                    background: `linear-gradient(to right, 
-                                        var(--color-danger-500) 0%, 
-                                        var(--color-warning-500) 50%, 
-                                        var(--color-success-500) 100%)`,
+                                    background: hasValue
+                                        ? `linear-gradient(to right, var(--color-danger-500) 0%, var(--color-warning-500) 50%, var(--color-success-500) 100%)`
+                                        : 'var(--color-gray-200)',
                                     cursor: 'pointer',
-                                    outline: 'none'
+                                    outline: 'none',
+                                    opacity: hasValue ? 1 : 0.6
                                 }}
                             />
                             {/* Value Display */}
                             <div style={{
                                 position: 'absolute',
-                                left: `${((value || 5) - 1) * (100 / 9)}%`,
+                                left: `${((ratingVal) - 1) * (100 / 9)}%`,
                                 top: '-10px',
                                 transform: 'translateX(-50%)',
                                 background: 'white',
-                                border: '2px solid var(--color-primary-500)',
-                                color: 'var(--color-primary-700)',
+                                border: `2px solid ${hasValue ? 'var(--color-primary-500)' : 'var(--color-gray-300)'}`,
+                                color: hasValue ? 'var(--color-primary-700)' : 'var(--color-gray-400)',
                                 padding: '2px 8px',
                                 borderRadius: '12px',
                                 fontSize: 'var(--font-size-sm)',
@@ -282,7 +292,7 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
                                 pointerEvents: 'none',
                                 transition: 'left 0.1s ease-out'
                             }}>
-                                {value || 5}/10
+                                {hasValue ? `${ratingVal}/10` : '--/10'}
                             </div>
                         </div>
                         <div style={{
@@ -298,6 +308,7 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
                         </div>
                     </div>
                 );
+            }
 
             default:
                 return <div>Type de question [{item.type}] non supporté par le système.</div>;

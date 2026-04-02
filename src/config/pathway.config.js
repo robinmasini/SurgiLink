@@ -3,11 +3,32 @@
 // Questions redistributed across the full protocol
 
 export const pathwayConfig = {
+    // Bienvenue: Configuration du portail
+    Bienvenue: {
+        title: "Bienvenue sur SurgiLink",
+        subtitle: "Activation de votre suivi",
+        sections: [
+            {
+                id: "welcome_activation",
+                icon: "👋",
+                title: "Commencer mon parcours",
+                items: [
+                    {
+                        id: "welcome_ok",
+                        type: "yes_no",
+                        label: "Avez-vous bien reçu vos codes d'accès et compris le fonctionnement de l'application ?",
+                        required: true
+                    }
+                ]
+            }
+        ]
+    },
+
     // J-7: Questionnaire de Pré-admission
     J7: {
         title: "Questionnaire de Pré-admission J-7",
         subtitle: "Préparation de votre intervention",
-        intro_text: "Afin de préparer au mieux votre intervention en chirurgie ambulatoire et de garantir votre sécurité, merci de répondre à ce rapide questionnaire.\nN'hésitez surtout pas à cocher \"Non\", cela ne veut pas dire que votre opération sera annulée. Si vous cochez \"Non\", l'équipe de la clinique vous rappellera pour trouver une solution adaptée à votre situation.",
+        intro_text: "Afin de préparer au mieux votre intervention en chirurgie ambulatoire et de garantir votre sécurité, merci de répondre à ce rapide questionnaire.",
         sections: [
             {
                 id: "medication_prep",
@@ -25,10 +46,10 @@ export const pathwayConfig = {
                     {
                         id: "recent_symptoms",
                         type: "yes_no",
-                        label: "Présentez-vous des symptômes anormaux (fièvre, toux, rhume, infection...) ?",
+                        label: "Confirmez-vous l'absence de symptômes anormaux (fièvre, toux, rhume, infection...) ?",
                         why: "Être malade peut augmenter les risques liés à l'anesthésie.",
                         required: true,
-                        risk_flag_rule: { type: "hard", condition: "yes" }
+                        risk_flag_rule: { type: "hard", condition: "no" }
                     },
                     {
                         id: "blood_work",
@@ -116,9 +137,9 @@ export const pathwayConfig = {
                     {
                         id: "recent_health_check",
                         type: "yes_no",
-                        label: "Depuis votre consultation, avez-vous eu fièvre, toux, infection ou autre problème de santé ?",
+                        label: "Depuis votre consultation, confirmez-vous que votre état de santé est stable (absence de fièvre, toux ou infection récente) ?",
                         required: true,
-                        risk_flag_rule: { type: "hard", condition: "yes" }
+                        risk_flag_rule: { type: "hard", condition: "no" }
                     }
                 ]
             }
@@ -173,23 +194,23 @@ export const pathwayConfig = {
                     {
                         id: "nausea_check",
                         type: "yes_no",
-                        label: "Avez-vous eu des nausées ou vomissements importants ?",
+                        label: "Confirmez-vous l'absence de nausées ou vomissements importants depuis votre retour ?",
                         required: true,
-                        risk_flag_rule: { type: "soft", condition: "yes" }
+                        risk_flag_rule: { type: "soft", condition: "no" }
                     },
                     {
                         id: "site_check",
                         type: "yes_no",
-                        label: "Avez-vous remarqué saignement, gonflement ou écoulement anormal ?",
+                        label: "Le site opératoire vous semble-t-il normal (absence de saignement, gonflement ou écoulement anormal) ?",
                         required: true,
-                        risk_flag_rule: { type: "hard", condition: "yes" }
+                        risk_flag_rule: { type: "hard", condition: "no" }
                     },
                     {
                         id: "worry_check",
                         type: "yes_no",
-                        label: "Avez-vous un symptôme qui vous inquiète ?",
+                        label: "Confirmez-vous l'absence de tout symptôme qui vous inquiète ?",
                         required: true,
-                        risk_flag_rule: { type: "hard", condition: "yes" }
+                        risk_flag_rule: { type: "hard", condition: "no" }
                     },
                     {
                         id: "treatment_followup",
