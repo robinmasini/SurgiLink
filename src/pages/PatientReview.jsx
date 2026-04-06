@@ -251,9 +251,28 @@ export default function PatientReview() {
         }
     };
 
-    const copyToClipboard = (text) => {
-        navigator.clipboard.writeText(text);
-        alert('Lien copié dans le presse-papier !');
+    const copyToClipboard = async (text) => {
+        try {
+            await navigator.clipboard.writeText(text);
+            alert('Lien copié dans le presse-papier !');
+        } catch (err) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-999999px";
+            textArea.style.top = "-999999px";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                alert('Lien copié dans le presse-papier !');
+            } catch (err2) {
+                console.error('Erreur de copie:', err2);
+                alert('Erreur lors de la copie du lien. Veuillez le copier manuellement.');
+            }
+            textArea.remove();
+        }
     };
 
     useEffect(() => {
@@ -833,6 +852,11 @@ export default function PatientReview() {
                                                     {clinicalResponses[item.screen][item.id] === true ? 'OUI' :
                                                         clinicalResponses[item.screen][item.id] === false ? 'NON' : 'Non renseigné'}
                                                 </div>
+                                                {responsesMeta[item.screen]?.[item.id]?.updated_at && (
+                                                    <div style={{ fontSize: '9px', color: 'var(--color-gray-400)', marginTop: '4px', fontStyle: 'italic' }}>
+                                                        le {new Date(responsesMeta[item.screen][item.id].updated_at).toLocaleDateString('fr-FR')} à {new Date(responsesMeta[item.screen][item.id].updated_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                                                    </div>
+                                                )}
                                             </div>
                                         ))}
                                     </div>
@@ -1094,6 +1118,11 @@ export default function PatientReview() {
                                             <div style={{ fontWeight: 'var(--font-weight-semibold)', color: clinicalResponses.J1[item.id] !== undefined ? 'var(--color-primary-600)' : 'var(--color-gray-300)', fontStyle: clinicalResponses.J1[item.id] === undefined ? 'italic' : 'normal' }}>
                                                 {clinicalResponses.J1[item.id] === true ? 'OUI' : clinicalResponses.J1[item.id] === false ? 'NON' : 'Non renseigné'}
                                             </div>
+                                            {responsesMeta.J1?.[item.id]?.updated_at && (
+                                                <div style={{ fontSize: '9px', color: 'var(--color-gray-400)', marginTop: '4px', fontStyle: 'italic' }}>
+                                                    le {new Date(responsesMeta.J1[item.id].updated_at).toLocaleDateString('fr-FR')} à {new Date(responsesMeta.J1[item.id].updated_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                                                </div>
+                                            )}
                                         </div>
                                     ))}
                                 </div>
@@ -1123,6 +1152,11 @@ export default function PatientReview() {
                                                 }}>
                                                     {clinicalResponses.J4_Satisfaction[item.id] || 'Non renseigné'}
                                                 </div>
+                                                {responsesMeta.J4_Satisfaction?.[item.id]?.updated_at && (
+                                                    <div style={{ fontSize: '9px', color: 'var(--color-gray-400)', marginTop: '4px', fontStyle: 'italic' }}>
+                                                        le {new Date(responsesMeta.J4_Satisfaction[item.id].updated_at).toLocaleDateString('fr-FR')} à {new Date(responsesMeta.J4_Satisfaction[item.id].updated_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                                                    </div>
+                                                )}
                                             </div>
                                         ))}
                                     </div>
@@ -1150,6 +1184,11 @@ export default function PatientReview() {
                                                 }}>
                                                     {clinicalResponses.ESATIS[item.id] === true ? 'OUI' : clinicalResponses.ESATIS[item.id] === false ? 'NON' : (clinicalResponses.ESATIS[item.id] || 'Non renseigné')}
                                                 </div>
+                                                {responsesMeta.ESATIS?.[item.id]?.updated_at && (
+                                                    <div style={{ fontSize: '9px', color: 'var(--color-gray-400)', marginTop: '4px', fontStyle: 'italic' }}>
+                                                        le {new Date(responsesMeta.ESATIS[item.id].updated_at).toLocaleDateString('fr-FR')} à {new Date(responsesMeta.ESATIS[item.id].updated_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                                                    </div>
+                                                )}
                                             </div>
                                         ))}
                                     </div>

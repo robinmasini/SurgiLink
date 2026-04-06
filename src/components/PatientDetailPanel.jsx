@@ -18,13 +18,52 @@ export default function PatientDetailPanel({ patient, responses = [], onClose })
     const [smsLogs, setSmsLogs] = useState([]);
     const [pendingReminders, setPendingReminders] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [token, setToken] = useState(null);
 
     useEffect(() => {
         if (patient) {
             loadSmsLogs();
             loadPendingReminders();
+            loadPatientToken();
         }
     }, [patient]);
+
+    const loadPatientToken = async () => {
+        try {
+            const { data } = await supabase.from('patient_tokens').select('token').eq('patient_id', patient.id).eq('is_active', true).single();
+            if (data) setToken(data.token);
+        } catch (err) {
+             console.error('Error loading token', err);
+        }
+    };
+
+    const handleCopyToken = async () => {
+        if (!token) {
+            alert('Lien non disponible pour ce patient.');
+            return;
+        }
+        const textToCopy = `${window.location.origin}/patient-portal/${token}`;
+        try {
+            await navigator.clipboard.writeText(textToCopy);
+            alert('Lien copié dans le presse-papier !');
+        } catch (err) {
+            const textArea = document.createElement("textarea");
+            textArea.value = textToCopy;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-999999px";
+            textArea.style.top = "-999999px";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                alert('Lien copié dans le presse-papier !');
+            } catch (err2) {
+                alert('Erreur lors de la copie du lien.');
+            }
+            textArea.remove();
+        }
+    };
 
     const loadSmsLogs = async () => {
         setIsLoading(true);
@@ -87,9 +126,14 @@ export default function PatientDetailPanel({ patient, responses = [], onClose })
                 alignItems: 'flex-start'
             }}>
                 <div>
-                    <h2 style={{ fontSize: 'var(--font-size-xl)', fontWeight: '700', color: 'var(--color-gray-900)', marginBottom: 'var(--spacing-1)' }}>
-                        {patient.name}
-                    </h2>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)', marginBottom: 'var(--spacing-1)' }}>
+                        <h2 style={{ fontSize: 'var(--font-size-xl)', fontWeight: '700', color: 'var(--color-gray-900)', margin: 0 }}>
+                            {patient.name}
+                        </h2>
+                        <span className="badge" style={{ fontSize: '10px', fontWeight: '700', background: 'var(--color-gray-100)', color: 'var(--color-gray-600)', padding: '4px 8px', borderRadius: '12px', border: '1px solid var(--color-gray-200)' }}>
+                            {patient.language ? patient.language.toUpperCase() : 'FR'}
+                        </span>
+                    </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)', fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-500)' }}>
                         <Calendar size={14} />
                         <span>Chirurgie le {patient.formattedDate}</span>
@@ -173,8 +217,8 @@ export default function PatientDetailPanel({ patient, responses = [], onClose })
                     <p style={{ fontSize: '11px', color: 'var(--color-primary-600)', marginBottom: 'var(--spacing-3)' }}>
                         Lien unique envoyé par SMS pour consulter le protocole.
                     </p>
-                    <button className="btn btn-sm btn-primary" style={{ width: '100%', fontSize: '11px', padding: '6px' }}>
-                        Copier le lien
+                    <button onClick={handleCopyToken} className="btn btn-sm btn-primary" style={{ width: '100%', fontSize: '11px', padding: '6px', opacity: token ? 1 : 0.5 }}>
+                        {token ? 'Copier le lien' : 'Génération requise'}
                     </button>
                 </div>
 
