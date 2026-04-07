@@ -26,9 +26,9 @@ export default function LanguageSelector() {
                     outline: 'none'
                 }}
             >
-                <option value="fr">Français</option>
-                <option value="en">English</option>
-                <option value="nl">Nederlands</option>
+                <option value="fr">🇫🇷 Français</option>
+                <option value="en">🇬🇧 English</option>
+                <option value="nl">🇳🇱 Nederlands</option>
             </select>
         </div>
     );

@@ -151,5 +151,21 @@
   "created_at": "created_at",
   "*, patients(phone)": "*, patients(phone)",
   "patient_id, expires_at, is_active, id": "patient_id, expires_at, is_active, id",
-  "id, birth_date": "id, birth_date"
+  "id, birth_date": "id, birth_date",
+  "Tableau de bord": "Tableau de bord",
+  "Listes patients": "Listes patients",
+  "Commentaires Patients": "Commentaires Patients",
+  "Rentabilité ROI": "Rentabilité ROI",
+  "Utilisateurs": "Utilisateurs",
+  "Mon compte": "Mon compte",
+  "Admin PRO": "Admin PRO",
+  "PRATICIEN": "PRATICIEN",
+  "Praticien": "Praticien",
+  "Corps de métier": "Corps de métier",
+  "Chirurgie Esthétique": "Chirurgie Esthétique",
+  "Plastique reconstructrice": "Plastique reconstructrice",
+  "INFIRMIER": "INFIRMIER",
+  "Suivi Post-Opératoire": "Suivi Post-Opératoire",
+  "Prise en charge patient": "Prise en charge patient",
+  "Déconnexion": "Déconnexion"
 }

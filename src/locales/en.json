@@ -115,5 +115,21 @@
   "Total: {{count}} patients au cabinet": "Total: {{count}} patients at the clinic",
   "Rechercher un patient...": "Search for a patient...",
   "Patients": "Patients",
-  "Aucun patient trouvé.": "No patient found."
+  "Aucun patient trouvé.": "No patient found.",
+  "Tableau de bord": "Dashboard",
+  "Listes patients": "Patient Lists",
+  "Commentaires Patients": "Patient Comments",
+  "Rentabilité ROI": "ROI Profitability",
+  "Utilisateurs": "Users",
+  "Mon compte": "My Account",
+  "Admin PRO": "PRO Admin",
+  "PRATICIEN": "PRACTITIONER",
+  "Praticien": "Practitioner",
+  "Corps de métier": "Specialty",
+  "Chirurgie Esthétique": "Aesthetic Surgery",
+  "Plastique reconstructrice": "Reconstructive Plastic",
+  "INFIRMIER": "NURSE",
+  "Suivi Post-Opératoire": "Post-Op Follow-up",
+  "Prise en charge patient": "Patient Care",
+  "Déconnexion": "Logout"
 }

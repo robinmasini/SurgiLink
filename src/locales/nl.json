@@ -115,5 +115,21 @@
   "Total: {{count}} patients au cabinet": "Totaal: {{count}} patiënten in de kliniek",
   "Rechercher un patient...": "Zoek een patiënt...",
   "Patients": "Patiënten",
-  "Aucun patient trouvé.": "Geen patiënten gevonden."
+  "Aucun patient trouvé.": "Geen patiënten gevonden.",
+  "Tableau de bord": "Dashboard",
+  "Listes patients": "Patiëntenlijsten",
+  "Commentaires Patients": "Opmerkingen",
+  "Rentabilité ROI": "ROI Winstgevendheid",
+  "Utilisateurs": "Gebruikers",
+  "Mon compte": "Mijn Account",
+  "Admin PRO": "PRO Beheerder",
+  "PRATICIEN": "BEHANDELAAR",
+  "Praticien": "Behandelaar",
+  "Corps de métier": "Specialiteit",
+  "Chirurgie Esthétique": "Esthetische Chirurgie",
+  "Plastique reconstructrice": "Plastische Reconstructie",
+  "INFIRMIER": "VERPLEEGKUNDIGE",
+  "Suivi Post-Opératoire": "Post-Op Opvolging",
+  "Prise en charge patient": "Patiëntenzorg",
+  "Déconnexion": "Uitloggen"
 }

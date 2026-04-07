@@ -15,6 +15,7 @@ import {
     User,
     LogOut
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const navItems = [
     { path: '/dashboard', label: 'Tableau de bord', icon: LayoutDashboard },
@@ -26,6 +27,7 @@ const navItems = [
 ];
 
 export default function Sidebar() {
+    const { t } = useTranslation();
     const location = useLocation();
     const navigate = useNavigate();
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
@@ -114,7 +116,7 @@ export default function Sidebar() {
                             <span className="sidebar-item-icon">
                                 <Icon size={isMobile ? 24 : 20} />
                             </span>
-                            {!isMobile && <span className="sidebar-item-label">{item.label}</span>}
+                            {!isMobile && <span className="sidebar-item-label">{t(item.label)}</span>}
                         </Link>
                     );
                 })}
@@ -135,33 +137,33 @@ export default function Sidebar() {
                     />
                     {!isMobile && (
                         <div className="sidebar-profile-info">
-                            <div className="sidebar-profile-name">{profile?.full_name?.toUpperCase() || "CHARGEMENT..."}</div>
+                            <div className="sidebar-profile-name">{profile?.full_name?.toUpperCase() || t("Chargement...")}</div>
                             {profile?.role === 'practitioner' ? (
                                 <>
                                     <div className="badge badge-gold" style={{ fontSize: '9px', padding: '2px 8px', marginBottom: '4px', width: 'fit-content', fontWeight: '800' }}>
-                                        Admin PRO
+                                        {t('Admin PRO')}
                                     </div>
                                     <div className="badge badge-primary" style={{ fontSize: '9px', padding: '2px 8px', marginBottom: '4px', width: 'fit-content', background: 'rgba(20, 184, 166, 0.1)', color: 'var(--color-primary-600)', border: '1px solid var(--color-primary-200)' }}>
-                                        PRATICIEN
+                                        {t('PRATICIEN')}
                                     </div>
-                                    <div className="sidebar-profile-title">Praticien</div>
+                                    <div className="sidebar-profile-title">{t('Praticien')}</div>
                                     <div className="sidebar-profile-specialty">
-                                        <span className="sidebar-profile-specialty-label">Corps de métier</span>
+                                        <span className="sidebar-profile-specialty-label">{t('Corps de métier')}</span>
                                         <span className="sidebar-profile-specialty-text">
-                                            Chirurgie Esthétique<br />Plastique reconstructrice
+                                            {t('Chirurgie Esthétique')}<br />{t('Plastique reconstructrice')}
                                         </span>
                                     </div>
                                 </>
                             ) : (
                                 <>
                                     <div className="badge badge-primary" style={{ fontSize: '9px', padding: '2px 8px', marginBottom: '4px', width: 'fit-content', background: 'var(--color-info-500)', color: 'white', fontWeight: '800' }}>
-                                        INFIRMIER
+                                        {t('INFIRMIER')}
                                     </div>
                                     <div className="sidebar-profile-title">Dr. Christophe DESOUCHES</div>
                                     <div className="sidebar-profile-specialty">
-                                        <span className="sidebar-profile-specialty-label">Corps de métier</span>
+                                        <span className="sidebar-profile-specialty-label">{t('Corps de métier')}</span>
                                         <span className="sidebar-profile-specialty-text">
-                                            Suivi Post-Opératoire<br />Prise en charge patient
+                                            {t('Suivi Post-Opératoire')}<br />{t('Prise en charge patient')}
                                         </span>
                                     </div>
                                 </>
@@ -180,7 +182,7 @@ export default function Sidebar() {
                     <span className="sidebar-item-icon">
                         <LogOut size={isMobile ? 22 : 18} />
                     </span>
-                    {!isMobile && <span className="sidebar-item-label">Déconnexion</span>}
+                    {!isMobile && <span className="sidebar-item-label">{t('Déconnexion')}</span>}
                 </button>
             </div>
         </aside>
