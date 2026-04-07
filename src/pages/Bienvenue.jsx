@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Sparkles, AlertCircle } from 'lucide-react';
 import { pathwayConfig } from '../config/pathway.config';
 import { saveResponse, getResponses, markScreenCompleted } from '../services/pathwayService';
@@ -10,6 +11,7 @@ import { supabase } from '../lib/supabase';
 import { calculateDaysUntilSurgery } from '../utils/dateUtils';
 
 export default function Bienvenue({ patient: propPatient, token: propToken }) {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const { token: urlToken } = useParams();
     const token = propToken || urlToken;
@@ -71,7 +73,7 @@ export default function Bienvenue({ patient: propPatient, token: propToken }) {
     if (loadingPatientId || loading) {
         return (
             <div className="patient-view" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
-                <div>Chargement...</div>
+                <div>{t('Chargement...')}</div>
             </div>
         );
     }
@@ -81,8 +83,8 @@ export default function Bienvenue({ patient: propPatient, token: propToken }) {
             <div className="patient-view" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
                 <div className="card" style={{ maxWidth: '500px', textAlign: 'center', padding: 'var(--spacing-6)' }}>
                     <AlertCircle size={64} style={{ margin: '0 auto var(--spacing-4)', color: 'var(--color-danger-500)' }} />
-                    <h2 style={{ marginBottom: 'var(--spacing-2)' }}>Accès non autorisé</h2>
-                    <p style={{ color: 'var(--color-gray-600)' }}>{patientIdError}</p>
+                    <h2 style={{ marginBottom: 'var(--spacing-2)' }}>{t('Accès non autorisé')}</h2>
+                    <p style={{ color: 'var(--color-gray-600)' }}>{t(patientIdError)}</p>
                 </div>
             </div>
         );
@@ -91,8 +93,8 @@ export default function Bienvenue({ patient: propPatient, token: propToken }) {
     return (
         <div className="patient-view">
             <div className="patient-header" style={{ padding: 'var(--spacing-6) var(--spacing-4)', textAlign: 'center', display: 'block' }}>
-                <h2 style={{ fontSize: 'var(--font-size-2xl)', marginBottom: 'var(--spacing-1)' }}>Bienvenue</h2>
-                <div style={{ color: 'var(--color-primary-600)', fontWeight: 'var(--font-weight-semibold)' }}>{config.subtitle}</div>
+                <h2 style={{ fontSize: 'var(--font-size-2xl)', marginBottom: 'var(--spacing-1)' }}>{t('Bienvenue')}</h2>
+                <div style={{ color: 'var(--color-primary-600)', fontWeight: 'var(--font-weight-semibold)' }}>{t(config.subtitle)}</div>
             </div>
 
             <div className="patient-content fade-in">
@@ -117,7 +119,7 @@ export default function Bienvenue({ patient: propPatient, token: propToken }) {
                     color: 'var(--color-primary-900)',
                     border: '1px solid var(--color-primary-100)'
                 }}>
-                    <strong>Bienvenue sur votre portail SurgiLink.</strong> Nous sommes ravis de vous accompagner dans votre parcours de soins. Merci de confirmer que vous avez bien accès à tous vos outils.
+                    <strong>{t('Bienvenue sur votre portail SurgiLink.')}</strong> {t('Nous sommes ravis de vous accompagner dans votre parcours de soins. Merci de confirmer que vous avez bien accès à tous vos outils.')}
                 </div>
 
                 <QuestionnaireFlow

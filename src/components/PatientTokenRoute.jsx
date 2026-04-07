@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { validateToken } from '../services/tokenService';
 import { Loader, AlertCircle } from 'lucide-react';
+import LanguageSelector from './LanguageSelector';
 
 export default function PatientTokenRoute({ children }) {
     const { token } = useParams();
@@ -92,13 +93,16 @@ export default function PatientTokenRoute({ children }) {
 
     // Pass patient and token to children
     return (
-        <>
+        <div style={{ position: 'relative' }}>
+            <div style={{ position: 'absolute', top: '16px', right: '16px', zIndex: 1000 }}>
+                <LanguageSelector />
+            </div>
             {React.Children.map(children, child => {
                 if (React.isValidElement(child)) {
                     return React.cloneElement(child, { patient, token });
                 }
                 return child;
             })}
-        </>
+        </div>
     );
 }

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Sidebar from '../components/Sidebar';
 import MobileNavbar from '../components/MobileNavbar';
 import Header from '../components/Header';
@@ -35,6 +36,7 @@ import PatientDetailPanel from '../components/PatientDetailPanel';
 import SMSAlarmsModal from '../components/SMSAlarmsModal'; // Added
 
 export default function Dashboard() {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const [isAddModalOpen, setIsAddModalOpen] = useState(false); // Renamed from isModalOpen
     const [isAlarmsModalOpen, setIsAlarmsModalOpen] = useState(false); // Added
@@ -260,21 +262,21 @@ export default function Dashboard() {
             <Sidebar />
             <main className="main-content" data-mobile={isMobile}>
                 <Header
-                    title="Tableau de Bord"
-                    subtitle="Vue d'ensemble de vos patients et indicateurs clés"
+                    title={t("Tableau de Bord")}
+                    subtitle={t("Vue d'ensemble de vos patients et indicateurs clés")}
                     hideTitleMobile={true}
                     actions={
                         <>
                             <button className="btn btn-secondary hide-mobile" onClick={() => setIsAlarmsModalOpen(true)} style={{ borderRadius: '12px', padding: '10px 20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                                 <Zap size={18} style={{ color: '#8b5cf6' }} fill="#8b5cf6" />
-                                <span>Alarme vigilance</span>
+                                <span>{t('Alarme vigilance')}</span>
                             </button>
                             <button
                                 className="btn btn-primary"
                                 onClick={() => setIsAddModalOpen(true)}
                                 style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)' }}
                             >
-                                <Plus size={18} /> Ajouter un patient
+                                <Plus size={18} /> {t('Ajouter un patient')}
                             </button>
                         </>
                     }
@@ -336,7 +338,7 @@ export default function Dashboard() {
                                 onClick={() => window.location.href = 'tel:0491550000'}
                             >
                                 <Phone size={18} />
-                                Appeler la Clinique
+                                {t('Appeler la Clinique')}
                             </button>
                         </>
                     )}
@@ -360,19 +362,19 @@ export default function Dashboard() {
                             background: stats.active > 0 && (stats.complete / stats.active) < 0.8 ? 'var(--color-warning-50)' : 'white',
                             borderColor: stats.active > 0 && (stats.complete / stats.active) < 0.8 ? 'var(--color-warning-200)' : 'var(--color-gray-100)',
                             transition: 'all 0.3s'
-                        }} onClick={() => navigate('/review/complete')}>
+                        }} onClick={() => navigate('/patients')}>
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--spacing-3)' }}>
                                 <div className="stat-card-icon" style={{ background: 'var(--color-success-50)', marginBottom: 0 }}>
                                     <CheckCircle size={24} style={{ color: 'var(--color-success-500)' }} />
                                 </div>
                                 {stats.active > 0 && (stats.complete / stats.active) < 0.8 && (
-                                    <span className="badge badge-warning">À améliorer</span>
+                                    <span className="badge badge-warning">{t('À améliorer')}</span>
                                 )}
                             </div>
                             <div className="stat-card-value" style={{ fontSize: 'var(--font-size-3xl)' }}>{stats.complete}</div>
-                            <div className="stat-card-label" style={{ fontWeight: '600', color: 'var(--color-gray-500)' }}>Protocoles complets</div>
+                            <div className="stat-card-label" style={{ fontWeight: '600', color: 'var(--color-gray-500)' }}>{t('Protocoles complets')}</div>
                             <div className="stat-card-meta" style={{ color: 'var(--color-success-600)', fontWeight: '600' }}>
-                                {stats.active > 0 ? Math.round((stats.complete / stats.active) * 100) : 0}% de conformité
+                                {stats.active > 0 ? Math.round((stats.complete / stats.active) * 100) : 0}% {t('de conformité')}
                             </div>
                         </div>
 
@@ -381,23 +383,23 @@ export default function Dashboard() {
                             background: stats.required > 0 ? 'var(--color-danger-50)' : 'white',
                             borderColor: stats.required > 0 ? 'var(--color-danger-100)' : 'var(--color-gray-100)',
                             transition: 'all 0.3s'
-                        }} onClick={() => navigate('/review/required')}>
+                        }} onClick={() => navigate('/patients')}>
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--spacing-3)' }}>
                                 <div className="stat-card-icon" style={{ background: 'var(--color-danger-50)', marginBottom: 0 }}>
                                     <AlertTriangle size={24} style={{ color: 'var(--color-danger-500)' }} />
                                 </div>
                                 {stats.required > 0 && (
-                                    <span className="badge badge-danger badge-pulse">Priorité</span>
+                                    <span className="badge badge-danger badge-pulse">{t('Priorité')}</span>
                                 )}
                             </div>
                             <div className="stat-card-value" style={{ fontSize: 'var(--font-size-3xl)', color: stats.required > 0 ? 'var(--color-danger-600)' : 'inherit' }}>{stats.required}</div>
-                            <div className="stat-card-label" style={{ fontWeight: '600', color: 'var(--color-gray-500)' }}>Actions requises</div>
+                            <div className="stat-card-label" style={{ fontWeight: '600', color: 'var(--color-gray-500)' }}>{t('Actions requises')}</div>
                             <div className="stat-card-meta" style={{ color: stats.required > 0 ? 'var(--color-danger-600)' : 'var(--color-success-600)', fontWeight: '600' }}>
-                                {stats.required > 0 ? "Attention immédiate" : "Tout est sécurisé"}
+                                {stats.required > 0 ? t("Attention immédiate") : t("Tout est sécurisé")}
                             </div>
                         </div>
 
-                        <div className="stat-card" style={{ cursor: 'pointer' }} onClick={() => navigate('/review/weekly')}>
+                        <div className="stat-card" style={{ cursor: 'pointer' }} onClick={() => navigate('/patients')}>
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--spacing-3)' }}>
                                 <div className="stat-card-icon" style={{ background: 'var(--color-info-50)', marginBottom: 0 }}>
                                     <Calendar size={24} style={{ color: 'var(--color-info-500)' }} />
@@ -419,8 +421,9 @@ export default function Dashboard() {
                         background: 'linear-gradient(135deg, #FFF5F5 0%, #FFF 100%)',
                         border: '1px solid #FEB2B2',
                         marginBottom: 'var(--spacing-6)',
-                        padding: 'var(--spacing-4)'
-                    }}>
+                        padding: 'var(--spacing-4)',
+                        cursor: 'pointer'
+                    }} onClick={() => setIsAlarmsModalOpen(true)}>
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)' }}>
                                 <div style={{
@@ -436,9 +439,9 @@ export default function Dashboard() {
                                     <AlertTriangle size={24} />
                                 </div>
                                 <div>
-                                    <h4 style={{ color: '#9B1C1C', marginBottom: '2px' }}>Alerte : Créneaux à risque détectés</h4>
+                                    <h4 style={{ color: '#9B1C1C', marginBottom: '2px' }}>{t('Alerte : Créneaux à risque détectés')}</h4>
                                     <p style={{ fontSize: 'var(--font-size-sm)', color: '#C53030' }}>
-                                        {allPatients.filter(p => (p.daysUntil === 'J-1' || p.daysUntil === 'J-0') && p.status !== 'ready').length} patients n'ont pas validé leur protocole pré-opératoire.
+                                        {allPatients.filter(p => (p.daysUntil === 'J-1' || p.daysUntil === 'J-0') && p.status !== 'ready').length} {t("patients n'ont pas validé leur protocole pré-opératoire.")}
                                     </p>
                                 </div>
                             </div>
@@ -489,9 +492,9 @@ export default function Dashboard() {
                     {/* Patients List */}
                     <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
                         <div style={{ padding: 'var(--spacing-4)', borderBottom: '1px solid var(--color-gray-100)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <h3 style={{ fontSize: 'var(--font-size-lg)' }}>Liste des patients</h3>
+                            <h3 style={{ fontSize: 'var(--font-size-lg)' }}>{t('Liste des patients')}</h3>
                             <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-500)' }}>
-                                {patients.length} patient{patients.length > 1 ? 's' : ''}
+                                {patients.length} {t('patient(s)')}
                             </div>
                         </div>
 
@@ -499,14 +502,14 @@ export default function Dashboard() {
                             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                                 <thead>
                                     <tr style={{ borderBottom: '1px solid var(--color-gray-100)', background: 'var(--color-gray-50)' }}>
-                                        <th style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-500)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Patient</th>
-                                        <th style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-500)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Retours patient</th>
-                                        <th className="hide-tablet" style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-500)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Étape</th>
-                                        <th className="hide-mobile" style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-500)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>SMS Envoyé</th>
+                                        <th style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-500)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t('Patient')}</th>
+                                        <th style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-500)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t('Retours patient')}</th>
+                                        <th className="hide-tablet" style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-500)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t('Étape')}</th>
+                                        <th className="hide-mobile" style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-500)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t('SMS Envoyé')}</th>
                                         {!selectedPatientId && (
                                             <>
-                                                <th className="hide-tablet" style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-500)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Date</th>
-                                                <th style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-500)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Statut</th>
+                                                <th className="hide-tablet" style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-500)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t('Date')}</th>
+                                                <th style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-500)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t('Statut')}</th>
                                             </>
                                         )}
                                     </tr>
@@ -515,13 +518,13 @@ export default function Dashboard() {
                                     {isLoading ? (
                                         <tr>
                                             <td colSpan="6" style={{ padding: 'var(--spacing-12)', textAlign: 'center', color: 'var(--color-gray-400)' }}>
-                                                Chargement des patients...
+                                                {t('Chargement des patients...')}
                                             </td>
                                         </tr>
                                     ) : patients.length === 0 ? (
                                         <tr>
                                             <td colSpan="6" style={{ padding: 'var(--spacing-12)', textAlign: 'center', color: 'var(--color-gray-400)' }}>
-                                                Aucun patient trouvé pour cette catégorie.
+                                                {t('Aucun patient trouvé pour cette catégorie.')}
                                             </td>
                                         </tr>
                                     ) : patients.map((patient) => (
@@ -580,7 +583,7 @@ export default function Dashboard() {
                                             <td className="hide-mobile" style={{ padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-500)' }}>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-1)' }}>
                                                     <Clock size={12} />
-                                                    {patient.daysUntil === 'J-0' ? 'Intervention du jour' : 'Consulté'}
+                                                    {patient.daysUntil === 'J-0' ? t('Intervention du jour') : t('Consulté')}
                                                 </div>
                                             </td>
                                             {!selectedPatientId && (

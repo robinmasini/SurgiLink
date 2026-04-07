@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import QuestionRenderer from './QuestionRenderer';
 import { ChevronRight, ChevronLeft, CheckCircle2 } from 'lucide-react';
 import { getCustomQuestions, answerCustomQuestion } from '../../services/customQuestionService';
@@ -12,6 +13,7 @@ export default function QuestionnaireFlow({
     screen,
     patientId // added patientId prop
 }) {
+    const { t } = useTranslation();
     const [customQuestions, setCustomQuestions] = useState([]);
     const [loadingCustom, setLoadingCustom] = useState(false);
 
@@ -49,7 +51,7 @@ export default function QuestionnaireFlow({
         type: 'textarea', // Custom questions are usually textual
         label: q.question_text,
         required: true,
-        sectionTitle: "Question complémentaire",
+        sectionTitle: t("Question complémentaire"),
         sectionIcon: "💡",
         isCustom: true,
         originalId: q.id
@@ -136,9 +138,9 @@ export default function QuestionnaireFlow({
             <div style={{ marginBottom: 'var(--spacing-8)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 'var(--spacing-3)' }}>
                     <div>
-                        <span className="q-badge">Question {currentIndex + 1} sur {allItems.length}</span>
+                        <span className="q-badge">{t('Question')} {currentIndex + 1} {t('sur')} {allItems.length}</span>
                         <h4 style={{ margin: 0, fontSize: '14px', color: 'var(--color-gray-500)', fontWeight: 600 }}>
-                            {currentItem.sectionTitle}
+                            {t(currentItem.sectionTitle)}
                         </h4>
                     </div>
                     <div style={{ fontSize: '18px', fontWeight: 800, color: 'var(--color-primary-600)' }}>
@@ -176,7 +178,7 @@ export default function QuestionnaireFlow({
                         style={{ flex: 1, borderRadius: 'var(--radius-xl)', height: '56px' }}
                     >
                         <ChevronLeft size={20} style={{ marginRight: '8px' }} />
-                        Précédent
+                        {t('Précédent')}
                     </button>
                 )}
 
@@ -195,11 +197,11 @@ export default function QuestionnaireFlow({
                     {isLast ? (
                         <>
                             <CheckCircle2 size={20} style={{ marginRight: '8px' }} />
-                            {saving ? 'Enregistrement...' : 'Terminer le questionnaire'}
+                            {saving ? t('Enregistrement...') : t('Terminer le questionnaire')}
                         </>
                     ) : (
                         <>
-                            Suivant
+                            {t('Suivant')}
                             <ChevronRight size={20} style={{ marginLeft: '8px' }} />
                         </>
                     )}
@@ -208,7 +210,7 @@ export default function QuestionnaireFlow({
 
             {/* Ludic hint */}
             <div style={{ textAlign: 'center', marginTop: 'var(--spacing-6)', color: 'var(--color-gray-400)', fontSize: '13px' }}>
-                Vos réponses sont enregistrées automatiquement.
+                {t('Vos réponses sont enregistrées automatiquement.')}
             </div>
         </div>
     );

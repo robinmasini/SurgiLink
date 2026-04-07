@@ -12,8 +12,10 @@ import DoctolibButton from '../components/pathway/DoctolibButton';
 import { usePatientId } from '../hooks/usePatientId';
 import { supabase } from '../lib/supabase';
 import { calculateAge, formatDateFR, calculateDaysUntilSurgery } from '../utils/dateUtils';
+import { useTranslation } from 'react-i18next';
 
 export default function PatientJ7({ patient: propPatient, token: propToken }) {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const { token: urlToken } = useParams();
     const token = propToken || urlToken;
@@ -120,7 +122,7 @@ export default function PatientJ7({ patient: propPatient, token: propToken }) {
     if (loadingPatientId) {
         return (
             <div className="patient-view" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
-                <div>Chargement...</div>
+                <div>{t('Chargement...')}</div>
             </div>
         );
     }
@@ -131,8 +133,8 @@ export default function PatientJ7({ patient: propPatient, token: propToken }) {
             <div className="patient-view" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
                 <div className="card" style={{ maxWidth: '500px', textAlign: 'center', padding: 'var(--spacing-6)' }}>
                     <AlertCircle size={64} style={{ margin: '0 auto var(--spacing-4)', color: 'var(--color-danger-500)' }} />
-                    <h2 style={{ marginBottom: 'var(--spacing-2)' }}>Accès non autorisé</h2>
-                    <p style={{ color: 'var(--color-gray-600)' }}>{patientIdError}</p>
+                    <h2 style={{ marginBottom: 'var(--spacing-2)' }}>{t('Accès non autorisé')}</h2>
+                    <p style={{ color: 'var(--color-gray-600)' }}>{t(patientIdError)}</p>
                 </div>
             </div>
         );
@@ -141,7 +143,7 @@ export default function PatientJ7({ patient: propPatient, token: propToken }) {
     if (loading) {
         return (
             <div className="patient-view" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
-                <div>Chargement...</div>
+                <div>{t('Chargement...')}</div>
             </div>
         );
     }
@@ -150,8 +152,8 @@ export default function PatientJ7({ patient: propPatient, token: propToken }) {
         <div className="patient-view">
             {/* Header */}
             <div className="patient-header" style={{ padding: 'var(--spacing-6) var(--spacing-4)', textAlign: 'center', display: 'block' }}>
-                <h2 style={{ fontSize: 'var(--font-size-2xl)', marginBottom: 'var(--spacing-1)' }}>Votre Dossier Médical</h2>
-                <div style={{ color: 'var(--color-primary-600)', fontWeight: 'var(--font-weight-semibold)' }}>Questionnaire de Pré-admission J-7</div>
+                <h2 style={{ fontSize: 'var(--font-size-2xl)', marginBottom: 'var(--spacing-1)' }}>{t('Votre Dossier Médical')}</h2>
+                <div style={{ color: 'var(--color-primary-600)', fontWeight: 'var(--font-weight-semibold)' }}>{t('Questionnaire de Pré-admission J-7')}</div>
             </div>
 
             {/* Content */}
@@ -178,9 +180,9 @@ export default function PatientJ7({ patient: propPatient, token: propToken }) {
                     color: 'var(--color-primary-900)',
                     border: '1px solid var(--color-primary-100)'
                 }}>
-                    <strong>Afin de préparer au mieux votre intervention</strong> en chirurgie ambulatoire et de garantir votre sécurité, merci de répondre à ce rapide questionnaire.
+                    <strong>{t('Afin de préparer au mieux votre intervention')}</strong>{t(' en chirurgie ambulatoire et de garantir votre sécurité, merci de répondre à ce rapide questionnaire.')}
                     <br /><br />
-                    N'hésitez surtout pas à cocher "Non", cela ne veut pas dire que votre opération sera annulée. Si vous cochez "Non", l'équipe de la clinique vous rappellera pour trouver une solution adaptée à votre situation.
+                    {t('N\'hésitez surtout pas à cocher "Non", cela ne veut pas dire que votre opération sera annulée. Si vous cochez "Non", l\'équipe de la clinique vous rappellera pour trouver une solution adaptée à votre situation.')}
                 </div>
 
 

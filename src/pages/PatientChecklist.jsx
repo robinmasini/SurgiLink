@@ -11,8 +11,10 @@ import {
     User
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { useTranslation } from 'react-i18next';
 
 export default function PatientChecklist() {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const { patientId } = useParams();
     const [patient, setPatient] = useState(null);
@@ -59,7 +61,7 @@ export default function PatientChecklist() {
             <div className="patient-view" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
                 <div style={{ textAlign: 'center' }}>
                     <div className="spinner" style={{ margin: '0 auto var(--spacing-4)' }}></div>
-                    <p>Chargement...</p>
+                    <p>{t('Chargement...')}</p>
                 </div>
             </div>
         );
@@ -69,8 +71,8 @@ export default function PatientChecklist() {
         return (
             <div className="patient-view" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
                 <div style={{ textAlign: 'center', color: 'var(--color-gray-500)' }}>
-                    <p>Patient introuvable</p>
-                    <button className="btn btn-primary" onClick={() => navigate('/patients')}>Retour à la liste</button>
+                    <p>{t('Patient introuvable')}</p>
+                    <button className="btn btn-primary" onClick={() => navigate('/patients')}>{t('Retour à la liste')}</button>
                 </div>
             </div>
         );
@@ -83,7 +85,7 @@ export default function PatientChecklist() {
             {/* Header */}
             <div className="patient-header">
                 <div className="patient-header-left">
-                    <h2>Bonjour {firstName}</h2>
+                    <h2>{t('Bonjour')} {firstName}</h2>
                     <span>{patient.days_until || 'J-0'} • {patient.operation}</span>
                 </div>
                 <button
@@ -110,8 +112,8 @@ export default function PatientChecklist() {
                 <div className="alert-banner alert-banner-primary" style={{ marginBottom: 'var(--spacing-6)' }}>
                     <Clock size={20} />
                     <div>
-                        <div style={{ fontWeight: 'var(--font-weight-semibold)' }}>Arrivée prévue à 07:30</div>
-                        <div style={{ opacity: 0.9, fontSize: 'var(--font-size-sm)' }}>Rendez-vous à l'accueil principal. Prévoyez d'arriver 15 min avant.</div>
+                        <div style={{ fontWeight: 'var(--font-weight-semibold)' }}>{t('Arrivée prévue à 07:30')}</div>
+                        <div style={{ opacity: 0.9, fontSize: 'var(--font-size-sm)' }}>{t("Rendez-vous à l'accueil principal. Prévoyez d'arriver 15 min avant.")}</div>
                     </div>
                 </div>
 
@@ -120,35 +122,34 @@ export default function PatientChecklist() {
                     <div className="step-header">
                         <span className="step-header-icon">📋</span>
                         <div>
-                            <div className="step-header-title">Étape Administrative</div>
-                            <div className="step-header-subtitle">Dernière ligne droite ! Vérifions ensemble que tout est prêt.</div>
+                            <div className="step-header-title">{t('Étape Administrative')}</div>
+                            <div className="step-header-subtitle">{t('Dernière ligne droite ! Vérifions ensemble que tout est prêt.')}</div>
                         </div>
                     </div>
                 </div>
 
                 {/* Consultation d'anesthésie */}
                 <div className="question-card">
-                    <div className="question-title">Consultation d'anesthésie</div>
+                    <div className="question-title">{t("Consultation d'anesthésie")}</div>
                     <div className="toggle-group">
                         <button
                             className={`toggle-btn ${anesthesie === true ? 'active' : ''}`}
                             onClick={() => setAnesthesie(true)}
                         >
-                            Oui
+                            {t('Oui')}
                         </button>
                         <button
-                            className={`toggle-btn ${anesthesie === false ? 'active-danger' : ''}`}
+                            className={`toggle-btn ${anesthesie === false ? 'active' : ''}`}
                             onClick={() => setAnesthesie(false)}
-                            style={anesthesie === false ? { background: 'var(--color-gray-700)', color: 'white', borderColor: 'var(--color-gray-700)' } : {}}
                         >
-                            Non
+                            {t('Non')}
                         </button>
                     </div>
                     <div className="info-box" style={{ marginTop: 'var(--spacing-4)' }}>
                         <Info size={16} className="info-box-icon" />
                         <div>
-                            <div className="info-box-title">Pourquoi est-ce important ?</div>
-                            <div className="info-box-text">C'est une obligation légale de sécurité.</div>
+                            <div className="info-box-title">{t('Pourquoi est-ce important ?')}</div>
+                            <div className="info-box-text">{t("C'est une obligation légale de sécurité.")}</div>
                         </div>
                     </div>
                 </div>
@@ -164,9 +165,8 @@ export default function PatientChecklist() {
                             Oui
                         </button>
                         <button
-                            className={`toggle-btn ${bilanSanguin === false ? 'active-danger' : ''}`}
+                            className={`toggle-btn ${bilanSanguin === false ? 'active' : ''}`}
                             onClick={() => setBilanSanguin(false)}
-                            style={bilanSanguin === false ? { background: 'var(--color-gray-700)', color: 'white', borderColor: 'var(--color-gray-700)' } : {}}
                         >
                             Non
                         </button>
@@ -208,9 +208,8 @@ export default function PatientChecklist() {
                             Oui, c'est prêt
                         </button>
                         <button
-                            className={`toggle-btn ${allergie === false ? 'active-danger' : ''}`}
+                            className={`toggle-btn ${allergie === false ? 'active' : ''}`}
                             onClick={() => setAllergie(false)}
-                            style={allergie === false ? { background: 'var(--color-gray-700)', color: 'white', borderColor: 'var(--color-gray-700)' } : {}}
                         >
                             Pas encore
                         </button>
@@ -239,9 +238,8 @@ export default function PatientChecklist() {
                             Oui, j'ai quelqu'un
                         </button>
                         <button
-                            className={`toggle-btn ${accompagnant === false ? 'active-danger' : ''}`}
+                            className={`toggle-btn ${accompagnant === false ? 'active' : ''}`}
                             onClick={() => setAccompagnant(false)}
-                            style={accompagnant === false ? { background: 'var(--color-danger-500)', color: 'white', borderColor: 'var(--color-danger-500)' } : {}}
                         >
                             Non, je suis seul(e)
                         </button>

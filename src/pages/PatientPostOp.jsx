@@ -8,8 +8,10 @@ import {
     Activity,
     Info
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export default function PatientPostOp() {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const [painLevel, setPainLevel] = useState(2);
     const [temperature, setTemperature] = useState(null);
@@ -33,7 +35,7 @@ export default function PatientPostOp() {
             {/* Header */}
             <div className="patient-header">
                 <div className="patient-header-left">
-                    <h2>Bonjour Paul</h2>
+                    <h2>{t('Bonjour')} Paul</h2>
                     <span>J+1 • Ligamentoplastie Genou</span>
                 </div>
                 <button
@@ -61,7 +63,7 @@ export default function PatientPostOp() {
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--spacing-4)' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)' }}>
                             <Heart size={18} style={{ color: 'var(--color-danger-400)' }} />
-                            <span className="question-title" style={{ marginBottom: 0 }}>Votre douleur</span>
+                            <span className="question-title" style={{ marginBottom: 0 }}>{t('Votre douleur')}</span>
                         </div>
                         <div
                             className="pain-value"
@@ -84,8 +86,8 @@ export default function PatientPostOp() {
                     <div className="info-box" style={{ marginTop: 'var(--spacing-4)' }}>
                         <Info size={16} className="info-box-icon" />
                         <div>
-                            <div className="info-box-title">Pourquoi est-ce important ?</div>
-                            <div className="info-box-text">Une bonne gestion de la douleur accélère votre rétablissement.</div>
+                            <div className="info-box-title">{t('Pourquoi est-ce important ?')}</div>
+                            <div className="info-box-text">{t("Une bonne gestion de la douleur accélère votre rétablissement.")}</div>
                         </div>
                     </div>
                 </div>
@@ -95,20 +97,20 @@ export default function PatientPostOp() {
                     <div className="question-card" style={{ marginBottom: 0 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)', marginBottom: 'var(--spacing-3)' }}>
                             <Thermometer size={16} style={{ color: 'var(--color-warning-500)' }} />
-                            <span style={{ fontWeight: 'var(--font-weight-semibold)', fontSize: 'var(--font-size-sm)' }}>Température</span>
+                            <span style={{ fontWeight: 'var(--font-weight-semibold)', fontSize: 'var(--font-size-sm)' }}>{t('Température')}</span>
                         </div>
                         <div className="compact-toggle">
                             <button
                                 className={`compact-toggle-btn ${temperature === true ? 'active-success' : ''}`}
                                 onClick={() => setTemperature(true)}
                             >
-                                OUI
+                                {t('OUI')}
                             </button>
                             <button
-                                className={`compact-toggle-btn ${temperature === false ? 'active-danger' : ''}`}
+                                className={`compact-toggle-btn ${temperature === false ? 'active-primary' : ''}`}
                                 onClick={() => setTemperature(false)}
                             >
-                                NON
+                                {t('NON')}
                             </button>
                         </div>
                     </div>
@@ -116,20 +118,20 @@ export default function PatientPostOp() {
                     <div className="question-card" style={{ marginBottom: 0 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)', marginBottom: 'var(--spacing-3)' }}>
                             <Activity size={16} style={{ color: 'var(--color-primary-500)' }} />
-                            <span style={{ fontWeight: 'var(--font-weight-semibold)', fontSize: 'var(--font-size-sm)' }}>Pansement</span>
+                            <span style={{ fontWeight: 'var(--font-weight-semibold)', fontSize: 'var(--font-size-sm)' }}>{t('Pansement')}</span>
                         </div>
                         <div className="compact-toggle">
                             <button
                                 className={`compact-toggle-btn ${pansement === true ? 'active-success' : ''}`}
                                 onClick={() => setPansement(true)}
                             >
-                                OUI
+                                {t('OUI')}
                             </button>
                             <button
-                                className={`compact-toggle-btn ${pansement === false ? 'active-danger' : ''}`}
+                                className={`compact-toggle-btn ${pansement === false ? 'active-primary' : ''}`}
                                 onClick={() => setPansement(false)}
                             >
-                                NON
+                                {t('NON')}
                             </button>
                         </div>
                     </div>
@@ -137,45 +139,45 @@ export default function PatientPostOp() {
 
                 {/* Récupération générale */}
                 <div className="question-card">
-                    <h4 style={{ marginBottom: 'var(--spacing-5)' }}>Récupération générale</h4>
+                    <h4 style={{ marginBottom: 'var(--spacing-5)' }}>{t('Récupération générale')}</h4>
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-4)' }}>
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                            <span style={{ color: 'var(--color-gray-700)' }}>Nausées ?</span>
+                            <span style={{ color: 'var(--color-gray-700)' }}>{t('Nausées ?')}</span>
                             <div className="compact-toggle">
                                 <button
                                     className={`compact-toggle-btn ${nausees === true ? 'active-success' : ''}`}
                                     onClick={() => setNausees(true)}
                                     style={{ minWidth: '50px' }}
                                 >
-                                    Oui
+                                    {t('Oui')}
                                 </button>
                                 <button
-                                    className={`compact-toggle-btn ${nausees === false ? 'active-danger' : ''}`}
+                                    className={`compact-toggle-btn ${nausees === false ? 'active-primary' : ''}`}
                                     onClick={() => setNausees(false)}
                                     style={{ minWidth: '50px' }}
                                 >
-                                    Non
+                                    {t('Non')}
                                 </button>
                             </div>
                         </div>
 
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                            <span style={{ color: 'var(--color-gray-700)' }}>Urine OK ?</span>
+                            <span style={{ color: 'var(--color-gray-700)' }}>{t('Urine OK ?')}</span>
                             <div className="compact-toggle">
                                 <button
                                     className={`compact-toggle-btn ${urine === true ? 'active-success' : ''}`}
                                     onClick={() => setUrine(true)}
                                     style={{ minWidth: '50px' }}
                                 >
-                                    Oui
+                                    {t('Oui')}
                                 </button>
                                 <button
-                                    className={`compact-toggle-btn ${urine === false ? 'active-danger' : ''}`}
+                                    className={`compact-toggle-btn ${urine === false ? 'active-primary' : ''}`}
                                     onClick={() => setUrine(false)}
                                     style={{ minWidth: '50px' }}
                                 >
-                                    Non
+                                    {t('Non')}
                                 </button>
                             </div>
                         </div>
@@ -183,7 +185,7 @@ export default function PatientPostOp() {
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)' }}>
                                 <span style={{ opacity: 0.5 }}>⚠️</span>
-                                <span style={{ color: 'var(--color-gray-700)' }}>Gêne thoracique ?</span>
+                                <span style={{ color: 'var(--color-gray-700)' }}>{t('Gêne thoracique ?')}</span>
                             </div>
                             <div className="compact-toggle">
                                 <button
@@ -191,14 +193,14 @@ export default function PatientPostOp() {
                                     onClick={() => setGeneThoracique(true)}
                                     style={{ minWidth: '50px' }}
                                 >
-                                    Oui
+                                    {t('Oui')}
                                 </button>
                                 <button
-                                    className={`compact-toggle-btn ${geneThoracique === false ? 'active-danger' : ''}`}
+                                    className={`compact-toggle-btn ${geneThoracique === false ? 'active-primary' : ''}`}
                                     onClick={() => setGeneThoracique(false)}
                                     style={{ minWidth: '50px' }}
                                 >
-                                    Non
+                                    {t('Non')}
                                 </button>
                             </div>
                         </div>
@@ -211,7 +213,7 @@ export default function PatientPostOp() {
                     style={{ width: '100%', marginTop: 'var(--spacing-6)' }}
                     onClick={handleSubmit}
                 >
-                    Continuer
+                    {t('Continuer')}
                 </button>
             </div>
 

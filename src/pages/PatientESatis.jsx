@@ -8,8 +8,10 @@ import CompactAppointmentCard from '../components/CompactAppointmentCard';
 import { usePatientId } from '../hooks/usePatientId';
 import { supabase } from '../lib/supabase';
 import { calculateDaysUntilSurgery } from '../utils/dateUtils';
+import { useTranslation } from 'react-i18next';
 
 export default function PatientESatis({ patient: propPatient, token: propToken }) {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const { token: urlToken } = useParams();
     const token = propToken || urlToken;
@@ -65,7 +67,7 @@ export default function PatientESatis({ patient: propPatient, token: propToken }
     if (loadingPatientId || loading) {
         return (
             <div className="patient-view" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
-                <div>Chargement...</div>
+                <div>{t('Chargement...')}</div>
             </div>
         );
     }
@@ -75,8 +77,8 @@ export default function PatientESatis({ patient: propPatient, token: propToken }
             <div className="patient-view" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
                 <div className="card" style={{ maxWidth: '500px', textAlign: 'center', padding: 'var(--spacing-6)' }}>
                     <AlertCircle size={64} style={{ margin: '0 auto var(--spacing-4)', color: 'var(--color-danger-500)' }} />
-                    <h2 style={{ marginBottom: 'var(--spacing-2)' }}>Accès non autorisé</h2>
-                    <p style={{ color: 'var(--color-gray-600)' }}>{patientIdError}</p>
+                    <h2 style={{ marginBottom: 'var(--spacing-2)' }}>{t('Accès non autorisé')}</h2>
+                    <p style={{ color: 'var(--color-gray-600)' }}>{t(patientIdError)}</p>
                 </div>
             </div>
         );
@@ -85,8 +87,8 @@ export default function PatientESatis({ patient: propPatient, token: propToken }
     return (
         <div className="patient-view">
             <div className="patient-header" style={{ padding: 'var(--spacing-6) var(--spacing-4)', textAlign: 'center', display: 'block' }}>
-                <h2 style={{ fontSize: 'var(--font-size-2xl)', marginBottom: 'var(--spacing-1)' }}>Enquête e-Satis</h2>
-                <div style={{ color: 'var(--color-primary-600)', fontWeight: 'var(--font-weight-semibold)' }}>Votre avis national</div>
+                <h2 style={{ fontSize: 'var(--font-size-2xl)', marginBottom: 'var(--spacing-1)' }}>{t('Enquête e-Satis')}</h2>
+                <div style={{ color: 'var(--color-primary-600)', fontWeight: 'var(--font-weight-semibold)' }}>{t('Votre avis national')}</div>
             </div>
 
             <div className="patient-content fade-in">

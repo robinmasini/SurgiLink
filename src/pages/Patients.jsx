@@ -15,8 +15,10 @@ import { calculateDaysUntilSurgery } from '../utils/dateUtils';
 import StatusBolt from '../components/StatusBolt';
 import PatientStatusBadges from '../components/PatientStatusBadges';
 import PatientDetailPanel from '../components/PatientDetailPanel';
+import { useTranslation } from 'react-i18next';
 
 export default function Patients() {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
     const [activeTab, setActiveTab] = useState('Tous');
@@ -117,8 +119,8 @@ export default function Patients() {
             <Sidebar />
             <main style={{ flex: 1, padding: 'var(--spacing-8)', marginLeft: 'var(--sidebar-width)' }}>
                 <Header
-                    title="Liste des patients"
-                    subtitle={`Total: ${allPatients.length} patients au cabinet`}
+                    title={t('Liste des patients')}
+                    subtitle={t('Total: {{count}} patients au cabinet', { count: allPatients.length })}
                     actions={
                         <button
                             className="btn btn-secondary hide-mobile"
@@ -135,7 +137,7 @@ export default function Patients() {
                             onClick={() => window.location.href = 'tel:0491550000'}
                         >
                             <Phone size={18} />
-                            Appeler la Clinique
+                            {t('Appeler la Clinique')}
                         </button>
                     }
                 />
@@ -170,7 +172,7 @@ export default function Patients() {
                             <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-gray-400)' }} />
                             <input
                                 type="text"
-                                placeholder="Rechercher un patient..."
+                                placeholder={t('Rechercher un patient...')}
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 style={{
@@ -189,7 +191,7 @@ export default function Patients() {
                             onClick={() => setIsModalOpen(true)}
                             style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)' }}
                         >
-                            <Plus size={18} /> Ajouter un patient
+                            <Plus size={18} /> {t('Ajouter un patient')}
                         </button>
                     </div>
                 </div>
@@ -203,21 +205,21 @@ export default function Patients() {
                 }}>
                     <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
                         <div style={{ padding: 'var(--spacing-4)', borderBottom: '1px solid var(--color-gray-100)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <h3 style={{ fontSize: 'var(--font-size-lg)' }}>Patients ({patients.length})</h3>
+                            <h3 style={{ fontSize: 'var(--font-size-lg)' }}>{t('Patients')} ({patients.length})</h3>
                         </div>
 
                         <div style={{ overflowX: 'auto' }}>
                             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                                 <thead>
                                     <tr style={{ borderBottom: '1px solid var(--color-gray-100)', background: 'var(--color-gray-50)' }}>
-                                        <th style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-500)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Patient</th>
-                                        <th style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-500)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Retours patient</th>
-                                        <th className="hide-tablet" style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-500)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Étape</th>
-                                        <th className="hide-mobile" style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-500)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>SMS envoyé</th>
+                                        <th style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-500)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t('Patient')}</th>
+                                        <th style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-500)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t('Retours patient')}</th>
+                                        <th className="hide-tablet" style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-500)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t('Étape')}</th>
+                                        <th className="hide-mobile" style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-500)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t('SMS Envoyé')}</th>
                                         {!selectedPatientId && (
                                             <>
-                                                <th className="hide-tablet" style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-500)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Date</th>
-                                                <th style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-500)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Statut</th>
+                                                <th className="hide-tablet" style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-500)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t('Date')}</th>
+                                                <th style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-500)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t('Statut')}</th>
                                             </>
                                         )}
                                     </tr>
@@ -226,13 +228,13 @@ export default function Patients() {
                                     {isLoading ? (
                                         <tr>
                                             <td colSpan="6" style={{ padding: 'var(--spacing-12)', textAlign: 'center', color: 'var(--color-gray-400)' }}>
-                                                Chargement des patients...
+                                                {t('Chargement des patients...')}
                                             </td>
                                         </tr>
                                     ) : patients.length === 0 ? (
                                         <tr>
                                             <td colSpan="6" style={{ padding: 'var(--spacing-12)', textAlign: 'center', color: 'var(--color-gray-400)' }}>
-                                                Aucun patient trouvé.
+                                                {t('Aucun patient trouvé.')}
                                             </td>
                                         </tr>
                                     ) : patients.map((patient) => (
@@ -291,7 +293,7 @@ export default function Patients() {
                                             <td className="hide-mobile" style={{ padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-500)' }}>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-1)' }}>
                                                     <Clock size={12} />
-                                                    {patient.daysUntil === 'J-0' ? 'Intervention du jour' : 'Consulté'}
+                                                    {patient.daysUntil === 'J-0' ? t('Intervention du jour') : t('Consulté')}
                                                 </div>
                                             </td>
                                             {!selectedPatientId && (

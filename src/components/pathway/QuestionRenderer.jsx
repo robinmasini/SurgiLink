@@ -1,11 +1,13 @@
 import { Info, AlertTriangle, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import DoctolibButton from './DoctolibButton';
 
 /**
  * QuestionRenderer - Generic question component based on pathway config
  */
 export default function QuestionRenderer({ item, value, onChange, screen }) {
+    const { t } = useTranslation();
     const [conditionalValue, setConditionalValue] = useState({});
     const [showInfo, setShowInfo] = useState(false);
 
@@ -53,24 +55,24 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
                                 transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
                             }}
                         >
-                            OUI
+                            {t('OUI')}
                         </button>
                         <button
-                            className={`btn btn-lg ${value === false ? 'btn-danger' : 'btn-secondary'}`}
+                            className={`btn btn-lg ${value === false ? 'btn-primary' : 'btn-secondary'}`}
                             onClick={() => handleChange(false)}
                             style={{
                                 height: '80px',
                                 fontSize: 'var(--font-size-xl)',
                                 fontWeight: 'var(--font-weight-bold)',
                                 borderRadius: 'var(--radius-full)',
-                                border: value === false ? '2px solid var(--color-danger-600)' : '2px solid var(--color-gray-200)',
-                                background: value === false ? 'var(--color-danger-500)' : 'white',
+                                border: value === false ? '2px solid var(--color-primary-600)' : '2px solid var(--color-gray-200)',
+                                background: value === false ? 'var(--color-primary-500)' : 'white',
                                 color: value === false ? 'white' : 'var(--color-gray-700)',
-                                boxShadow: value === false ? '0 10px 15px -3px rgba(var(--color-danger-rgb), 0.3)' : 'none',
+                                boxShadow: value === false ? '0 10px 15px -3px rgba(var(--color-primary-rgb), 0.3)' : 'none',
                                 transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
                             }}
                         >
-                            NON
+                            {t('NON')}
                         </button>
                     </div>
                 );
@@ -103,7 +105,7 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
                                         boxShadow: value === option.value ? `0 4px 6px -1px rgba(var(--color-${isOui ? 'success' : 'primary'}-rgb), 0.2)` : 'none'
                                     }}
                                 >
-                                    {option.label}
+                                    {t(option.label)}
                                 </button>
                             );
                         })}
@@ -139,7 +141,7 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
                                     }}
                                     style={{ width: '18px', height: '18px' }}
                                 />
-                                <span style={{ fontSize: 'var(--font-size-sm)' }}>{option.label}</span>
+                                <span style={{ fontSize: 'var(--font-size-sm)' }}>{t(option.label)}</span>
                             </label>
                         ))}
                     </div>
@@ -176,7 +178,7 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
                             fontSize: 'var(--font-size-sm)',
                             color: 'var(--color-gray-600)'
                         }}>
-                            <span>0 (Aucune)</span>
+                            <span>0 ({t('Aucune')})</span>
                             <span style={{
                                 fontWeight: 'var(--font-weight-bold)',
                                 fontSize: 'var(--font-size-xl)',
@@ -184,7 +186,7 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
                             }}>
                                 {hasValue ? sliderVal : '--'}
                             </span>
-                            <span>10 (Insupportable)</span>
+                            <span>10 ({t('Insupportable')})</span>
                         </div>
                     </div>
                 );
@@ -239,7 +241,7 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
                                         boxShadow: value === option.value ? `0 4px 6px -1px rgba(var(--color-${isOui ? 'success' : 'primary'}-rgb), 0.2)` : 'none'
                                     }}
                                 >
-                                    {option.label}
+                                    {t(option.label)}
                                 </button>
                             );
                         })}
@@ -303,8 +305,8 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
                             marginTop: '4px',
                             fontWeight: '500'
                         }}>
-                            <span>1 (Pas du tout satisfait)</span>
-                            <span>10 (Très satisfait)</span>
+                            <span>1 ({t('Pas du tout satisfait')})</span>
+                            <span>10 ({t('Très satisfait')})</span>
                         </div>
                     </div>
                 );
@@ -327,7 +329,7 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
             return (
                 <div style={{ marginTop: 'var(--spacing-4)' }}>
                     <label style={{ display: 'block', marginBottom: 'var(--spacing-2)', fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-medium)' }}>
-                        {field.label}
+                        {t(field.label)}
                     </label>
                     {field.type === 'text' || field.type === 'slider_0_10' ? (
                         <textarea
@@ -359,7 +361,7 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
                     {item.conditional_fields.fields.map(field => (
                         <div key={field.id}>
                             <label style={{ display: 'block', marginBottom: 'var(--spacing-2)', fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-medium)' }}>
-                                {field.label}
+                                {t(field.label)}
                             </label>
                             {field.type === 'text' && (
                                 <input
@@ -425,7 +427,7 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
                 <div className={`alert-banner alert-banner-${item.warning_banner.type}`} style={{ marginBottom: 'var(--spacing-4)' }}>
                     <AlertTriangle size={18} />
                     <div style={{ fontSize: 'var(--font-size-sm)' }}>
-                        <strong>Important :</strong> {item.warning_banner.message}
+                        <strong>{t('Important')} :</strong> {t(item.warning_banner.message)}
                     </div>
                 </div>
             )}
@@ -435,7 +437,7 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
                 <div className={`alert-banner alert-banner-${item.info_banner.type}`} style={{ marginBottom: 'var(--spacing-4)' }}>
                     <Info size={18} />
                     <div style={{ fontSize: 'var(--font-size-sm)' }}>
-                        {item.info_banner.message}
+                        {t(item.info_banner.message)}
                     </div>
                 </div>
             )}
@@ -446,7 +448,7 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
                 fontWeight: 'var(--font-weight-bold)',
                 color: 'var(--color-gray-900)',
                 lineHeight: '1.4'
-            }}>{item.label}</div>
+            }}>{t(item.label)}</div>
 
             {/* Input */}
             {renderInput()}
@@ -537,20 +539,20 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
 
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: 'var(--spacing-4)', color: 'var(--color-primary-600)' }}>
                             <Info size={24} />
-                            <h4 style={{ margin: 0, fontSize: '18px', fontWeight: '800' }}>Informations</h4>
+                            <h4 style={{ margin: 0, fontSize: '18px', fontWeight: '800' }}>{t('Informations')}</h4>
                         </div>
 
                         {item.why && (
                             <div style={{ marginBottom: 'var(--spacing-4)' }}>
-                                <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--color-gray-400)', textTransform: 'uppercase', marginBottom: '4px' }}>Pourquoi est-ce important ?</div>
-                                <div style={{ fontSize: '15px', lineHeight: '1.5', color: 'var(--color-gray-700)' }}>{item.why}</div>
+                                <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--color-gray-400)', textTransform: 'uppercase', marginBottom: '4px' }}>{t('Pourquoi est-ce important ?')}</div>
+                                <div style={{ fontSize: '15px', lineHeight: '1.5', color: 'var(--color-gray-700)' }}>{t(item.why)}</div>
                             </div>
                         )}
 
                         {item.action && (
                             <div>
-                                <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--color-gray-400)', textTransform: 'uppercase', marginBottom: '4px' }}>À faire maintenant</div>
-                                <div style={{ fontSize: '15px', lineHeight: '1.5', color: 'var(--color-gray-700)' }}>{item.action}</div>
+                                <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--color-gray-400)', textTransform: 'uppercase', marginBottom: '4px' }}>{t('À faire maintenant')}</div>
+                                <div style={{ fontSize: '15px', lineHeight: '1.5', color: 'var(--color-gray-700)' }}>{t(item.action)}</div>
                             </div>
                         )}
 
@@ -559,7 +561,7 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
                             style={{ width: '100%', marginTop: 'var(--spacing-6)', borderRadius: '14px' }}
                             onClick={() => setShowInfo(false)}
                         >
-                            J'ai compris
+                            {t("J'ai compris")}
                         </button>
                     </div>
                 </div>

@@ -3,8 +3,10 @@ import { CheckCircle, ArrowLeft, Trophy, Sparkles, Loader2 } from 'lucide-react'
 import { useState, useEffect } from 'react';
 import { usePatientId } from '../hooks/usePatientId';
 import { supabase } from '../lib/supabase';
+import { useTranslation } from 'react-i18next';
 
 export default function PatientSuccess() {
+    const { t } = useTranslation();
     const { token } = useParams();
     const { patientId, loading: loadingId } = usePatientId();
     const [progress, setProgress] = useState(null);
@@ -43,7 +45,7 @@ export default function PatientSuccess() {
         return (
             <div className="success-page" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
                 <Loader2 className="animate-spin" size={48} style={{ color: 'var(--color-primary-500)' }} />
-                <p style={{ marginTop: '16px', color: 'var(--color-gray-500)', fontWeight: '600' }}>Calcul de votre progression...</p>
+                <p style={{ marginTop: '16px', color: 'var(--color-gray-500)', fontWeight: '600' }}>{t('Calcul de votre progression...')}</p>
             </div>
         );
     }
@@ -67,27 +69,27 @@ export default function PatientSuccess() {
                 </div>
 
                 <h1 className="success-title">
-                    {isComplete ? "Félicitations !" : "Bien reçu !"}
+                    {isComplete ? t("Félicitations !") : t("Bien reçu !")}
                 </h1>
 
                 <p className="success-message">
                     {isComplete
-                        ? "Vous avez atteint 100% de votre suivi de soins. Un grand merci pour votre assiduité tout au long de ce parcours !"
-                        : "Vos informations ont été transmises avec succès à l'équipe médicale."}
+                        ? t("Vous avez atteint 100% de votre suivi de soins. Un grand merci pour votre assiduité tout au long de ce parcours !")
+                        : t("Vos informations ont été transmises avec succès à l'équipe médicale.")}
                 </p>
 
                 {/* Progress Feedback if not complete */}
                 {!isComplete && progress !== null && progress > 0 && (
                     <div style={{ marginBottom: 'var(--spacing-8)', width: '100%' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: 'var(--color-gray-500)', marginBottom: '8px' }}>
-                            <span style={{ fontWeight: '600' }}>Progression globale</span>
+                            <span style={{ fontWeight: '600' }}>{t('Progression globale')}</span>
                             <span style={{ fontWeight: '700', color: 'var(--color-primary-600)' }}>{progress}%</span>
                         </div>
                         <div style={{ height: '10px', background: 'var(--color-gray-100)', borderRadius: '20px', overflow: 'hidden', border: '1px solid var(--color-gray-200)' }}>
                             <div style={{ height: '100%', width: `${progress}%`, background: 'linear-gradient(90deg, var(--color-primary-400), var(--color-primary-600))', borderRadius: '20px', transition: 'width 1.5s cubic-bezier(0.34, 1.56, 0.64, 1)' }}></div>
                         </div>
                         <p style={{ fontSize: '12px', color: 'var(--color-gray-400)', marginTop: '12px', lineHeight: '1.4' }}>
-                            Il vous reste quelques étapes pour finaliser votre dossier et recevoir votre attestation de fin de parcours.
+                            {t("Il vous reste quelques étapes pour finaliser votre dossier et recevoir votre attestation de fin de parcours.")}
                         </p>
                     </div>
                 )}
@@ -108,7 +110,7 @@ export default function PatientSuccess() {
                         boxShadow: '0 4px 6px rgba(212, 175, 55, 0.1)'
                     }}>
                         <Trophy size={18} />
-                        <span>PARCOURS 100% COMPLÉTÉ</span>
+                        <span>{t('PARCOURS 100% COMPLÉTÉ')}</span>
                     </div>
                 )}
 
@@ -131,12 +133,12 @@ export default function PatientSuccess() {
                         }}
                     >
                         <ArrowLeft size={18} />
-                        Retour au portail
+                        {t('Retour au portail')}
                     </Link>
                 )}
 
                 <div style={{ color: 'var(--color-gray-400)', fontSize: 'var(--font-size-sm)', marginTop: 'var(--spacing-4)' }}>
-                    SurgiLink • Votre partenaire santé
+                    SurgiLink • {t('Votre partenaire santé')}
                 </div>
             </div>
 

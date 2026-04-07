@@ -415,7 +415,7 @@ export default function PatientPreviewModal({ isOpen, onClose, patient, onRespon
                                                                 padding: '8px 16px',
                                                                 borderRadius: '8px',
                                                                 fontSize: 'var(--font-size-xs)',
-                                                                background: responses[item.id] === false ? 'var(--color-danger-500)' : 'var(--color-gray-50)',
+                                                                background: responses[item.id] === false ? 'var(--color-primary-500)' : 'var(--color-gray-50)',
                                                                 color: responses[item.id] === false ? 'white' : 'var(--color-gray-400)',
                                                                 border: 'none',
                                                                 flex: 1,
