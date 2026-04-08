@@ -1,4 +1,5 @@
 import { MapPin, Calendar, Clock, Zap, Download } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import clinicImageNew from '../assets/clinic_new.png';
 
 export default function CompactAppointmentCard({
@@ -14,6 +15,8 @@ export default function CompactAppointmentCard({
     operation = null,
     style = {}
 }) {
+    const { t } = useTranslation();
+
     // Helper to format date in a short version
     const formatShortDate = (dateStr) => {
         if (!dateStr) return 'Date non définie';
@@ -142,7 +145,7 @@ export default function CompactAppointmentCard({
                         }}
                     >
                         <Download size={18} style={{ color: 'var(--color-primary-500)' }} />
-                        <span>Télécharger mon ordonnance</span>
+                        <span>{t('Télécharger mon ordonnance')}</span>
                     </button>
                 )}
             </div>

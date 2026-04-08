@@ -341,15 +341,15 @@ export async function scheduleTimeBasedReminders(patientId, interventionDate) {
         console.warn('Using default reminder offsets due to fetch error:', e);
     }
 
-    // Calculate reminder dates using dynamic offsets and fixed Paris 10:00 AM
-    const j7Date = setParisTime(new Date(interventionDate).getTime() + (offsets.j7 * 86400000), 10, 0);
-    const j2Date = setParisTime(new Date(interventionDate).getTime() + (offsets.j2 * 86400000), 10, 0);
-    const j1Date = setParisTime(new Date(interventionDate).getTime() + (offsets.j1 * 86400000), 10, 0);
+    // Calculate reminder dates using dynamic offsets and fixed Paris 08:30 AM
+    const j7Date = setParisTime(new Date(interventionDate).getTime() + (offsets.j7 * 86400000), 8, 30);
+    const j2Date = setParisTime(new Date(interventionDate).getTime() + (offsets.j2 * 86400000), 8, 30);
+    const j1Date = setParisTime(new Date(interventionDate).getTime() + (offsets.j1 * 86400000), 8, 30);
     const j0Date = setParisTime(new Date(interventionDate).getTime() + (offsets.j0 * 86400000), 6, 30);
-    const j1PostOpDate = setParisTime(new Date(interventionDate).getTime() + (offsets.j1_postop * 86400000), 10, 0);
+    const j1PostOpDate = setParisTime(new Date(interventionDate).getTime() + (offsets.j1_postop * 86400000), 8, 30);
     const j4SatisfactionDate = setParisTime(new Date(interventionDate).getTime() + (offsets.j4_satisfaction * 86400000), 11, 0);
     const j4EsatisDate = setParisTime(new Date(interventionDate).getTime() + (offsets.esatis * 86400000), 11, 30);
-    const welcomeDate = setParisTime(new Date(interventionDate).getTime() + (offsets.welcome * 86400000), 10, 0);
+    const welcomeDate = setParisTime(new Date(interventionDate).getTime() + (offsets.welcome * 86400000), 8, 30);
 
     // Queue reminders
     const remindersToQueue = [

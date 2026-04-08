@@ -133,7 +133,12 @@ export default function PatientPortal({ patient: initialPatient }) {
     };
 
     const loadDocuments = async (patientId) => {
-        // ... (existing code)
+        try {
+            const docs = await getDocuments(patientId);
+            setDocuments(docs || []);
+        } catch (err) {
+            console.error('Error loading documents:', err);
+        }
     };
 
     const loadCustomQuestions = async (patientId) => {

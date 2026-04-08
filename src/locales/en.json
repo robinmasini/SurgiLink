@@ -131,5 +131,6 @@
   "INFIRMIER": "NURSE",
   "Suivi Post-Opératoire": "Post-Op Follow-up",
   "Prise en charge patient": "Patient Care",
-  "Déconnexion": "Logout"
+  "Déconnexion": "Logout",
+  "Télécharger mon ordonnance": "Download my prescription"
 }
