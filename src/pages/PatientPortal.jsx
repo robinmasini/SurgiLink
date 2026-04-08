@@ -405,31 +405,31 @@ export default function PatientPortal({ patient: initialPatient }) {
                     marginBottom: 'var(--spacing-8)',
                     boxShadow: '0 10px 40px rgba(0,0,0,0.02)'
                 }}>
-                    <div style={{ display: 'flex', gap: 'var(--spacing-8)', alignItems: 'center', flexWrap: 'wrap' }}>
-                        {/* Left: Portail Banner Card */}
-                        <div style={{ flex: '0 0 300px', borderRadius: '24px', overflow: 'hidden', boxShadow: '0 15px 35px rgba(124, 58, 237, 0.1)', border: '1px solid var(--color-primary-100)' }}>
-                            <img src={portailCard} alt="Portail Patient" style={{ width: '100%', height: 'auto', display: 'block', objectFit: 'cover' }} />
-                        </div>
-                        {/* Right: Appointment info */}
-                        <div style={{ flex: 1, minWidth: '300px' }}>
-                            <CompactAppointmentCard
-                                variant="pill"
-                                appointmentDate={patient.date}
-                                appointmentTime={patient.surgery_time}
-                                jValue={calculateDaysUntilSurgery(patient.date)}
-                                hasPrescription={documents.length > 0}
-                                onDownloadPrescription={handleDownloadPrescription}
-                                stayType={patient.stay_type}
-                                operation={patient.operation}
+                    {/* Appointment info - full width */}
+                    <CompactAppointmentCard
+                        variant="pill"
+                        appointmentDate={patient.date}
+                        appointmentTime={patient.surgery_time}
+                        jValue={calculateDaysUntilSurgery(patient.date)}
+                        hasPrescription={documents.length > 0}
+                        onDownloadPrescription={handleDownloadPrescription}
+                        stayType={patient.stay_type}
+                        operation={patient.operation}
+                    />
+
+                    {/* Protocol Status + small portailCard side by side */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginTop: 'var(--spacing-4)' }}>
+                        <div style={{ flex: 1 }}>
+                            <ProtocolStatus
+                                progress={Math.min(100, patient?.progress || (responses ? Math.round((Object.keys(responses).length / 20) * 100) : 0))}
+                                status={patient?.status}
+                                statusLabel="Protocole en cours d'exécution"
                             />
                         </div>
+                        <div style={{ flexShrink: 0, width: '110px', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 8px 20px rgba(124, 58, 237, 0.12)', border: '1px solid var(--color-primary-100)' }}>
+                            <img src={portailCard} alt="Portail Patient" style={{ width: '100%', height: '80px', display: 'block', objectFit: 'cover', objectPosition: 'center' }} />
+                        </div>
                     </div>
-                    {/* Protocol Status */}
-                    <ProtocolStatus
-                        progress={Math.min(100, patient?.progress || (responses ? Math.round((Object.keys(responses).length / 20) * 100) : 0))}
-                        status={patient?.status}
-                        statusLabel="Protocole en cours d'exécution"
-                    />
                 </div>
 
                 {/* ─── Informations du rendez-vous ─── */}
