@@ -32,8 +32,10 @@ import portailCard from '../assets/portail-card.png';
 import { HelpCircle, Send, RefreshCw, Download } from 'lucide-react';
 import { generateSynthesisPDF } from '../services/pdfService';
 import PatientSynthesisReport from '../components/PatientSynthesisReport';
+import { useTranslation } from 'react-i18next';
 
 function ConsignesSection() {
+    const { t } = useTranslation();
     const [acknowledged, setAcknowledged] = useState(() => {
         return localStorage.getItem('consignes_acknowledged') === 'true';
     });
@@ -46,11 +48,11 @@ function ConsignesSection() {
     const consignes = [
         {
             icon: '🍽️',
-            text: 'Vous devez être à jeun 3 heures avant votre examen (ni boire, ni manger, ni fumer).'
+            text: t('Vous devez être à jeun 3 heures avant votre examen (ni boire, ni manger, ni fumer).')
         },
         {
             icon: '🩸',
-            text: "Un bilan sanguin avec dosage de la créatinine (de moins de 3 mois) est demandé à tous les patients qui présentent : une hyper tension, une pathologie rénale, un diabète de type II (quelque soit l\u2019âge du patient)."
+            text: t('Un bilan sanguin avec dosage de la créatinine (de moins de 3 mois) est demandé à tous les patients qui présentent : une hyper tension, une pathologie rénale, un diabète de type II (quelque soit l’âge du patient).')
         }
     ];
 
@@ -76,11 +78,11 @@ function ConsignesSection() {
             }}>
                 <ShieldCheck size={18} style={{ color: acknowledged ? '#059669' : 'var(--color-primary-600)', flexShrink: 0 }} />
                 <div style={{ fontSize: '13px', fontWeight: '800', color: acknowledged ? '#065f46' : 'var(--color-primary-700)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                    Consignes pré-opératoires
+                    {t('Consignes pré-opératoires')}
                 </div>
                 {acknowledged && (
                     <div style={{ marginLeft: 'auto', background: '#059669', color: 'white', fontSize: '11px', fontWeight: '700', padding: '3px 10px', borderRadius: '20px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <CheckCircle2 size={12} /> Lu et compris
+                        <CheckCircle2 size={12} /> {t('Lu et compris')}
                     </div>
                 )}
             </div>
@@ -121,12 +123,12 @@ function ConsignesSection() {
                         onMouseOut={(e) => e.currentTarget.style.opacity = '1'}
                     >
                         <CheckCircle2 size={18} />
-                        J'affirme avoir lu et compris les consignes
+                        {t("J'affirme avoir lu et compris les consignes")}
                     </button>
                 ) : (
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '12px 16px', background: '#f0fdf4', borderRadius: '12px', border: '1px solid #d1fae5' }}>
                         <CheckCircle2 size={18} style={{ color: '#059669' }} />
-                        <span style={{ fontSize: '14px', fontWeight: '600', color: '#065f46' }}>Vous avez confirmé avoir lu les consignes</span>
+                        <span style={{ fontSize: '14px', fontWeight: '600', color: '#065f46' }}>{t('Vous avez confirmé avoir lu les consignes')}</span>
                     </div>
                 )}
             </div>
@@ -135,6 +137,7 @@ function ConsignesSection() {
 }
 
 export default function PatientPortal({ patient: initialPatient }) {
+    const { t } = useTranslation();
     const { token } = useParams();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(!initialPatient);
@@ -390,9 +393,9 @@ export default function PatientPortal({ patient: initialPatient }) {
                 {/* Header Greeting */}
                 <div style={{ marginBottom: 'var(--spacing-10)', textAlign: 'center' }}>
                     <h1 style={{ fontSize: '36px', fontWeight: '900', marginBottom: 'var(--spacing-2)', color: 'var(--color-gray-900)', letterSpacing: '-0.02em' }}>
-                        Bonjour, {patient?.name || 'Patient'}
+                        {t('Bonjour,')} {patient?.name || 'Patient'}
                     </h1>
-                    <p style={{ color: 'var(--color-gray-500)', fontSize: '18px', fontWeight: '500' }}>Votre portail de suivi personnalisé SurgiLink</p>
+                    <p style={{ color: 'var(--color-gray-500)', fontSize: '18px', fontWeight: '500' }}>{t('Votre portail de suivi personnalisé SurgiLink')}</p>
                 </div>
 
                 {/* Main Info Glass Container */}
