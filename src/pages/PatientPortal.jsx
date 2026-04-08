@@ -27,7 +27,6 @@ import ClinicAppointmentCard from '../components/ClinicAppointmentCard';
 import CompactAppointmentCard from '../components/CompactAppointmentCard';
 import ProtocolStatus from '../components/ProtocolStatus';
 import PatientTraceability from '../components/PatientTraceability';
-import portailCard from '../assets/portail-card.png';
 
 import { HelpCircle, Send, RefreshCw, Download } from 'lucide-react';
 import { generateSynthesisPDF } from '../services/pdfService';
@@ -58,42 +57,41 @@ function ConsignesSection() {
 
     return (
         <div style={{
-            background: 'white',
+            background: acknowledged ? '#f0fdf4' : '#f5f3ff',
             borderRadius: '24px',
             marginBottom: '16px',
             overflow: 'hidden',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
-            border: acknowledged ? '1px solid #d1fae5' : '1px solid #e8e0ff'
+            boxShadow: '0 4px 12px rgba(0,0,0,0.06)',
+            border: acknowledged ? '2px solid #bbf7d0' : '2px solid var(--color-primary-200)'
         }}>
             {/* Header */}
             <div style={{
                 background: acknowledged
-                    ? 'linear-gradient(135deg, #d1fae5, #a7f3d0)'
-                    : 'linear-gradient(135deg, var(--color-primary-50), #ede9fe)',
-                padding: '14px 20px',
-                borderBottom: '1px solid #f4f5f7',
+                    ? 'linear-gradient(135deg, #059669, #10b981)'
+                    : 'linear-gradient(135deg, var(--color-primary-600), var(--color-primary-800))',
+                padding: '16px 20px',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '10px'
             }}>
-                <ShieldCheck size={18} style={{ color: acknowledged ? '#059669' : 'var(--color-primary-600)', flexShrink: 0 }} />
-                <div style={{ fontSize: '13px', fontWeight: '800', color: acknowledged ? '#065f46' : 'var(--color-primary-700)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                <ShieldCheck size={20} style={{ color: 'white', flexShrink: 0 }} />
+                <div style={{ fontSize: '14px', fontWeight: '800', color: 'white', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                     {t('Consignes pré-opératoires')}
                 </div>
                 {acknowledged && (
-                    <div style={{ marginLeft: 'auto', background: '#059669', color: 'white', fontSize: '11px', fontWeight: '700', padding: '3px 10px', borderRadius: '20px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <div style={{ marginLeft: 'auto', background: 'rgba(255,255,255,0.2)', color: 'white', fontSize: '11px', fontWeight: '700', padding: '4px 12px', borderRadius: '20px', display: 'flex', alignItems: 'center', gap: '4px', border: '1px solid rgba(255,255,255,0.3)' }}>
                         <CheckCircle2 size={12} /> {t('Lu et compris')}
                     </div>
                 )}
             </div>
 
             {/* Instructions */}
-            <div style={{ padding: '16px 20px' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '20px' }}>
+            <div style={{ padding: '20px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '24px' }}>
                     {consignes.map((c, i) => (
                         <div key={i} style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
-                            <div style={{ fontSize: '22px', flexShrink: 0, marginTop: '1px' }}>{c.icon}</div>
-                            <p style={{ fontSize: '14px', color: '#374151', lineHeight: 1.65, margin: 0 }}>{c.text}</p>
+                            <div style={{ fontSize: '24px', flexShrink: 0 }}>{c.icon}</div>
+                            <p style={{ fontSize: '15px', color: '#1f2937', lineHeight: 1.6, fontWeight: '500', margin: 0 }}>{c.text}</p>
                         </div>
                     ))}
                 </div>
@@ -104,31 +102,37 @@ function ConsignesSection() {
                         onClick={handleAcknowledge}
                         style={{
                             width: '100%',
-                            padding: '14px 20px',
-                            borderRadius: '14px',
+                            padding: '16px 20px',
+                            borderRadius: '16px',
                             background: 'linear-gradient(135deg, var(--color-primary-600), var(--color-primary-800))',
                             color: 'white',
-                            border: 'none',
-                            fontWeight: '700',
-                            fontSize: '15px',
+                            border: '2px solid rgba(255,255,255,0.2)',
+                            fontWeight: '800',
+                            fontSize: '16px',
                             cursor: 'pointer',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            gap: '10px',
-                            boxShadow: '0 4px 12px rgba(124, 58, 237, 0.25)',
-                            transition: 'opacity 0.2s'
+                            gap: '12px',
+                            boxShadow: '0 10px 20px rgba(124, 58, 237, 0.3)',
+                            transition: 'all 0.2s'
                         }}
-                        onMouseOver={(e) => e.currentTarget.style.opacity = '0.9'}
-                        onMouseOut={(e) => e.currentTarget.style.opacity = '1'}
+                        onMouseOver={(e) => {
+                            e.currentTarget.style.transform = 'translateY(-2px)';
+                            e.currentTarget.style.boxShadow = '0 12px 24px rgba(124, 58, 237, 0.4)';
+                        }}
+                        onMouseOut={(e) => {
+                            e.currentTarget.style.transform = 'translateY(0)';
+                            e.currentTarget.style.boxShadow = '0 10px 20px rgba(124, 58, 237, 0.3)';
+                        }}
                     >
-                        <CheckCircle2 size={18} />
+                        <CheckCircle2 size={20} />
                         {t("J'affirme avoir lu et compris les consignes")}
                     </button>
                 ) : (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '12px 16px', background: '#f0fdf4', borderRadius: '12px', border: '1px solid #d1fae5' }}>
-                        <CheckCircle2 size={18} style={{ color: '#059669' }} />
-                        <span style={{ fontSize: '14px', fontWeight: '600', color: '#065f46' }}>{t('Vous avez confirmé avoir lu les consignes')}</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '16px 20px', background: '#d1fae5', borderRadius: '14px', border: '1px solid #10b981' }}>
+                        <CheckCircle2 size={24} style={{ color: '#059669' }} />
+                        <span style={{ fontSize: '15px', fontWeight: '700', color: '#064e3b' }}>{t('Vous avez confirmé avoir lu les consignes')}</span>
                     </div>
                 )}
             </div>
@@ -405,9 +409,25 @@ export default function PatientPortal({ patient: initialPatient }) {
                     borderRadius: '32px',
                     padding: 'var(--spacing-6)',
                     border: '1px solid rgba(255, 255, 255, 0.5)',
-                    marginBottom: 'var(--spacing-8)',
+                    marginBottom: 'var(--spacing-4)',
                     boxShadow: '0 10px 40px rgba(0,0,0,0.02)'
                 }}>
+                    {/* Primary Call Action - Moved to TOP as requested */}
+                    <div style={{ marginBottom: 'var(--spacing-6)' }}>
+                        <a href={`tel:${patient.clinic_phone || '0491159019'}`} style={{
+                            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px',
+                            padding: '16px 24px', borderRadius: '18px', 
+                            background: 'linear-gradient(135deg, var(--color-primary-600), var(--color-primary-800))',
+                            color: 'white', fontWeight: '800', fontSize: '16px', textDecoration: 'none',
+                            boxShadow: '0 8px 16px rgba(124, 58, 237, 0.2)',
+                            transition: 'transform 0.2s'
+                        }}
+                        onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.02)'}
+                        onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}>
+                            <Phone size={20} fill="white" /> {t('Appeler la clinique')}
+                        </a>
+                    </div>
+
                     {/* Appointment info - full width */}
                     <CompactAppointmentCard
                         variant="pill"
@@ -420,59 +440,56 @@ export default function PatientPortal({ patient: initialPatient }) {
                         operation={patient.operation}
                     />
 
-                    {/* Protocol Status + small portailCard side by side */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginTop: 'var(--spacing-4)' }}>
-                        <div style={{ flex: 1 }}>
-                            <ProtocolStatus
-                                progress={Math.min(100, patient?.progress || (responses ? Math.round((Object.keys(responses).length / 20) * 100) : 0))}
-                                status={patient?.status}
-                                statusLabel="Protocole en cours d'exécution"
-                            />
-                        </div>
-                        <div style={{ flexShrink: 0, width: '110px', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 8px 20px rgba(124, 58, 237, 0.12)', border: '1px solid var(--color-primary-100)' }}>
-                            <img src={portailCard} alt="Portail Patient" style={{ width: '100%', height: '80px', display: 'block', objectFit: 'cover', objectPosition: 'center' }} />
-                        </div>
+                    {/* Protocol Status - Full width now */}
+                    <div style={{ marginTop: 'var(--spacing-4)' }}>
+                        <ProtocolStatus
+                            progress={Math.min(100, patient?.progress || (responses ? Math.round((Object.keys(responses).length / 20) * 100) : 0))}
+                            status={patient?.status}
+                            statusLabel={t("Protocole en cours d'exécution")}
+                        />
                     </div>
                 </div>
 
                 {/* ─── Informations du rendez-vous ─── */}
-                <div style={{ background: 'white', borderRadius: '24px', marginBottom: '16px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', border: '1px solid #eef0f4' }}>
+                <div style={{ background: 'white', borderRadius: '24px', marginBottom: '16px', overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', border: '1px solid #eef0f4' }}>
                     {/* Date banner */}
-                    <div style={{ background: 'linear-gradient(135deg, var(--color-primary-600), var(--color-primary-800))', color: 'white', padding: '14px 20px', display: 'flex', alignItems: 'center', gap: '20px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: '700', fontSize: '15px' }}>
-                            <Calendar size={16} />
-                            {patient.date ? new Date(patient.date).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }) : 'Date à confirmer'}
+                    <div style={{ background: 'linear-gradient(135deg, var(--color-primary-600), var(--color-primary-800))', color: 'white', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '20px', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: '800', fontSize: '15px' }}>
+                            <Calendar size={18} />
+                            {patient.date ? new Date(patient.date).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }) : t('Date à confirmer')}
                         </div>
                         {patient.surgery_time && (
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: '700', fontSize: '15px' }}>
-                                <Clock size={16} />
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: '800', fontSize: '15px' }}>
+                                <Clock size={18} />
                                 {patient.surgery_time}
                             </div>
                         )}
                     </div>
 
-                    {/* Operation type */}
-                    {patient.operation && (
-                        <div style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '14px', borderBottom: '1px solid #f4f5f7' }}>
-                            <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--color-primary-50)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                <Activity size={20} style={{ color: 'var(--color-primary-600)' }} />
+                    <div style={{ padding: '4px 0' }}> {/* Wrapper for tighter spacing */}
+                        {/* Operation type */}
+                        {patient.operation && (
+                            <div style={{ padding: '12px 20px', display: 'flex', alignItems: 'center', gap: '14px' }}>
+                                <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--color-primary-50)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                    <Activity size={22} style={{ color: 'var(--color-primary-600)' }} />
+                                </div>
+                                <div style={{ flex: 1 }}>
+                                    <div style={{ fontWeight: '800', fontSize: '17px', color: '#111827' }}>{patient.operation}</div>
+                                    {patient.stay_type && <div style={{ fontSize: '14px', color: '#6b7280', fontWeight: '500', marginTop: '1px' }}>{patient.stay_type}</div>}
+                                </div>
                             </div>
-                            <div>
-                                <div style={{ fontWeight: '700', fontSize: '15px', color: '#1a1a1a' }}>{patient.operation}</div>
-                                {patient.stay_type && <div style={{ fontSize: '13px', color: '#888', marginTop: '2px' }}>{patient.stay_type}</div>}
-                            </div>
-                        </div>
-                    )}
+                        )}
 
-                    {/* Clinic name */}
-                    {patient.clinic_name && (
-                        <div style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '14px' }}>
-                            <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#f5f7ff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                <Home size={20} style={{ color: 'var(--color-primary-500)' }} />
+                        {/* Clinic name */}
+                        {patient.clinic_name && (
+                            <div style={{ padding: '12px 20px', display: 'flex', alignItems: 'center', gap: '14px' }}>
+                                <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#f5f7ff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                    <Home size={22} style={{ color: 'var(--color-primary-500)' }} />
+                                </div>
+                                <div style={{ fontWeight: '700', fontSize: '16px', color: '#374151' }}>{patient.clinic_name}</div>
                             </div>
-                            <div style={{ fontWeight: '600', fontSize: '15px', color: '#1a1a1a' }}>{patient.clinic_name}</div>
-                        </div>
-                    )}
+                        )}
+                    </div>
                 </div>
 
                 {/* ─── Préparation & Documents ─── */}
@@ -572,26 +589,15 @@ export default function PatientPortal({ patient: initialPatient }) {
                     </a>
 
                     {patient.clinic_name && (
-                        <div style={{ padding: '16px 20px', display: 'flex', alignItems: 'flex-start', gap: '14px', borderBottom: '1px solid #f4f5f7' }}>
+                        <div style={{ padding: '16px 20px', display: 'flex', alignItems: 'flex-start', gap: '14px' }}>
                             <Home size={18} style={{ color: 'var(--color-primary-600)', flexShrink: 0, marginTop: '2px' }} />
                             <div>
-                                <div style={{ fontSize: '13px', fontWeight: '700', color: '#1a1a1a', marginBottom: '4px' }}>Se rendre à la consultation</div>
+                                <div style={{ fontSize: '13px', fontWeight: '700', color: '#1a1a1a', marginBottom: '4px' }}>{t('Se rendre à la consultation')}</div>
                                 <div style={{ fontSize: '14px', fontWeight: '700', color: '#1a1a1a' }}>{patient.clinic_name}</div>
                                 {patient.clinic_address && <div style={{ fontSize: '13px', color: '#666', marginTop: '2px', lineHeight: 1.5 }}>{patient.clinic_address}</div>}
                             </div>
                         </div>
                     )}
-
-                    <div style={{ padding: '16px 20px', display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-                        <a href="tel:0444444444" style={{
-                            flex: 1, minWidth: '160px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                            padding: '12px 16px', borderRadius: '12px', background: 'var(--color-primary-50)',
-                            color: 'var(--color-primary-700)', border: '1px solid var(--color-primary-100)',
-                            fontWeight: '700', fontSize: '14px', textDecoration: 'none'
-                        }}>
-                            <Phone size={16} /> Appeler la clinique
-                        </a>
-                    </div>
                 </div>
 
                 {/* ─── Parcours de Soins ─── */}
