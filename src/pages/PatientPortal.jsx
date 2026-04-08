@@ -67,20 +67,19 @@ function ConsignesSection({ patientId }) {
         }}>
             {/* Header */}
             <div style={{
-                background: acknowledged
-                    ? 'linear-gradient(135deg, #059669, #10b981)'
-                    : 'linear-gradient(135deg, var(--color-primary-600), var(--color-primary-800))',
+                background: acknowledged ? '#f0fdf4' : 'white',
                 padding: '16px 20px',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '10px'
+                gap: '10px',
+                borderBottom: acknowledged ? '1px solid #bbf7d0' : '1px solid #f3f4f6'
             }}>
-                <ShieldCheck size={20} style={{ color: 'white', flexShrink: 0 }} />
-                <div style={{ fontSize: '14px', fontWeight: '800', color: 'white', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                <ShieldCheck size={20} style={{ color: acknowledged ? '#059669' : 'var(--color-primary-600)', flexShrink: 0 }} />
+                <div style={{ fontSize: '15px', fontWeight: '800', color: acknowledged ? '#059669' : 'var(--color-primary-600)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                     {t('Consignes pré-opératoires')}
                 </div>
                 {acknowledged && (
-                    <div style={{ marginLeft: 'auto', background: 'rgba(255,255,255,0.2)', color: 'white', fontSize: '11px', fontWeight: '700', padding: '4px 12px', borderRadius: '20px', display: 'flex', alignItems: 'center', gap: '4px', border: '1px solid rgba(255,255,255,0.3)' }}>
+                    <div style={{ marginLeft: 'auto', background: '#d1fae5', color: '#059669', fontSize: '11px', fontWeight: '700', padding: '4px 12px', borderRadius: '20px', display: 'flex', alignItems: 'center', gap: '4px', border: '1px solid #10b981' }}>
                         <CheckCircle2 size={12} /> {t('Lu et compris')}
                     </div>
                 )}
@@ -405,101 +404,91 @@ export default function PatientPortal({ patient: initialPatient }) {
 
                 {/* Main Info Glass Container */}
                 <div style={{
-                    background: 'rgba(255, 255, 255, 0.4)',
-                    backdropFilter: 'blur(10px)',
+                    background: 'white',
                     borderRadius: '32px',
                     padding: 'var(--spacing-6)',
-                    border: '1px solid rgba(255, 255, 255, 0.5)',
+                    border: '1px solid #eef0f4',
                     marginBottom: 'var(--spacing-4)',
-                    boxShadow: '0 10px 40px rgba(0,0,0,0.02)'
+                    boxShadow: '0 10px 30px rgba(0,0,0,0.04)'
                 }}>
-                    {/* Primary Call Action - Moved to TOP as requested */}
-                    <div style={{ marginBottom: 'var(--spacing-6)' }}>
-                        <a href={`tel:${patient.clinic_phone || '0491159019'}`} style={{
-                            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px',
-                            padding: '16px 24px', borderRadius: '18px', 
-                            background: 'white',
-                            color: 'var(--color-primary-600)', 
-                            border: '2px solid var(--color-primary-600)',
-                            fontWeight: '800', fontSize: '16px', textDecoration: 'none',
-                            boxShadow: '0 4px 12px rgba(124, 58, 237, 0.12)',
-                            transition: 'all 0.2s'
-                        }}
-                        onMouseOver={(e) => {
-                            e.currentTarget.style.background = 'var(--color-primary-50)';
-                            e.currentTarget.style.transform = 'scale(1.02)';
-                        }}
-                        onMouseOut={(e) => {
-                            e.currentTarget.style.background = 'white';
-                            e.currentTarget.style.transform = 'scale(1)';
-                        }}>
-                            <Phone size={20} color="var(--color-primary-600)" fill="none" /> {t('Appeler la clinique')}
-                        </a>
-                    </div>
-
-                    {/* Appointment info - full width */}
-                    <CompactAppointmentCard
-                        variant="pill"
-                        appointmentDate={patient.date}
-                        appointmentTime={patient.surgery_time}
-                        jValue={calculateDaysUntilSurgery(patient.date)}
-                        hasPrescription={documents.length > 0}
-                        onDownloadPrescription={handleDownloadPrescription}
-                        stayType={patient.stay_type}
-                        operation={patient.operation}
-                    />
-
-                    {/* Protocol Status - Full width now */}
-                    <div style={{ marginTop: 'var(--spacing-4)' }}>
-                        <ProtocolStatus
-                            progress={Math.min(100, patient?.progress || (responses ? Math.round((Object.keys(responses).length / 20) * 100) : 0))}
-                            status={patient?.status}
-                            statusLabel={t("Protocole en cours d'exécution")}
-                        />
-                    </div>
-                </div>
-
-                {/* ─── Informations du rendez-vous ─── */}
-                <div style={{ background: 'white', borderRadius: '24px', marginBottom: '16px', overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', border: '1px solid #eef0f4' }}>
-                    {/* Date banner */}
-                    <div style={{ background: 'linear-gradient(135deg, var(--color-primary-600), var(--color-primary-800))', color: 'white', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '20px', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: '800', fontSize: '15px' }}>
-                            <Calendar size={18} />
-                            {patient.date ? new Date(patient.date).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }) : t('Date à confirmer')}
+                    {/* Clinic & Appointment Header - RESTORED TRAME */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px', flexWrap: 'wrap', gap: '20px' }}>
+                        <div style={{ flex: 1, minWidth: '250px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+                                <div style={{ background: 'var(--color-primary-50)', padding: '8px', borderRadius: '12px', color: 'var(--color-primary-600)' }}>
+                                    <Home size={22} />
+                                </div>
+                                <h2 style={{ fontSize: '22px', fontWeight: '900', color: '#111827', margin: 0 }}>{patient.clinic_name || 'Clinique de Vitrolles'}</h2>
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginLeft: '45px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#4b5563', fontWeight: '600', fontSize: '15px' }}>
+                                    <Calendar size={18} style={{ color: 'var(--color-primary-500)' }} />
+                                    {patient.date ? new Date(patient.date).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) : t('Date à confirmer')}
+                                </div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#4b5563', fontWeight: '600', fontSize: '15px' }}>
+                                    <Clock size={18} style={{ color: 'var(--color-primary-500)' }} />
+                                    {patient.surgery_time || '07:30'}
+                                </div>
+                                {patient.operation && (
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--color-primary-600)', fontWeight: '700', fontSize: '15px', marginTop: '4px' }}>
+                                        <Activity size={18} />
+                                        {patient.operation}
+                                    </div>
+                                )}
+                            </div>
                         </div>
-                        {patient.surgery_time && (
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: '800', fontSize: '15px' }}>
-                                <Clock size={18} />
-                                {patient.surgery_time}
-                            </div>
-                        )}
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', minWidth: '200px' }}>
+                            <a 
+                                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(patient.clinic_address || "La Tuilière II, Rue Bel air, 13127 Vitrolles")}`}
+                                target="_blank" rel="noopener noreferrer"
+                                style={{
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
+                                    padding: '12px 20px', borderRadius: '14px', background: 'var(--color-primary-600)',
+                                    color: 'white', fontWeight: '700', fontSize: '15px', textDecoration: 'none',
+                                    boxShadow: '0 4px 12px rgba(124, 58, 237, 0.2)', transition: 'all 0.2s'
+                                }}
+                                onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+                                onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                            >
+                                <Zap size={18} fill="white" /> {t('M\'y rendre')}
+                            </a>
+                            <a href={`tel:${patient.clinic_phone || '0491159019'}`} style={{
+                                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
+                                padding: '12px 20px', borderRadius: '14px', background: 'white',
+                                color: 'var(--color-primary-600)', border: '2px solid var(--color-primary-600)',
+                                fontWeight: '700', fontSize: '15px', textDecoration: 'none',
+                                transition: 'all 0.2s'
+                            }}
+                            onMouseOver={(e) => e.currentTarget.style.background = 'var(--color-primary-50)'}
+                            onMouseOut={(e) => e.currentTarget.style.background = 'white'}
+                            >
+                                <Phone size={18} color="var(--color-primary-600)" /> {t('Appeler la clinique')}
+                            </a>
+                        </div>
                     </div>
 
-                    <div style={{ padding: '4px 0' }}> {/* Wrapper for tighter spacing */}
-                        {/* Operation type */}
-                        {patient.operation && (
-                            <div style={{ padding: '12px 20px', display: 'flex', alignItems: 'center', gap: '14px' }}>
-                                <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--color-primary-50)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                    <Activity size={22} style={{ color: 'var(--color-primary-600)' }} />
-                                </div>
-                                <div style={{ flex: 1 }}>
-                                    <div style={{ fontWeight: '800', fontSize: '17px', color: '#111827' }}>{patient.operation}</div>
-                                    {patient.stay_type && <div style={{ fontSize: '14px', color: '#6b7280', fontWeight: '500', marginTop: '1px' }}>{patient.stay_type}</div>}
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Clinic name */}
-                        {patient.clinic_name && (
-                            <div style={{ padding: '12px 20px', display: 'flex', alignItems: 'center', gap: '14px' }}>
-                                <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#f5f7ff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                    <Home size={22} style={{ color: 'var(--color-primary-500)' }} />
-                                </div>
-                                <div style={{ fontWeight: '700', fontSize: '16px', color: '#374151' }}>{patient.clinic_name}</div>
-                            </div>
-                        )}
+                    {/* J-Condition Badge & Progress */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px', borderTop: '1px solid #f3f4f6', paddingTop: '20px' }}>
+                        <div style={{
+                            background: 'linear-gradient(135deg, var(--color-primary-600), var(--color-primary-800))',
+                            color: 'white', padding: '10px 16px', borderRadius: '14px', fontWeight: '800', fontSize: '18px',
+                            display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 4px 12px rgba(124, 58, 237, 0.2)'
+                        }}>
+                            <Zap size={18} fill="currentColor" />
+                            {calculateDaysUntilSurgery(patient.date)}
+                        </div>
+                        <div style={{ flex: 1 }}>
+                            <ProtocolStatus
+                                progress={Math.min(100, patient?.progress || (responses ? Math.round((Object.keys(responses).length / 20) * 100) : 0))}
+                                status={patient?.status}
+                                statusLabel={t("Protocole en cours d'exécution")}
+                            />
+                        </div>
                     </div>
                 </div>
+
+
 
                 {/* ─── Préparation & Documents ─── */}
                 <div style={{ background: 'white', borderRadius: '24px', marginBottom: '16px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', border: '1px solid #eef0f4' }}>
