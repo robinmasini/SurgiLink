@@ -5,26 +5,28 @@ import { usePatientId } from '../hooks/usePatientId';
 import { supabase } from '../lib/supabase';
 import { useTranslation } from 'react-i18next';
 
-export default function PatientSuccess() {
+export default function PatientSuccess({ patient: propPatient }) {
     const { t } = useTranslation();
     const { token } = useParams();
-    const { patientId, loading: loadingId } = usePatientId();
+    const { patientId: hookPatientId, loading: loadingId } = usePatientId();
     const [progress, setProgress] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    const resolvedPatientId = propPatient?.id || hookPatientId;
+
     useEffect(() => {
-        if (patientId) {
+        if (resolvedPatientId) {
             loadProgress();
         }
-    }, [patientId]);
+    }, [resolvedPatientId]);
 
     const loadProgress = async () => {
         try {
-            console.log('Loading progress for patient:', patientId);
+            console.log('Loading progress for patient:', resolvedPatientId);
             const { data, error } = await supabase
                 .from('patients')
                 .select('progress, status')
-                .eq('id', patientId)
+                .eq('id', resolvedPatientId)
                 .single();
 
             if (error) throw error;
@@ -41,7 +43,9 @@ export default function PatientSuccess() {
 
     const isComplete = progress >= 99; // Allow 99% as complete to be generous with rounding
 
-    if (loadingId || (patientId && loading)) {
+    const isLoadingPatientId = !propPatient && loadingId;
+
+    if (isLoadingPatientId || (resolvedPatientId && loading)) {
         return (
             <div className="success-page" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
                 <Loader2 className="animate-spin" size={48} style={{ color: 'var(--color-primary-500)' }} />
