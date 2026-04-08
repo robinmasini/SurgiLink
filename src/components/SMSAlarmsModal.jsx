@@ -183,7 +183,7 @@ export default function SMSAlarmsModal({ isOpen, onClose, onSuccess }) {
                                 <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)', marginBottom: 'var(--spacing-4)' }}>
                                     <TrendingDown size={18} style={{ color: 'var(--color-danger-500)' }} />
                                     <h3 style={{ fontSize: '14px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-gray-500)', margin: 0 }}>
-                                        Impact Économique Potentiel
+                                        Impact Financier Potentiel
                                     </h3>
                                 </div>
                                 <div className="card" style={{ padding: 'var(--spacing-5)', background: 'var(--color-gray-50)', border: '1px solid var(--color-gray-100)' }}>
@@ -225,7 +225,7 @@ export default function SMSAlarmsModal({ isOpen, onClose, onSuccess }) {
                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-4)' }}>
                                     <div className="card" style={{ padding: 'var(--spacing-4)' }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                                            <div style={{ width: '14px', height: '14px', borderRadius: '50%', backgroundColor: 'var(--color-warning-500)', flexShrink: 0 }} />
+                                            <Zap size={16} color="var(--color-warning-500)" fill="var(--color-warning-500)" style={{ flexShrink: 0 }} />
                                             <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: 'var(--color-gray-700)', margin: 0 }}>
                                                 Protocole incomplet (Consulté mais réponses manquantes)
                                             </label>
@@ -262,7 +262,7 @@ export default function SMSAlarmsModal({ isOpen, onClose, onSuccess }) {
 
                                     <div className="card" style={{ padding: 'var(--spacing-4)' }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                                            <div style={{ width: '14px', height: '14px', borderRadius: '50%', backgroundColor: 'var(--color-danger-500)', flexShrink: 0 }} />
+                                            <Zap size={16} color="var(--color-danger-500)" fill="var(--color-danger-500)" style={{ flexShrink: 0 }} />
                                             <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: 'var(--color-gray-700)', margin: 0 }}>
                                                 Aucune réponse (Déjà contacté, 0 interaction)
                                             </label>
@@ -285,7 +285,7 @@ export default function SMSAlarmsModal({ isOpen, onClose, onSuccess }) {
                                     </div>
                                     <div className="card" style={{ padding: 'var(--spacing-4)', gridColumn: 'span 2' }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                                            <div style={{ width: '14px', height: '14px', borderRadius: '50%', backgroundColor: 'var(--color-success-500)', flexShrink: 0 }} />
+                                            <Zap size={16} color="var(--color-success-500)" fill="var(--color-success-500)" style={{ flexShrink: 0 }} />
                                             <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: 'var(--color-gray-700)', margin: 0 }}>
                                                 Performance (Succès et assiduité)
                                             </label>
