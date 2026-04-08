@@ -33,14 +33,15 @@ import { generateSynthesisPDF } from '../services/pdfService';
 import PatientSynthesisReport from '../components/PatientSynthesisReport';
 import { useTranslation } from 'react-i18next';
 
-function ConsignesSection() {
+function ConsignesSection({ patientId }) {
     const { t } = useTranslation();
+    const storageKey = `consignes_acknowledged_${patientId}`;
     const [acknowledged, setAcknowledged] = useState(() => {
-        return localStorage.getItem('consignes_acknowledged') === 'true';
+        return localStorage.getItem(storageKey) === 'true';
     });
 
     const handleAcknowledge = () => {
-        localStorage.setItem('consignes_acknowledged', 'true');
+        localStorage.setItem(storageKey, 'true');
         setAcknowledged(true);
     };
 
@@ -104,9 +105,9 @@ function ConsignesSection() {
                             width: '100%',
                             padding: '16px 20px',
                             borderRadius: '16px',
-                            background: 'linear-gradient(135deg, var(--color-primary-600), var(--color-primary-800))',
-                            color: 'white',
-                            border: '2px solid rgba(255,255,255,0.2)',
+                            background: 'white',
+                            color: 'var(--color-primary-600)',
+                            border: '2px solid var(--color-primary-600)',
                             fontWeight: '800',
                             fontSize: '16px',
                             cursor: 'pointer',
@@ -114,19 +115,19 @@ function ConsignesSection() {
                             alignItems: 'center',
                             justifyContent: 'center',
                             gap: '12px',
-                            boxShadow: '0 10px 20px rgba(124, 58, 237, 0.3)',
+                            boxShadow: '0 4px 12px rgba(124, 58, 237, 0.12)',
                             transition: 'all 0.2s'
                         }}
                         onMouseOver={(e) => {
+                            e.currentTarget.style.background = 'var(--color-primary-50)';
                             e.currentTarget.style.transform = 'translateY(-2px)';
-                            e.currentTarget.style.boxShadow = '0 12px 24px rgba(124, 58, 237, 0.4)';
                         }}
                         onMouseOut={(e) => {
+                            e.currentTarget.style.background = 'white';
                             e.currentTarget.style.transform = 'translateY(0)';
-                            e.currentTarget.style.boxShadow = '0 10px 20px rgba(124, 58, 237, 0.3)';
                         }}
                     >
-                        <CheckCircle2 size={20} />
+                        <CheckCircle2 size={20} color="var(--color-primary-600)" />
                         {t("J'affirme avoir lu et compris les consignes")}
                     </button>
                 ) : (
@@ -417,14 +418,22 @@ export default function PatientPortal({ patient: initialPatient }) {
                         <a href={`tel:${patient.clinic_phone || '0491159019'}`} style={{
                             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px',
                             padding: '16px 24px', borderRadius: '18px', 
-                            background: 'linear-gradient(135deg, var(--color-primary-600), var(--color-primary-800))',
-                            color: 'white', fontWeight: '800', fontSize: '16px', textDecoration: 'none',
-                            boxShadow: '0 8px 16px rgba(124, 58, 237, 0.2)',
-                            transition: 'transform 0.2s'
+                            background: 'white',
+                            color: 'var(--color-primary-600)', 
+                            border: '2px solid var(--color-primary-600)',
+                            fontWeight: '800', fontSize: '16px', textDecoration: 'none',
+                            boxShadow: '0 4px 12px rgba(124, 58, 237, 0.12)',
+                            transition: 'all 0.2s'
                         }}
-                        onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.02)'}
-                        onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}>
-                            <Phone size={20} fill="white" /> {t('Appeler la clinique')}
+                        onMouseOver={(e) => {
+                            e.currentTarget.style.background = 'var(--color-primary-50)';
+                            e.currentTarget.style.transform = 'scale(1.02)';
+                        }}
+                        onMouseOut={(e) => {
+                            e.currentTarget.style.background = 'white';
+                            e.currentTarget.style.transform = 'scale(1)';
+                        }}>
+                            <Phone size={20} color="var(--color-primary-600)" fill="none" /> {t('Appeler la clinique')}
                         </a>
                     </div>
 
@@ -567,7 +576,7 @@ export default function PatientPortal({ patient: initialPatient }) {
                 </div>
 
                 {/* ─── Consignes pré-opératoires ─── */}
-                <ConsignesSection />
+                <ConsignesSection patientId={patient.id} />
 
                 {/* ─── Détails de l'établissement ─── */}
                 <div style={{ background: 'white', borderRadius: '24px', marginBottom: '16px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', border: '1px solid #eef0f4' }}>
