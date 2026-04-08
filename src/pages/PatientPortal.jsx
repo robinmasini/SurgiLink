@@ -19,7 +19,9 @@ import {
     Clock,
     ChevronRight,
     Phone,
-    Lock
+    Lock,
+    CheckCircle2,
+    ShieldCheck
 } from 'lucide-react';
 import ClinicAppointmentCard from '../components/ClinicAppointmentCard';
 import CompactAppointmentCard from '../components/CompactAppointmentCard';
@@ -30,6 +32,107 @@ import portailCard from '../assets/portail-card.png';
 import { HelpCircle, Send, RefreshCw, Download } from 'lucide-react';
 import { generateSynthesisPDF } from '../services/pdfService';
 import PatientSynthesisReport from '../components/PatientSynthesisReport';
+
+function ConsignesSection() {
+    const [acknowledged, setAcknowledged] = useState(() => {
+        return localStorage.getItem('consignes_acknowledged') === 'true';
+    });
+
+    const handleAcknowledge = () => {
+        localStorage.setItem('consignes_acknowledged', 'true');
+        setAcknowledged(true);
+    };
+
+    const consignes = [
+        {
+            icon: '🍽️',
+            text: 'Vous devez être à jeun 3 heures avant votre examen (ni boire, ni manger, ni fumer).'
+        },
+        {
+            icon: '🩸',
+            text: "Un bilan sanguin avec dosage de la créatinine (de moins de 3 mois) est demandé à tous les patients qui présentent : une hyper tension, une pathologie rénale, un diabète de type II (quelque soit l\u2019âge du patient)."
+        }
+    ];
+
+    return (
+        <div style={{
+            background: 'white',
+            borderRadius: '24px',
+            marginBottom: '16px',
+            overflow: 'hidden',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+            border: acknowledged ? '1px solid #d1fae5' : '1px solid #e8e0ff'
+        }}>
+            {/* Header */}
+            <div style={{
+                background: acknowledged
+                    ? 'linear-gradient(135deg, #d1fae5, #a7f3d0)'
+                    : 'linear-gradient(135deg, var(--color-primary-50), #ede9fe)',
+                padding: '14px 20px',
+                borderBottom: '1px solid #f4f5f7',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px'
+            }}>
+                <ShieldCheck size={18} style={{ color: acknowledged ? '#059669' : 'var(--color-primary-600)', flexShrink: 0 }} />
+                <div style={{ fontSize: '13px', fontWeight: '800', color: acknowledged ? '#065f46' : 'var(--color-primary-700)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    Consignes pré-opératoires
+                </div>
+                {acknowledged && (
+                    <div style={{ marginLeft: 'auto', background: '#059669', color: 'white', fontSize: '11px', fontWeight: '700', padding: '3px 10px', borderRadius: '20px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <CheckCircle2 size={12} /> Lu et compris
+                    </div>
+                )}
+            </div>
+
+            {/* Instructions */}
+            <div style={{ padding: '16px 20px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '20px' }}>
+                    {consignes.map((c, i) => (
+                        <div key={i} style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
+                            <div style={{ fontSize: '22px', flexShrink: 0, marginTop: '1px' }}>{c.icon}</div>
+                            <p style={{ fontSize: '14px', color: '#374151', lineHeight: 1.65, margin: 0 }}>{c.text}</p>
+                        </div>
+                    ))}
+                </div>
+
+                {/* CTA */}
+                {!acknowledged ? (
+                    <button
+                        onClick={handleAcknowledge}
+                        style={{
+                            width: '100%',
+                            padding: '14px 20px',
+                            borderRadius: '14px',
+                            background: 'linear-gradient(135deg, var(--color-primary-600), var(--color-primary-800))',
+                            color: 'white',
+                            border: 'none',
+                            fontWeight: '700',
+                            fontSize: '15px',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '10px',
+                            boxShadow: '0 4px 12px rgba(124, 58, 237, 0.25)',
+                            transition: 'opacity 0.2s'
+                        }}
+                        onMouseOver={(e) => e.currentTarget.style.opacity = '0.9'}
+                        onMouseOut={(e) => e.currentTarget.style.opacity = '1'}
+                    >
+                        <CheckCircle2 size={18} />
+                        J'affirme avoir lu et compris les consignes
+                    </button>
+                ) : (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '12px 16px', background: '#f0fdf4', borderRadius: '12px', border: '1px solid #d1fae5' }}>
+                        <CheckCircle2 size={18} style={{ color: '#059669' }} />
+                        <span style={{ fontSize: '14px', fontWeight: '600', color: '#065f46' }}>Vous avez confirmé avoir lu les consignes</span>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+}
 
 export default function PatientPortal({ patient: initialPatient }) {
     const { token } = useParams();
@@ -302,33 +405,12 @@ export default function PatientPortal({ patient: initialPatient }) {
                     marginBottom: 'var(--spacing-8)',
                     boxShadow: '0 10px 40px rgba(0,0,0,0.02)'
                 }}>
-                    <div style={{
-                        display: 'flex',
-                        gap: 'var(--spacing-8)',
-                        alignItems: 'center',
-                        flexWrap: 'wrap' // For mobile responsiveness
-                    }}>
+                    <div style={{ display: 'flex', gap: 'var(--spacing-8)', alignItems: 'center', flexWrap: 'wrap' }}>
                         {/* Left: Portail Banner Card */}
-                        <div style={{
-                            flex: '0 0 300px', // Fixed-ish width for the card
-                            borderRadius: '24px',
-                            overflow: 'hidden',
-                            boxShadow: '0 15px 35px rgba(124, 58, 237, 0.1)',
-                            border: '1px solid var(--color-primary-100)'
-                        }}>
-                            <img
-                                src={portailCard}
-                                alt="Portail Patient"
-                                style={{
-                                    width: '100%',
-                                    height: 'auto',
-                                    display: 'block',
-                                    objectFit: 'cover'
-                                }}
-                            />
+                        <div style={{ flex: '0 0 300px', borderRadius: '24px', overflow: 'hidden', boxShadow: '0 15px 35px rgba(124, 58, 237, 0.1)', border: '1px solid var(--color-primary-100)' }}>
+                            <img src={portailCard} alt="Portail Patient" style={{ width: '100%', height: 'auto', display: 'block', objectFit: 'cover' }} />
                         </div>
-
-                        {/* Right: Top Pills Row */}
+                        {/* Right: Appointment info */}
                         <div style={{ flex: 1, minWidth: '300px' }}>
                             <CompactAppointmentCard
                                 variant="pill"
@@ -342,292 +424,236 @@ export default function PatientPortal({ patient: initialPatient }) {
                             />
                         </div>
                     </div>
-
-                    {/* Clinic Card Row (Full width below) */}
-                    <div style={{ marginTop: 'var(--spacing-8)' }}>
-                        <CompactAppointmentCard
-                            variant="card"
-                            clinicName={patient.clinic_name || 'Clinique de Vitrolles'}
-                            appointmentDate={patient.date}
-                            appointmentTime={patient.surgery_time}
-                        />
-                    </div>
-
-                    {/* Protocol Status Row */}
+                    {/* Protocol Status */}
                     <ProtocolStatus
                         progress={Math.min(100, patient?.progress || (responses ? Math.round((Object.keys(responses).length / 20) * 100) : 0))}
                         status={patient?.status}
                         statusLabel="Protocole en cours d'exécution"
                     />
-
-                    {/* Contact Buttons */}
-                    <div style={{
-                        display: 'flex',
-                        gap: 'var(--spacing-4)',
-                        marginTop: 'var(--spacing-6)',
-                        flexWrap: 'wrap'
-                    }}>
-                        <a
-                            href="tel:0144444444"
-                            style={{
-                                flex: 1,
-                                minWidth: '200px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                gap: '12px',
-                                padding: '16px',
-                                borderRadius: '16px',
-                                background: 'white',
-                                color: 'var(--color-primary-600)',
-                                border: '1px solid var(--color-primary-100)',
-                                fontWeight: '700',
-                                textDecoration: 'none',
-                                boxShadow: '0 4px 12px rgba(0,0,0,0.02)',
-                                transition: 'all 0.2s'
-                            }}
-                            onMouseOver={(e) => e.currentTarget.style.background = 'var(--color-primary-50)'}
-                            onMouseOut={(e) => e.currentTarget.style.background = 'white'}
-                        >
-                            <Phone size={20} />
-                            Appeler la clinique
-                        </a>
-                        <a
-                            href="tel:0144444444"
-                            style={{
-                                flex: 1,
-                                minWidth: '200px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                gap: '12px',
-                                padding: '16px',
-                                borderRadius: '16px',
-                                background: 'white',
-                                color: 'var(--color-primary-600)',
-                                border: '1px solid var(--color-primary-100)',
-                                fontWeight: '700',
-                                textDecoration: 'none',
-                                boxShadow: '0 4px 12px rgba(0,0,0,0.02)',
-                                transition: 'all 0.2s'
-                            }}
-                            onMouseOver={(e) => e.currentTarget.style.background = 'var(--color-primary-50)'}
-                            onMouseOut={(e) => e.currentTarget.style.background = 'white'}
-                        >
-                            <Phone size={20} />
-                            Appeler le cabinet
-                        </a>
-                    </div>
                 </div>
 
-
-
-                {/* Care Pathway Section */}
-                <div className="card" style={{
-                    background: 'rgba(232, 240, 254, 0.4)',
-                    padding: 'var(--spacing-6)',
-                    borderRadius: '32px',
-                    border: '1px solid rgba(255, 255, 255, 0.5)'
-                }}>
-                    {/* Custom Questions Section */}
-                    {customQuestions.filter(q => !q.response).length > 0 && (
-                        <div style={{ marginBottom: 'var(--spacing-6)' }}>
-                            <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-primary-600)', textTransform: 'uppercase', marginBottom: 'var(--spacing-4)', letterSpacing: '0.05em' }}>
-                                Question(s) spécifique(s) pour vous
+                {/* ─── Informations du rendez-vous ─── */}
+                <div style={{ background: 'white', borderRadius: '24px', marginBottom: '16px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', border: '1px solid #eef0f4' }}>
+                    {/* Date banner */}
+                    <div style={{ background: 'linear-gradient(135deg, var(--color-primary-600), var(--color-primary-800))', color: 'white', padding: '14px 20px', display: 'flex', alignItems: 'center', gap: '20px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: '700', fontSize: '15px' }}>
+                            <Calendar size={16} />
+                            {patient.date ? new Date(patient.date).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }) : 'Date à confirmer'}
+                        </div>
+                        {patient.surgery_time && (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: '700', fontSize: '15px' }}>
+                                <Clock size={16} />
+                                {patient.surgery_time}
                             </div>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        )}
+                    </div>
+
+                    {/* Operation type */}
+                    {patient.operation && (
+                        <div style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '14px', borderBottom: '1px solid #f4f5f7' }}>
+                            <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--color-primary-50)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                <Activity size={20} style={{ color: 'var(--color-primary-600)' }} />
+                            </div>
+                            <div>
+                                <div style={{ fontWeight: '700', fontSize: '15px', color: '#1a1a1a' }}>{patient.operation}</div>
+                                {patient.stay_type && <div style={{ fontSize: '13px', color: '#888', marginTop: '2px' }}>{patient.stay_type}</div>}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Clinic name */}
+                    {patient.clinic_name && (
+                        <div style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '14px' }}>
+                            <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#f5f7ff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                <Home size={20} style={{ color: 'var(--color-primary-500)' }} />
+                            </div>
+                            <div style={{ fontWeight: '600', fontSize: '15px', color: '#1a1a1a' }}>{patient.clinic_name}</div>
+                        </div>
+                    )}
+                </div>
+
+                {/* ─── Préparation & Documents ─── */}
+                <div style={{ background: 'white', borderRadius: '24px', marginBottom: '16px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', border: '1px solid #eef0f4' }}>
+                    {/* Protocol status row */}
+                    <div style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #f4f5f7' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                            <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#f0fdf4', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                <TrendingUp size={20} style={{ color: '#16a34a' }} />
+                            </div>
+                            <div>
+                                <div style={{ fontWeight: '700', fontSize: '15px', color: '#1a1a1a' }}>
+                                    {(patient?.progress || 0) >= 100 ? 'Préparation terminée 🎉' : 'Préparation en cours'}
+                                </div>
+                                <div style={{ fontSize: '13px', color: '#888', marginTop: '2px' }}>
+                                    {(patient?.progress || 0) >= 100 ? 'Tout est prêt pour votre prise en charge' : `${patient?.progress || 0}% du protocole complété`}
+                                </div>
+                            </div>
+                        </div>
+                        <ChevronRight size={20} style={{ color: '#ccc', flexShrink: 0 }} />
+                    </div>
+
+                    {/* Download ordonnance — always visible */}
+                    <div
+                        onClick={documents.length > 0 ? handleDownloadPrescription : undefined}
+                        style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '14px', cursor: documents.length > 0 ? 'pointer' : 'default', opacity: documents.length > 0 ? 1 : 0.5, borderBottom: '1px solid #f4f5f7', transition: 'background 0.15s' }}
+                        onMouseOver={(e) => { if (documents.length > 0) e.currentTarget.style.background = '#f9fafb'; }}
+                        onMouseOut={(e) => { e.currentTarget.style.background = 'transparent'; }}
+                    >
+                        <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#eff6ff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                            <Download size={20} style={{ color: 'var(--color-primary-600)' }} />
+                        </div>
+                        <div style={{ flex: 1 }}>
+                            <div style={{ fontWeight: '700', fontSize: '15px', color: documents.length > 0 ? 'var(--color-primary-600)' : '#aaa' }}>
+                                Télécharger mon ordonnance
+                            </div>
+                            <div style={{ fontSize: '13px', color: '#888', marginTop: '2px' }}>
+                                {documents.length > 0 ? `${documents.length} document(s) disponible(s)` : 'Aucun document disponible pour le moment'}
+                            </div>
+                        </div>
+                        <ChevronRight size={20} style={{ color: '#ccc', flexShrink: 0 }} />
+                    </div>
+
+                    {/* Custom Questions */}
+                    {customQuestions.filter(q => !q.response).length > 0 && (
+                        <div style={{ padding: '16px 20px', borderBottom: '1px solid #f4f5f7' }}>
+                            <div style={{ fontSize: '12px', fontWeight: '800', color: 'var(--color-primary-600)', textTransform: 'uppercase', marginBottom: '12px', letterSpacing: '0.05em' }}>
+                                Questions de votre équipe médicale
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                                 {customQuestions.filter(q => !q.response).map(q => (
-                                    <div key={q.id} className="card glass-effect" style={{ padding: 'var(--spacing-4)', background: 'rgba(255,255,255,0.8)', borderLeft: '4px solid var(--color-primary-500)' }}>
-                                        <div style={{ fontSize: '15px', color: 'var(--color-gray-900)', fontWeight: '600', marginBottom: '12px' }}>
-                                            {q.question_text}
-                                        </div>
+                                    <div key={q.id} style={{ background: 'var(--color-primary-50)', borderRadius: '12px', padding: '12px 16px', borderLeft: '3px solid var(--color-primary-400)' }}>
+                                        <div style={{ fontSize: '14px', color: 'var(--color-gray-900)', fontWeight: '600', marginBottom: '10px' }}>{q.question_text}</div>
                                         <div style={{ display: 'flex', gap: '8px' }}>
-                                            <input
-                                                type="text"
-                                                className="input"
-                                                placeholder="Votre réponse ici..."
-                                                style={{ flex: 1, fontSize: '14px', height: '40px', background: 'white' }}
-                                                onKeyDown={(e) => {
-                                                    if (e.key === 'Enter') handleAnswerCustomQuestion(q.id, e.target.value);
-                                                }}
-                                            />
-                                            <button
-                                                className="btn btn-primary"
-                                                style={{ padding: '0 16px', height: '40px', background: 'var(--color-primary-600)' }}
-                                                disabled={answeringQuestionId === q.id}
-                                                onClick={(e) => {
-                                                    const input = e.currentTarget.previousSibling;
-                                                    handleAnswerCustomQuestion(q.id, input.value);
-                                                }}
-                                            >
-                                                {answeringQuestionId === q.id ? <RefreshCw size={18} className="animate-spin" /> : <Send size={18} />}
+                                            <input type="text" className="input" placeholder="Votre réponse..." style={{ flex: 1, fontSize: '14px', height: '38px', background: 'white' }}
+                                                onKeyDown={(e) => { if (e.key === 'Enter') handleAnswerCustomQuestion(q.id, e.target.value); }} />
+                                            <button className="btn btn-primary" style={{ padding: '0 14px', height: '38px' }} disabled={answeringQuestionId === q.id}
+                                                onClick={(e) => { const input = e.currentTarget.previousSibling; handleAnswerCustomQuestion(q.id, input.value); }}>
+                                                {answeringQuestionId === q.id ? <RefreshCw size={16} className="animate-spin" /> : <Send size={16} />}
                                             </button>
                                         </div>
                                     </div>
                                 ))}
                             </div>
-                            <div style={{ height: '1px', background: 'rgba(255,255,255,0.5)', margin: '24px 0' }}></div>
                         </div>
                     )}
 
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--spacing-6)' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                            <div style={{ background: '#FFF3E0', padding: '8px', borderRadius: '10px', color: '#E65100' }}>
-                                <FileText size={20} />
-                            </div>
-                            <h3 style={{ fontSize: '18px', fontWeight: '800', color: '#1A1A1A' }}>Votre Parcours de Soins</h3>
+                    {/* Patient name */}
+                    <div style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '14px' }}>
+                        <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#f4f5f7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                            <User size={20} style={{ color: '#555' }} />
                         </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <div style={{ fontWeight: '600', fontSize: '15px', color: '#1a1a1a' }}>{patient.name}</div>
+                    </div>
+                </div>
 
-                            <div style={{
-                                background: '#37474F',
-                                color: 'white',
-                                padding: '6px 16px',
-                                borderRadius: '20px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '8px',
-                                fontSize: '14px',
-                                fontWeight: '700'
-                            }}>
-                                <Zap size={14} fill="currentColor" />
-                                {calculateDaysUntilSurgery(patient.date)}
+                {/* ─── Consignes pré-opératoires ─── */}
+                <ConsignesSection />
+
+                {/* ─── Détails de l'établissement ─── */}
+                <div style={{ background: 'white', borderRadius: '24px', marginBottom: '16px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', border: '1px solid #eef0f4' }}>
+                    <div style={{ padding: '14px 20px', borderBottom: '1px solid #f4f5f7' }}>
+                        <div style={{ fontSize: '11px', fontWeight: '800', color: '#aaa', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Détails de l'établissement de santé</div>
+                    </div>
+
+                    <a href={`tel:${patient.clinic_phone || '0444444444'}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                        <div style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '14px', borderBottom: '1px solid #f4f5f7', cursor: 'pointer' }}
+                            onMouseOver={(e) => e.currentTarget.style.background = '#f9fafb'}
+                            onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}>
+                            <Phone size={18} style={{ color: 'var(--color-primary-600)', flexShrink: 0 }} />
+                            <div>
+                                <div style={{ fontSize: '13px', fontWeight: '700', color: '#1a1a1a' }}>Téléphone de la clinique</div>
+                                <div style={{ fontSize: '13px', color: 'var(--color-primary-600)', fontWeight: '600', marginTop: '2px' }}>{patient.clinic_phone || '04 91 15 90 19'}</div>
+                                <div style={{ fontSize: '12px', color: 'var(--color-primary-500)', marginTop: '2px' }}>Appeler l'établissement</div>
                             </div>
+                        </div>
+                    </a>
+
+                    {patient.clinic_name && (
+                        <div style={{ padding: '16px 20px', display: 'flex', alignItems: 'flex-start', gap: '14px', borderBottom: '1px solid #f4f5f7' }}>
+                            <Home size={18} style={{ color: 'var(--color-primary-600)', flexShrink: 0, marginTop: '2px' }} />
+                            <div>
+                                <div style={{ fontSize: '13px', fontWeight: '700', color: '#1a1a1a', marginBottom: '4px' }}>Se rendre à la consultation</div>
+                                <div style={{ fontSize: '14px', fontWeight: '700', color: '#1a1a1a' }}>{patient.clinic_name}</div>
+                                {patient.clinic_address && <div style={{ fontSize: '13px', color: '#666', marginTop: '2px', lineHeight: 1.5 }}>{patient.clinic_address}</div>}
+                            </div>
+                        </div>
+                    )}
+
+                    <div style={{ padding: '16px 20px', display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                        <a href="tel:0444444444" style={{
+                            flex: 1, minWidth: '160px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                            padding: '12px 16px', borderRadius: '12px', background: 'var(--color-primary-50)',
+                            color: 'var(--color-primary-700)', border: '1px solid var(--color-primary-100)',
+                            fontWeight: '700', fontSize: '14px', textDecoration: 'none'
+                        }}>
+                            <Phone size={16} /> Appeler la clinique
+                        </a>
+                    </div>
+                </div>
+
+                {/* ─── Parcours de Soins ─── */}
+                <div style={{ background: 'white', borderRadius: '24px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', border: '1px solid #eef0f4' }}>
+                    <div style={{ padding: '14px 20px', borderBottom: '1px solid #f4f5f7', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div style={{ fontSize: '11px', fontWeight: '800', color: '#aaa', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Votre Parcours de Soins</div>
+                        <div style={{ background: 'var(--color-primary-600)', color: 'white', padding: '4px 14px', borderRadius: '20px', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: '700' }}>
+                            <Zap size={13} fill="currentColor" />
+                            {calculateDaysUntilSurgery(patient.date)}
                         </div>
                     </div>
 
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-3)' }}>
-                        {(() => {
-                            const today = new Date();
-                            today.setHours(0, 0, 0, 0);
-                            const surgeryDate = patient.date ? new Date(patient.date) : null;
-                            if (surgeryDate) surgeryDate.setHours(0, 0, 0, 0);
-                            const diffDays = surgeryDate ? Math.ceil((surgeryDate - today) / (1000 * 60 * 60 * 24)) : 999;
+                    {(() => {
+                        const today = new Date();
+                        today.setHours(0, 0, 0, 0);
+                        const surgeryDate = patient.date ? new Date(patient.date) : null;
+                        if (surgeryDate) surgeryDate.setHours(0, 0, 0, 0);
+                        const diffDays = surgeryDate ? Math.ceil((surgeryDate - today) / (1000 * 60 * 60 * 24)) : 999;
 
-                            return [
-                                { to: `bienvenue`, emoji: '👋', label: 'Bienvenue', desc: 'Commencez ici : activation de votre suivi', offset: 99 },
-                                { to: `j7`, emoji: '📋', label: 'Questionnaire J-7', desc: 'Préparation administrative (anesthésie, accompagnant)', offset: 7 },
-                                { to: `j2`, emoji: '📄', label: 'Questionnaire J-2', desc: 'Documents, jeûne et consignes du jour J', offset: 2 },
-                                { to: `j1-preop`, emoji: '🚿', label: 'Confirmation J-1', desc: 'Dernière vérification avant votre venue', offset: 1 },
-                                { to: `j1`, emoji: '🌡️', label: 'Suivi J+1', desc: 'Bilan post-opératoire du lendemain', offset: -1 },
-                                { to: `j4`, emoji: '⭐', label: 'Satisfaction J+4', desc: 'Votre avis sur notre prise en charge', offset: -4 },
-                                { to: `e-satis`, emoji: '🇫🇷', label: 'Enquête e-Satis', desc: 'Questionnaire national', offset: -4 },
-                            ].map(step => {
-                                const isLocked = diffDays > step.offset;
+                        return [
+                            { to: `bienvenue`, emoji: '👋', label: 'Bienvenue', desc: 'Activation de votre suivi', offset: 99 },
+                            { to: `j7`, emoji: '📋', label: 'Questionnaire J-7', desc: 'Préparation administrative (anesthésie, accompagnant)', offset: 7 },
+                            { to: `j2`, emoji: '📄', label: 'Questionnaire J-2', desc: 'Documents, jeûne et consignes du jour J', offset: 2 },
+                            { to: `j1-preop`, emoji: '🚿', label: 'Confirmation J-1', desc: 'Dernière vérification avant votre venue', offset: 1 },
+                            { to: `j1`, emoji: '🌡️', label: 'Suivi J+1', desc: 'Bilan post-opératoire du lendemain', offset: -1 },
+                            { to: `j4`, emoji: '⭐', label: 'Satisfaction J+4', desc: 'Votre avis sur notre prise en charge', offset: -4 },
+                            { to: `e-satis`, emoji: '🇫🇷', label: 'Enquête e-Satis', desc: 'Questionnaire national de satisfaction', offset: -4 },
+                        ].map((step, idx, arr) => {
+                            const isLocked = diffDays > step.offset;
+                            const isLast = idx === arr.length - 1;
+                            let isRequired = false;
+                            if (step.to === 'j7' && diffDays <= 7 && !responses['anesthesia_consultation']) isRequired = true;
+                            if (step.to === 'j2' && diffDays <= 2 && !responses['fasting_understood']) isRequired = true;
+                            if (step.to === 'j1-preop' && diffDays <= 1 && !responses['admission_confirmed']) isRequired = true;
 
-                                if (isLocked) {
-                                    return (
-                                        <div
-                                            key={step.to}
-                                            className="card glass-effect"
-                                            style={{
-                                                textDecoration: 'none',
-                                                display: 'block',
-                                                border: '1px solid var(--color-gray-100)',
-                                                opacity: 0.6,
-                                                cursor: 'not-allowed',
-                                                background: 'rgba(255,255,255,0.5)',
-                                                borderRadius: '20px',
-                                                padding: 'var(--spacing-4) var(--spacing-6)'
-                                            }}
-                                        >
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-4)' }}>
-                                                <div style={{ fontSize: '32px', width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center', filter: 'grayscale(1)' }}>
-                                                    {step.emoji}
-                                                </div>
-                                                <div style={{ flex: 1 }}>
-                                                    <h4 style={{ marginBottom: '2px', fontWeight: '700', color: '#666' }}>{step.label}</h4>
-                                                    <p style={{ fontSize: '12px', color: '#999', fontWeight: '500' }}>{step.desc}</p>
-                                                </div>
-                                                <div style={{
-                                                    color: '#BDBDBD',
-                                                    fontSize: '13px',
-                                                    fontWeight: '600',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    gap: '8px',
-                                                    background: 'var(--color-gray-50)',
-                                                    padding: '6px 12px',
-                                                    borderRadius: '10px'
-                                                }}>
-                                                    <Lock size={14} />
-                                                    Verrouillé
-                                                </div>
-                                            </div>
+                            const row = (
+                                <div key={step.to} style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '14px', borderBottom: isLast ? 'none' : '1px solid #f4f5f7', opacity: isLocked ? 0.5 : 1 }}>
+                                    <div style={{ fontSize: '28px', width: '44px', height: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '12px', background: '#f9fafb', flexShrink: 0, filter: isLocked ? 'grayscale(1)' : 'none' }}>
+                                        {step.emoji}
+                                    </div>
+                                    <div style={{ flex: 1 }}>
+                                        <div style={{ fontWeight: '700', fontSize: '15px', color: isLocked ? '#999' : '#1a1a1a' }}>{step.label}</div>
+                                        <div style={{ fontSize: '12px', color: '#aaa', marginTop: '2px' }}>{step.desc}</div>
+                                    </div>
+                                    {isRequired && !isLocked && (
+                                        <div style={{ background: '#FFEBEE', color: '#FF1744', padding: '3px 10px', borderRadius: '8px', fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', flexShrink: 0 }}>
+                                            Requis
                                         </div>
-                                    );
-                                }
+                                    )}
+                                    {isLocked
+                                        ? <Lock size={16} style={{ color: '#ccc', flexShrink: 0 }} />
+                                        : <ChevronRight size={18} style={{ color: '#ccc', flexShrink: 0 }} />}
+                                </div>
+                            );
 
-                                return (
-                                    <Link
-                                        key={step.to}
-                                        to={`/patient-portal/${token}/${step.to}`}
-                                        className="card"
-                                        style={{
-                                            textDecoration: 'none',
-                                            display: 'block',
-                                            transition: 'transform 0.2s',
-                                            cursor: 'pointer',
-                                            background: 'white',
-                                            borderRadius: '20px',
-                                            padding: 'var(--spacing-4) var(--spacing-6)',
-                                            border: 'none',
-                                            boxShadow: '0 4px 12px rgba(0,0,0,0.02)'
-                                        }}
-                                    >
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-4)' }}>
-                                            <div style={{ fontSize: '32px', width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                {step.emoji}
-                                            </div>
-                                            <div style={{ flex: 1 }}>
-                                                <h4 style={{ marginBottom: '2px', fontWeight: '700', color: '#1A1A1A' }}>{step.label}</h4>
-                                                <p style={{ fontSize: '12px', color: '#666', fontWeight: '500' }}>{step.desc}</p>
-                                            </div>
-
-                                            {/* Dynamic Requisition Badge */}
-                                            {(() => {
-                                                let isRequired = false;
-                                                if (step.to === 'j7' && diffDays <= 7 && !responses['anesthesia_consultation']) isRequired = true;
-                                                if (step.to === 'j2' && diffDays <= 2 && !responses['fasting_understood']) isRequired = true;
-                                                if (step.to === 'j1-preop' && diffDays <= 1 && !responses['admission_confirmed']) isRequired = true;
-
-                                                if (!isRequired) return null;
-
-                                                return (
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginRight: 'var(--spacing-4)' }}>
-                                                        <div style={{ color: '#FF1744' }}><AlertCircle size={24} /></div>
-                                                        <div style={{
-                                                            background: '#FFEBEE',
-                                                            color: '#FF1744',
-                                                            padding: '4px 12px',
-                                                            borderRadius: '8px',
-                                                            fontSize: '11px',
-                                                            fontWeight: '800',
-                                                            textTransform: 'uppercase'
-                                                        }}>
-                                                            Requis
-                                                        </div>
-                                                    </div>
-                                                );
-                                            })()}
-
-                                            <div style={{
-                                                color: '#BDBDBD',
-                                                fontSize: '13px',
-                                                fontWeight: '600',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: '4px'
-                                            }}>
-                                                Ouvrir
-                                                <ChevronRight size={16} />
-                                            </div>
-                                        </div>
-                                    </Link>
-                                );
-                            });
-                        })()}
-                    </div>
+                            if (isLocked) return row;
+                            return (
+                                <Link key={step.to} to={`/patient-portal/${token}/${step.to}`} style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
+                                    onMouseOver={(e) => e.currentTarget.style.background = '#f9fafb'}
+                                    onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}>
+                                    {row}
+                                </Link>
+                            );
+                        });
+                    })()}
                 </div>
             </div>
 
@@ -648,3 +674,4 @@ export default function PatientPortal({ patient: initialPatient }) {
         </div>
     );
 }
+
