@@ -8,7 +8,8 @@ import {
     TrendingDown,
     RefreshCw,
     CheckCircle2,
-    Zap
+    Zap,
+    Bell
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
@@ -145,7 +146,7 @@ export default function SMSAlarmsModal({ isOpen, onClose, onSuccess }) {
                             alignItems: 'center',
                             justifyContent: 'center'
                         }}>
-                            <Zap size={24} fill="currentColor" />
+                            <Bell size={24} fill="currentColor" />
                         </div>
                         <div>
                             <h2 style={{ fontSize: 'var(--font-size-xl)', fontWeight: '800', margin: 0 }}>Alarme vigilance & Pilotage</h2>
@@ -218,14 +219,17 @@ export default function SMSAlarmsModal({ isOpen, onClose, onSuccess }) {
                                 <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)', marginBottom: 'var(--spacing-4)' }}>
                                     <AlertTriangle size={18} style={{ color: 'var(--color-warning-500)' }} />
                                     <h3 style={{ fontSize: '14px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-gray-500)', margin: 0 }}>
-                                        Règles des Éclairs (Vigilance)
+                                        Règles de Vigilance
                                     </h3>
                                 </div>
                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-4)' }}>
                                     <div className="card" style={{ padding: 'var(--spacing-4)' }}>
-                                        <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: 'var(--color-warning-600)', marginBottom: '8px' }}>
-                                            VIGILANCE PARTICULIÈRE (ALERTE)
-                                        </label>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                                            <div style={{ width: '14px', height: '14px', borderRadius: '50%', backgroundColor: 'var(--color-warning-500)', flexShrink: 0 }} />
+                                            <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: 'var(--color-gray-700)', margin: 0 }}>
+                                                Protocole incomplet (Consulté mais réponses manquantes)
+                                            </label>
+                                        </div>
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                                             <div>
                                                 <span style={{ fontSize: '11px', color: 'var(--color-gray-500)' }}>Pas d'accès au portail après :</span>
@@ -257,9 +261,12 @@ export default function SMSAlarmsModal({ isOpen, onClose, onSuccess }) {
                                     </div>
 
                                     <div className="card" style={{ padding: 'var(--spacing-4)' }}>
-                                        <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: 'var(--color-danger-600)', marginBottom: '8px' }}>
-                                            VIGILANCE PRIORITAIRE (CRITIQUE)
-                                        </label>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                                            <div style={{ width: '14px', height: '14px', borderRadius: '50%', backgroundColor: 'var(--color-danger-500)', flexShrink: 0 }} />
+                                            <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: 'var(--color-gray-700)', margin: 0 }}>
+                                                Aucune réponse (Déjà contacté, 0 interaction)
+                                            </label>
+                                        </div>
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                                             <div>
                                                 <span style={{ fontSize: '11px', color: 'var(--color-gray-500)' }}>Protocole incomplet à partir de :</span>
@@ -274,26 +281,15 @@ export default function SMSAlarmsModal({ isOpen, onClose, onSuccess }) {
                                                     <span style={{ fontSize: '12px', fontWeight: '600' }}>J-(x)</span>
                                                 </div>
                                             </div>
-                                            <div>
-                                                <span style={{ fontSize: '11px', color: 'var(--color-gray-500)' }}>Seuil critique de complétion :</span>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
-                                                    <input
-                                                        type="number"
-                                                        className="input"
-                                                        value={settings.status_rules.progress_critical_threshold}
-                                                        onChange={(e) => setSettings({ ...settings, status_rules: { ...settings.status_rules, progress_critical_threshold: parseInt(e.target.value) || 0 } })}
-                                                        style={{ padding: '4px 8px', width: '60px' }}
-                                                    />
-                                                    <span style={{ fontSize: '12px', fontWeight: '600' }}>%</span>
-                                                </div>
-                                            </div>
                                         </div>
                                     </div>
-
                                     <div className="card" style={{ padding: 'var(--spacing-4)', gridColumn: 'span 2' }}>
-                                        <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: 'var(--color-success-600)', marginBottom: '8px' }}>
-                                            PERFORMANCE (SUCCÈS)
-                                        </label>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                                            <div style={{ width: '14px', height: '14px', borderRadius: '50%', backgroundColor: 'var(--color-success-500)', flexShrink: 0 }} />
+                                            <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: 'var(--color-gray-700)', margin: 0 }}>
+                                                Performance (Succès et assiduité)
+                                            </label>
+                                        </div>
                                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                                                 <div style={{
@@ -309,7 +305,7 @@ export default function SMSAlarmsModal({ isOpen, onClose, onSuccess }) {
                                                     <Zap size={16} fill="currentColor" />
                                                 </div>
                                                 <div style={{ flex: 1 }}>
-                                                    <div style={{ fontSize: '11px', color: 'var(--color-gray-500)' }}>Éclair vert si assiduité à 100% :</div>
+                                                    <div style={{ fontSize: '11px', color: 'var(--color-gray-500)' }}>Cercle vert si assiduité à 100% :</div>
                                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
                                                         <label className="switch" style={{ display: 'inline-flex', alignItems: 'center', cursor: 'pointer' }}>
                                                             <input
