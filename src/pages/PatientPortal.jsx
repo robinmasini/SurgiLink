@@ -417,7 +417,7 @@ export default function PatientPortal({ patient: initialPatient }) {
             {/* Top Bar Logo & Brand */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', marginTop: '10px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <img src={logoSlMa} alt="Logo SurgiLink" style={{ height: '40px' }} />
+                    <img src={logoSlMa} alt="Logo SurgiLink" style={{ height: '40px', marginTop: '6px' }} />
                 </div>
                 
                 <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
@@ -435,16 +435,23 @@ export default function PatientPortal({ patient: initialPatient }) {
                     </h1>
                     
                     {/* Language Selector (Glassy) */}
-                    <div style={{ 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        gap: '8px', 
-                        padding: '6px 12px', 
-                        borderRadius: '20px', 
-                        ...GLASS_STYLE,
-                        border: '1px solid rgba(255,255,255,0.1)'
-                    }}>
-                        <span style={{ fontSize: '18px' }}>🇫🇷</span>
+                    <div 
+                        onClick={() => {
+                            const nextLang = i18n.language === 'fr' ? 'en' : 'fr';
+                            i18n.changeLanguage(nextLang);
+                        }}
+                        style={{ 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            gap: '8px', 
+                            padding: '6px 12px', 
+                            borderRadius: '20px', 
+                            ...GLASS_STYLE,
+                            border: '1px solid rgba(255,255,255,0.1)',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        <span style={{ fontSize: '18px' }}>{i18n.language === 'fr' ? '🇫🇷' : '🇬🇧'}</span>
                         <ChevronRight size={14} style={{ transform: 'rotate(90deg)', opacity: 0.6 }} />
                     </div>
                 </div>
@@ -494,7 +501,16 @@ export default function PatientPortal({ patient: initialPatient }) {
                             </span>
                         </div>
 
-                        <div style={{ position: 'relative', zIndex: 2 }}>
+                        <div style={{ marginTop: 'auto' }}>
+                            <h2 style={{ 
+                                fontSize: '22px', 
+                                fontWeight: '800', 
+                                color: 'white', 
+                                marginBottom: '4px',
+                                textShadow: '0 2px 10px rgba(0,0,0,0.3)' 
+                            }}>
+                                Préparez-vous en toute sérénité
+                            </h2>
                             <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.8)', marginBottom: '4px' }}>
                                 Prochaines questions dans :
                             </p>
