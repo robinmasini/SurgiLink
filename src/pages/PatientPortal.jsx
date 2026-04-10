@@ -417,7 +417,7 @@ export default function PatientPortal({ patient: initialPatient }) {
             {/* Top Bar Logo & Brand */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', marginTop: '10px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <img src={logoSlMa} alt="Logo SurgiLink" style={{ height: '40px', marginTop: '6px' }} />
+                    <img src={logoSlMa} alt="Logo SurgiLink" style={{ height: '36px', objectFit: 'contain' }} />
                 </div>
                 
                 <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
@@ -460,7 +460,7 @@ export default function PatientPortal({ patient: initialPatient }) {
                 <div style={{
                     position: 'relative',
                     width: '100%',
-                    height: '220px',
+                    height: '240px',
                     borderRadius: '30px',
                     overflow: 'hidden',
                     marginBottom: '24px',
@@ -474,6 +474,22 @@ export default function PatientPortal({ patient: initialPatient }) {
                         style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
                     />
 
+                    {/* Nurse Illustration */}
+                    <img 
+                        src="/src/assets/welcomecard-infirmier.png" 
+                        alt="Nurse Support" 
+                        style={{ 
+                            position: 'absolute', 
+                            right: '-10px', 
+                            bottom: '0', 
+                            height: '100%', 
+                            zIndex: 1,
+                            filter: (patient?.progress || 0) >= 100 ? 'none' : 'grayscale(1)',
+                            opacity: (patient?.progress || 0) >= 100 ? 1 : 0.8,
+                            transition: 'all 0.5s ease'
+                        }} 
+                    />
+
                     {/* Overlay Content */}
                     <div style={{
                         position: 'absolute',
@@ -482,46 +498,51 @@ export default function PatientPortal({ patient: initialPatient }) {
                         display: 'flex',
                         flexDirection: 'column',
                         justifyContent: 'space-between',
-                        background: 'linear-gradient(to right, rgba(0,0,0,0.3), transparent)'
+                        background: 'linear-gradient(to right, rgba(0,0,0,0.4), transparent)',
+                        zIndex: 2
                     }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <div style={{
-                                background: (patient?.progress || 0) >= 100 ? '#10B981' : 'rgba(255,255,255,0.2)',
-                                width: '24px',
-                                height: '24px',
-                                borderRadius: '50%',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center'
+                        <div>
+                            <h2 style={{ 
+                                fontSize: '20px', 
+                                fontWeight: '900', 
+                                color: 'white', 
+                                marginBottom: '12px',
+                                textShadow: '0 2px 10px rgba(0,0,0,0.3)',
+                                lineHeight: 1.2
                             }}>
-                                <CheckCircle2 size={12} color="white" />
+                                Préparez-vous en<br />toute sérénité
+                            </h2>
+
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <div style={{
+                                    background: (patient?.progress || 0) >= 100 ? '#10B981' : 'rgba(255,255,255,0.2)',
+                                    width: '20px',
+                                    height: '20px',
+                                    borderRadius: '50%',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                }}>
+                                    <CheckCircle2 size={10} color="white" />
+                                </div>
+                                <span style={{ fontSize: '12px', fontWeight: '800', color: 'white', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                                    {(patient?.progress || 0) >= 100 ? t('Vous êtes à jour !') : t('Vous n’êtes pas à jour !')}
+                                </span>
                             </div>
-                            <span style={{ fontSize: '13px', fontWeight: '700', color: 'white' }}>
-                                {(patient?.progress || 0) >= 100 ? t('Vous êtes à jour !') : t('Vous n’êtes pas à jour !')}
-                            </span>
                         </div>
 
-                        <div style={{ marginTop: 'auto' }}>
-                            <h2 style={{ 
-                                fontSize: '22px', 
-                                fontWeight: '800', 
-                                color: 'white', 
-                                marginBottom: '4px',
-                                textShadow: '0 2px 10px rgba(0,0,0,0.3)' 
-                            }}>
-                                Préparez-vous en toute sérénité
-                            </h2>
-                            <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.8)', marginBottom: '4px' }}>
+                        <div>
+                            <p style={{ fontSize: '10px', fontWeight: '700', color: 'rgba(255,255,255,0.8)', marginBottom: '4px', textTransform: 'uppercase' }}>
                                 Prochaines questions dans :
                             </p>
-                            <div style={{ fontSize: '32px', fontWeight: '900', letterSpacing: '0.05em', color: 'white' }}>
+                            <div style={{ fontSize: '28px', fontWeight: '900', letterSpacing: '0.05em', color: 'white' }}>
                                 {calculateDaysUntilSurgery(patient.date).includes('J') ? '24:00:00' : '00:00:00'}
                             </div>
                         </div>
                     </div>
 
                     {/* Progress Dots Bottom Right */}
-                    <div style={{ position: 'absolute', right: '24px', bottom: '24px', display: 'flex', gap: '4px' }}>
+                    <div style={{ position: 'absolute', left: '24px', bottom: '24px', display: 'flex', gap: '4px', zIndex: 3 }}>
                         <div style={{ width: '12px', height: '4px', borderRadius: '2px', background: 'rgba(255,255,255,0.8)' }}></div>
                         <div style={{ width: '12px', height: '4px', borderRadius: '2px', background: 'rgba(255,255,255,0.3)' }}></div>
                         <div style={{ width: '12px', height: '4px', borderRadius: '2px', background: 'rgba(255,255,255,0.3)' }}></div>
