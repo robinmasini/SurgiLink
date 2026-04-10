@@ -33,6 +33,12 @@ import { generateSynthesisPDF } from '../services/pdfService';
 import PatientSynthesisReport from '../components/PatientSynthesisReport';
 import { useTranslation } from 'react-i18next';
 
+// Premium Assets
+import appBg from '../assets/app_bg.png';
+import logoSlMa from '../assets/logo-sl-ma.png';
+import suiviCard from '../assets/suivi-card.png';
+import suiviCardBw from '../assets/suivi-card-bw.png';
+
 function ConsignesSection({ patientId }) {
     const { t } = useTranslation();
     const storageKey = `consignes_acknowledged_${patientId}`;
@@ -400,7 +406,7 @@ export default function PatientPortal({ patient: initialPatient }) {
         <div style={{
             minHeight: '100vh',
             background: 'var(--grad-premium-dark)',
-            backgroundImage: `url('/src/assets/app_bg.png')`, // To be provided by user
+            backgroundImage: `url(${appBg})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundAttachment: 'fixed',
@@ -411,10 +417,7 @@ export default function PatientPortal({ patient: initialPatient }) {
             {/* Top Bar Logo & Brand */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', marginTop: '10px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <img src="/src/assets/logo_lightning.svg" alt="Logo" style={{ height: '32px' }} 
-                        onError={(e) => e.target.style.display = 'none'} />
-                    {/* Fallback if logo not found */}
-                    {!document.querySelector('img[src="/src/assets/logo_lightning.svg"]') && <Zap fill="#7C3AED" color="#7C3AED" size={32} />}
+                    <img src={logoSlMa} alt="Logo SurgiLink" style={{ height: '40px' }} />
                 </div>
                 
                 <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
@@ -446,75 +449,58 @@ export default function PatientPortal({ patient: initialPatient }) {
                     </div>
                 </div>
 
-                {/* Main Hero Card (Premium Question Card) */}
+                {/* Main Hero Card (Premium Status Card) */}
                 <div style={{
-                    ...GLASS_STYLE,
                     position: 'relative',
-                    padding: '24px',
-                    marginBottom: '32px',
-                    minHeight: '220px',
+                    width: '100%',
+                    height: '220px',
+                    borderRadius: '30px',
                     overflow: 'hidden',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'space-between'
+                    marginBottom: '24px',
+                    boxShadow: '0 20px 40px rgba(0,0,0,0.3)',
+                    background: 'rgba(255,255,255,0.05)'
                 }}>
-                    {/* Floating Illustration */}
+                    {/* Background Status Card */}
+                    <img 
+                        src={(patient?.progress || 0) >= 100 ? suiviCard : suiviCardBw} 
+                        alt="Status Card" 
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                    />
+
+                    {/* Overlay Content */}
                     <div style={{
                         position: 'absolute',
-                        right: '-20px',
-                        bottom: '0',
-                        height: '110%',
-                        zIndex: 1,
-                        pointerEvents: 'none'
+                        inset: 0,
+                        padding: '24px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'space-between',
+                        background: 'linear-gradient(to right, rgba(0,0,0,0.3), transparent)'
                     }}>
-                        <img 
-                            src="/src/assets/nurse_hero.png" 
-                            alt="Professional support" 
-                            style={{ height: '100%', objectFit: 'contain' }}
-                            onError={(e) => {
-                                // Fallback to existing nurse-avatar if nurse_hero is missing
-                                if (e.target.src.indexOf('nurse_hero.png') !== -1) {
-                                    e.target.src = '/src/assets/nurse-avatar.png';
-                                } else {
-                                    e.target.style.display = 'none';
-                                }
-                            }}
-                        />
-                    </div>
-
-                    {/* Content */}
-                    <div style={{ position: 'relative', zIndex: 2, maxWidth: '65%' }}>
-                        <h2 style={{ fontSize: '20px', fontWeight: '800', color: 'white', marginBottom: '8px', lineHeight: 1.2 }}>
-                            Préparez-vous en<br />toute sérénité !
-                        </h2>
-                        <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.7)', lineHeight: 1.4, marginBottom: '16px' }}>
-                            Répondez à des questions de suivi pour préparer votre opération
-                        </p>
-
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '24px' }}>
-                            <div style={{ 
-                                width: '20px', 
-                                height: '20px', 
-                                borderRadius: '50%', 
-                                background: (patient?.progress || 0) < 100 ? '#F59E0B' : '#10B981',
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <div style={{
+                                background: (patient?.progress || 0) >= 100 ? '#10B981' : 'rgba(255,255,255,0.2)',
+                                width: '24px',
+                                height: '24px',
+                                borderRadius: '50%',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center'
                             }}>
                                 <CheckCircle2 size={12} color="white" />
                             </div>
-                            <span style={{ fontSize: '13px', fontWeight: '700' }}>
+                            <span style={{ fontSize: '13px', fontWeight: '700', color: 'white' }}>
                                 {(patient?.progress || 0) >= 100 ? t('Vous êtes à jour !') : t('Vous n’êtes pas à jour !')}
                             </span>
                         </div>
-                    </div>
 
-                    <div style={{ position: 'relative', zIndex: 2 }}>
-                        <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)', marginBottom: '4px' }}>
-                            Prochaines questions dans :
-                        </p>
-                        <div style={{ fontSize: '32px', fontWeight: '900', letterSpacing: '0.05em' }}>
-                            {calculateDaysUntilSurgery(patient.date).includes('J') ? '24:00:00' : '00:00:00'}
+                        <div style={{ position: 'relative', zIndex: 2 }}>
+                            <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.8)', marginBottom: '4px' }}>
+                                Prochaines questions dans :
+                            </p>
+                            <div style={{ fontSize: '32px', fontWeight: '900', letterSpacing: '0.05em', color: 'white' }}>
+                                {calculateDaysUntilSurgery(patient.date).includes('J') ? '24:00:00' : '00:00:00'}
+                            </div>
                         </div>
                     </div>
 
@@ -524,9 +510,6 @@ export default function PatientPortal({ patient: initialPatient }) {
                         <div style={{ width: '12px', height: '4px', borderRadius: '2px', background: 'rgba(255,255,255,0.3)' }}></div>
                         <div style={{ width: '12px', height: '4px', borderRadius: '2px', background: 'rgba(255,255,255,0.3)' }}></div>
                     </div>
-                    
-                    {/* Small Decorative Lightning */}
-                    <Zap size={24} style={{ position: 'absolute', top: '24px', right: '24px', opacity: 0.5 }} />
                 </div>
 
                 {/* Main Action Buttons */}
