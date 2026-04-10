@@ -644,6 +644,77 @@ export default function PatientPortal({ patient: initialPatient }) {
                     </div>
                 </div>
 
+                {/* Parcours de Soins (Care Pathway) - Premium Glass Design */}
+                <div style={{
+                    ...GLASS_STYLE,
+                    marginBottom: '24px',
+                    overflow: 'hidden',
+                    background: 'rgba(255,255,255,0.03)'
+                }}>
+                    <div style={{ padding: '16px 20px', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <h3 style={{ fontSize: '14px', fontWeight: '700', color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>
+                            Votre Parcours de Soins
+                        </h3>
+                        <div style={{ background: 'rgba(124, 58, 237, 0.2)', color: '#A78BFA', padding: '4px 12px', borderRadius: '20px', fontSize: '12px', fontWeight: '700' }}>
+                            {calculateDaysUntilSurgery(patient.date)}
+                        </div>
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        {(() => {
+                            const today = new Date();
+                            today.setHours(0, 0, 0, 0);
+                            const surgeryDate = patient.date ? new Date(patient.date) : null;
+                            if (surgeryDate) surgeryDate.setHours(0, 0, 0, 0);
+                            const diffDays = surgeryDate ? Math.ceil((surgeryDate - today) / (1000 * 60 * 60 * 24)) : 999;
+
+                            return [
+                                { to: `bienvenue`, emoji: '👋', label: 'Bienvenue', desc: 'Activation de votre suivi', offset: 99 },
+                                { to: `j7`, emoji: '📋', label: 'Questionnaire J-7', desc: 'Préparation administrative', offset: 7 },
+                                { to: `j2`, emoji: '📄', label: 'Questionnaire J-2', desc: 'Documents & consignes', offset: 2 },
+                                { to: `j1-preop`, emoji: '🚿', label: 'Confirmation J-1', desc: 'Vérification finale', offset: 1 },
+                                { to: `j1`, emoji: '🌡️', label: 'Suivi J+1', desc: 'Bilan post-opératoire', offset: -1 },
+                                { to: `j4`, emoji: '⭐', label: 'Satisfaction J+4', desc: 'Votre avis nous intéresse', offset: -4 },
+                            ].map((step, idx, arr) => {
+                                const isLocked = diffDays > step.offset;
+                                const isLast = idx === arr.length - 1;
+                                
+                                const stepContent = (
+                                    <div key={step.to} style={{ 
+                                        padding: '16px 20px', 
+                                        display: 'flex', 
+                                        alignItems: 'center', 
+                                        gap: '14px', 
+                                        borderBottom: isLast ? 'none' : '1px solid rgba(255,255,255,0.05)', 
+                                        opacity: isLocked ? 0.3 : 1,
+                                        transition: 'background 0.2s'
+                                    }}>
+                                        <div style={{ 
+                                            fontSize: '20px', width: '36px', height: '36px', 
+                                            display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                                            borderRadius: '10px', background: 'rgba(255,255,255,0.1)', flexShrink: 0 
+                                        }}>
+                                            {step.emoji}
+                                        </div>
+                                        <div style={{ flex: 1 }}>
+                                            <div style={{ fontWeight: '700', fontSize: '14px', color: 'white' }}>{step.label}</div>
+                                            <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', marginTop: '2px' }}>{step.desc}</div>
+                                        </div>
+                                        {isLocked ? <Lock size={14} style={{ color: 'rgba(255,255,255,0.4)' }} /> : <ChevronRight size={16} style={{ color: 'rgba(255,255,255,0.6)' }} />}
+                                    </div>
+                                );
+
+                                if (isLocked) return stepContent;
+                                return (
+                                    <Link key={step.to} to={`/patient-portal/${token}/${step.to}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                                        {stepContent}
+                                    </Link>
+                                );
+                            });
+                        })()}
+                    </div>
+                </div>
+
                 {/* Footer Call & Ordonnance Buttons */}
                 <div style={{ display: 'flex', gap: '12px', marginBottom: '12px' }}>
                     <a href={`tel:${patient.clinic_phone || '0491159019'}`} style={{
