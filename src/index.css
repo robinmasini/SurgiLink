@@ -2,7 +2,7 @@
 /* Premium Medical Aesthetic - Clean & Elegant */
 
 /* Google Fonts Import */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
 
 :root {
   /* Colors - Medical Premium Palette */
@@ -147,6 +147,19 @@
   /* Sidebar width */
   --sidebar-width: 260px;
   --sidebar-width-mobile: 80px;
+
+  /* Glassmorphism Design Tokens */
+  --glass-bg: rgba(255, 255, 255, 0.1);
+  --glass-bg-dark: rgba(0, 0, 0, 0.2);
+  --glass-border: rgba(255, 255, 255, 0.15);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+  --glass-blur: blur(16px);
+  --glass-blur-sm: blur(8px);
+
+  /* Premium Gradients */
+  --grad-premium-purple: linear-gradient(135deg, #7C3AED 0%, #3B82F6 100%);
+  --grad-premium-dark: linear-gradient(180deg, #1E1E2E 0%, #0F0F1A 100%);
+  --grad-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
 }
 
 /* Reset & Base Styles */

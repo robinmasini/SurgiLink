@@ -359,13 +359,13 @@ export default function PatientPortal({ patient: initialPatient }) {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                background: 'white'
+                background: 'var(--grad-premium-dark)'
             }}>
-                <div className="card" style={{ maxWidth: '500px', textAlign: 'center' }}>
-                    <AlertCircle size={64} style={{ margin: '0 auto var(--spacing-4)', color: 'var(--color-danger-500)' }} />
-                    <h2 style={{ marginBottom: 'var(--spacing-2)' }}>Accès non autorisé</h2>
-                    <p style={{ color: 'var(--color-gray-600)', marginBottom: 'var(--spacing-6)' }}>{error}</p>
-                    <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-500)' }}>
+                <div className="card" style={{ maxWidth: '500px', textAlign: 'center', background: 'rgba(255,255,255,0.05)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }}>
+                    <AlertCircle size={64} style={{ margin: '0 auto var(--spacing-4)', color: '#ef4444' }} />
+                    <h2 style={{ marginBottom: 'var(--spacing-2)', color: 'white' }}>Accès non autorisé</h2>
+                    <p style={{ color: 'rgba(255,255,255,0.7)', marginBottom: 'var(--spacing-6)' }}>{error}</p>
+                    <p style={{ fontSize: 'var(--font-size-sm)', color: 'rgba(255,255,255,0.5)' }}>
                         Si vous pensez qu'il s'agit d'une erreur, veuillez contacter votre praticien.
                     </p>
                 </div>
@@ -375,11 +375,11 @@ export default function PatientPortal({ patient: initialPatient }) {
 
     if (!patient) {
         return (
-            <div className="patient-view" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', padding: 'var(--spacing-4)' }}>
-                <div className="card" style={{ maxWidth: '400px', textAlign: 'center' }}>
-                    <AlertCircle size={48} style={{ color: 'var(--color-danger-500)', marginBottom: 'var(--spacing-4)' }} />
-                    <h2 style={{ marginBottom: 'var(--spacing-2)' }}>Accès non autorisé</h2>
-                    <p style={{ color: 'var(--color-gray-600)' }}>
+            <div className="patient-view" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', padding: 'var(--spacing-4)', background: 'var(--grad-premium-dark)' }}>
+                <div className="card" style={{ maxWidth: '400px', textAlign: 'center', background: 'rgba(255,255,255,0.05)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }}>
+                    <AlertCircle size={48} style={{ color: '#ef4444', marginBottom: 'var(--spacing-4)' }} />
+                    <h2 style={{ marginBottom: 'var(--spacing-2)', color: 'white' }}>Accès non autorisé</h2>
+                    <p style={{ color: 'rgba(255,255,255,0.7)' }}>
                         Impossible de charger les données de votre dossier. Veuillez contacter votre établissement de soins.
                     </p>
                 </div>
@@ -387,280 +387,314 @@ export default function PatientPortal({ patient: initialPatient }) {
         );
     }
 
+    const GLASS_STYLE = {
+        background: 'var(--glass-bg)',
+        backdropFilter: 'var(--glass-blur)',
+        WebkitBackdropFilter: 'var(--glass-blur)',
+        border: '1px solid var(--glass-border)',
+        boxShadow: 'var(--glass-shadow)',
+        borderRadius: '24px'
+    };
+
     return (
         <div style={{
             minHeight: '100vh',
-            background: 'var(--color-primary-50)',
-            padding: 'var(--spacing-8) var(--spacing-4)'
+            background: 'var(--grad-premium-dark)',
+            backgroundImage: `url('/src/assets/app_bg.png')`, // To be provided by user
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundAttachment: 'fixed',
+            padding: '20px 16px',
+            color: 'white',
+            fontFamily: "'Outfit', sans-serif"
         }}>
-            <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-                {/* Header Greeting */}
-                <div style={{ marginBottom: 'var(--spacing-10)', textAlign: 'center' }}>
-                    <h1 style={{ fontSize: '36px', fontWeight: '900', marginBottom: 'var(--spacing-2)', color: 'var(--color-gray-900)', letterSpacing: '-0.02em' }}>
-                        {t('Bonjour,')} {patient?.name || 'Patient'}
+            {/* Top Bar Logo & Brand */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', marginTop: '10px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <img src="/src/assets/logo_lightning.svg" alt="Logo" style={{ height: '32px' }} 
+                        onError={(e) => e.target.style.display = 'none'} />
+                    {/* Fallback if logo not found */}
+                    {!document.querySelector('img[src="/src/assets/logo_lightning.svg"]') && <Zap fill="#7C3AED" color="#7C3AED" size={32} />}
+                </div>
+                
+                <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+                    <div style={{ height: '15px', width: '2px', background: 'rgba(255,255,255,0.3)', marginBottom: '5px' }}></div>
+                    <div style={{ fontSize: '10px', fontWeight: '800', letterSpacing: '0.1em', opacity: 0.8 }}>MEDICAL</div>
+                    <div style={{ fontSize: '12px', fontWeight: '900', letterSpacing: '0.2em' }}>ALLIANCE</div>
+                </div>
+            </div>
+
+            <div style={{ maxWidth: '500px', margin: '0 auto' }}>
+                {/* Greeting & Language */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                    <h1 style={{ fontSize: '24px', fontWeight: '500', color: 'white', margin: 0 }}>
+                        {t('Bienvenue,')} {patient?.name?.split(' ')[0] || 'Christophe'} !
                     </h1>
-                    <p style={{ color: 'var(--color-gray-500)', fontSize: '18px', fontWeight: '500' }}>{t('Votre portail de suivi personnalisé SurgiLink')}</p>
+                    
+                    {/* Language Selector (Glassy) */}
+                    <div style={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        gap: '8px', 
+                        padding: '6px 12px', 
+                        borderRadius: '20px', 
+                        ...GLASS_STYLE,
+                        border: '1px solid rgba(255,255,255,0.1)'
+                    }}>
+                        <span style={{ fontSize: '18px' }}>🇫🇷</span>
+                        <ChevronRight size={14} style={{ transform: 'rotate(90deg)', opacity: 0.6 }} />
+                    </div>
                 </div>
 
-                {/* Main Info Glass Container */}
+                {/* Main Hero Card (Premium Question Card) */}
                 <div style={{
-                    background: 'white',
-                    borderRadius: '32px',
-                    padding: 'var(--spacing-6)',
-                    border: '1px solid #eef0f4',
-                    marginBottom: 'var(--spacing-4)',
-                    boxShadow: '0 10px 30px rgba(0,0,0,0.04)'
+                    ...GLASS_STYLE,
+                    position: 'relative',
+                    padding: '24px',
+                    marginBottom: '32px',
+                    minHeight: '220px',
+                    overflow: 'hidden',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between'
                 }}>
-                    {/* Clinic & Appointment Header - RESTORED TRAME */}
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px', flexWrap: 'wrap', gap: '20px' }}>
-                        <div style={{ flex: 1, minWidth: '250px' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
-                                <div style={{ background: 'var(--color-primary-50)', padding: '8px', borderRadius: '12px', color: 'var(--color-primary-600)' }}>
-                                    <Home size={22} />
-                                </div>
-                                <h2 style={{ fontSize: '22px', fontWeight: '900', color: '#111827', margin: 0 }}>{patient.clinic_name || 'Clinique de Vitrolles'}</h2>
-                            </div>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginLeft: '45px' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#4b5563', fontWeight: '600', fontSize: '15px' }}>
-                                    <Calendar size={18} style={{ color: 'var(--color-primary-500)' }} />
-                                    {patient.date ? new Date(patient.date).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) : t('Date à confirmer')}
-                                </div>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#4b5563', fontWeight: '600', fontSize: '15px' }}>
-                                    <Clock size={18} style={{ color: 'var(--color-primary-500)' }} />
-                                    {patient.surgery_time || '07:30'}
-                                </div>
-                                {patient.operation && (
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--color-primary-600)', fontWeight: '700', fontSize: '15px', marginTop: '4px' }}>
-                                        <Activity size={18} />
-                                        {patient.operation}
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', minWidth: '200px' }}>
-                            <a 
-                                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(patient.clinic_address || "La Tuilière II, Rue Bel air, 13127 Vitrolles")}`}
-                                target="_blank" rel="noopener noreferrer"
-                                style={{
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
-                                    padding: '12px 20px', borderRadius: '14px', background: 'var(--color-primary-600)',
-                                    color: 'white', fontWeight: '700', fontSize: '15px', textDecoration: 'none',
-                                    boxShadow: '0 4px 12px rgba(124, 58, 237, 0.2)', transition: 'all 0.2s'
-                                }}
-                                onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
-                                onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
-                            >
-                                <Zap size={18} fill="white" /> {t('M\'y rendre')}
-                            </a>
-                            <a href={`tel:${patient.clinic_phone || '0491159019'}`} style={{
-                                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
-                                padding: '12px 20px', borderRadius: '14px', background: 'white',
-                                color: 'var(--color-primary-600)', border: '2px solid var(--color-primary-600)',
-                                fontWeight: '700', fontSize: '15px', textDecoration: 'none',
-                                transition: 'all 0.2s'
+                    {/* Floating Illustration */}
+                    <div style={{
+                        position: 'absolute',
+                        right: '-20px',
+                        bottom: '0',
+                        height: '110%',
+                        zIndex: 1,
+                        pointerEvents: 'none'
+                    }}>
+                        <img 
+                            src="/src/assets/nurse_hero.png" 
+                            alt="Professional support" 
+                            style={{ height: '100%', objectFit: 'contain' }}
+                            onError={(e) => {
+                                // Fallback to existing nurse-avatar if nurse_hero is missing
+                                if (e.target.src.indexOf('nurse_hero.png') !== -1) {
+                                    e.target.src = '/src/assets/nurse-avatar.png';
+                                } else {
+                                    e.target.style.display = 'none';
+                                }
                             }}
-                            onMouseOver={(e) => e.currentTarget.style.background = 'var(--color-primary-50)'}
-                            onMouseOut={(e) => e.currentTarget.style.background = 'white'}
-                            >
-                                <Phone size={18} color="var(--color-primary-600)" /> {t('Appeler la clinique')}
-                            </a>
+                        />
+                    </div>
+
+                    {/* Content */}
+                    <div style={{ position: 'relative', zIndex: 2, maxWidth: '65%' }}>
+                        <h2 style={{ fontSize: '20px', fontWeight: '800', color: 'white', marginBottom: '8px', lineHeight: 1.2 }}>
+                            Préparez-vous en<br />toute sérénité !
+                        </h2>
+                        <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.7)', lineHeight: 1.4, marginBottom: '16px' }}>
+                            Répondez à des questions de suivi pour préparer votre opération
+                        </p>
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '24px' }}>
+                            <div style={{ 
+                                width: '20px', 
+                                height: '20px', 
+                                borderRadius: '50%', 
+                                background: (patient?.progress || 0) < 100 ? '#F59E0B' : '#10B981',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                            }}>
+                                <CheckCircle2 size={12} color="white" />
+                            </div>
+                            <span style={{ fontSize: '13px', fontWeight: '700' }}>
+                                {(patient?.progress || 0) >= 100 ? t('Vous êtes à jour !') : t('Vous n’êtes pas à jour !')}
+                            </span>
                         </div>
                     </div>
 
-                    {/* J-Condition Badge & Progress */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px', borderTop: '1px solid #f3f4f6', paddingTop: '20px' }}>
-                        <div style={{
-                            background: 'linear-gradient(135deg, var(--color-primary-600), var(--color-primary-800))',
-                            color: 'white', padding: '10px 16px', borderRadius: '14px', fontWeight: '800', fontSize: '18px',
-                            display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 4px 12px rgba(124, 58, 237, 0.2)'
-                        }}>
-                            <Zap size={18} fill="currentColor" />
-                            {calculateDaysUntilSurgery(patient.date)}
-                        </div>
-                        <div style={{ flex: 1 }}>
-                            <ProtocolStatus
-                                progress={Math.min(100, patient?.progress || (responses ? Math.round((Object.keys(responses).length / 20) * 100) : 0))}
-                                status={patient?.status}
-                                statusLabel={t("Protocole en cours d'exécution")}
-                            />
+                    <div style={{ position: 'relative', zIndex: 2 }}>
+                        <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)', marginBottom: '4px' }}>
+                            Prochaines questions dans :
+                        </p>
+                        <div style={{ fontSize: '32px', fontWeight: '900', letterSpacing: '0.05em' }}>
+                            {calculateDaysUntilSurgery(patient.date).includes('J') ? '24:00:00' : '00:00:00'}
                         </div>
                     </div>
+
+                    {/* Progress Dots Bottom Right */}
+                    <div style={{ position: 'absolute', right: '24px', bottom: '24px', display: 'flex', gap: '4px' }}>
+                        <div style={{ width: '12px', height: '4px', borderRadius: '2px', background: 'rgba(255,255,255,0.8)' }}></div>
+                        <div style={{ width: '12px', height: '4px', borderRadius: '2px', background: 'rgba(255,255,255,0.3)' }}></div>
+                        <div style={{ width: '12px', height: '4px', borderRadius: '2px', background: 'rgba(255,255,255,0.3)' }}></div>
+                    </div>
+                    
+                    {/* Small Decorative Lightning */}
+                    <Zap size={24} style={{ position: 'absolute', top: '24px', right: '24px', opacity: 0.5 }} />
                 </div>
 
-
-
-                {/* ─── Préparation & Documents ─── */}
-                <div style={{ background: 'white', borderRadius: '24px', marginBottom: '16px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', border: '1px solid #eef0f4' }}>
-                    {/* Protocol status row */}
-                    <div style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #f4f5f7' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                            <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#f0fdf4', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                <TrendingUp size={20} style={{ color: '#16a34a' }} />
-                            </div>
-                            <div>
-                                <div style={{ fontWeight: '700', fontSize: '15px', color: '#1a1a1a' }}>
-                                    {(patient?.progress || 0) >= 100 ? 'Préparation terminée 🎉' : 'Préparation en cours'}
-                                </div>
-                                <div style={{ fontSize: '13px', color: '#888', marginTop: '2px' }}>
-                                    {(patient?.progress || 0) >= 100 ? 'Tout est prêt pour votre prise en charge' : `${patient?.progress || 0}% du protocole complété`}
-                                </div>
-                            </div>
-                        </div>
-                        <ChevronRight size={20} style={{ color: '#ccc', flexShrink: 0 }} />
-                    </div>
-
-                    {/* Download ordonnance — always visible */}
-                    <div
-                        onClick={documents.length > 0 ? handleDownloadPrescription : undefined}
-                        style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '14px', cursor: documents.length > 0 ? 'pointer' : 'default', opacity: documents.length > 0 ? 1 : 0.5, borderBottom: '1px solid #f4f5f7', transition: 'background 0.15s' }}
-                        onMouseOver={(e) => { if (documents.length > 0) e.currentTarget.style.background = '#f9fafb'; }}
-                        onMouseOut={(e) => { e.currentTarget.style.background = 'transparent'; }}
-                    >
-                        <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#eff6ff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                            <Download size={20} style={{ color: 'var(--color-primary-600)' }} />
-                        </div>
-                        <div style={{ flex: 1 }}>
-                            <div style={{ fontWeight: '700', fontSize: '15px', color: documents.length > 0 ? 'var(--color-primary-600)' : '#aaa' }}>
-                                Télécharger mon ordonnance
-                            </div>
-                            <div style={{ fontSize: '13px', color: '#888', marginTop: '2px' }}>
-                                {documents.length > 0 ? `${documents.length} document(s) disponible(s)` : 'Aucun document disponible pour le moment'}
-                            </div>
-                        </div>
-                        <ChevronRight size={20} style={{ color: '#ccc', flexShrink: 0 }} />
-                    </div>
-
-                    {/* Custom Questions */}
-                    {customQuestions.filter(q => !q.response).length > 0 && (
-                        <div style={{ padding: '16px 20px', borderBottom: '1px solid #f4f5f7' }}>
-                            <div style={{ fontSize: '12px', fontWeight: '800', color: 'var(--color-primary-600)', textTransform: 'uppercase', marginBottom: '12px', letterSpacing: '0.05em' }}>
-                                Questions de votre équipe médicale
-                            </div>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                                {customQuestions.filter(q => !q.response).map(q => (
-                                    <div key={q.id} style={{ background: 'var(--color-primary-50)', borderRadius: '12px', padding: '12px 16px', borderLeft: '3px solid var(--color-primary-400)' }}>
-                                        <div style={{ fontSize: '14px', color: 'var(--color-gray-900)', fontWeight: '600', marginBottom: '10px' }}>{q.question_text}</div>
-                                        <div style={{ display: 'flex', gap: '8px' }}>
-                                            <input type="text" className="input" placeholder="Votre réponse..." style={{ flex: 1, fontSize: '14px', height: '38px', background: 'white' }}
-                                                onKeyDown={(e) => { if (e.key === 'Enter') handleAnswerCustomQuestion(q.id, e.target.value); }} />
-                                            <button className="btn btn-primary" style={{ padding: '0 14px', height: '38px' }} disabled={answeringQuestionId === q.id}
-                                                onClick={(e) => { const input = e.currentTarget.previousSibling; handleAnswerCustomQuestion(q.id, input.value); }}>
-                                                {answeringQuestionId === q.id ? <RefreshCw size={16} className="animate-spin" /> : <Send size={16} />}
-                                            </button>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Patient name */}
-                    <div style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '14px' }}>
-                        <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#f4f5f7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                            <User size={20} style={{ color: '#555' }} />
-                        </div>
-                        <div style={{ fontWeight: '600', fontSize: '15px', color: '#1a1a1a' }}>{patient.name}</div>
-                    </div>
-                </div>
-
-                {/* ─── Consignes pré-opératoires ─── */}
-                <ConsignesSection patientId={patient.id} />
-
-                {/* ─── Détails de l'établissement ─── */}
-                <div style={{ background: 'white', borderRadius: '24px', marginBottom: '16px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', border: '1px solid #eef0f4' }}>
-                    <div style={{ padding: '14px 20px', borderBottom: '1px solid #f4f5f7' }}>
-                        <div style={{ fontSize: '11px', fontWeight: '800', color: '#aaa', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Détails de l'établissement de santé</div>
-                    </div>
-
-                    <a href={`tel:${patient.clinic_phone || '0444444444'}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                        <div style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '14px', borderBottom: '1px solid #f4f5f7', cursor: 'pointer' }}
-                            onMouseOver={(e) => e.currentTarget.style.background = '#f9fafb'}
-                            onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}>
-                            <Phone size={18} style={{ color: 'var(--color-primary-600)', flexShrink: 0 }} />
-                            <div>
-                                <div style={{ fontSize: '13px', fontWeight: '700', color: '#1a1a1a' }}>Téléphone de la clinique</div>
-                                <div style={{ fontSize: '13px', color: 'var(--color-primary-600)', fontWeight: '600', marginTop: '2px' }}>{patient.clinic_phone || '04 91 15 90 19'}</div>
-                                <div style={{ fontSize: '12px', color: 'var(--color-primary-500)', marginTop: '2px' }}>Appeler l'établissement</div>
-                            </div>
-                        </div>
-                    </a>
-
-                    {patient.clinic_name && (
-                        <div style={{ padding: '16px 20px', display: 'flex', alignItems: 'flex-start', gap: '14px' }}>
-                            <Home size={18} style={{ color: 'var(--color-primary-600)', flexShrink: 0, marginTop: '2px' }} />
-                            <div>
-                                <div style={{ fontSize: '13px', fontWeight: '700', color: '#1a1a1a', marginBottom: '4px' }}>{t('Se rendre à la consultation')}</div>
-                                <div style={{ fontSize: '14px', fontWeight: '700', color: '#1a1a1a' }}>{patient.clinic_name}</div>
-                                {patient.clinic_address && <div style={{ fontSize: '13px', color: '#666', marginTop: '2px', lineHeight: 1.5 }}>{patient.clinic_address}</div>}
-                            </div>
-                        </div>
-                    )}
-                </div>
-
-                {/* ─── Parcours de Soins ─── */}
-                <div style={{ background: 'white', borderRadius: '24px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', border: '1px solid #eef0f4' }}>
-                    <div style={{ padding: '14px 20px', borderBottom: '1px solid #f4f5f7', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <div style={{ fontSize: '11px', fontWeight: '800', color: '#aaa', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Votre Parcours de Soins</div>
-                        <div style={{ background: 'var(--color-primary-600)', color: 'white', padding: '4px 14px', borderRadius: '20px', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: '700' }}>
-                            <Zap size={13} fill="currentColor" />
-                            {calculateDaysUntilSurgery(patient.date)}
-                        </div>
-                    </div>
-
-                    {(() => {
+                {/* Main Action Buttons */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '32px' }}>
+                    <button style={{
+                        width: '100%',
+                        padding: '18px',
+                        borderRadius: '20px',
+                        background: 'var(--grad-premium-purple)',
+                        color: 'white',
+                        border: 'none',
+                        fontSize: '15px',
+                        fontWeight: '800',
+                        letterSpacing: '0.05em',
+                        boxShadow: '0 10px 20px rgba(124, 58, 237, 0.3)',
+                        cursor: 'pointer',
+                        transition: 'transform 0.2s'
+                    }}
+                    onClick={() => {
                         const today = new Date();
-                        today.setHours(0, 0, 0, 0);
                         const surgeryDate = patient.date ? new Date(patient.date) : null;
-                        if (surgeryDate) surgeryDate.setHours(0, 0, 0, 0);
                         const diffDays = surgeryDate ? Math.ceil((surgeryDate - today) / (1000 * 60 * 60 * 24)) : 999;
+                        
+                        let nextStep = 'bienvenue';
+                        if (diffDays <= 7 && !responses['anesthesia_consultation']) nextStep = 'j7';
+                        else if (diffDays <= 2 && !responses['fasting_understood']) nextStep = 'j2';
+                        else if (diffDays <= 1 && !responses['admission_confirmed']) nextStep = 'j1-preop';
+                        
+                        navigate(`/patient-portal/${token}/${nextStep}`);
+                    }}
+                    onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+                    onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                    >
+                        DÉMARRER MON QUESTIONNAIRE
+                    </button>
 
-                        return [
-                            { to: `bienvenue`, emoji: '👋', label: 'Bienvenue', desc: 'Activation de votre suivi', offset: 99 },
-                            { to: `j7`, emoji: '📋', label: 'Questionnaire J-7', desc: 'Préparation administrative (anesthésie, accompagnant)', offset: 7 },
-                            { to: `j2`, emoji: '📄', label: 'Questionnaire J-2', desc: 'Documents, jeûne et consignes du jour J', offset: 2 },
-                            { to: `j1-preop`, emoji: '🚿', label: 'Confirmation J-1', desc: 'Dernière vérification avant votre venue', offset: 1 },
-                            { to: `j1`, emoji: '🌡️', label: 'Suivi J+1', desc: 'Bilan post-opératoire du lendemain', offset: -1 },
-                            { to: `j4`, emoji: '⭐', label: 'Satisfaction J+4', desc: 'Votre avis sur notre prise en charge', offset: -4 },
-                            { to: `e-satis`, emoji: '🇫🇷', label: 'Enquête e-Satis', desc: 'Questionnaire national de satisfaction', offset: -4 },
-                        ].map((step, idx, arr) => {
-                            const isLocked = diffDays > step.offset;
-                            const isLast = idx === arr.length - 1;
-                            let isRequired = false;
-                            if (step.to === 'j7' && diffDays <= 7 && !responses['anesthesia_consultation']) isRequired = true;
-                            if (step.to === 'j2' && diffDays <= 2 && !responses['fasting_understood']) isRequired = true;
-                            if (step.to === 'j1-preop' && diffDays <= 1 && !responses['admission_confirmed']) isRequired = true;
+                    <button style={{
+                        ...GLASS_STYLE,
+                        width: '100%',
+                        padding: '18px',
+                        borderRadius: '20px',
+                        color: 'rgba(255,255,255,0.9)',
+                        fontSize: '15px',
+                        fontWeight: '700',
+                        letterSpacing: '0.05em',
+                        cursor: 'pointer',
+                        transition: 'background 0.2s'
+                    }}
+                    onClick={() => navigate(`/patient-portal/${token}/j7`)}
+                    onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.15)'}
+                    onMouseOut={(e) => e.currentTarget.style.background = 'var(--glass-bg)'}
+                    >
+                        MODIFIER MES RÉPONSES PRÉCÉDENTES
+                    </button>
+                </div>
 
-                            const row = (
-                                <div key={step.to} style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '14px', borderBottom: isLast ? 'none' : '1px solid #f4f5f7', opacity: isLocked ? 0.5 : 1 }}>
-                                    <div style={{ fontSize: '28px', width: '44px', height: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '12px', background: '#f9fafb', flexShrink: 0, filter: isLocked ? 'grayscale(1)' : 'none' }}>
-                                        {step.emoji}
-                                    </div>
-                                    <div style={{ flex: 1 }}>
-                                        <div style={{ fontWeight: '700', fontSize: '15px', color: isLocked ? '#999' : '#1a1a1a' }}>{step.label}</div>
-                                        <div style={{ fontSize: '12px', color: '#aaa', marginTop: '2px' }}>{step.desc}</div>
-                                    </div>
-                                    {isRequired && !isLocked && (
-                                        <div style={{ background: '#FFEBEE', color: '#FF1744', padding: '3px 10px', borderRadius: '8px', fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', flexShrink: 0 }}>
-                                            Requis
-                                        </div>
-                                    )}
-                                    {isLocked
-                                        ? <Lock size={16} style={{ color: '#ccc', flexShrink: 0 }} />
-                                        : <ChevronRight size={18} style={{ color: '#ccc', flexShrink: 0 }} />}
-                                </div>
-                            );
+                {/* Intervention Reminder Card */}
+                <div style={{
+                    ...GLASS_STYLE,
+                    padding: '24px',
+                    marginBottom: '24px',
+                    background: 'rgba(255,255,255,0.06)'
+                }}>
+                    <h3 style={{ fontSize: '18px', fontWeight: '500', color: 'white', marginBottom: '20px' }}>
+                        Rappel de votre intervention
+                    </h3>
 
-                            if (isLocked) return row;
-                            return (
-                                <Link key={step.to} to={`/patient-portal/${token}/${step.to}`} style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
-                                    onMouseOver={(e) => e.currentTarget.style.background = '#f9fafb'}
-                                    onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}>
-                                    {row}
-                                </Link>
-                            );
-                        });
-                    })()}
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <div style={{ width: '40px', height: '24px', borderRadius: '4px', overflow: 'hidden' }}>
+                                <img src="/src/assets/clinic_thumb.png" alt="Clinic" style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                    onError={(e) => {
+                                        if (e.target.src.indexOf('clinic_thumb.png') !== -1) e.target.src = '/src/assets/clinic.png';
+                                    }} />
+                            </div>
+                            <span style={{ fontSize: '14px', fontWeight: '700' }}>{patient.clinic_name || 'Clinique de Vitrolles'}</span>
+                        </div>
+                        <a 
+                            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(patient.clinic_address || "Vitrolles")}`}
+                            target="_blank" rel="noopener noreferrer"
+                            style={{
+                                padding: '8px 16px',
+                                borderRadius: '14px',
+                                background: 'rgba(255,255,255,0.15)',
+                                color: 'white',
+                                fontSize: '12px',
+                                fontWeight: '700',
+                                textDecoration: 'none',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '4px'
+                            }}
+                        >
+                            M'y rendre <ChevronRight size={12} />
+                        </a>
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: 'rgba(255,255,255,0.9)' }}>
+                            <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <Calendar size={16} />
+                            </div>
+                            <span style={{ fontSize: '14px', fontWeight: '500' }}>
+                                {patient.date ? new Date(patient.date).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) : t('Date à confirmer')}
+                            </span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: 'rgba(255,255,255,0.9)' }}>
+                            <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <Clock size={16} />
+                            </div>
+                            <span style={{ fontSize: '14px', fontWeight: '500' }}>
+                                {patient.surgery_time ? patient.surgery_time : 'Non-communiquée'}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Footer Call & Ordonnance Buttons */}
+                <div style={{ display: 'flex', gap: '12px', marginBottom: '12px' }}>
+                    <a href={`tel:${patient.clinic_phone || '0491159019'}`} style={{
+                        ...GLASS_STYLE,
+                        flex: 1,
+                        padding: '16px',
+                        textAlign: 'center',
+                        fontSize: '14px',
+                        fontWeight: '600',
+                        color: 'white',
+                        textDecoration: 'none',
+                        background: 'rgba(255,255,255,0.08)'
+                    }}>
+                        Appeler clinique <ChevronRight size={14} style={{ verticalAlign: 'middle', transform: 'rotate(-45deg)' }} />
+                    </a>
+                    <a href={`tel:${patient.practitioner_phone || '0491159019'}`} style={{
+                        ...GLASS_STYLE,
+                        flex: 1,
+                        padding: '16px',
+                        textAlign: 'center',
+                        fontSize: '14px',
+                        fontWeight: '600',
+                        color: 'white',
+                        textDecoration: 'none',
+                        background: 'rgba(255,255,255,0.08)'
+                    }}>
+                        Appeler cabinet <ChevronRight size={14} style={{ verticalAlign: 'middle', transform: 'rotate(-45deg)' }} />
+                    </a>
+                </div>
+
+                <div 
+                    onClick={documents.length > 0 ? handleDownloadPrescription : undefined}
+                    style={{
+                        ...GLASS_STYLE,
+                        width: '100%',
+                        padding: '16px',
+                        textAlign: 'center',
+                        fontSize: '14px',
+                        fontWeight: '600',
+                        color: 'white',
+                        background: 'rgba(255,255,255,0.08)',
+                        cursor: documents.length > 0 ? 'pointer' : 'default',
+                        opacity: documents.length > 0 ? 1 : 0.5,
+                        marginBottom: '40px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '8px'
+                    }}
+                >
+                    Télécharger mon ordonnance <Download size={16} />
                 </div>
             </div>
 
