@@ -460,7 +460,7 @@ export default function PatientPortal({ patient: initialPatient }) {
                 <div style={{
                     position: 'relative',
                     width: '100%',
-                    height: '240px',
+                    height: '280px',
                     borderRadius: '40px',
                     overflow: 'hidden',
                     marginBottom: '32px',
@@ -490,42 +490,39 @@ export default function PatientPortal({ patient: initialPatient }) {
                         }} 
                     />
 
-                    {/* Decorative Lightning Inside Card */}
-                    <Zap size={36} color="white" strokeWidth={1.5} style={{ position: 'absolute', top: '24px', right: '24px', opacity: 0.8, zIndex: 3 }} />
-
                     {/* Overlay Content */}
                     <div style={{
                         position: 'absolute',
                         inset: 0,
-                        padding: '24px 32px',
+                        padding: '32px 40px',
                         display: 'flex',
                         flexDirection: 'column',
                         justifyContent: 'space-between',
                         background: 'linear-gradient(to right, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.2) 60%, transparent 100%)',
                         zIndex: 2
                     }}>
-                        <div style={{ maxWidth: '70%' }}>
+                        <div style={{ maxWidth: '75%' }}>
                             <h2 style={{ 
-                                fontSize: '26px', 
+                                fontSize: '28px', 
                                 fontWeight: '500', 
                                 color: 'white', 
-                                marginBottom: '4px',
+                                marginBottom: '8px',
                                 letterSpacing: '-0.02em',
                                 lineHeight: 1.1
                             }}>
                                 Préparez-vous en<br />toute sérénité !
                             </h2>
                             <p style={{ 
-                                fontSize: '11px', 
+                                fontSize: '12px', 
                                 color: 'rgba(255,255,255,0.7)', 
-                                marginBottom: '16px',
-                                lineHeight: 1.4,
-                                maxWidth: '180px'
+                                marginBottom: '24px',
+                                lineHeight: 1.5,
+                                maxWidth: '200px'
                             }}>
                                 Répondez à des questions de suivi pour préparer votre opération
                             </p>
 
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                 <div style={{
                                     background: (patient?.progress || 0) >= 100 ? '#10B981' : '#F59E0B',
                                     width: '24px',
@@ -538,27 +535,27 @@ export default function PatientPortal({ patient: initialPatient }) {
                                 }}>
                                     <CheckCircle2 size={12} color="white" />
                                 </div>
-                                <span style={{ fontSize: '15px', fontWeight: '700', color: 'white' }}>
+                                <span style={{ fontSize: '16px', fontWeight: '700', color: 'white' }}>
                                     {(patient?.progress || 0) >= 100 ? t('Vous êtes à jour !') : t('Vous n’êtes pas à jour !')}
                                 </span>
                             </div>
                         </div>
 
                         <div>
-                            <p style={{ fontSize: '12px', fontWeight: '400', color: 'rgba(255,255,255,0.7)', marginBottom: '2px' }}>
+                            <p style={{ fontSize: '13px', fontWeight: '400', color: 'rgba(255,255,255,0.7)', marginBottom: '4px' }}>
                                 Prochaines questions dans :
                             </p>
-                            <div style={{ fontSize: '42px', fontWeight: '800', letterSpacing: '0.05em', color: 'white' }}>
+                            <div style={{ fontSize: '48px', fontWeight: '800', letterSpacing: '0.05em', color: 'white' }}>
                                 {calculateDaysUntilSurgery(patient.date).includes('J') ? '00:00:00' : '00:00:00'}
                             </div>
                         </div>
                     </div>
 
                     {/* Progress Dots Bottom Right */}
-                    <div style={{ position: 'absolute', right: '32px', bottom: '24px', display: 'flex', gap: '6px', zIndex: 3 }}>
-                        <div style={{ width: '24px', height: '4px', borderRadius: '2px', background: 'rgba(255,255,255,0.4)' }}></div>
-                        <div style={{ width: '24px', height: '4px', borderRadius: '2px', background: 'rgba(255,255,255,0.4)' }}></div>
-                        <div style={{ width: '24px', height: '4px', borderRadius: '2px', background: 'rgba(255,255,255,0.4)' }}></div>
+                    <div style={{ position: 'absolute', right: '40px', bottom: '32px', display: 'flex', gap: '8px', zIndex: 3 }}>
+                        <div style={{ width: '28px', height: '4px', borderRadius: '2px', background: 'rgba(255,255,255,0.4)' }}></div>
+                        <div style={{ width: '28px', height: '4px', borderRadius: '2px', background: 'rgba(255,255,255,0.4)' }}></div>
+                        <div style={{ width: '28px', height: '4px', borderRadius: '2px', background: 'rgba(255,255,255,0.4)' }}></div>
                     </div>
                 </div>
 
