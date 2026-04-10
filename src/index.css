@@ -2484,3 +2484,14 @@ textarea.input {
   margin-bottom: var(--spacing-4);
   border: 1px solid var(--color-primary-100);
 }
+
+/* Background Animation */
+@keyframes slowZoom {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.bg-animate-zoom {
+  animation: slowZoom 40s ease-in-out infinite;
+}

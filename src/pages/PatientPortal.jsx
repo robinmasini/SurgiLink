@@ -14,14 +14,12 @@ import {
     Loader,
     AlertCircle,
     LogOut,
-    Home,
-    Zap,
+    CheckCircle2,
+    ShieldCheck,
     Clock,
     ChevronRight,
     Phone,
-    Lock,
-    CheckCircle2,
-    ShieldCheck
+    Lock
 } from 'lucide-react';
 import ClinicAppointmentCard from '../components/ClinicAppointmentCard';
 import CompactAppointmentCard from '../components/CompactAppointmentCard';
@@ -74,7 +72,7 @@ function ConsignesSection({ patientId }) {
             {/* Header */}
             <div style={{
                 background: acknowledged ? '#f0fdf4' : 'white',
-                padding: '16px 20px',
+                padding: '166px 20px',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '10px',
@@ -403,17 +401,29 @@ export default function PatientPortal({ patient: initialPatient }) {
     };
 
     return (
-        <div style={{
-            minHeight: '100vh',
-            background: 'var(--grad-premium-dark)',
-            backgroundImage: `url(${appBg})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundAttachment: 'fixed',
-            padding: '20px 16px',
-            color: 'white',
-            fontFamily: "var(--font-family)"
-        }}>
+        <div style={{ position: 'relative', minHeight: '100vh', overflow: 'hidden' }}>
+            {/* Animated Background Layer */}
+            <div 
+                className="bg-animate-zoom"
+                style={{
+                    position: 'absolute',
+                    inset: 0,
+                    backgroundImage: `url(${appBg})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    backgroundAttachment: 'fixed',
+                    zIndex: -1
+                }}
+            />
+
+            <div style={{
+                position: 'relative',
+                zIndex: 1,
+                minHeight: '100vh',
+                padding: '20px 16px',
+                color: 'white',
+                fontFamily: "var(--font-family)"
+            }}>
             {/* Top Bar Logo & Brand */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', marginTop: '10px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '4px', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)' }}>
@@ -490,8 +500,6 @@ export default function PatientPortal({ patient: initialPatient }) {
                         }} 
                     />
 
-                    {/* Decorative Lightning Inside Card */}
-                    <Zap size={24} color="white" strokeWidth={1.5} style={{ position: 'absolute', top: '24px', right: '24px', opacity: 0.7, zIndex: 3 }} />
 
                     {/* Overlay Content */}
                     <div style={{
@@ -817,6 +825,6 @@ export default function PatientPortal({ patient: initialPatient }) {
                 </div>
             </div>
         </div>
+    </div>
     );
 }
-
