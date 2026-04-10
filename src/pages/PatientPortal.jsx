@@ -461,16 +461,16 @@ export default function PatientPortal({ patient: initialPatient }) {
                     position: 'relative',
                     width: '100%',
                     height: '240px',
-                    borderRadius: '30px',
+                    borderRadius: '40px',
                     overflow: 'hidden',
-                    marginBottom: '24px',
+                    marginBottom: '32px',
                     boxShadow: '0 20px 40px rgba(0,0,0,0.3)',
                     background: 'rgba(255,255,255,0.05)'
                 }}>
                     {/* Background Status Card */}
                     <img 
                         src={(patient?.progress || 0) >= 100 ? suiviCard : suiviCardBw} 
-                        alt="Status Card" 
+                        alt="" 
                         style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
                     />
 
@@ -491,64 +491,74 @@ export default function PatientPortal({ patient: initialPatient }) {
                     />
 
                     {/* Decorative Lightning Inside Card */}
-                    <Zap size={20} color="white" style={{ position: 'absolute', top: '24px', right: '24px', opacity: 0.4, zIndex: 3 }} />
+                    <Zap size={36} color="white" strokeWidth={1.5} style={{ position: 'absolute', top: '24px', right: '24px', opacity: 0.8, zIndex: 3 }} />
 
                     {/* Overlay Content */}
                     <div style={{
                         position: 'absolute',
                         inset: 0,
-                        padding: '24px',
+                        padding: '24px 32px',
                         display: 'flex',
                         flexDirection: 'column',
                         justifyContent: 'space-between',
-                        background: 'linear-gradient(to right, rgba(0,0,0,0.4), transparent)',
+                        background: 'linear-gradient(to right, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.2) 60%, transparent 100%)',
                         zIndex: 2
                     }}>
-                        <div>
+                        <div style={{ maxWidth: '70%' }}>
                             <h2 style={{ 
-                                fontSize: '20px', 
-                                fontWeight: '900', 
+                                fontSize: '26px', 
+                                fontWeight: '500', 
                                 color: 'white', 
-                                marginBottom: '12px',
-                                textShadow: '0 2px 10px rgba(0,0,0,0.3)',
-                                lineHeight: 1.2
+                                marginBottom: '4px',
+                                letterSpacing: '-0.02em',
+                                lineHeight: 1.1
                             }}>
-                                Préparez-vous en<br />toute sérénité
+                                Préparez-vous en<br />toute sérénité !
                             </h2>
+                            <p style={{ 
+                                fontSize: '11px', 
+                                color: 'rgba(255,255,255,0.7)', 
+                                marginBottom: '16px',
+                                lineHeight: 1.4,
+                                maxWidth: '180px'
+                            }}>
+                                Répondez à des questions de suivi pour préparer votre opération
+                            </p>
 
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                 <div style={{
                                     background: (patient?.progress || 0) >= 100 ? '#10B981' : '#F59E0B',
-                                    width: '20px',
-                                    height: '20px',
+                                    width: '24px',
+                                    height: '24px',
                                     borderRadius: '50%',
                                     display: 'flex',
                                     alignItems: 'center',
-                                    justifyContent: 'center'
+                                    justifyContent: 'center',
+                                    border: '1.5px solid white'
                                 }}>
-                                    <CheckCircle2 size={10} color="white" />
+                                    <CheckCircle2 size={12} color="white" />
                                 </div>
-                                <span style={{ fontSize: '12px', fontWeight: '800', color: 'white', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                                <span style={{ fontSize: '15px', fontWeight: '700', color: 'white' }}>
                                     {(patient?.progress || 0) >= 100 ? t('Vous êtes à jour !') : t('Vous n’êtes pas à jour !')}
                                 </span>
                             </div>
                         </div>
 
                         <div>
-                            <p style={{ fontSize: '10px', fontWeight: '700', color: 'rgba(255,255,255,0.8)', marginBottom: '4px', textTransform: 'uppercase' }}>
+                            <p style={{ fontSize: '12px', fontWeight: '400', color: 'rgba(255,255,255,0.7)', marginBottom: '2px' }}>
                                 Prochaines questions dans :
                             </p>
-                            <div style={{ fontSize: '28px', fontWeight: '900', letterSpacing: '0.05em', color: 'white' }}>
-                                {calculateDaysUntilSurgery(patient.date).includes('J') ? '24:00:00' : '00:00:00'}
+                            <div style={{ fontSize: '42px', fontWeight: '800', letterSpacing: '0.05em', color: 'white' }}>
+                                {calculateDaysUntilSurgery(patient.date).includes('J') ? '00:00:00' : '00:00:00'}
                             </div>
                         </div>
                     </div>
 
                     {/* Progress Dots Bottom Right */}
-                    <div style={{ position: 'absolute', left: '24px', bottom: '24px', display: 'flex', gap: '4px', zIndex: 3 }}>
-                        <div style={{ width: '12px', height: '4px', borderRadius: '2px', background: 'rgba(255,255,255,0.8)' }}></div>
-                        <div style={{ width: '12px', height: '4px', borderRadius: '2px', background: 'rgba(255,255,255,0.3)' }}></div>
-                        <div style={{ width: '12px', height: '4px', borderRadius: '2px', background: 'rgba(255,255,255,0.3)' }}></div>
+                    <div style={{ position: 'absolute', right: '32px', bottom: '24px', display: 'flex', gap: '6px', zIndex: 3 }}>
+                        <div style={{ width: '24px', height: '4px', borderRadius: '2px', background: 'rgba(255,255,255,0.4)' }}></div>
+                        <div style={{ width: '24px', height: '4px', borderRadius: '2px', background: 'rgba(255,255,255,0.4)' }}></div>
+                        <div style={{ width: '24px', height: '4px', borderRadius: '2px', background: 'rgba(255,255,255,0.4)' }}></div>
                     </div>
                 </div>
 
