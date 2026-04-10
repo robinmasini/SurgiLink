@@ -19,7 +19,8 @@ import {
     Clock,
     ChevronRight,
     Phone,
-    Lock
+    Lock,
+    Zap
 } from 'lucide-react';
 import ClinicAppointmentCard from '../components/ClinicAppointmentCard';
 import CompactAppointmentCard from '../components/CompactAppointmentCard';
@@ -426,14 +427,13 @@ export default function PatientPortal({ patient: initialPatient }) {
             }}>
             {/* Top Bar Logo & Brand */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', marginTop: '10px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '4px', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)' }}>
-                    <img src={logoSlMa} alt="Logo" style={{ height: '22px', objectFit: 'contain' }} />
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                    <img src={logoSlMa} alt="Logo" style={{ height: '48px', objectFit: 'contain' }} />
                 </div>
                 
-                <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-                    <div style={{ height: '15px', width: '2px', background: 'rgba(255,255,255,0.3)', marginBottom: '5px' }}></div>
-                    <div style={{ fontSize: '10px', fontWeight: '800', letterSpacing: '0.1em', opacity: 0.8 }}>MEDICAL</div>
-                    <div style={{ fontSize: '12px', fontWeight: '900', letterSpacing: '0.2em' }}>ALLIANCE</div>
+                <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', opacity: 0.6 }}>
+                    <div style={{ fontSize: '10px', fontWeight: '800', letterSpacing: '0.1em' }}>SURGILINK</div>
+                    <div style={{ fontSize: '10px', fontWeight: '500', letterSpacing: '0.1em' }}>PATIENT PORTAL</div>
                 </div>
             </div>
 
@@ -500,6 +500,9 @@ export default function PatientPortal({ patient: initialPatient }) {
                         }} 
                     />
 
+
+                    {/* Stylized Lightning Inside Card (from design) */}
+                    <Zap size={48} color="white" strokeWidth={1} style={{ position: 'absolute', top: '24px', right: '32px', opacity: 0.8, zIndex: 3 }} />
 
                     {/* Overlay Content */}
                     <div style={{
