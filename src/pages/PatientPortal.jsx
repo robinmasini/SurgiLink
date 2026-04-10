@@ -147,7 +147,7 @@ function ConsignesSection({ patientId }) {
 }
 
 export default function PatientPortal({ patient: initialPatient }) {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const { token } = useParams();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(!initialPatient);
