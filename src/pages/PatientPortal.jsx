@@ -416,8 +416,8 @@ export default function PatientPortal({ patient: initialPatient }) {
         }}>
             {/* Top Bar Logo & Brand */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', marginTop: '10px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <img src={logoSlMa} alt="Logo SurgiLink" style={{ height: '36px', objectFit: 'contain' }} />
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '4px', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                    <img src={logoSlMa} alt="Logo" style={{ height: '28px', objectFit: 'contain' }} />
                 </div>
                 
                 <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
@@ -477,7 +477,7 @@ export default function PatientPortal({ patient: initialPatient }) {
                     {/* Nurse Illustration */}
                     <img 
                         src="/src/assets/welcomecard-infirmier.png" 
-                        alt="Nurse Support" 
+                        alt="" 
                         style={{ 
                             position: 'absolute', 
                             right: '-10px', 
@@ -489,6 +489,9 @@ export default function PatientPortal({ patient: initialPatient }) {
                             transition: 'all 0.5s ease'
                         }} 
                     />
+
+                    {/* Decorative Lightning Inside Card */}
+                    <Zap size={20} color="white" style={{ position: 'absolute', top: '24px', right: '24px', opacity: 0.4, zIndex: 3 }} />
 
                     {/* Overlay Content */}
                     <div style={{
@@ -515,7 +518,7 @@ export default function PatientPortal({ patient: initialPatient }) {
 
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                 <div style={{
-                                    background: (patient?.progress || 0) >= 100 ? '#10B981' : 'rgba(255,255,255,0.2)',
+                                    background: (patient?.progress || 0) >= 100 ? '#10B981' : '#F59E0B',
                                     width: '20px',
                                     height: '20px',
                                     borderRadius: '50%',
