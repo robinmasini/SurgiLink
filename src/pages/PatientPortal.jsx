@@ -417,7 +417,7 @@ export default function PatientPortal({ patient: initialPatient }) {
             {/* Top Bar Logo & Brand */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', marginTop: '10px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '4px', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)' }}>
-                    <img src={logoSlMa} alt="Logo" style={{ height: '28px', objectFit: 'contain' }} />
+                    <img src={logoSlMa} alt="Logo" style={{ height: '22px', objectFit: 'contain' }} />
                 </div>
                 
                 <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
@@ -490,6 +490,9 @@ export default function PatientPortal({ patient: initialPatient }) {
                         }} 
                     />
 
+                    {/* Decorative Lightning Inside Card */}
+                    <Zap size={24} color="white" strokeWidth={1.5} style={{ position: 'absolute', top: '24px', right: '24px', opacity: 0.7, zIndex: 3 }} />
+
                     {/* Overlay Content */}
                     <div style={{
                         position: 'absolute',
@@ -545,7 +548,7 @@ export default function PatientPortal({ patient: initialPatient }) {
                             <p style={{ fontSize: '13px', fontWeight: '400', color: 'rgba(255,255,255,0.7)', marginBottom: '4px' }}>
                                 Prochaines questions dans :
                             </p>
-                            <div style={{ fontSize: '48px', fontWeight: '800', letterSpacing: '0.05em', color: 'white' }}>
+                            <div style={{ fontSize: '36px', fontWeight: '800', letterSpacing: '0.05em', color: 'white' }}>
                                 {calculateDaysUntilSurgery(patient.date).includes('J') ? '00:00:00' : '00:00:00'}
                             </div>
                         </div>
