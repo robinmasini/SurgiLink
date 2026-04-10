@@ -19,8 +19,7 @@ import {
     Clock,
     ChevronRight,
     Phone,
-    Lock,
-    Zap
+    Lock
 } from 'lucide-react';
 import ClinicAppointmentCard from '../components/ClinicAppointmentCard';
 import CompactAppointmentCard from '../components/CompactAppointmentCard';
@@ -501,8 +500,6 @@ export default function PatientPortal({ patient: initialPatient }) {
                     />
 
 
-                    {/* Stylized Lightning Inside Card (from design) */}
-                    <Zap size={48} color="white" strokeWidth={1} style={{ position: 'absolute', top: '24px', right: '32px', opacity: 0.8, zIndex: 3 }} />
 
                     {/* Overlay Content */}
                     <div style={{
