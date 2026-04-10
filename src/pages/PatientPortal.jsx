@@ -412,7 +412,7 @@ export default function PatientPortal({ patient: initialPatient }) {
             backgroundAttachment: 'fixed',
             padding: '20px 16px',
             color: 'white',
-            fontFamily: "'Outfit', sans-serif"
+            fontFamily: "var(--font-family)"
         }}>
             {/* Top Bar Logo & Brand */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', marginTop: '10px' }}>
