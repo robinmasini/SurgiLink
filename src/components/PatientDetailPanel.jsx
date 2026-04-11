@@ -195,11 +195,41 @@ export default function PatientDetailPanel({ patient, responses = [], onClose })
                         color: 'white',
                         border: 'none',
                         cursor: 'pointer',
-                        marginBottom: 'var(--spacing-4)'
+                        marginBottom: 'var(--spacing-2)'
                     }}
                     onClick={() => window.location.href = `/patient/${patient.id}`}
                 >
                     <ExternalLink size={18} /> Accéder à la fiche patient
+                </button>
+
+                <button
+                    className="btn btn-outline"
+                    style={{
+                        width: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 'var(--spacing-2)',
+                        padding: 'var(--spacing-3)',
+                        fontSize: 'var(--font-size-sm)',
+                        fontWeight: '700',
+                        borderRadius: 'var(--radius-lg)',
+                        background: 'white',
+                        color: 'var(--color-primary-600)',
+                        border: '1px solid var(--color-primary-200)',
+                        cursor: 'pointer',
+                        marginBottom: 'var(--spacing-4)',
+                        opacity: token ? 1 : 0.6
+                    }}
+                    onClick={() => {
+                        if (token) {
+                            window.open(`${window.location.origin}/patient-portal/${token}`, '_blank');
+                        } else {
+                            alert('Lien non disponible pour ce patient.');
+                        }
+                    }}
+                >
+                    <ExternalLink size={18} /> Ouvrir Portail Patient
                 </button>
 
                 {/* Patient Portal Access */}
