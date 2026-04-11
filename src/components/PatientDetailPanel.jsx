@@ -9,19 +9,76 @@ import {
     FileText,
     ExternalLink,
     ChevronRight,
-    AlertCircle
+    AlertCircle,
+    Sparkles,
+    Copy,
+    Check
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import PatientStatusBadges from './PatientStatusBadges';
+
+const STYLES = {
+    panel: {
+        position: 'sticky',
+        top: 'var(--spacing-6)',
+        background: 'white',
+        borderRadius: 'var(--radius-xl)',
+        border: '1px solid var(--color-primary-100)',
+        boxShadow: 'var(--shadow-lg)',
+        display: 'flex',
+        flexDirection: 'column',
+        maxHeight: 'calc(100vh - 120px)',
+        overflow: 'hidden'
+    },
+    header: {
+        padding: 'var(--spacing-5)',
+        borderBottom: '1px solid var(--color-gray-100)',
+        background: 'linear-gradient(to right, var(--color-primary-50), white)',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start'
+    },
+    sectionTitle: {
+        fontSize: 'var(--font-size-xs)',
+        fontWeight: '700',
+        color: 'var(--color-gray-400)',
+        textTransform: 'uppercase',
+        letterSpacing: '0.05em',
+        marginBottom: 'var(--spacing-3)'
+    },
+    infoCard: {
+        padding: 'var(--spacing-3)',
+        background: 'var(--color-gray-50)',
+        borderRadius: 'var(--radius-lg)'
+    },
+    actionButton: {
+        width: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 'var(--spacing-2)',
+        padding: 'var(--spacing-3)',
+        fontSize: 'var(--font-size-sm)',
+        fontWeight: '700',
+        borderRadius: 'var(--radius-lg)',
+        border: 'none',
+        cursor: 'pointer',
+        transition: 'all 0.2s ease'
+    }
+};
 
 export default function PatientDetailPanel({ patient, responses = [], onClose }) {
     const [smsLogs, setSmsLogs] = useState([]);
     const [pendingReminders, setPendingReminders] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [token, setToken] = useState(null);
+    const [copied, setCopied] = useState(false);
 
     useEffect(() => {
         if (patient) {
+            setToken(null);
+            setSmsLogs([]);
+            setPendingReminders([]);
             loadSmsLogs();
             loadPendingReminders();
             loadPatientToken();
@@ -30,38 +87,30 @@ export default function PatientDetailPanel({ patient, responses = [], onClose })
 
     const loadPatientToken = async () => {
         try {
-            const { data } = await supabase.from('patient_tokens').select('token').eq('patient_id', patient.id).eq('is_active', true).single();
-            if (data) setToken(data.token);
+            const { data, error } = await supabase
+                .from('patient_tokens')
+                .select('token')
+                .eq('patient_id', patient.id)
+                .eq('is_active', true)
+                .order('created_at', { ascending: false })
+                .limit(1);
+
+            if (error) throw error;
+            if (data && data.length > 0) setToken(data[0].token);
         } catch (err) {
              console.error('Error loading token', err);
         }
     };
 
     const handleCopyToken = async () => {
-        if (!token) {
-            alert('Lien non disponible pour ce patient.');
-            return;
-        }
+        if (!token) return;
         const textToCopy = `${window.location.origin}/patient-portal/${token}`;
         try {
             await navigator.clipboard.writeText(textToCopy);
-            alert('Lien copié dans le presse-papier !');
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
         } catch (err) {
-            const textArea = document.createElement("textarea");
-            textArea.value = textToCopy;
-            textArea.style.position = "fixed";
-            textArea.style.left = "-999999px";
-            textArea.style.top = "-999999px";
-            document.body.appendChild(textArea);
-            textArea.focus();
-            textArea.select();
-            try {
-                document.execCommand('copy');
-                alert('Lien copié dans le presse-papier !');
-            } catch (err2) {
-                alert('Erreur lors de la copie du lien.');
-            }
-            textArea.remove();
+            console.error('Copy failed', err);
         }
     };
 
@@ -103,28 +152,12 @@ export default function PatientDetailPanel({ patient, responses = [], onClose })
 
     if (!patient) return null;
 
+    const portalUrl = token ? `${window.location.origin}/patient-portal/${token}` : null;
+
     return (
-        <div className="patient-detail-panel fade-in" style={{
-            position: 'sticky',
-            top: 'var(--spacing-6)',
-            background: 'white',
-            borderRadius: 'var(--radius-xl)',
-            border: '1px solid var(--color-primary-100)',
-            boxShadow: 'var(--shadow-lg)',
-            display: 'flex',
-            flexDirection: 'column',
-            maxHeight: 'calc(100vh - 120px)',
-            overflow: 'hidden'
-        }}>
+        <div className="patient-detail-panel fade-in" style={STYLES.panel}>
             {/* Header */}
-            <div style={{
-                padding: 'var(--spacing-5)',
-                borderBottom: '1px solid var(--color-gray-100)',
-                background: 'linear-gradient(to right, var(--color-primary-50), white)',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'flex-start'
-            }}>
+            <div style={STYLES.header}>
                 <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)', marginBottom: 'var(--spacing-1)' }}>
                         <h2 style={{ fontSize: 'var(--font-size-xl)', fontWeight: '700', color: 'var(--color-gray-900)', margin: 0 }}>
@@ -148,11 +181,82 @@ export default function PatientDetailPanel({ patient, responses = [], onClose })
             </div>
 
             <div style={{ padding: 'var(--spacing-5)', overflowY: 'auto', flex: 1 }}>
+                {/* Actions Group - Premium Polish */}
+                <div style={{ 
+                    marginBottom: 'var(--spacing-6)', 
+                    padding: 'var(--spacing-4)', 
+                    background: 'var(--color-primary-50)', 
+                    borderRadius: 'var(--radius-xl)',
+                    border: '1px solid var(--color-primary-100)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 'var(--spacing-3)'
+                }}>
+                    <button
+                        className="btn-primary"
+                        style={{
+                            ...STYLES.actionButton,
+                            background: 'var(--color-primary-600)',
+                            color: 'white',
+                            boxShadow: '0 4px 12px rgba(var(--color-primary-rgb), 0.2)'
+                        }}
+                        onClick={() => window.location.href = `/patient/${patient.id}`}
+                    >
+                        <FileText size={18} /> Accéder à la fiche patient
+                    </button>
+
+                    <button
+                        style={{
+                            ...STYLES.actionButton,
+                            background: 'white',
+                            color: 'var(--color-primary-600)',
+                            border: '1px solid var(--color-primary-200)',
+                            opacity: token ? 1 : 0.6
+                        }}
+                        onClick={() => {
+                            if (portalUrl) window.open(portalUrl, '_blank');
+                            else alert('Lien non disponible pour ce patient.');
+                        }}
+                    >
+                        <Sparkles size={18} /> Ouvrir Portail Patient
+                    </button>
+
+                    {token && (
+                        <div style={{ 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            justifyContent: 'space-between',
+                            padding: 'var(--spacing-2) var(--spacing-3)',
+                            background: 'rgba(255,255,255,0.5)',
+                            borderRadius: 'var(--radius-md)',
+                            fontSize: '11px',
+                            color: 'var(--color-primary-600)',
+                            marginTop: '4px'
+                        }}>
+                            <span style={{ fontWeight: '600' }}>Lien direct patient</span>
+                            <button 
+                                onClick={handleCopyToken}
+                                style={{ 
+                                    background: 'none', 
+                                    border: 'none', 
+                                    color: copied ? 'var(--color-success-600)' : 'var(--color-primary-600)',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '4px',
+                                    fontWeight: '700'
+                                }}
+                            >
+                                {copied ? <Check size={14} /> : <Copy size={14} />}
+                                {copied ? 'Copié !' : 'Copier'}
+                            </button>
+                        </div>
+                    )}
+                </div>
+
                 {/* Stats Summary */}
                 <div style={{ marginBottom: 'var(--spacing-6)' }}>
-                    <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: '700', color: 'var(--color-gray-400)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 'var(--spacing-3)' }}>
-                        Retours Patient
-                    </div>
+                    <div style={STYLES.sectionTitle}>Retours Patient</div>
                     <PatientStatusBadges responses={responses} daysUntil={patient.daysUntil} patientStatus={patient.status} />
                 </div>
 
@@ -163,11 +267,11 @@ export default function PatientDetailPanel({ patient, responses = [], onClose })
                     gap: 'var(--spacing-3)',
                     marginBottom: 'var(--spacing-6)'
                 }}>
-                    <div style={{ padding: 'var(--spacing-3)', background: 'var(--color-gray-50)', borderRadius: 'var(--radius-lg)' }}>
+                    <div style={STYLES.infoCard}>
                         <div style={{ fontSize: '10px', color: 'var(--color-gray-400)', textTransform: 'uppercase', fontWeight: '700' }}>Étape</div>
                         <div style={{ fontSize: 'var(--font-size-sm)', fontWeight: '600', color: 'var(--color-primary-600)' }}>{patient.daysUntil}</div>
                     </div>
-                    <div style={{ padding: 'var(--spacing-3)', background: 'var(--color-gray-50)', borderRadius: 'var(--radius-lg)' }}>
+                    <div style={STYLES.infoCard}>
                         <div style={{ fontSize: '10px', color: 'var(--color-gray-400)', textTransform: 'uppercase', fontWeight: '700' }}>Mode de séjour</div>
                         <div style={{ fontSize: 'var(--font-size-sm)', fontWeight: '600' }}>{patient.stay_type || 'Ambulatoire'}</div>
                     </div>
@@ -178,86 +282,10 @@ export default function PatientDetailPanel({ patient, responses = [], onClose })
                     <div style={{ fontSize: 'var(--font-size-sm)', fontWeight: '700', color: 'var(--color-primary-900)' }}>{patient.operation || 'Non renseignée'}</div>
                 </div>
 
-                {/* CTA: Patient Record */}
-                <button
-                    className="btn btn-primary"
-                    style={{
-                        width: '100%',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: 'var(--spacing-2)',
-                        padding: 'var(--spacing-3)',
-                        fontSize: 'var(--font-size-sm)',
-                        fontWeight: '700',
-                        borderRadius: 'var(--radius-lg)',
-                        background: 'var(--color-primary-500)',
-                        color: 'white',
-                        border: 'none',
-                        cursor: 'pointer',
-                        marginBottom: 'var(--spacing-2)'
-                    }}
-                    onClick={() => window.location.href = `/patient/${patient.id}`}
-                >
-                    <ExternalLink size={18} /> Accéder à la fiche patient
-                </button>
-
-                <button
-                    className="btn btn-outline"
-                    style={{
-                        width: '100%',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: 'var(--spacing-2)',
-                        padding: 'var(--spacing-3)',
-                        fontSize: 'var(--font-size-sm)',
-                        fontWeight: '700',
-                        borderRadius: 'var(--radius-lg)',
-                        background: 'white',
-                        color: 'var(--color-primary-600)',
-                        border: '1px solid var(--color-primary-200)',
-                        cursor: 'pointer',
-                        marginBottom: 'var(--spacing-4)',
-                        opacity: token ? 1 : 0.6
-                    }}
-                    onClick={() => {
-                        if (token) {
-                            window.open(`${window.location.origin}/patient-portal/${token}`, '_blank');
-                        } else {
-                            alert('Lien non disponible pour ce patient.');
-                        }
-                    }}
-                >
-                    <ExternalLink size={18} /> Ouvrir Portail Patient
-                </button>
-
-                {/* Patient Portal Access */}
-                <div style={{
-                    padding: 'var(--spacing-4)',
-                    background: 'var(--color-primary-50)',
-                    borderRadius: 'var(--radius-lg)',
-                    border: '1px dashed var(--color-primary-200)',
-                    marginBottom: 'var(--spacing-6)'
-                }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)', marginBottom: 'var(--spacing-2)' }}>
-                        <ExternalLink size={16} style={{ color: 'var(--color-primary-600)' }} />
-                        <span style={{ fontSize: 'var(--font-size-sm)', fontWeight: '700', color: 'var(--color-primary-700)' }}>Accès Patient Sécurisé</span>
-                    </div>
-                    <p style={{ fontSize: '11px', color: 'var(--color-primary-600)', marginBottom: 'var(--spacing-3)' }}>
-                        Lien unique envoyé par SMS pour consulter le protocole.
-                    </p>
-                    <button onClick={handleCopyToken} className="btn btn-sm btn-primary" style={{ width: '100%', fontSize: '11px', padding: '6px', opacity: token ? 1 : 0.5 }}>
-                        {token ? 'Copier le lien' : 'Génération requise'}
-                    </button>
-                </div>
-
                 {/* Reminder Queue */}
                 <div style={{ marginBottom: 'var(--spacing-6)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-3)' }}>
-                        <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: '700', color: 'var(--color-gray-400)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                            Prochains Rappels
-                        </div>
+                        <div style={STYLES.sectionTitle}>Prochains Rappels</div>
                         <Calendar size={14} style={{ color: 'var(--color-gray-400)' }} />
                     </div>
 
@@ -272,14 +300,14 @@ export default function PatientDetailPanel({ patient, responses = [], onClose })
                                 alignItems: 'center',
                                 gap: 'var(--spacing-3)',
                                 padding: '10px',
-                                background: 'var(--color-primary-50)',
+                                background: 'white',
                                 borderRadius: 'var(--radius-md)',
-                                border: '1px solid var(--color-primary-100)'
+                                border: '1px solid var(--color-gray-100)'
                             }}>
                                 <Clock size={14} style={{ color: 'var(--color-primary-600)' }} />
                                 <div>
-                                    <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--color-primary-700)' }}>{rem.screen}</div>
-                                    <div style={{ fontSize: '10px', color: 'var(--color-primary-600)' }}>
+                                    <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--color-gray-900)' }}>{rem.screen}</div>
+                                    <div style={{ fontSize: '10px', color: 'var(--color-gray-500)' }}>
                                         {new Date(rem.scheduled_for).toLocaleString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
                                     </div>
                                 </div>
@@ -291,9 +319,7 @@ export default function PatientDetailPanel({ patient, responses = [], onClose })
                 {/* Recent Activity */}
                 <div style={{ marginBottom: 'var(--spacing-6)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-3)' }}>
-                        <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: '700', color: 'var(--color-gray-400)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                            Derniers Échanges
-                        </div>
+                        <div style={STYLES.sectionTitle}>Derniers Échanges</div>
                         <Clock size={14} style={{ color: 'var(--color-gray-400)' }} />
                     </div>
 
@@ -350,40 +376,26 @@ export default function PatientDetailPanel({ patient, responses = [], onClose })
 
                 <div style={{ display: 'flex', gap: 'var(--spacing-2)' }}>
                     <button
-                        className="btn btn-outline"
                         style={{
+                            ...STYLES.actionButton,
                             flex: 1,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: 'var(--spacing-2)',
                             background: '#f3f4f6',
-                            border: 'none',
                             color: 'var(--color-gray-700)',
                             padding: '10px',
-                            fontWeight: '600',
-                            borderRadius: 'var(--radius-lg)',
-                            cursor: 'pointer'
+                            fontWeight: '600'
                         }}
                         onClick={() => window.location.href = `tel:${patient.phone}`}
                     >
                         <Phone size={18} /> Appeler
                     </button>
                     <button
-                        className="btn btn-outline"
                         style={{
+                            ...STYLES.actionButton,
                             flex: 1,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: 'var(--spacing-2)',
                             background: '#f3f4f6',
-                            border: 'none',
                             color: 'var(--color-gray-700)',
                             padding: '10px',
-                            fontWeight: '600',
-                            borderRadius: 'var(--radius-lg)',
-                            cursor: 'pointer'
+                            fontWeight: '600'
                         }}
                         onClick={() => window.location.href = `sms:${patient.phone}`}
                     >

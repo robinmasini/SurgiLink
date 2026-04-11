@@ -185,6 +185,8 @@ export default function PatientJ7({ patient: propPatient, token: propToken }) {
                     {t('N\'hésitez surtout pas à cocher "Non", cela ne veut pas dire que votre opération sera annulée. Si vous cochez "Non", l\'équipe de la clinique vous rappellera pour trouver une solution adaptée à votre situation.')}
                 </div>
 
+                <DoctolibButton />
+
 
                 {/* Questionnaire Flow */}
                 <QuestionnaireFlow
