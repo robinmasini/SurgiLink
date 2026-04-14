@@ -438,17 +438,7 @@ export default function PatientPortal({ patient: initialPatient }) {
                 color: 'white',
                 fontFamily: "var(--font-family)"
             }}>
-            {/* Top Bar Logo & Brand */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', marginTop: '10px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                    <img src={logoSlMa} alt="Logo" style={{ height: '48px', objectFit: 'contain' }} />
-                </div>
-                
-                <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', opacity: 0.6 }}>
-                    <div style={{ fontSize: '10px', fontWeight: '800', letterSpacing: '0.1em' }}>SURGILINK</div>
-                    <div style={{ fontSize: '10px', fontWeight: '500', letterSpacing: '0.1em' }}>PATIENT PORTAL</div>
-                </div>
-            </div>
+
 
             <div style={{ maxWidth: '500px', margin: '0 auto' }}>
                 {/* Greeting & Language */}
@@ -457,26 +447,7 @@ export default function PatientPortal({ patient: initialPatient }) {
                         {t('Bienvenue,')} {patient?.name?.split(' ')[0] || 'Christophe'} !
                     </h1>
                     
-                    {/* Language Selector (Glassy) */}
-                    <div 
-                        onClick={() => {
-                            const nextLang = i18n.language === 'fr' ? 'en' : 'fr';
-                            i18n.changeLanguage(nextLang);
-                        }}
-                        style={{ 
-                            display: 'flex', 
-                            alignItems: 'center', 
-                            gap: '8px', 
-                            padding: '6px 12px', 
-                            borderRadius: '20px', 
-                            ...GLASS_STYLE,
-                            border: '1px solid rgba(255,255,255,0.1)',
-                            cursor: 'pointer'
-                        }}
-                    >
-                        <span style={{ fontSize: '18px' }}>{i18n.language === 'fr' ? '🇫🇷' : '🇬🇧'}</span>
-                        <ChevronRight size={14} style={{ transform: 'rotate(90deg)', opacity: 0.6 }} />
-                    </div>
+
                 </div>
 
                 {/* Main Hero Card (Premium Status Card) */}
