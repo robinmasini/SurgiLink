@@ -10,6 +10,7 @@ import welcomeCardV4 from '../assets/welcome-card-v4.jpg';
 import welcomeCardInfirmier from '../assets/welcomecard-infirmier.png';
 import christopheSignature from '../assets/christophe-signature.png';
 import nurseAvatar from '../assets/nurse-avatar.png';
+import wppPhone from '../assets/wpp-phone.png';
 import {
     Users,
     AlertTriangle,
@@ -258,7 +259,17 @@ export default function Dashboard() {
 
 
     return (
-        <div className="dashboard-layout" data-mobile={isMobile}>
+        <div 
+            className="dashboard-layout" 
+            data-mobile={isMobile}
+            style={{
+                backgroundImage: `url(${wppPhone})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundAttachment: 'fixed',
+                minHeight: '100vh'
+            }}
+        >
             <Sidebar />
             <main className="main-content" data-mobile={isMobile}>
                 <Header

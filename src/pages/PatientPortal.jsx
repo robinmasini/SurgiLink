@@ -541,7 +541,16 @@ export default function PatientPortal({ patient: initialPatient }) {
                         background: 'linear-gradient(to right, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.2) 60%, transparent 100%)',
                         zIndex: 2
                     }}>
-                        <div style={{ maxWidth: '75%' }}>
+                        <div style={{ maxWidth: '75%', position: 'relative' }}>
+                            {/* White Lightning Bolt Icon */}
+                            <div style={{ 
+                                position: 'absolute', 
+                                left: '-35px', 
+                                top: '5px' 
+                            }}>
+                                <Activity size={24} color="white" strokeWidth={2.5} />
+                            </div>
+
                             <h2 style={{ 
                                 fontSize: '28px', 
                                 fontWeight: '500', 

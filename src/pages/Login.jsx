@@ -4,8 +4,6 @@ import favicon from '/favicon.png';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, ArrowRight, User, Activity } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import wppPhone from '../assets/wpp-phone.png';
-import wppDesktop from '../assets/wpp-desktop.png';
 
 
 export default function Login() {
@@ -109,22 +107,26 @@ export default function Login() {
             </div>
 
             {/* Background Layer with Zoom Animation */}
-            <div
-                className="login-bg-container bg-animate-zoom"
+            <video 
+                autoPlay 
+                loop 
+                muted 
+                playsInline
+                className="login-video"
                 style={{
                     position: 'absolute',
                     top: 0,
                     left: 0,
                     right: 0,
                     bottom: 0,
-                    backgroundImage: `url(${wppPhone})`,
-
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                    backgroundRepeat: 'no-repeat',
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
                     zIndex: 0
                 }}
-            />
+            >
+                <source src="/login-bg.mp4" type="video/mp4" />
+            </video>
 
 
             {/* Dark Overlay for contrast */}
