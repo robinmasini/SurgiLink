@@ -438,13 +438,13 @@ export default function PatientPortal({ patient: initialPatient }) {
                 color: 'white',
                 fontFamily: "var(--font-family)"
             }}>
-            {/* Top Bar Logo & Brand */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', marginTop: '10px' }}>
+            {/* Top Bar Logo - Centered for Mobile & Desktop Alignment */}
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '32px', marginTop: '10px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                     <img src={logoSlMa} alt="Logo" style={{ height: '80px', objectFit: 'contain' }} />
                 </div>
-
             </div>
+
 
             <div style={{ maxWidth: '500px', margin: '0 auto' }}>
                 {/* Greeting & Language */}
