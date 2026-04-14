@@ -821,69 +821,77 @@ export default function PatientReview() {
                                     </div>
                                     <h3>Données Cliniques</h3>
                                 </div>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-4)' }}>
-                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                                        <div style={{
-                                            fontSize: 'var(--font-size-xs)',
-                                            color: patient.last_consulted_at ? 'var(--color-success-600)' : 'var(--color-gray-400)',
-                                            background: patient.last_consulted_at ? 'var(--color-success-50)' : 'var(--color-gray-50)',
-                                            padding: '4px 12px',
-                                            borderRadius: 'var(--radius-full)',
-                                            border: `1px solid ${patient.last_consulted_at ? 'var(--color-success-100)' : 'var(--color-gray-100)'}`,
-                                            fontWeight: '500'
-                                        }}>
-                                            {patient.last_consulted_at ? `Connecté le ${formatDateTimeFR(patient.last_consulted_at)}` : 'Jamais connecté'}
-                                        </div>
-                                        {patient.onboarding_completed_at ? (
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                <div style={{
-                                                    fontSize: '10px',
-                                                    color: 'var(--color-primary-600)',
-                                                    background: 'var(--color-primary-50)',
-                                                    padding: '4px 12px',
-                                                    borderRadius: 'var(--radius-full)',
-                                                    border: '1px solid var(--color-primary-100)',
-                                                    fontWeight: '700',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    gap: '4px'
-                                                }}>
-                                                    <ShieldCheck size={12} />
-                                                    DIDACTICIEL CONSULTÉ
-                                                </div>
-                                                <button 
-                                                    onClick={handleResetOnboarding}
-                                                    title="Réinitialiser le didacticiel"
-                                                    style={{ 
-                                                        background: 'transparent', 
-                                                        border: 'none', 
-                                                        color: 'var(--color-gray-400)', 
-                                                        cursor: 'pointer',
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        padding: '4px'
-                                                    }}
-                                                >
-                                                    <RefreshCw size={14} />
-                                                </button>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                    {/* Onboarding Status & Reset Button */}
+                                    {patient.onboarding_completed_at ? (
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                            <div style={{
+                                                fontSize: '11px',
+                                                color: 'var(--color-primary-600)',
+                                                background: 'var(--color-primary-50)',
+                                                padding: '6px 14px',
+                                                borderRadius: 'var(--radius-full)',
+                                                border: '1px solid var(--color-primary-100)',
+                                                fontWeight: '700',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '6px'
+                                            }}>
+                                                <ShieldCheck size={14} />
+                                                TUTO OK
                                             </div>
-                                        ) : (
                                             <button 
                                                 onClick={handleResetOnboarding}
+                                                className="btn-icon"
+                                                title="Réinitialiser le didacticiel"
                                                 style={{ 
-                                                    fontSize: '10px', 
-                                                    padding: '4px 8px',
-                                                    background: 'transparent',
-                                                    border: '1px dashed var(--color-gray-300)',
-                                                    borderRadius: '4px',
-                                                    color: 'var(--color-gray-500)',
+                                                    width: '32px',
+                                                    height: '32px',
+                                                    borderRadius: '50%',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    background: 'white',
+                                                    border: '1px solid var(--color-gray-200)',
+                                                    color: 'var(--color-primary-600)',
+                                                    boxShadow: 'var(--shadow-sm)',
                                                     cursor: 'pointer'
                                                 }}
                                             >
-                                                Réinitialiser didacticiel
+                                                <RefreshCw size={14} />
                                             </button>
-                                        )}
+                                        </div>
+                                    ) : (
+                                        <button 
+                                            onClick={handleResetOnboarding}
+                                            className="btn-secondary"
+                                            style={{ 
+                                                padding: '6px 12px',
+                                                fontSize: '11px',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '6px',
+                                                borderRadius: 'var(--radius-lg)',
+                                                cursor: 'pointer'
+                                            }}
+                                        >
+                                            <RefreshCw size={14} />
+                                            Reset Tuto
+                                        </button>
+                                    )}
+
+                                    <div style={{
+                                        fontSize: 'var(--font-size-xs)',
+                                        color: patient.last_consulted_at ? 'var(--color-success-600)' : 'var(--color-gray-400)',
+                                        background: patient.last_consulted_at ? 'var(--color-success-50)' : 'var(--color-gray-50)',
+                                        padding: '6px 14px',
+                                        borderRadius: 'var(--radius-full)',
+                                        border: `1px solid ${patient.last_consulted_at ? 'var(--color-success-100)' : 'var(--color-gray-100)'}`,
+                                        fontWeight: '500'
+                                    }}>
+                                        {patient.last_consulted_at ? `Connecté le ${formatDateTimeFR(patient.last_consulted_at)}` : 'Jamais connecté'}
                                     </div>
+
                                     <button
                                         onClick={handleDownloadSynthesis}
                                         disabled={isGeneratingPDF}
@@ -906,7 +914,6 @@ export default function PatientReview() {
                                         <Plus size={18} style={{ marginRight: '8px' }} />
                                         Ajouter une question
                                     </button>
-
                                 </div>
                             </div>
 
