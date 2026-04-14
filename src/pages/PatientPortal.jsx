@@ -438,16 +438,16 @@ export default function PatientPortal({ patient: initialPatient }) {
                 color: 'white',
                 fontFamily: "var(--font-family)"
             }}>
-            {/* Top Bar Logo - Centered for Mobile & Desktop Alignment */}
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '32px', marginTop: '10px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                    <img src={logoSlMa} alt="Logo" style={{ height: '80px', objectFit: 'contain' }} />
-                </div>
-            </div>
 
 
             <div style={{ maxWidth: '500px', margin: '0 auto' }}>
+                {/* Top Bar Logo - Left Aligned with Content */}
+                <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', marginBottom: '32px', marginTop: '10px' }}>
+                    <img src={logoSlMa} alt="Logo" style={{ height: '80px', objectFit: 'contain' }} />
+                </div>
+
                 {/* Greeting & Language */}
+
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
                     <h1 style={{ fontSize: '24px', fontWeight: '500', color: 'white', margin: 0 }}>
                         {t('Bienvenue,')} {patient?.name?.split(' ')[0] || 'Christophe'} !
