@@ -420,7 +420,8 @@ export default function PatientPortal({ patient: initialPatient }) {
                 style={{
                     position: 'absolute',
                     inset: 0,
-                    backgroundImage: `url(${isMobile ? wppPhone : wppDesktop})`,
+                    backgroundImage: `url(${wppPhone})`,
+
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                     backgroundAttachment: 'fixed',

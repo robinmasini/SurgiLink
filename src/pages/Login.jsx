@@ -117,7 +117,8 @@ export default function Login() {
                     left: 0,
                     right: 0,
                     bottom: 0,
-                    backgroundImage: `url(${isMobile ? wppPhone : wppDesktop})`,
+                    backgroundImage: `url(${wppPhone})`,
+
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                     backgroundRepeat: 'no-repeat',
