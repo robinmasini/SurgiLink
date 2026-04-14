@@ -17,7 +17,8 @@ export default function EditPatientModal({ isOpen, onClose, patient, onPatientUp
         appointmentDatetime: '',
         surgeonName: '',
         surgeryTime: '',
-        stayType: ''
+        stayType: '',
+        reminderTime: '08:30'
     });
     const [isSaving, setIsSaving] = useState(false);
 
@@ -55,7 +56,8 @@ export default function EditPatientModal({ isOpen, onClose, patient, onPatientUp
                 appointmentDatetime: patient.appointment_datetime ? new Date(patient.appointment_datetime).toISOString().slice(0, 16) : '',
                 surgeonName: patient.surgeon_name || '',
                 surgeryTime: patient.surgery_time || '07:30',
-                stayType: patient.stay_type || 'Ambulatoire'
+                stayType: patient.stay_type || 'Ambulatoire',
+                reminderTime: patient.reminder_time || '08:30'
             });
         }
     }, [patient]);
@@ -84,7 +86,8 @@ export default function EditPatientModal({ isOpen, onClose, patient, onPatientUp
                     appointment_datetime: formData.appointmentDatetime || null,
                     surgeon_name: formData.surgeonName,
                     surgery_time: formData.surgeryTime,
-                    stay_type: formData.stayType
+                    stay_type: formData.stayType,
+                    reminder_time: formData.reminderTime
                 })
                 .eq('id', patient.id)
                 .select();
@@ -223,7 +226,7 @@ export default function EditPatientModal({ isOpen, onClose, patient, onPatientUp
                                 </div>
                             </div>
                             <div>
-                                <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Heure</label>
+                                <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Heure Chirurgie</label>
                                 <div style={{ position: 'relative' }}>
                                     <Clock size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-gray-400)', zIndex: 1 }} />
                                     <input
@@ -235,6 +238,23 @@ export default function EditPatientModal({ isOpen, onClose, patient, onPatientUp
                                     />
                                 </div>
                             </div>
+                        </div>
+
+                        <div>
+                            <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Heure Rappel SMS (Défaut)</label>
+                            <div style={{ position: 'relative' }}>
+                                <Clock size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-primary-400)', zIndex: 1 }} />
+                                <input
+                                    type="time"
+                                    className="input"
+                                    style={{ paddingLeft: '40px', border: '1px solid var(--color-primary-200)', background: 'var(--color-primary-50)' }}
+                                    value={formData.reminderTime}
+                                    onChange={(e) => setFormData({ ...formData, reminderTime: e.target.value })}
+                                />
+                            </div>
+                            <p style={{ fontSize: '10px', color: 'var(--color-gray-400)', marginTop: '4px' }}>
+                                Cette heure sera utilisée pour tous les rappels automatiques (J-7, J-2, etc.)
+                            </p>
                         </div>
 
                         <div>

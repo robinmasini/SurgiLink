@@ -16,6 +16,8 @@ import {
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import PatientStatusBadges from './PatientStatusBadges';
+import { generatePatientToken } from '../services/tokenService';
+
 
 const STYLES = {
     panel: {
@@ -88,7 +90,8 @@ export default function PatientDetailPanel({ patient, responses = [], onClose })
     const loadPatientToken = async () => {
         try {
             const { data, error } = await supabase
-                .from('patient_tokens')
+                .from('patient_review_tokens')
+
                 .select('token')
                 .eq('patient_id', patient.id)
                 .eq('is_active', true)
@@ -211,15 +214,28 @@ export default function PatientDetailPanel({ patient, responses = [], onClose })
                             background: 'white',
                             color: 'var(--color-primary-600)',
                             border: '1px solid var(--color-primary-200)',
-                            opacity: token ? 1 : 0.6
+                            opacity: 1
                         }}
-                        onClick={() => {
-                            if (portalUrl) window.open(portalUrl, '_blank');
-                            else alert('Lien non disponible pour ce patient.');
+                        onClick={async () => {
+                            let currentToken = token;
+                            if (!currentToken) {
+                                // Auto-generate token if missing for "single click" access
+                                const res = await generatePatientToken(patient.id);
+                                if (res.success) {
+                                    currentToken = res.token;
+                                    setToken(res.token);
+                                } else {
+                                    alert('Erreur lors de la génération du lien portal.');
+                                    return;
+                                }
+                            }
+                            const url = `${window.location.origin}/patient-portal/${currentToken}`;
+                            window.open(url, '_blank');
                         }}
                     >
                         <Sparkles size={18} /> Ouvrir Portail Patient
                     </button>
+
 
                     {token && (
                         <div style={{ 
@@ -310,7 +326,28 @@ export default function PatientDetailPanel({ patient, responses = [], onClose })
                                     <div style={{ fontSize: '10px', color: 'var(--color-gray-500)' }}>
                                         {new Date(rem.scheduled_for).toLocaleString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
                                     </div>
+                                    <button
+                                        onClick={() => {
+                                            const mapping = {
+                                                'J-7': 'j7',
+                                                'J-2': 'j2',
+                                                'J-1': 'j1-preop',
+                                                'J-J': '',
+                                                'J+1': 'j1',
+                                                'J+4': 'j4',
+                                                'E-SATIS': 'e-satis'
+                                            };
+                                            const path = mapping[rem.screen] || '';
+                                            const url = token ? `${window.location.origin}/patient-portal/${token}${path ? '/' + path : ''}` : null;
+                                            if (url) window.open(url, '_blank');
+                                            else alert('Lien non disponible.');
+                                        }}
+                                        style={{ background: 'none', border: 'none', padding: 0, color: 'var(--color-primary-600)', fontSize: '10px', cursor: 'pointer', marginTop: '4px', textDecoration: 'underline' }}
+                                    >
+                                        Aperçu questionnaire
+                                    </button>
                                 </div>
+
                             </div>
                         ))}
                     </div>

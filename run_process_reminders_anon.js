@@ -1,9 +1,10 @@
-
+import 'dotenv/config';
 import { processPendingReminders } from './src/services/reminderService.js';
-import dotenv from 'dotenv';
 
-dotenv.config();
-dotenv.config({ path: '.env.local', override: true });
+// If you need .env.local specifically, you might need to handle it differently 
+// since 'import' is hoisted. 
+// A better way for local dev is to use node -r dotenv/config
+
 
 async function run() {
     console.log('Running processPendingReminders with ANON KEY...');

@@ -307,7 +307,7 @@ export async function getReminderHistory(patientId, screen = null) {
  * @param {Date} interventionDate - Date of intervention
  * @returns {Promise<Object>} - { success, scheduled }
  */
-export async function scheduleTimeBasedReminders(patientId, interventionDate) {
+export async function scheduleTimeBasedReminders(patientId, interventionDate, timePreferences = {}) {
     const reminders = [];
 
     // Fetch patient info for late-registration logic
@@ -341,15 +341,36 @@ export async function scheduleTimeBasedReminders(patientId, interventionDate) {
         console.warn('Using default reminder offsets due to fetch error:', e);
     }
 
-    // Calculate reminder dates using dynamic offsets and fixed Paris 08:30 AM
-    const j7Date = setParisTime(new Date(interventionDate).getTime() + (offsets.j7 * 86400000), 8, 30);
-    const j2Date = setParisTime(new Date(interventionDate).getTime() + (offsets.j2 * 86400000), 8, 30);
-    const j1Date = setParisTime(new Date(interventionDate).getTime() + (offsets.j1 * 86400000), 8, 30);
-    const j0Date = setParisTime(new Date(interventionDate).getTime() + (offsets.j0 * 86400000), 6, 30);
-    const j1PostOpDate = setParisTime(new Date(interventionDate).getTime() + (offsets.j1_postop * 86400000), 8, 30);
-    const j4SatisfactionDate = setParisTime(new Date(interventionDate).getTime() + (offsets.j4_satisfaction * 86400000), 11, 0);
-    const j4EsatisDate = setParisTime(new Date(interventionDate).getTime() + (offsets.esatis * 86400000), 11, 30);
-    const welcomeDate = setParisTime(new Date(interventionDate).getTime() + (offsets.welcome * 86400000), 8, 30);
+    // Calculate reminder dates using dynamic offsets and optional time preferences
+    const getTP = (key, defH, defM) => {
+        if (timePreferences[key]) {
+            const [h, m] = timePreferences[key].split(':').map(Number);
+            return { h, m };
+        }
+        if (timePreferences.default) {
+            const [h, m] = timePreferences.default.split(':').map(Number);
+            return { h, m };
+        }
+        return { h: defH, m: defM };
+    };
+
+    const tpJ7 = getTP('j7', 8, 30);
+    const tpJ2 = getTP('j2', 8, 30);
+    const tpJ1 = getTP('j1', 18, 0); // J-1 typically evening
+    const tpJ1Post = getTP('j1_postop', 8, 30);
+    const tpJ4Sat = getTP('j4_satisfaction', 11, 0);
+    const tpJ4Esat = getTP('j4_esatis', 11, 30);
+    const tpWelcome = getTP('welcome', 8, 30);
+    const tpJJ = getTP('j0', 7, 30); // Default 7:30 AM for surgery day
+
+    const j7Date = setParisTime(new Date(interventionDate).getTime() + (offsets.j7 * 86400000), tpJ7.h, tpJ7.m);
+    const j2Date = setParisTime(new Date(interventionDate).getTime() + (offsets.j2 * 86400000), tpJ2.h, tpJ2.m);
+    const j1Date = setParisTime(new Date(interventionDate).getTime() + (offsets.j1 * 86400000), tpJ1.h, tpJ1.m);
+    const j1PostOpDate = setParisTime(new Date(interventionDate).getTime() + (offsets.j1_postop * 86400000), tpJ1Post.h, tpJ1Post.m);
+    const j4SatisfactionDate = setParisTime(new Date(interventionDate).getTime() + (offsets.j4_satisfaction * 86400000), tpJ4Sat.h, tpJ4Sat.m);
+    const j4EsatisDate = setParisTime(new Date(interventionDate).getTime() + (offsets.esatis * 86400000), tpJ4Esat.h, tpJ4Esat.m);
+    const jjDate = setParisTime(new Date(interventionDate).getTime() + (offsets.j0 * 86400000), tpJJ.h, tpJJ.m);
+    const welcomeDate = setParisTime(new Date(interventionDate).getTime() + (offsets.welcome * 86400000), tpWelcome.h, tpWelcome.m);
 
     // Queue reminders
     const remindersToQueue = [
@@ -357,6 +378,7 @@ export async function scheduleTimeBasedReminders(patientId, interventionDate) {
         { screen: 'J-7', date: j7Date, template: 'j7_reminder' },
         { screen: 'J-2', date: j2Date, template: 'j2_reminder' },
         { screen: 'J-1', date: j1Date, template: 'j1_reminder_long' },
+        { screen: 'J-J', date: jjDate, template: 'jj_reminder' },
         { screen: 'J+1', date: j1PostOpDate, template: 'j1_postop' },
         { screen: 'J+4', date: j4SatisfactionDate, template: 'j4_satisfaction' },
         { screen: 'E-SATIS', date: j4EsatisDate, template: 'j4_esatis' }

@@ -5,68 +5,74 @@ export const smsTemplates = {
     // Message d'accueil – Préparation de votre intervention
     welcome_accueil: {
         name: "Message d'accueil",
-        message: "Bonjour {first_name}, bienvenue chez {clinic_name}. Pour votre opération du {procedure_date}, vous allez bénéficier d'un suivi personnalisé par SMS avant et après l'intervention. Préparez votre séjour ici : {checklist_link}. À bientôt !",
-        variables: ['first_name', 'clinic_name', 'procedure_date', 'checklist_link']
+        message: "{clinic_name}: Suivez votre operation du {procedure_date} ici: {checklist_link}",
+        variables: ['clinic_name', 'procedure_date', 'checklist_link']
     },
     // J-7 General Reminder
     j7_reminder: {
         name: "Questionnaire J-7",
-        message: "Bonjour {first_name}, à J-7 de votre opération, merci de compléter votre questionnaire de pré-admission ici : {checklist_link}. L'équipe de {clinic_name}",
-        variables: ['first_name', 'checklist_link', 'clinic_name']
+        message: "{clinic_name}: Merci de completer votre dossier J-7 ici: {checklist_link}",
+        variables: ['checklist_link', 'clinic_name']
     },
     // J-2 Pre-op Instructions
     j2_reminder: {
         name: "Questionnaire J-2",
-        message: "Bonjour {first_name}, à J-2 de votre intervention, merci de vérifier vos consignes et de répondre à ces 3 questions rapides : {checklist_link}. {clinic_name}",
-        variables: ['first_name', 'checklist_link', 'clinic_name']
+        message: "{clinic_name}: Verifiez vos consignes J-2 ici: {checklist_link}",
+        variables: ['checklist_link', 'clinic_name']
     },
     // J-1 Reminders
     j1_reminder_long: {
         name: "Message J-1 Confirmation",
-        message: "Bonjour {first_name}, RDV demain à {arrival_time} à {clinic_name}. Merci de confirmer votre venue en répondant au questionnaire : {checklist_link}",
-        variables: ['first_name', 'arrival_time', 'clinic_name', 'checklist_link']
+        message: "{clinic_name}: RDV demain {arrival_time}. Confirmez ici: {checklist_link}",
+        variables: ['arrival_time', 'clinic_name', 'checklist_link']
+    },
+    // J-J Day of Surgery
+    jj_reminder: {
+        name: "Rappel Jour-J",
+        message: "{clinic_name}: Votre intervention est aujourd'hui. Suivez les consignes ici: {checklist_link}",
+        variables: ['checklist_link', 'clinic_name']
     },
     // Message Sortie d’Etablissement
     sortie_doc: {
         name: "Sortie d'Etablissement",
-        message: "Bonjour {first_name}, vous trouverez vos documents de sortie (ordonnances, protocole) sur votre portail : {checklist_link}. Bonne récupération !",
-        variables: ['first_name', 'checklist_link']
+        message: "{clinic_name}: Vos documents de sortie sont ici: {checklist_link}",
+        variables: ['checklist_link', 'clinic_name']
     },
     // J+1 Post-op Follow-up
     j1_postop: {
         name: "Suivi J+1 Post-op",
-        message: "Bonjour {first_name}, comment se passe votre premier jour à domicile ? Merci de répondre au suivi post-opératoire : {checklist_link}",
-        variables: ['first_name', 'checklist_link']
+        message: "{clinic_name}: Comment ca va ? Reponse au suivi J+1 ici: {checklist_link}",
+        variables: ['checklist_link', 'clinic_name']
     },
     // J+4 Satisfaction
     j4_satisfaction: {
         name: "Enquête de satisfaction",
-        message: "Bonjour {first_name}, votre avis nous aide à améliorer la qualité de nos soins. Merci de répondre à notre enquête de satisfaction : {checklist_link}",
-        variables: ['first_name', 'checklist_link']
+        message: "{clinic_name}: Votre avis nous aide ! Enquete ici: {checklist_link}",
+        variables: ['checklist_link', 'clinic_name']
     },
     // J+4 e-Satis
     j4_esatis: {
         name: "Enquête e-Satis",
-        message: "Bonjour {first_name}, suite à votre séjour à {clinic_name}, merci de répondre au questionnaire national e-Satis : {esatis_link}",
-        variables: ['first_name', 'clinic_name', 'esatis_link']
+        message: "{clinic_name}: Merci de repondre a l'enquete e-Satis: {esatis_link}",
+        variables: ['esatis_link', 'clinic_name']
     },
     // Generic Targeted Reminder
     generic_item_reminder: {
         name: "Generic Item Reminder",
-        message: "Bonjour {first_name}, il manque une information importante : {item_name}. Complétez votre dossier : {checklist_link}. {clinic_name}",
-        variables: ['first_name', 'item_name', 'checklist_link', 'clinic_name']
+        message: "{clinic_name}: Il manque: {item_name}. Complétez ici: {checklist_link}",
+        variables: ['item_name', 'checklist_link', 'clinic_name']
     },
     // Custom Punctual Message (Message Libre)
     custom_punctual: {
         name: "Message Libre",
-        message: "Bonjour {first_name}, {manualMessage}. {clinic_name}",
-        variables: ['first_name', 'manualMessage', 'clinic_name']
+        message: "{clinic_name}: {manualMessage}",
+        variables: ['manualMessage', 'clinic_name']
     },
     // Custom Targeted Reminder
     custom_reminder: {
         name: "Rappel Personnalisé",
-        message: "Bonjour {first_name}, {manualMessage}. Lien : {checklist_link}",
-        variables: ['first_name', 'manualMessage', 'checklist_link']
+        message: "{clinic_name}: {manualMessage}. Lien: {checklist_link}",
+        variables: ['manualMessage', 'checklist_link', 'clinic_name']
     }
 };
 

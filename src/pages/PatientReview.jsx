@@ -373,7 +373,7 @@ export default function PatientReview() {
 
             // 2. Re-schedule
             const { scheduleTimeBasedReminders } = await import('../services/reminderService');
-            await scheduleTimeBasedReminders(id, patient.date);
+            await scheduleTimeBasedReminders(id, patient.date, { default: patient.reminder_time });
 
             loadNextReminder();
             alert('Planning SMS régénéré avec succès !');
@@ -1308,6 +1308,7 @@ export default function PatientReview() {
                                                                     'J-7': 'j7',
                                                                     'J-2': 'j2',
                                                                     'J-1': 'j1-preop',
+                                                                    'J-J': '',
                                                                     'J+1': 'j1',
                                                                     'J+4': 'j4',
                                                                     'E-SATIS': 'j4'

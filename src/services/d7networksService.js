@@ -5,7 +5,7 @@ const D7_API_TOKEN = (typeof process !== 'undefined' && process.env.VITE_D7_API_
     (typeof import.meta.env !== 'undefined' && import.meta.env.VITE_D7_API_TOKEN);
 const D7_SENDER_ID = (typeof process !== 'undefined' && process.env.VITE_D7_SENDER_ID) ||
     (typeof import.meta.env !== 'undefined' && import.meta.env.VITE_D7_SENDER_ID) ||
-    'SMS';
+    'SLINK';
 
 export async function sendSMS(templateKey, to, variables, metadata = {}, supabaseClient = null) {
     const db = supabaseClient || supabase;
@@ -45,6 +45,14 @@ export async function sendSMS(templateKey, to, variables, metadata = {}, supabas
             throw new Error('D7Networks API Token not configured.');
         }
 
+        const stripAccents = (str) => {
+            return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        };
+
+        const finalMessage = stripAccents(message);
+
+        console.log(`[sendSMS] Sending to ${formattedPhone}: ${finalMessage}`);
+
         const response = await fetch('https://api.d7networks.com/messages/v1/send', {
             method: 'POST',
             headers: {
@@ -57,9 +65,9 @@ export async function sendSMS(templateKey, to, variables, metadata = {}, supabas
                     {
                         channel: 'sms',
                         recipients: [formattedPhone],
-                        content: message,
+                        content: finalMessage,
                         msg_type: 'text',
-                        data_coding: 'auto',
+                        data_coding: 'text',
                         originator: D7_SENDER_ID
                     }
                 ]
