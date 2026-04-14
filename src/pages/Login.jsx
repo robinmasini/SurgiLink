@@ -112,7 +112,7 @@ export default function Login() {
                 loop 
                 muted 
                 playsInline
-                className="login-video"
+                className="login-bg-video"
                 style={{
                     position: 'absolute',
                     top: 0,
