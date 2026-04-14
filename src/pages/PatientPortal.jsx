@@ -454,29 +454,43 @@ export default function PatientPortal({ patient: initialPatient }) {
                     </h1>
                     
                     {/* Liquid Glass Translation Menu */}
-                    <div style={{ position: 'relative' }}>
+                    <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
                         <select 
                             value={i18n.language || 'fr'} 
                             onChange={(e) => i18n.changeLanguage(e.target.value)}
                             style={{
                                 ...GLASS_STYLE,
-                                padding: '8px 16px',
+                                padding: '8px 32px 8px 16px',
                                 border: '1px solid rgba(255,255,255,0.1)',
                                 color: 'white',
                                 appearance: 'none',
-                                fontSize: '14px',
+                                fontSize: '18px',
                                 fontWeight: '600',
                                 cursor: 'pointer',
                                 outline: 'none',
                                 textAlign: 'center',
-                                minWidth: '60px'
+                                minWidth: '70px',
+                                position: 'relative',
+                                zIndex: 2
                             }}
                         >
                             <option value="fr">🇫🇷</option>
                             <option value="en">🇬🇧</option>
                             <option value="nl">🇳🇱</option>
                         </select>
+                        <ChevronRight 
+                            size={14} 
+                            style={{ 
+                                position: 'absolute',
+                                right: '12px',
+                                transform: 'rotate(90deg)', 
+                                opacity: 0.6,
+                                pointerEvents: 'none',
+                                zIndex: 3
+                            }} 
+                        />
                     </div>
+
 
                 </div>
 
