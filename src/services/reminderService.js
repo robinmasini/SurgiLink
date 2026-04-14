@@ -133,14 +133,26 @@ export async function processPendingReminders(supabaseClient = null) {
                 return mapping[screen] || '';
             };
 
+            // Fetch token
+            const { data: tokenData } = await db
+                .from('patient_review_tokens')
+                .select('token')
+                .eq('patient_id', patient.id)
+                .eq('is_active', true)
+                .order('created_at', { ascending: false })
+                .limit(1)
+                .maybeSingle();
+
+            const token = tokenData?.token;
             const screenPath = getScreenPath(reminder.screen);
-            const baseUrl = `https://surgilink.eu/patient-portal/${patient.token || patient.id}`;
+            const baseUrl = `https://surgilink.eu/patient-portal/${token || ''}`;
             const directLink = screenPath ? `${baseUrl}/${screenPath}` : baseUrl;
 
             const variables = {
                 first_name: patient.name?.split(' ')[0] || 'Patient',
                 procedure_date: patient.date || 'bientôt',
                 arrival_time: patient.surgery_time || '07:30',
+
                 clinic_name: 'SurgiLink',
                 clinic_phone: '01 XX XX XX XX',
                 checklist_link: directLink,
@@ -225,9 +237,20 @@ export async function sendManualReminder(patientId, screen, itemId, templateKey,
             return mapping[screen] || '';
         };
 
+        const { data: tokenData } = await supabase
+            .from('patient_review_tokens')
+            .select('token')
+            .eq('patient_id', patientId)
+            .eq('is_active', true)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .maybeSingle();
+
+        const token = tokenData?.token;
         const screenPath = getScreenPath(screen);
-        const baseUrl = `https://surgilink.eu/patient-portal/${patient.token || ''}`;
+        const baseUrl = `https://surgilink.eu/patient-portal/${token || ''}`;
         const directLink = screenPath ? `${baseUrl}/${screenPath}` : baseUrl;
+
 
         // Prepare variables
         const variables = {

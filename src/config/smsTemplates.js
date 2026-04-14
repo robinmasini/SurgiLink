@@ -5,75 +5,87 @@ export const smsTemplates = {
     // Message d'accueil – Préparation de votre intervention
     welcome_accueil: {
         name: "Message d'accueil",
-        message: "{clinic_name}: Suivez votre operation du {procedure_date} ici: {checklist_link}",
-        variables: ['clinic_name', 'procedure_date', 'checklist_link']
+        message: "Suivez votre operation du {procedure_date} ici: {checklist_link}",
+        variables: ['procedure_date', 'checklist_link']
     },
+
     // J-7 General Reminder
     j7_reminder: {
         name: "Questionnaire J-7",
-        message: "{clinic_name}: Merci de completer votre dossier J-7 ici: {checklist_link}",
-        variables: ['checklist_link', 'clinic_name']
+        message: "Merci de completer votre dossier J-7 ici: {checklist_link}",
+        variables: ['checklist_link']
     },
+
     // J-2 Pre-op Instructions
     j2_reminder: {
         name: "Questionnaire J-2",
-        message: "{clinic_name}: Verifiez vos consignes J-2 ici: {checklist_link}",
-        variables: ['checklist_link', 'clinic_name']
+        message: "Verifiez vos consignes J-2 ici: {checklist_link}",
+        variables: ['checklist_link']
     },
+
     // J-1 Reminders
     j1_reminder_long: {
         name: "Message J-1 Confirmation",
-        message: "{clinic_name}: RDV demain {arrival_time}. Confirmez ici: {checklist_link}",
-        variables: ['arrival_time', 'clinic_name', 'checklist_link']
+        message: "RDV demain {arrival_time}. Confirmez ici: {checklist_link}",
+        variables: ['arrival_time', 'checklist_link']
     },
+
     // J-J Day of Surgery
     jj_reminder: {
         name: "Rappel Jour-J",
-        message: "{clinic_name}: Votre intervention est aujourd'hui. Suivez les consignes ici: {checklist_link}",
-        variables: ['checklist_link', 'clinic_name']
+        message: "Votre intervention est aujourd'hui. Suivez les consignes ici: {checklist_link}",
+        variables: ['checklist_link']
     },
+
     // Message Sortie d’Etablissement
     sortie_doc: {
         name: "Sortie d'Etablissement",
-        message: "{clinic_name}: Vos documents de sortie sont ici: {checklist_link}",
-        variables: ['checklist_link', 'clinic_name']
+        message: "Vos documents de sortie sont ici: {checklist_link}",
+        variables: ['checklist_link']
     },
+
     // J+1 Post-op Follow-up
     j1_postop: {
         name: "Suivi J+1 Post-op",
-        message: "{clinic_name}: Comment ca va ? Reponse au suivi J+1 ici: {checklist_link}",
-        variables: ['checklist_link', 'clinic_name']
+        message: "Comment ca va ? Reponse au suivi J+1 ici: {checklist_link}",
+        variables: ['checklist_link']
     },
+
     // J+4 Satisfaction
     j4_satisfaction: {
         name: "Enquête de satisfaction",
-        message: "{clinic_name}: Votre avis nous aide ! Enquete ici: {checklist_link}",
-        variables: ['checklist_link', 'clinic_name']
+        message: "Votre avis nous aide ! Enquete ici: {checklist_link}",
+        variables: ['checklist_link']
     },
+
     // J+4 e-Satis
     j4_esatis: {
         name: "Enquête e-Satis",
-        message: "{clinic_name}: Merci de repondre a l'enquete e-Satis: {esatis_link}",
-        variables: ['esatis_link', 'clinic_name']
+        message: "Merci de repondre a l'enquete e-Satis: {esatis_link}",
+        variables: ['esatis_link']
     },
+
     // Generic Targeted Reminder
     generic_item_reminder: {
         name: "Generic Item Reminder",
-        message: "{clinic_name}: Il manque: {item_name}. Complétez ici: {checklist_link}",
-        variables: ['item_name', 'checklist_link', 'clinic_name']
+        message: "Il manque: {item_name}. Complétez ici: {checklist_link}",
+        variables: ['item_name', 'checklist_link']
     },
+
     // Custom Punctual Message (Message Libre)
     custom_punctual: {
         name: "Message Libre",
-        message: "{clinic_name}: {manualMessage}",
-        variables: ['manualMessage', 'clinic_name']
+        message: "{manualMessage}",
+        variables: ['manualMessage']
     },
+
     // Custom Targeted Reminder
     custom_reminder: {
         name: "Rappel Personnalisé",
-        message: "{clinic_name}: {manualMessage}. Lien: {checklist_link}",
-        variables: ['manualMessage', 'checklist_link', 'clinic_name']
+        message: "{manualMessage}. Lien: {checklist_link}",
+        variables: ['manualMessage', 'checklist_link']
     }
+
 };
 
 /**

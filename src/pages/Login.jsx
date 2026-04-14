@@ -4,6 +4,9 @@ import favicon from '/favicon.png';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, ArrowRight, User, Activity } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import wppPhone from '../assets/wpp-phone.png';
+import wppDesktop from '../assets/wpp-desktop.png';
+
 
 export default function Login() {
     const navigate = useNavigate();
@@ -13,13 +16,24 @@ export default function Login() {
     const [isLoading, setIsLoading] = useState(true); // Preloader
     const [isAuthenticating, setIsAuthenticating] = useState(false); // Login process
 
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
     useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth < 768);
+        };
+        window.addEventListener('resize', handleResize);
+
         // Simulation d'un chargement premium
         const timer = setTimeout(() => {
             setIsLoading(false);
         }, 800); // Snappier feel
-        return () => clearTimeout(timer);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+            clearTimeout(timer);
+        };
     }, []);
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -94,17 +108,23 @@ export default function Login() {
                 <img src={favicon} alt="Loading" className="preloader-icon" />
             </div>
 
-            {/* Background Video */}
-            <video
-                autoPlay
-                loop
-                muted
-                playsInline
-                className="login-bg-video"
-                style={{ background: '#000' }} // Solid background during load
-            >
-                <source src="/login-bg.mp4" type="video/mp4" />
-            </video>
+            {/* Background Layer with Zoom Animation */}
+            <div
+                className="login-bg-container bg-animate-zoom"
+                style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundImage: `url(${isMobile ? wppPhone : wppDesktop})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    backgroundRepeat: 'no-repeat',
+                    zIndex: 0
+                }}
+            />
+
 
             {/* Dark Overlay for contrast */}
             <div className="login-overlay"></div>
