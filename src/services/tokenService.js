@@ -62,17 +62,28 @@ export async function generatePatientToken(patientId, expiresInDays = null) {
  */
 export async function validateToken(token) {
     try {
+        if (!token) {
+            return { valid: false, error: 'Token manquant' };
+        }
+
+        const cleanToken = token.trim().toLowerCase();
+
         const { data, error } = await supabase
             .from('patient_review_tokens')
             .select('patient_id, expires_at, is_active, id')
-            .eq('token', token)
+            .eq('token', cleanToken)
             .single();
 
-        if (error || !data) {
-            return {
-                valid: false,
-                error: 'Token invalide ou introuvable'
-            };
+        if (error) {
+            console.error('[validateToken] Supabase error:', error);
+            if (error.code === 'PGRST116') {
+                return { valid: false, error: 'Token invalide ou introuvable' };
+            }
+            return { valid: false, error: `Erreur base de données: ${error.message}` };
+        }
+
+        if (!data) {
+            return { valid: false, error: 'Token invalide ou introuvable' };
         }
 
         // Check if token is active
