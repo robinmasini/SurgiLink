@@ -32,7 +32,9 @@ import PatientSynthesisReport from '../components/PatientSynthesisReport';
 import { useTranslation } from 'react-i18next';
 
 // Premium Assets
-import appBg from '../assets/app_bg.png';
+import wppPhone from '../assets/wpp-phone.png';
+import wppDesktop from '../assets/wpp-desktop.png';
+
 import logoSlMa from '../assets/logo-sl-ma.png';
 import suiviCard from '../assets/suivi-card.png';
 import suiviCardBw from '../assets/suivi-card-bw.png';
@@ -162,7 +164,17 @@ export default function PatientPortal({ patient: initialPatient }) {
     const [answeringQuestionId, setAnsweringQuestionId] = useState(null);
     const [smsData, setSmsData] = useState([]);
     const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
     const reportRef = useRef(null);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth < 768);
+        };
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
 
     useEffect(() => {
         if (initialPatient) {
@@ -408,12 +420,13 @@ export default function PatientPortal({ patient: initialPatient }) {
                 style={{
                     position: 'absolute',
                     inset: 0,
-                    backgroundImage: `url(${appBg})`,
+                    backgroundImage: `url(${isMobile ? wppPhone : wppDesktop})`,
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                     backgroundAttachment: 'fixed',
                     zIndex: -1
                 }}
+
             />
 
             <div style={{
