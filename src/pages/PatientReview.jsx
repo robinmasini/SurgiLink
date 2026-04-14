@@ -282,6 +282,38 @@ export default function PatientReview() {
             loadNextReminder();
         }
     }, [id]);
+    
+    const handleResetOnboarding = async () => {
+        if (!window.confirm('Voulez-vous vraiment réinitialiser le didacticiel pour ce patient ?')) return;
+
+        try {
+            const { error } = await supabase
+                .from('patients')
+                .update({ onboarding_completed_at: null })
+                .eq('id', id);
+
+            if (error) {
+                // If column doesn't exist, we still clear local storage and show a message
+                console.warn('Database reset failed (column might be missing):', error);
+            }
+
+            // Clear local storage for the current device (facilitates practitioner testing)
+            localStorage.removeItem(`onboarding_completed_${id}`);
+
+            // Refresh patient data
+            const { data: updatedPatient } = await supabase
+                .from('patients')
+                .select('*')
+                .eq('id', id)
+                .single();
+            
+            setPatient(updatedPatient);
+            alert('Didacticiel réinitialisé ! (Pensez à tester en navigation privée ou à vider le cache du patient si vous testez sur le même appareil).');
+        } catch (err) {
+            console.error('Error resetting onboarding:', err);
+            alert('Erreur lors de la réinitialisation.');
+        }
+    };
 
     const loadNextReminder = async () => {
         const reminders = await getPendingReminders(id);
@@ -802,22 +834,54 @@ export default function PatientReview() {
                                         }}>
                                             {patient.last_consulted_at ? `Connecté le ${formatDateTimeFR(patient.last_consulted_at)}` : 'Jamais connecté'}
                                         </div>
-                                        {patient.onboarding_completed_at && (
-                                            <div style={{
-                                                fontSize: '10px',
-                                                color: 'var(--color-primary-600)',
-                                                background: 'var(--color-primary-50)',
-                                                padding: '4px 12px',
-                                                borderRadius: 'var(--radius-full)',
-                                                border: '1px solid var(--color-primary-100)',
-                                                fontWeight: '700',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: '4px'
-                                            }}>
-                                                <ShieldCheck size={12} />
-                                                DIDACTICIEL CONSULTÉ
+                                        {patient.onboarding_completed_at ? (
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                <div style={{
+                                                    fontSize: '10px',
+                                                    color: 'var(--color-primary-600)',
+                                                    background: 'var(--color-primary-50)',
+                                                    padding: '4px 12px',
+                                                    borderRadius: 'var(--radius-full)',
+                                                    border: '1px solid var(--color-primary-100)',
+                                                    fontWeight: '700',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: '4px'
+                                                }}>
+                                                    <ShieldCheck size={12} />
+                                                    DIDACTICIEL CONSULTÉ
+                                                </div>
+                                                <button 
+                                                    onClick={handleResetOnboarding}
+                                                    title="Réinitialiser le didacticiel"
+                                                    style={{ 
+                                                        background: 'transparent', 
+                                                        border: 'none', 
+                                                        color: 'var(--color-gray-400)', 
+                                                        cursor: 'pointer',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        padding: '4px'
+                                                    }}
+                                                >
+                                                    <RefreshCw size={14} />
+                                                </button>
                                             </div>
+                                        ) : (
+                                            <button 
+                                                onClick={handleResetOnboarding}
+                                                style={{ 
+                                                    fontSize: '10px', 
+                                                    padding: '4px 8px',
+                                                    background: 'transparent',
+                                                    border: '1px dashed var(--color-gray-300)',
+                                                    borderRadius: '4px',
+                                                    color: 'var(--color-gray-500)',
+                                                    cursor: 'pointer'
+                                                }}
+                                            >
+                                                Réinitialiser didacticiel
+                                            </button>
                                         )}
                                     </div>
                                     <button
