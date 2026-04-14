@@ -18,6 +18,7 @@ import PatientESatis from './pages/PatientESatis';
 import Account from './pages/Account';
 import PatientPathwayTracker from './components/PatientPathwayTracker';
 import PatientPortal from './pages/PatientPortal';
+import OnboardingFlow from './pages/OnboardingFlow';
 import Comments from './pages/Comments';
 import ProtectedRoute from './components/ProtectedRoute';
 import PatientTokenRoute from './components/PatientTokenRoute';
@@ -57,6 +58,7 @@ function App() {
         <Route path="/staff/pathway/:patientId" element={<ProtectedRoute><PatientPathwayTracker /></ProtectedRoute>} />
 
         {/* Patient Portal Routes - Token-based access (no authentication required) */}
+        <Route path="/patient-portal/:token/onboarding" element={<OnboardingFlow />} />
         <Route path="/patient-portal/:token" element={<PatientTokenRoute><PatientPortal /></PatientTokenRoute>} />
         <Route path="/patient-portal/:token/bienvenue" element={<PatientTokenRoute><Bienvenue /></PatientTokenRoute>} />
         <Route path="/patient-portal/:token/j7" element={<PatientTokenRoute><PatientJ7 /></PatientTokenRoute>} />

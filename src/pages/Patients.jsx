@@ -9,6 +9,7 @@ import {
     Plus,
     Clock,
     Phone,
+    CheckCircle2,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { calculateDaysUntilSurgery } from '../utils/dateUtils';
@@ -291,9 +292,23 @@ export default function Patients() {
                                                 </span>
                                             </td>
                                             <td className="hide-mobile" style={{ padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-500)' }}>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-1)' }}>
-                                                    <Clock size={12} />
-                                                    {patient.daysUntil === 'J-0' ? t('Intervention du jour') : t('Consulté')}
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-1)' }}>
+                                                        <Clock size={12} />
+                                                        {patient.daysUntil === 'J-0' ? t('Intervention du jour') : t('Consulté')}
+                                                    </div>
+                                                    {patient.onboarding_completed_at && (
+                                                        <div style={{ 
+                                                            display: 'inline-flex', 
+                                                            alignItems: 'center', 
+                                                            gap: '4px', 
+                                                            color: 'var(--color-success-600)',
+                                                            fontWeight: '600'
+                                                        }}>
+                                                            <CheckCircle2 size={12} />
+                                                            {t('Tuto OK')}
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </td>
                                             {!selectedPatientId && (

@@ -790,19 +790,34 @@ export default function PatientReview() {
                                     <h3>Données Cliniques</h3>
                                 </div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-4)' }}>
-                                    <div style={{
-                                        fontSize: 'var(--font-size-xs)',
-                                        color: patient.last_consulted_at ? 'var(--color-success-600)' : 'var(--color-gray-400)',
-                                        background: patient.last_consulted_at ? 'var(--color-success-50)' : 'var(--color-gray-50)',
-                                        padding: '4px 12px',
-                                        borderRadius: 'var(--radius-full)',
-                                        border: `1px solid ${patient.last_consulted_at ? 'var(--color-success-100)' : 'var(--color-gray-100)'}`,
-                                        fontWeight: '500'
-                                    }}>
-                                        {patient.last_consulted_at ? (
-                                            `Consulté le ${new Date(patient.last_consulted_at).toLocaleDateString('fr-FR')} à ${new Date(patient.last_consulted_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })} par ${patient.name}`
-                                        ) : (
-                                            "Non encore consulté par le patient"
+                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                                        <div style={{
+                                            fontSize: 'var(--font-size-xs)',
+                                            color: patient.last_consulted_at ? 'var(--color-success-600)' : 'var(--color-gray-400)',
+                                            background: patient.last_consulted_at ? 'var(--color-success-50)' : 'var(--color-gray-50)',
+                                            padding: '4px 12px',
+                                            borderRadius: 'var(--radius-full)',
+                                            border: `1px solid ${patient.last_consulted_at ? 'var(--color-success-100)' : 'var(--color-gray-100)'}`,
+                                            fontWeight: '500'
+                                        }}>
+                                            {patient.last_consulted_at ? `Connecté le ${formatDateTimeFR(patient.last_consulted_at)}` : 'Jamais connecté'}
+                                        </div>
+                                        {patient.onboarding_completed_at && (
+                                            <div style={{
+                                                fontSize: '10px',
+                                                color: 'var(--color-primary-600)',
+                                                background: 'var(--color-primary-50)',
+                                                padding: '4px 12px',
+                                                borderRadius: 'var(--radius-full)',
+                                                border: '1px solid var(--color-primary-100)',
+                                                fontWeight: '700',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '4px'
+                                            }}>
+                                                <ShieldCheck size={12} />
+                                                DIDACTICIEL CONSULTÉ
+                                            </div>
                                         )}
                                     </div>
                                     <button
