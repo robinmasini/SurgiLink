@@ -542,14 +542,6 @@ export default function PatientPortal({ patient: initialPatient }) {
                         zIndex: 2
                     }}>
                         <div style={{ maxWidth: '75%', position: 'relative' }}>
-                            {/* White Lightning Bolt Icon */}
-                            <div style={{ 
-                                position: 'absolute', 
-                                left: '-35px', 
-                                top: '5px' 
-                            }}>
-                                <Activity size={24} color="white" strokeWidth={2.5} />
-                            </div>
 
                             <h2 style={{ 
                                 fontSize: '28px', 
@@ -676,10 +668,7 @@ export default function PatientPortal({ patient: initialPatient }) {
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                             <div style={{ width: '40px', height: '24px', borderRadius: '4px', overflow: 'hidden' }}>
-                                <img src="/src/assets/clinic_thumb.png" alt="Clinic" style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                    onError={(e) => {
-                                        if (e.target.src.indexOf('clinic_thumb.png') !== -1) e.target.src = '/src/assets/clinic.png';
-                                    }} />
+                                <img src="/src/assets/clinic.jpg" alt="Clinic" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                             </div>
                             <span style={{ fontSize: '14px', fontWeight: '700' }}>{patient.clinic_name || 'Clinique de Vitrolles'}</span>
                         </div>
