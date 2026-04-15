@@ -49,6 +49,29 @@ import LogoPremium from '../components/LogoPremium';
 import clinicImage from '../assets/clinic.png';
 import StatusBolt from '../components/StatusBolt';
 
+const Drawer = ({ isOpen, onClose, title, icon, children }) => {
+    return (
+        <div className={`drawer-overlay ${isOpen ? 'open' : ''}`} onClick={onClose}>
+            <div className="drawer-content" onClick={e => e.stopPropagation()}>
+                <div className="drawer-header">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div className="card-icon card-icon-primary" style={{ width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            {icon}
+                        </div>
+                        <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '800' }}>{title}</h3>
+                    </div>
+                    <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: 'var(--color-gray-400)', cursor: 'pointer', padding: '8px' }}>
+                        <X size={24} />
+                    </button>
+                </div>
+                <div style={{ flex: 1, overflowY: 'auto' }}>
+                    {children}
+                </div>
+            </div>
+        </div>
+    );
+};
+
 export default function PatientReview() {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -80,6 +103,8 @@ export default function PatientReview() {
     const [customQuestions, setCustomQuestions] = useState([]);
     const [isAddQuestionModalOpen, setIsAddQuestionModalOpen] = useState(false);
     const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+    const [isSecureLinkDrawerOpen, setIsSecureLinkDrawerOpen] = useState(false);
+    const [isHistoryDrawerOpen, setIsHistoryDrawerOpen] = useState(false);
     const reportRef = useRef(null);
     const fileInputRef = useRef(null);
 
@@ -552,16 +577,35 @@ export default function PatientReview() {
             <Sidebar />
             <main className="main-content">
                 {/* Header Actions */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-4)', marginBottom: 'var(--spacing-6)' }}>
-                    <button onClick={() => navigate(-1)} className="btn btn-secondary btn-sm" style={{ padding: '8px', border: 'none', background: 'transparent' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--spacing-6)', flexWrap: 'wrap', gap: 'var(--spacing-4)' }}>
+                    <button onClick={() => navigate(-1)} className="btn btn-secondary btn-sm" style={{ padding: '8px', border: 'none', background: 'transparent', display: 'flex', alignItems: 'center' }}>
                         <ChevronLeft size={20} />
                         <span style={{ marginLeft: 'var(--spacing-2)' }}>Retour</span>
                     </button>
+
+                    <div style={{ display: 'flex', gap: 'var(--spacing-3)' }}>
+                        <button 
+                            onClick={() => setIsSecureLinkDrawerOpen(true)}
+                            className="btn btn-secondary btn-sm"
+                            style={{ display: 'flex', alignItems: 'center', gap: '8px', borderRadius: '12px' }}
+                        >
+                            <ShieldCheck size={18} />
+                            Lien Patient
+                        </button>
+                        <button 
+                            onClick={() => setIsHistoryDrawerOpen(true)}
+                            className="btn btn-secondary btn-sm"
+                            style={{ display: 'flex', alignItems: 'center', gap: '8px', borderRadius: '12px' }}
+                        >
+                            <History size={18} />
+                            Historique
+                        </button>
+                    </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 2fr) 1fr', gap: 'var(--spacing-8)' }}>
+                <div className="patient-review-layout">
                     {/* Left Column: Data */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-8)' }}>
+                    <div className="patient-review-main">
 
                         {/* 1. Patient Card */}
                         <div className="card glass-effect" style={{ padding: 'var(--spacing-8)', position: 'relative' }}>
@@ -740,15 +784,7 @@ export default function PatientReview() {
                                     </div>
 
                                     {/* Detailed Info Grid */}
-                                    <div style={{
-                                        display: 'grid',
-                                        gridTemplateColumns: '1fr 1fr 1fr',
-                                        columnGap: 'var(--spacing-8)',
-                                        rowGap: 'var(--spacing-10)',
-                                        marginTop: 'var(--spacing-10)',
-                                        paddingTop: 'var(--spacing-8)',
-                                        borderTop: '1px solid var(--color-gray-100)'
-                                    }}>
+                                    <div className="patient-details-grid">
                                         {/* Item 1: Clinique */}
                                         <div>
                                             <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', textTransform: 'uppercase', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '600' }}>
@@ -1281,244 +1317,313 @@ export default function PatientReview() {
                                 </div>
                             </div>
                         </div>
-
-                        {/* 4. Protocol Progress */}
-                        <div className="card glass-effect" style={{ padding: 'var(--spacing-8)' }}>
-                            <div className="card-header" style={{ marginBottom: 'var(--spacing-6)' }}>
-                                <div className="card-icon card-icon-success">
-                                    <Activity size={20} />
-                                </div>
-                                <h3>État du Suivi</h3>
-                            </div>
-                            <div style={{ textAlign: 'center' }}>
-                                <div style={{ fontSize: 'var(--font-size-4xl)', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-primary-500)', marginBottom: 'var(--spacing-2)' }}>
-                                    {patient.displayProgress || patient.progress || 0}%
-                                </div>
-                                <div className="progress-bar" style={{ height: '12px', background: 'var(--color-gray-100)', borderRadius: '6px', overflow: 'hidden', marginBottom: 'var(--spacing-4)' }}>
-                                    <div className="progress-fill progress-fill-primary" style={{ width: `${patient.displayProgress || patient.progress || 0}%`, height: '100%', transition: 'width 0.5s ease' }}></div>
-                                </div>
-                                <div className="badge badge-success" style={{ padding: '8px 20px', borderRadius: '20px' }}>Protocole en cours d'exécution</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Right Column: history & Secure Link */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-8)' }}>
-                        {/* Secure Link Card */}
-                        <div className="card glass-effect" style={{ padding: 'var(--spacing-8)', border: '1px solid var(--color-primary-100)' }}>
-                            <div className="card-header" style={{ marginBottom: 'var(--spacing-6)' }}>
-                                <div className="card-icon card-icon-primary" style={{ background: 'var(--color-primary-50)', color: 'var(--color-primary-600)' }}>
-                                    <ShieldCheck size={20} />
-                                </div>
-                                <h3>Accès Patient Sécurisé</h3>
-                            </div>
-
-                            <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-500)', marginBottom: 'var(--spacing-6)' }}>
-                                Générez un lien unique pour permettre au patient d'accéder à son portail sans mot de passe.
-                            </p>
-
-                            {tokenData ? (
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-4)' }}>
-                                    <div style={{
-                                        background: 'var(--color-gray-50)',
-                                        padding: 'var(--spacing-4)',
-                                        borderRadius: 'var(--border-radius-lg)',
-                                        border: '1px dashed var(--color-gray-200)',
-                                        wordBreak: 'break-all',
-                                        fontSize: 'var(--font-size-xs)',
-                                        color: 'var(--color-primary-700)',
-                                        fontFamily: 'monospace',
-                                        position: 'relative'
-                                    }}>
-                                        {`${window.location.origin}/patient-portal/${tokenData.token}`}
-                                    </div>
-                                    <div style={{ display: 'flex', gap: 'var(--spacing-2)' }}>
-                                        <button
-                                            onClick={() => copyToClipboard(`${window.location.origin}/patient-portal/${tokenData.token}`)}
-                                            className="btn btn-primary btn-sm"
-                                            style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--spacing-2)' }}
-                                        >
-                                            <Copy size={16} />
-                                            Copier le lien
-                                        </button>
-                                        <button
-                                            onClick={handleGenerateToken}
-                                            disabled={isGeneratingToken}
-                                            className="btn btn-secondary btn-sm"
-                                            title="Régénérer le lien"
-                                            style={{ padding: '8px' }}
-                                        >
-                                            <RefreshCw size={16} className={isGeneratingToken ? 'animate-spin' : ''} />
-                                        </button>
-                                    </div>
-                                    <div style={{ fontSize: '10px', color: 'var(--color-gray-400)', textAlign: 'center' }}>
-                                        Lien actif • Créé le {new Date(tokenData.created_at || Date.now()).toLocaleDateString('fr-FR')}
-                                    </div>
-                                    <div style={{ marginTop: 'var(--spacing-6)', paddingTop: 'var(--spacing-6)', borderTop: '1px solid var(--color-gray-100)' }}>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-4)' }}>
-                                            <h4 style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-gray-500)', textTransform: 'uppercase', marginBottom: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                <History size={14} />
-                                                Rappels planifiés {pendingReminders.length > 0 ? `(${pendingReminders.length})` : ''}
-                                            </h4>
-                                            <button
-                                                onClick={() => setIsCustomSMSModalOpen(true)}
-                                                className="btn btn-secondary btn-xs"
-                                                style={{ fontSize: '10px', padding: '4px 8px', borderColor: 'var(--color-primary-200)', color: 'var(--color-primary-600)' }}
-                                            >
-                                                <Send size={12} style={{ marginRight: '4px' }} />
-                                                SMS personnalisé
-                                            </button>
-                                        </div>
-
-                                        {pendingReminders.length > 0 ? (
-                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                                {pendingReminders.map(rem => (
-                                                    <div key={rem.id} style={{ padding: 'var(--spacing-3)', background: 'var(--color-gray-50)', borderRadius: 'var(--border-radius-md)', border: '1px solid var(--color-gray-200)' }}>
-                                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                                                            <span style={{ fontWeight: 'var(--font-weight-bold)', fontSize: 'var(--font-size-sm)', color: 'var(--color-purple-700)' }}>{rem.screen}</span>
-                                                            <span style={{ fontSize: '10px', color: 'var(--color-gray-500)' }}>
-                                                                {new Date(rem.scheduled_for).toLocaleDateString('fr-FR')} {new Date(rem.scheduled_for).getHours()}:{String(new Date(rem.scheduled_for).getMinutes()).padStart(2, '0')}
-                                                            </span>
-                                                        </div>
-                                                        <button
-                                                            onClick={() => { setEditingReminder(rem); setIsSMSModalOpen(true); }}
-                                                            className="btn btn-secondary btn-sm"
-                                                            style={{ width: '100%', fontSize: '11px', padding: '4px 8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', background: 'white' }}
-                                                        >
-                                                            <Edit2 size={12} />
-                                                            Gérer / Envoyer
-                                                        </button>
-                                                        <button
-                                                            onClick={() => {
-                                                                const mapping = {
-                                                                    'J-7': 'j7',
-                                                                    'J-2': 'j2',
-                                                                    'J-1': 'j1-preop',
-                                                                    'J-J': '',
-                                                                    'J+1': 'j1',
-                                                                    'J+4': 'j4',
-                                                                    'E-SATIS': 'j4'
-                                                                };
-                                                                const path = mapping[rem.screen] || '';
-                                                                const url = `${window.location.origin}/patient-portal/${tokenData.token}${path ? '/' + path : ''}`;
-                                                                window.open(url, '_blank');
-                                                            }}
-                                                            className="btn btn-primary btn-sm"
-                                                            style={{ width: '100%', fontSize: '11px', padding: '4px 8px', marginTop: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}
-                                                        >
-                                                            <Activity size={12} />
-                                                            Ouvrir Questionnaire
-                                                        </button>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        ) : (
-                                            <div style={{ fontSize: '11px', color: 'var(--color-gray-400)', textAlign: 'center', padding: 'var(--spacing-4)', background: 'var(--color-gray-50)', borderRadius: 'var(--border-radius-md)', border: '1px dashed var(--color-gray-200)' }}>
-                                                Aucun rappel planifié.
-                                            </div>
-                                        )}
-
-                                        <button
-                                            onClick={handleRegenerateSchedule}
-                                            className="btn btn-secondary"
-                                            style={{ width: '100%', marginTop: 'var(--spacing-4)', fontSize: '10px', padding: 'var(--spacing-2)', border: '1px dashed var(--color-gray-300)', background: 'transparent', color: 'var(--color-gray-400)' }}
-                                        >
-                                            <RefreshCw size={12} style={{ marginRight: '4px' }} />
-                                            Regénérer le planning complet
-                                        </button>
-                                    </div>
-                                </div>
-                            ) : (
-                                <button
-                                    onClick={handleGenerateToken}
-                                    disabled={isGeneratingToken}
-                                    className="btn btn-primary"
-                                    style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--spacing-2)' }}
-                                >
-                                    {isGeneratingToken ? <RefreshCw size={18} className="animate-spin" /> : <LinkIcon size={18} />}
-                                    Générer un lien d'accès
-                                </button>
-                            )}
-                        </div>
-
-                        {/* History Card */}
-                        <div className="card glass-effect" style={{ height: 'fit-content', padding: 'var(--spacing-8)' }}>
-                            <div className="card-header" style={{ marginBottom: 'var(--spacing-8)' }}>
-                                <div className="card-icon card-icon-primary" style={{ background: 'var(--color-purple-50)', color: 'var(--color-purple-600)' }}>
-                                    <History size={20} />
-                                </div>
-                                <h3>Historique des événements</h3>
-                            </div>
-
-                            <div className="timeline" style={{ position: 'relative' }}>
-                                <div style={{ position: 'absolute', left: '7px', top: 0, bottom: 0, width: '2px', background: 'var(--color-gray-100)' }}></div>
-                                {medicalHistory.length > 0 ? (
-                                    medicalHistory.map((item) => {
-                                        const isSystemSms = item.type === 'sms_log' || item.category === 'sms';
-                                        return (
-                                            <div key={item.id} className="timeline-item" style={{ paddingLeft: 'var(--spacing-8)', paddingBottom: 'var(--spacing-8)', position: 'relative' }}>
-                                                <div style={{
-                                                    position: 'absolute',
-                                                    left: 0,
-                                                    top: '4px',
-                                                    width: '16px',
-                                                    height: '16px',
-                                                    borderRadius: '50%',
-                                                    background: isSystemSms ? 'var(--color-secondary-500)' : 'var(--color-primary-500)',
-                                                    border: '3px solid white',
-                                                    boxShadow: '0 0 0 1px var(--color-gray-100)',
-                                                    zIndex: 1
-                                                }}></div>
-                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)' }}>
-                                                        <span style={{ fontWeight: 'var(--font-weight-black)', fontSize: 'var(--font-size-md)' }}>{item.title}</span>
-                                                        {isSystemSms && <span className="badge" style={{ fontSize: '8px', background: 'var(--color-gray-100)', letterSpacing: '0.05em' }}>SMS ENVOYÉ</span>}
-                                                        {item.status && <span className={`badge badge-${item.status === 'sent' || item.status === 'delivered' ? 'success' : 'danger'}`} style={{ fontSize: '7px' }}>{item.status.toUpperCase()}</span>}
-                                                    </div>
-                                                    <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-400)', display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)' }}>
-                                                        {isSystemSms ? formatDateTimeFR(item.timestamp || item.date) : formatDateFR(item.timestamp || item.date)} • {isSystemSms ? 'Communication' : 'Événement clinique'}
-                                                    </div>
-                                                    {item.description && (
-                                                        <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-600)', marginTop: '4px', background: 'var(--color-gray-50)', padding: 'var(--spacing-3)', borderRadius: 'var(--border-radius-md)', whiteSpace: 'pre-wrap' }}>
-                                                            {item.description}
-                                                            {isSystemSms && item.screen && (
-                                                                <div style={{ marginTop: '8px', borderTop: '1px solid var(--color-gray-200)', paddingTop: '8px' }}>
-                                                                    <button
-                                                                        onClick={() => {
-                                                                            const mapping = {
-                                                                                'J-7': 'j7',
-                                                                                'J-2': 'j2',
-                                                                                'J-1': 'j1-preop',
-                                                                                'J+1': 'j1',
-                                                                                'J+4': 'j4',
-                                                                                'E-SATIS': 'e-satis'
-                                                                            };
-                                                                            const path = mapping[item.screen] || '';
-                                                                            const url = `${window.location.origin}/patient-portal/${tokenData.token}${path ? '/' + path : ''}`;
-                                                                            window.open(url, '_blank');
-                                                                        }}
-                                                                        className="btn btn-secondary btn-xs"
-                                                                        style={{ fontSize: '10px', padding: '4px 8px', background: 'white' }}
-                                                                    >
-                                                                        <Activity size={10} style={{ marginRight: '4px' }} />
-                                                                        Ouvrir Questionnaire {item.screen}
-                                                                    </button>
-                                                                </div>
-                                                            )}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        );
-                                    })
-                                ) : (
-                                    <p style={{ textAlign: 'center', color: 'var(--color-gray-400)', padding: 'var(--spacing-8)' }}>Aucun événement.</p>
-                                )}
-                            </div>
-                        </div>
                     </div>
                 </div>
             </main >
+
+            {/* Secure Link Drawer */}
+            <Drawer 
+                isOpen={isSecureLinkDrawerOpen}
+                onClose={() => setIsSecureLinkDrawerOpen(false)}
+                title="Accès Patient Sécurisé"
+                icon={<ShieldCheck size={20} />}
+            >
+                <div style={{ padding: 'var(--spacing-6)' }}>
+                    <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-500)', marginBottom: 'var(--spacing-6)' }}>
+                        Générez un lien unique pour permettre au patient d'accéder à son portail sans mot de passe.
+                    </p>
+
+                    {tokenData ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-4)' }}>
+                            <div style={{
+                                background: 'white',
+                                padding: 'var(--spacing-4)',
+                                borderRadius: 'var(--border-radius-lg)',
+                                border: '1px dashed var(--color-primary-200)',
+                                wordBreak: 'break-all',
+                                fontSize: 'var(--font-size-xs)',
+                                color: 'var(--color-primary-700)',
+                                fontFamily: 'monospace',
+                                position: 'relative',
+                                boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)'
+                            }}>
+                                {`${window.location.origin}/patient-portal/${tokenData.token}`}
+                            </div>
+                            <div style={{ display: 'flex', gap: 'var(--spacing-2)' }}>
+                                <button
+                                    onClick={() => copyToClipboard(`${window.location.origin}/patient-portal/${tokenData.token}`)}
+                                    className="btn btn-primary btn-sm"
+                                    style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--spacing-2)' }}
+                                >
+                                    <Copy size={16} />
+                                    Copier le lien
+                                </button>
+                                <button
+                                    onClick={handleGenerateToken}
+                                    disabled={isGeneratingToken}
+                                    className="btn btn-secondary btn-sm"
+                                    title="Régénérer le lien"
+                                    style={{ padding: '8px' }}
+                                >
+                                    <RefreshCw size={16} className={isGeneratingToken ? 'animate-spin' : ''} />
+                                </button>
+                            </div>
+                            <div style={{ fontSize: '10px', color: 'var(--color-gray-400)', textAlign: 'center' }}>
+                                Lien actif • Créé le {new Date(tokenData.created_at || Date.now()).toLocaleDateString('fr-FR')}
+                            </div>
+                            <div style={{ marginTop: 'var(--spacing-6)', paddingTop: 'var(--spacing-6)', borderTop: '1px solid var(--color-gray-100)' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-4)' }}>
+                                    <h4 style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-gray-500)', textTransform: 'uppercase', marginBottom: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        <History size={14} />
+                                        Rappels planifiés {pendingReminders.length > 0 ? `(${pendingReminders.length})` : ''}
+                                    </h4>
+                                    <button
+                                        onClick={() => setIsCustomSMSModalOpen(true)}
+                                        className="btn btn-secondary btn-xs"
+                                        style={{ fontSize: '10px', padding: '4px 8px', borderColor: 'var(--color-primary-200)', color: 'var(--color-primary-600)' }}
+                                    >
+                                        <Send size={12} style={{ marginRight: '4px' }} />
+                                        SMS personnalisé
+                                    </button>
+                                </div>
+
+                                {pendingReminders.length > 0 ? (
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                        {pendingReminders.map(rem => (
+                                            <div key={rem.id} style={{ padding: 'var(--spacing-3)', background: 'white', borderRadius: 'var(--border-radius-md)', border: '1px solid var(--color-gray-100)', boxShadow: 'var(--shadow-sm)' }}>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                                                    <span style={{ fontWeight: 'var(--font-weight-bold)', fontSize: 'var(--font-size-sm)', color: 'var(--color-purple-700)' }}>{rem.screen}</span>
+                                                    <span style={{ fontSize: '10px', color: 'var(--color-gray-400)' }}>
+                                                        {new Date(rem.scheduled_for).toLocaleDateString('fr-FR')} {new Date(rem.scheduled_for).getHours()}:{String(new Date(rem.scheduled_for).getMinutes()).padStart(2, '0')}
+                                                    </span>
+                                                </div>
+                                                <button
+                                                    onClick={() => { setEditingReminder(rem); setIsSMSModalOpen(true); }}
+                                                    className="btn btn-secondary btn-sm"
+                                                    style={{ width: '100%', fontSize: '11px', padding: '4px 8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', background: 'white' }}
+                                                >
+                                                    <Edit2 size={12} />
+                                                    Gérer / Envoyer
+                                                </button>
+                                                <button
+                                                    onClick={() => {
+                                                        const mapping = {
+                                                            'J-7': 'j7',
+                                                            'J-2': 'j2',
+                                                            'J-1': 'j1-preop',
+                                                            'J-J': '',
+                                                            'J+1': 'j1',
+                                                            'J+4': 'j4',
+                                                            'E-SATIS': 'j4'
+                                                        };
+                                                        const path = mapping[rem.screen] || '';
+                                                        const url = `${window.location.origin}/patient-portal/${tokenData.token}${path ? '/' + path : ''}`;
+                                                        window.open(url, '_blank');
+                                                    }}
+                                                    className="btn btn-primary btn-sm"
+                                                    style={{ width: '100%', fontSize: '11px', padding: '4px 8px', marginTop: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}
+                                                >
+                                                    <Activity size={12} />
+                                                    Ouvrir Questionnaire
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div style={{ fontSize: '11px', color: 'var(--color-gray-400)', textAlign: 'center', padding: 'var(--spacing-4)', background: 'var(--color-gray-50)', borderRadius: 'var(--border-radius-md)', border: '1px dashed var(--color-gray-200)' }}>
+                                        Aucun rappel planifié.
+                                    </div>
+                                )}
+
+                                <button
+                                    onClick={handleRegenerateSchedule}
+                                    className="btn btn-secondary"
+                                    style={{ width: '100%', marginTop: 'var(--spacing-4)', fontSize: '10px', padding: 'var(--spacing-2)', border: '1px dashed var(--color-gray-300)', background: 'transparent', color: 'var(--color-gray-400)' }}
+                                >
+                                    <RefreshCw size={12} style={{ marginRight: '4px' }} />
+                                    Regénérer le planning complet
+                                </button>
+                            </div>
+                        </div>
+                    ) : (
+                        <button
+                            onClick={handleGenerateToken}
+                            disabled={isGeneratingToken}
+                            className="btn btn-primary"
+                            style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--spacing-2)' }}
+                        >
+                            {isGeneratingToken ? <RefreshCw size={18} className="animate-spin" /> : <LinkIcon size={18} />}
+                            Générer un lien d'accès
+                        </button>
+                    )}
+                </div>
+            </Drawer>
+
+            {/* History Drawer */}
+            <Drawer 
+                isOpen={isHistoryDrawerOpen}
+                onClose={() => setIsHistoryDrawerOpen(false)}
+                title="Historique des événements"
+                icon={<History size={20} />}
+            >
+                <div style={{ padding: 'var(--spacing-6)' }}>
+                    <div className="timeline" style={{ position: 'relative' }}>
+                        <div style={{ position: 'absolute', left: '7px', top: 0, bottom: 0, width: '2px', background: 'var(--color-gray-100)' }}></div>
+                        {medicalHistory.length > 0 ? (
+                            medicalHistory.map((item) => {
+                                const isSystemSms = item.type === 'sms_log' || item.category === 'sms';
+                                return (
+                                    <div key={item.id} className="timeline-item" style={{ paddingLeft: 'var(--spacing-8)', paddingBottom: 'var(--spacing-8)', position: 'relative' }}>
+                                        <div style={{
+                                            position: 'absolute',
+                                            left: 0,
+                                            top: '4px',
+                                            width: '16px',
+                                            height: '16px',
+                                            borderRadius: '50%',
+                                            background: isSystemSms ? 'var(--color-secondary-500)' : 'var(--color-primary-500)',
+                                            border: '3px solid white',
+                                            boxShadow: '0 0 0 1px var(--color-gray-100)',
+                                            zIndex: 1
+                                        }}></div>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)', flexWrap: 'wrap' }}>
+                                                <span style={{ fontWeight: 'var(--font-weight-black)', fontSize: 'var(--font-size-md)' }}>{item.title}</span>
+                                                {isSystemSms && <span className="badge" style={{ fontSize: '8px', background: 'var(--color-gray-100)', letterSpacing: '0.05em' }}>SMS ENVOYÉ</span>}
+                                                {item.status && <span className={`badge badge-${item.status === 'sent' || item.status === 'delivered' ? 'success' : 'danger'}`} style={{ fontSize: '7px' }}>{item.status.toUpperCase()}</span>}
+                                            </div>
+                                            <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-400)', display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)' }}>
+                                                {isSystemSms ? formatDateTimeFR(item.timestamp || item.date) : formatDateFR(item.timestamp || item.date)} • {isSystemSms ? 'Communication' : 'Événement clinique'}
+                                            </div>
+                                            {item.description && (
+                                                <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-600)', marginTop: '4px', background: 'var(--color-gray-50)', padding: 'var(--spacing-3)', borderRadius: 'var(--border-radius-md)', whiteSpace: 'pre-wrap' }}>
+                                                    {item.description}
+                                                    {isSystemSms && item.screen && (
+                                                        <div style={{ marginTop: '8px', borderTop: '1px solid var(--color-gray-200)', paddingTop: '8px' }}>
+                                                            <button
+                                                                onClick={() => {
+                                                                    const mapping = {
+                                                                        'J-7': 'j7',
+                                                                        'J-2': 'j2',
+                                                                        'J-1': 'j1-preop',
+                                                                        'J+1': 'j1',
+                                                                        'J+4': 'j4',
+                                                                        'E-SATIS': 'e-satis'
+                                                                    };
+                                                                    const path = mapping[item.screen] || '';
+                                                                    const url = `${window.location.origin}/patient-portal/${tokenData.token}${path ? '/' + path : ''}`;
+                                                                    window.open(url, '_blank');
+                                                                }}
+                                                                className="btn btn-secondary btn-xs"
+                                                                style={{ fontSize: '10px', padding: '4px 8px', background: 'white' }}
+                                                            >
+                                                                <Activity size={10} style={{ marginRight: '4px' }} />
+                                                                Ouvrir Questionnaire {item.screen}
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                );
+                            })
+                        ) : (
+                            <p style={{ textAlign: 'center', color: 'var(--color-gray-400)', padding: 'var(--spacing-8)' }}>Aucun événement.</p>
+                        )}
+                    </div>
+                </div>
+            </Drawer>
+
+            <style dangerouslySetInnerHTML={{
+                __html: `
+                .patient-review-layout {
+                    display: grid;
+                    grid-template-columns: 1fr;
+                    gap: var(--spacing-8);
+                }
+
+                .patient-details-grid {
+                    display: grid;
+                    grid-template-columns: 1fr;
+                    column-gap: var(--spacing-8);
+                    row-gap: var(--spacing-10);
+                    margin-top: var(--spacing-10);
+                    padding-top: var(--spacing-8);
+                    border-top: 1px solid var(--color-gray-100);
+                }
+
+                @media (min-width: 768px) {
+                    .patient-details-grid {
+                        grid-template-columns: 1fr 1fr 1fr;
+                    }
+                }
+
+                .grid-3 {
+                    display: grid;
+                    grid-template-columns: 1fr;
+                    gap: var(--spacing-4);
+                }
+
+                @media (min-width: 640px) {
+                    .grid-3 {
+                        grid-template-columns: 1fr 1fr;
+                    }
+                }
+
+                @media (min-width: 992px) {
+                    .grid-3 {
+                        grid-template-columns: 1fr 1fr 1fr;
+                    }
+                }
+
+                .drawer-overlay {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: rgba(0,0,0,0.4);
+                    backdrop-filter: blur(4px);
+                    z-index: 2000;
+                    opacity: 0;
+                    visibility: hidden;
+                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                }
+
+                .drawer-overlay.open {
+                    opacity: 1;
+                    visibility: visible;
+                }
+
+                .drawer-content {
+                    position: fixed;
+                    top: 0;
+                    right: -450px;
+                    width: 100%;
+                    max-width: 450px;
+                    height: 100%;
+                    background: white;
+                    z-index: 2001;
+                    box-shadow: -10px 0 40px rgba(0,0,0,0.15);
+                    transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                    display: flex;
+                    flex-direction: column;
+                }
+
+                .drawer-overlay.open .drawer-content {
+                    right: 0;
+                }
+
+                .drawer-header {
+                    padding: var(--spacing-6) var(--spacing-8);
+                    border-bottom: 1px solid var(--color-gray-100);
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    background: var(--color-gray-50);
+                }
+            `}} />
 
             <EditPatientModal
                 isOpen={isEditModalOpen}
