@@ -38,6 +38,7 @@ import wppDesktop from '../assets/wpp-desktop.png';
 import logoSlMa from '../assets/logo-sl-ma.png';
 import suiviCard from '../assets/suivi-card.png';
 import suiviCardBw from '../assets/suivi-card-bw.png';
+import clinicImg from '../assets/clinic.jpg';
 
 function ConsignesSection({ patientId }) {
     const { t } = useTranslation();
@@ -668,7 +669,7 @@ export default function PatientPortal({ patient: initialPatient }) {
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                             <div style={{ width: '40px', height: '24px', borderRadius: '4px', overflow: 'hidden' }}>
-                                <img src="/src/assets/clinic.jpg" alt="Clinic" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                <img src={clinicImg} alt="Clinic" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                             </div>
                             <span style={{ fontSize: '14px', fontWeight: '700' }}>{patient.clinic_name || 'Clinique de Vitrolles'}</span>
                         </div>
