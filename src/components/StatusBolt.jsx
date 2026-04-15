@@ -27,10 +27,10 @@ const statusConfigs = {
         description: 'Action urgente requise'
     },
     'success': {
-        color: 'var(--color-success-600)',
+        color: '#10B981', // Match portal green
         bg: 'var(--color-success-50)',
-        label: 'Performance / Assiduité',
-        description: 'Patient à jour'
+        label: 'Patient à jour',
+        description: 'Protocole respecté'
     },
     'ready': {
         color: 'var(--color-success-600)',

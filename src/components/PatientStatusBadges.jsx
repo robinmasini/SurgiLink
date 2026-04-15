@@ -86,6 +86,18 @@ export default function PatientStatusBadges({ responses = [], daysUntil = '', pa
             badges.push({ label: `Questionnaire J-${rules.j2_incomplete_days} non rempli`, color: 'danger' });
         }
 
+        const isUpToDate = (
+            (Math.abs(days) > rules.j7_incomplete_days) ||
+            (Math.abs(days) <= rules.j7_incomplete_days && isJ7Complete)
+        ) && (
+                (Math.abs(days) > 2) ||
+                (Math.abs(days) <= 2 && isJ2Complete)
+            );
+
+        if (isUpToDate && hasAnyResponse) {
+            badges.push({ label: 'À jour ✓', color: 'success' });
+        }
+
         if (isJ7Complete && isJ2Complete && patientStatus === 'ready') {
             badges.push({ label: 'Prêt pour l\'intervention ✓', color: 'success' });
         }
