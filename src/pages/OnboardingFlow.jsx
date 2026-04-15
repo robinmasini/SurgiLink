@@ -258,7 +258,7 @@ export default function OnboardingFlow() {
 
                             <div className="info-badge" style={{ 
                                 background: 'rgba(255, 255, 255, 0.1)', 
-                                padding: '12px 20px', 
+                                padding: '10px 20px', 
                                 borderRadius: '15px', 
                                 display: 'flex', 
                                 alignItems: 'center', 
@@ -267,7 +267,7 @@ export default function OnboardingFlow() {
                                 border: '1px solid rgba(255, 255, 255, 0.2)',
                                 backdropFilter: 'blur(10px)'
                             }}>
-                                <img src={checkpointImg} alt="Checkpoint" style={{ width: '24px', height: '24px' }} />
+                                <img src={smsImg} alt="SMS" style={{ height: '32px', filter: 'drop-shadow(0 2px 5px rgba(0,0,0,0.2))' }} />
                                 <span style={{ fontWeight: '600' }}>Suivi SMS : Questionnaires</span>
                             </div>
 
@@ -296,45 +296,46 @@ export default function OnboardingFlow() {
                                 <div className="timeline-items" style={{ display: 'flex', justifyContent: 'space-between', position: 'relative', zIndex: 1, padding: '0 5px' }}>
                                     {['J-7', 'J-2', 'J-1', 'J-J', 'J+1', 'J+2', 'J+7'].map((day, ix) => (
                                         <div key={day} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-                                            {ix === 0 ? (
-                                                <img src={checkpointImg} alt="active" style={{ width: '24px', height: '24px' }} />
-                                            ) : (
-                                                <div style={{ 
-                                                    width: '24px', 
-                                                    height: '24px', 
-                                                    borderRadius: '50%', 
-                                                    background: 'rgba(255, 255, 255, 0.2)',
-                                                    border: '1px solid rgba(255, 255, 255, 0.4)'
-                                                }} />
-                                            )}
+                                            <div style={{ 
+                                                width: '24px', 
+                                                height: '24px', 
+                                                borderRadius: '50%', 
+                                                background: ix === 0 ? 'var(--color-purple-600)' : 'rgba(255, 255, 255, 0.2)',
+                                                border: ix === 0 ? '2px solid white' : '1px solid rgba(255, 255, 255, 0.4)',
+                                                boxShadow: ix === 0 ? '0 0 10px rgba(139, 92, 246, 0.6)' : 'none'
+                                            }} />
                                             <span style={{ fontSize: '0.75rem', fontWeight: '600', opacity: ix === 0 ? 1 : 0.6 }}>{day}</span>
                                         </div>
                                     ))}
                                 </div>
                             </div>
 
-                            <div className="onboarding-bottom-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                <div className="phone-preview" style={{ width: '120px' }}>
+                            <div className="onboarding-bottom-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '20px' }}>
+                                <div className="phone-preview" style={{ width: '100px' }}>
                                     <img src={phoneExempleImg} alt="App Preview" style={{ width: '100%', filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.5))' }} />
                                 </div>
 
                                 <button 
                                     onClick={handleComplete}
                                     style={{ 
-                                        width: '70px', 
-                                        height: '70px', 
-                                        borderRadius: '35px', 
+                                        flex: 1,
+                                        maxWidth: '220px',
+                                        height: '60px', 
+                                        borderRadius: '30px', 
                                         background: 'var(--color-purple-600)',
                                         border: 'none',
                                         color: 'white',
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
+                                        gap: '12px',
                                         boxShadow: '0 10px 30px rgba(139, 92, 246, 0.6)',
-                                        cursor: 'pointer'
+                                        cursor: 'pointer',
+                                        padding: '0 25px'
                                     }}
                                 >
-                                    <ArrowRight size={32} />
+                                    <span style={{ fontWeight: '800', fontSize: '1.1rem', letterSpacing: '0.02em' }}>CONTINUER</span>
+                                    <ArrowRight size={24} />
                                 </button>
                             </div>
                         </div>
