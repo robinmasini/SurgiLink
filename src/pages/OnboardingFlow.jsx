@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowRight, MessageSquare, CheckCircle2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { validateToken } from '../services/tokenService';
+import { saveResponse, markScreenCompleted } from '../services/pathwayService';
 import logoSlMa from '../assets/logo-sl-ma.png';
 import medecinImg from '../assets/medecin.png';
 import phoneExempleImg from '../assets/phone-exemple.png';
@@ -73,6 +74,10 @@ export default function OnboardingFlow() {
             if (updateError) {
                 console.warn('Could not update onboarding status (column may not exist yet):', updateError);
             }
+
+            // Also mark Bienvenue step as complete to satisfy "up to date" logic
+            await saveResponse(patient.id, 'Bienvenue', 'welcome_ok', true, true);
+            await markScreenCompleted(patient.id, 'Bienvenue');
 
             console.log('-> Onboarding complete, navigating to portal');
             navigate(`/patient-portal/${token}`);
