@@ -144,63 +144,101 @@ export default function OnboardingFlow() {
                 flex: 1,
                 display: 'flex',
                 flexDirection: 'column',
-                padding: '20px 16px',
+                padding: step === 1 ? '20px 0 0 0' : '20px 16px',
                 maxWidth: '500px',
                 margin: '0 auto',
                 width: '100%'
             }}>
                 
                 {step === 1 && (
-                    <div className="step-container fadeIn" style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
-                        <div className="onboarding-logo-container" style={{ marginTop: '10px', marginBottom: '32px', width: '100%', display: 'flex', justifyContent: 'center' }}>
-                            <img src={logoSlMa} alt="SurgiLink" style={{ height: '80px', objectFit: 'contain' }} />
+                    <div className="step-container fadeIn" style={{ 
+                        flex: 1, 
+                        display: 'flex', 
+                        flexDirection: 'column', 
+                        alignItems: 'center', 
+                        textAlign: 'center',
+                        justifyContent: 'space-between',
+                        height: '100%'
+                    }}>
+                        <div className="onboarding-logo-container" style={{ marginTop: '20px', marginBottom: '20px', width: '100%', display: 'flex', justifyContent: 'center' }}>
+                            <img src={logoSlMa} alt="SurgiLink" style={{ height: '70px', objectFit: 'contain' }} />
                         </div>
 
-                        <div className="onboarding-text-container" style={{ color: 'white', marginBottom: 'var(--spacing-8)' }}>
-                            <h1 style={{ fontSize: '1.8rem', fontWeight: '700', marginBottom: 'var(--spacing-2)' }}>
+                        <div className="onboarding-text-container" style={{ 
+                            color: 'white', 
+                            marginBottom: 'auto', 
+                            marginTop: '10px',
+                            fontFamily: 'var(--font-family)',
+                            padding: '0 10px'
+                        }}>
+                            <h1 style={{ 
+                                fontSize: '2rem', 
+                                fontWeight: '700', 
+                                marginBottom: '8px', 
+                                color: 'white',
+                                lineHeight: '1.2' 
+                            }}>
                                 Bienvenue <span style={{ fontWeight: '400' }}>dans SurgiLink !</span>
                             </h1>
-                            <p style={{ fontSize: '1.1rem', opacity: 0.9 }}>
+                            <p style={{ 
+                                fontSize: '1.15rem', 
+                                opacity: 1, 
+                                color: 'white',
+                                fontWeight: '500'
+                            }}>
                                 Votre assistant de suivi médical
                             </p>
                         </div>
 
-                        <div className="onboarding-image-container" style={{ flex: 1, display: 'flex', alignItems: 'flex-end', width: '100%', maxWidth: '400px' }}>
+                        <div className="onboarding-image-container" style={{ 
+                            position: 'relative', 
+                            width: '100%', 
+                            display: 'flex', 
+                            flexDirection: 'column', 
+                            alignItems: 'center',
+                            marginTop: 'auto'
+                        }}>
                             <img 
                                 src={medecinImg} 
                                 alt="Médecin" 
                                 style={{ 
                                     width: '100%', 
+                                    maxWidth: '500px',
                                     height: 'auto', 
-                                    objectFit: 'contain',
-                                    filter: 'drop-shadow(0 20px 50px rgba(0,0,0,0.5))'
+                                    display: 'block',
+                                    marginBottom: '-10px', /* Ensure it really touches the bottom */
+                                    filter: 'drop-shadow(0 0 30px rgba(0,0,0,0.3))'
                                 }} 
                             />
+                            
+                            <button 
+                                onClick={() => setStep(2)}
+                                className="btn-primary"
+                                style={{ 
+                                    position: 'absolute',
+                                    bottom: '25%', /* Positioning it relative to the image (roughly below arms) */
+                                    width: '85%', 
+                                    maxWidth: '280px',
+                                    padding: '1.1rem',
+                                    borderRadius: '50px',
+                                    fontSize: '1.1rem',
+                                    fontWeight: '800',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: '12px',
+                                    background: 'var(--color-purple-600)',
+                                    border: 'none',
+                                    color: 'white',
+                                    boxShadow: '0 15px 35px rgba(124, 58, 237, 0.5)',
+                                    zIndex: 10,
+                                    cursor: 'pointer',
+                                    letterSpacing: '0.02em'
+                                }}
+                            >
+                                CONTINUER <ArrowRight size={22} />
+                            </button>
                         </div>
-
-                        <button 
-                            onClick={() => setStep(2)}
-                            className="btn-primary"
-                            style={{ 
-                                width: '100%', 
-                                maxWidth: '300px',
-                                padding: '1.2rem',
-                                borderRadius: '20px',
-                                fontSize: '1.1rem',
-                                fontWeight: '600',
-                                marginTop: 'var(--spacing-8)',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                gap: '10px',
-                                background: 'var(--color-purple-600)',
-                                border: 'none',
-                                color: 'white',
-                                boxShadow: '0 10px 30px rgba(139, 92, 246, 0.4)'
-                            }}
-                        >
-                            CONTINUER
-                        </button>
                     </div>
                 )}
 
