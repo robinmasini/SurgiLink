@@ -1,7 +1,6 @@
 import { Info, AlertTriangle, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import DoctolibButton from './DoctolibButton';
 
 /**
  * QuestionRenderer - Generic question component based on pathway config
@@ -148,7 +147,7 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
                 );
 
             case 'slider_0_10': {
-                const hasValue = value !== undefined && value !== null;
+                const hasValue = value !== undefined && value !== null && value !== '';
                 const sliderVal = hasValue ? value : 5;
                 return (
                     <div>
@@ -249,7 +248,7 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
                 );
             }
             case 'rating': {
-                const hasValue = value !== undefined && value !== null;
+                const hasValue = value !== undefined && value !== null && value !== '';
                 const ratingVal = hasValue ? value : 5;
                 return (
                     <div style={{ marginTop: 'var(--spacing-2)' }}>
@@ -567,12 +566,6 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
                 </div>
             )}
 
-            {/* Special Doctolib Integration for Anesthesia question */}
-            {(item.id === 'anesthesia_consultation' || item.label?.toLowerCase().includes('consultation d\'anesthésie')) && value !== true && (
-                <div style={{ marginTop: 'var(--spacing-4)' }}>
-                    <DoctolibButton />
-                </div>
-            )}
         </div>
     );
 }

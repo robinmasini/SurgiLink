@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { usePatientId } from '../hooks/usePatientId';
 import { supabase } from '../lib/supabase';
 import { useTranslation } from 'react-i18next';
-import DoctolibButton from '../components/pathway/DoctolibButton';
 
 
 export default function PatientSuccess({ patient: propPatient }) {
@@ -142,11 +141,6 @@ export default function PatientSuccess({ patient: propPatient }) {
                         {t('Retour au portail')}
                     </Link>
                 )}
-
-                <div style={{ marginTop: 'var(--spacing-4)', width: '100%' }}>
-                    <DoctolibButton />
-                </div>
-
 
                 <div style={{ color: 'var(--color-gray-400)', fontSize: 'var(--font-size-sm)', marginTop: 'var(--spacing-4)' }}>
                     SurgiLink • {t('Votre partenaire santé')}

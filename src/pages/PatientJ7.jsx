@@ -8,7 +8,6 @@ import QuestionRenderer from '../components/pathway/QuestionRenderer';
 import QuestionnaireFlow from '../components/pathway/QuestionnaireFlow';
 import AlertBanner from '../components/pathway/AlertBanner';
 import CompactAppointmentCard from '../components/CompactAppointmentCard';
-import DoctolibButton from '../components/pathway/DoctolibButton';
 import { usePatientId } from '../hooks/usePatientId';
 import { supabase } from '../lib/supabase';
 import { calculateAge, formatDateFR, calculateDaysUntilSurgery } from '../utils/dateUtils';
@@ -184,8 +183,6 @@ export default function PatientJ7({ patient: propPatient, token: propToken }) {
                     <br /><br />
                     {t('N\'hésitez surtout pas à cocher "Non", cela ne veut pas dire que votre opération sera annulée. Si vous cochez "Non", l\'équipe de la clinique vous rappellera pour trouver une solution adaptée à votre situation.')}
                 </div>
-
-                <DoctolibButton />
 
 
                 {/* Questionnaire Flow */}

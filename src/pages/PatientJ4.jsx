@@ -9,7 +9,6 @@ import { usePatientId } from '../hooks/usePatientId';
 import { supabase } from '../lib/supabase';
 import { calculateDaysUntilSurgery } from '../utils/dateUtils';
 import { useTranslation } from 'react-i18next';
-import DoctolibButton from '../components/pathway/DoctolibButton';
 
 
 export default function PatientJ4({ patient: propPatient, token: propToken }) {
@@ -114,8 +113,6 @@ export default function PatientJ4({ patient: propPatient, token: propToken }) {
                     screen="J4_Satisfaction"
                     patientId={resolvedPatientId}
                 />
-
-                <DoctolibButton />
             </div>
 
             <button className="fab">

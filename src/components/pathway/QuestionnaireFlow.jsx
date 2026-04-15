@@ -120,7 +120,7 @@ export default function QuestionnaireFlow({
         }
 
         // Ludic: If it's a yes_no or select, we can auto-advance after 500ms
-        if (currentItem.type === 'yes_no' || currentItem.type === 'select' || currentItem.type === 'tri_state' || currentItem.type === 'rating' || currentItem.type === 'scale') {
+        if (currentItem.type === 'yes_no' || currentItem.type === 'select' || currentItem.type === 'tri_state') {
             setTimeout(() => {
                 if (currentIndex < allItems.length - 1) {
                     handleNext();
