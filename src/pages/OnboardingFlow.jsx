@@ -294,17 +294,16 @@ export default function OnboardingFlow() {
                                     zIndex: 0
                                 }} />
                                 <div className="timeline-items" style={{ display: 'flex', justifyContent: 'space-between', position: 'relative', zIndex: 1, padding: '0 5px' }}>
-                                    {['J-7', 'J-2', 'J-1', 'J-J', 'J+1', 'J+2', 'J+7'].map((day, ix) => (
+                                    {['J-7', 'J-2', 'J-1', 'J-J', 'J+1', 'J+2', 'J+7'].map((day) => (
                                         <div key={day} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
                                             <div style={{ 
                                                 width: '24px', 
                                                 height: '24px', 
                                                 borderRadius: '50%', 
-                                                background: ix === 0 ? 'var(--color-purple-600)' : 'rgba(255, 255, 255, 0.2)',
-                                                border: ix === 0 ? '2px solid white' : '1px solid rgba(255, 255, 255, 0.4)',
-                                                boxShadow: ix === 0 ? '0 0 10px rgba(139, 92, 246, 0.6)' : 'none'
+                                                background: 'rgba(255, 255, 255, 0.2)',
+                                                border: '1px solid rgba(255, 255, 255, 0.4)'
                                             }} />
-                                            <span style={{ fontSize: '0.75rem', fontWeight: '600', opacity: ix === 0 ? 1 : 0.6 }}>{day}</span>
+                                            <span style={{ fontSize: '0.75rem', fontWeight: '600', opacity: 0.8 }}>{day}</span>
                                         </div>
                                     ))}
                                 </div>
