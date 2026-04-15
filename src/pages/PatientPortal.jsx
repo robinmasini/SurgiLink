@@ -25,6 +25,7 @@ import ClinicAppointmentCard from '../components/ClinicAppointmentCard';
 import CompactAppointmentCard from '../components/CompactAppointmentCard';
 import ProtocolStatus from '../components/ProtocolStatus';
 import PatientTraceability from '../components/PatientTraceability';
+import { getScreenItems } from '../config/pathway.config';
 
 import { HelpCircle, Send, RefreshCw, Download } from 'lucide-react';
 import { generateSynthesisPDF } from '../services/pdfService';
@@ -413,6 +414,48 @@ export default function PatientPortal({ patient: initialPatient }) {
         borderRadius: '24px'
     };
 
+    // Calculate if patient is up to date based on due questionnaires
+    const isUpToDate = (() => {
+        if (!patient || !responses) return false;
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const surgeryDate = patient.date ? new Date(patient.date) : null;
+        if (surgeryDate) surgeryDate.setHours(0, 0, 0, 0);
+        const diffDays = surgeryDate ? Math.ceil((surgeryDate - today) / (1000 * 60 * 60 * 24)) : 999;
+
+        const steps = [
+            { id: 'Bienvenue', offset: 99 },
+            { id: 'J7', offset: 7 },
+            { id: 'J2', offset: 2 },
+            { id: 'J1_PreOp', offset: 1 },
+            { id: 'J1', offset: -1 },
+            { id: 'J4_Satisfaction', offset: -4 },
+            { id: 'ESATIS', offset: -4 }
+        ];
+
+        // Check each step that is currently due
+        for (const step of steps) {
+            if (diffDays <= step.offset) {
+                const items = getScreenItems(step.id);
+                const requiredItems = items.filter(item => 
+                    item.required !== false && 
+                    item.type !== 'text' && 
+                    item.type !== 'verbatim'
+                );
+
+                const isComplete = requiredItems.every(item => {
+                    const val = responses[item.id];
+                    return val !== undefined && val !== null && val !== '';
+                });
+
+                if (!isComplete) return false;
+            }
+        }
+
+        return true;
+    })();
+
     return (
         <div style={{ position: 'relative', minHeight: '100vh', overflow: 'hidden' }}>
             {/* Animated Background Layer */}
@@ -508,7 +551,7 @@ export default function PatientPortal({ patient: initialPatient }) {
                 }}>
                     {/* Background Status Card */}
                     <img 
-                        src={(patient?.progress || 0) >= 100 ? suiviCard : suiviCardBw} 
+                        src={isUpToDate ? suiviCard : suiviCardBw} 
                         alt="" 
                         style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
                     />
@@ -523,8 +566,8 @@ export default function PatientPortal({ patient: initialPatient }) {
                             bottom: '0', 
                             height: '100%', 
                             zIndex: 1,
-                            filter: (patient?.progress || 0) >= 100 ? 'none' : 'grayscale(1)',
-                            opacity: (patient?.progress || 0) >= 100 ? 1 : 0.8,
+                            filter: isUpToDate ? 'none' : 'grayscale(1)',
+                            opacity: isUpToDate ? 1 : 0.8,
                             transition: 'all 0.5s ease'
                         }} 
                     />
@@ -566,7 +609,7 @@ export default function PatientPortal({ patient: initialPatient }) {
 
                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                 <div style={{
-                                    background: (patient?.progress || 0) >= 100 ? '#10B981' : '#F59E0B',
+                                    background: isUpToDate ? '#10B981' : '#F59E0B',
                                     width: '24px',
                                     height: '24px',
                                     borderRadius: '50%',
@@ -578,7 +621,7 @@ export default function PatientPortal({ patient: initialPatient }) {
                                     <CheckCircle2 size={12} color="white" />
                                 </div>
                                 <span style={{ fontSize: '16px', fontWeight: '700', color: 'white' }}>
-                                    {(patient?.progress || 0) >= 100 ? t('Vous êtes à jour !') : t('Vous n’êtes pas à jour !')}
+                                    {isUpToDate ? t('Vous êtes à jour !') : t('Vous n’êtes pas à jour !')}
                                 </span>
                             </div>
                         </div>
