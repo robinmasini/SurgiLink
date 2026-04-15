@@ -1251,7 +1251,7 @@ export default function PatientReview() {
                             </div>
 
                             {/* Satisfaction Section */}
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-8)' }}>
+                            <div className="grid-2" style={{ gap: 'var(--spacing-8)' }}>
                                 <div>
                                     <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-gray-400)', textTransform: 'uppercase', marginBottom: 'var(--spacing-4)', letterSpacing: '0.05em' }}>
                                         Satisfaction (J+4)
@@ -1577,6 +1577,18 @@ export default function PatientReview() {
                     }
                 }
 
+                .grid-2 {
+                    display: grid;
+                    grid-template-columns: 1fr;
+                    gap: var(--spacing-8);
+                }
+
+                @media (min-width: 640px) {
+                    .grid-2 {
+                        grid-template-columns: 1fr 1fr;
+                    }
+                }
+
                 .drawer-overlay {
                     position: fixed;
                     top: 0;
@@ -1588,31 +1600,42 @@ export default function PatientReview() {
                     z-index: 2000;
                     opacity: 0;
                     visibility: hidden;
+                    display: none;
                     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                    pointer-events: none;
                 }
 
                 .drawer-overlay.open {
                     opacity: 1;
                     visibility: visible;
+                    display: block;
+                    pointer-events: auto;
                 }
 
                 .drawer-content {
                     position: fixed;
                     top: 0;
-                    right: -450px;
+                    right: 0;
                     width: 100%;
                     max-width: 450px;
                     height: 100%;
                     background: white;
                     z-index: 2001;
                     box-shadow: -10px 0 40px rgba(0,0,0,0.15);
-                    transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                    transform: translateX(100%);
+                    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
                     display: flex;
                     flex-direction: column;
                 }
 
+                @media (max-width: 640px) {
+                    .drawer-content {
+                        max-width: 100%;
+                    }
+                }
+
                 .drawer-overlay.open .drawer-content {
-                    right: 0;
+                    transform: translateX(0);
                 }
 
                 .drawer-header {
