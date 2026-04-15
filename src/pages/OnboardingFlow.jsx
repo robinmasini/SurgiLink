@@ -163,27 +163,22 @@ export default function OnboardingFlow() {
                         <div className="onboarding-logo-container" style={{ marginTop: '20px', marginBottom: '20px', width: '100%', display: 'flex', justifyContent: 'center' }}>
                             <img src={logoSlMa} alt="SurgiLink" style={{ height: '70px', objectFit: 'contain' }} />
                         </div>
-
                         <div className="onboarding-text-container" style={{ 
-                            color: 'white', 
                             marginBottom: 'auto', 
                             marginTop: '10px',
-                            fontFamily: 'var(--font-family)',
-                            padding: '0 10px'
+                            padding: '0 20px',
+                            zIndex: 5
                         }}>
-                            <h1 style={{ 
-                                fontSize: '2rem', 
+                            <h1 className="onboarding-title" style={{ 
+                                fontSize: '2.2rem', 
                                 fontWeight: '700', 
-                                marginBottom: '8px', 
-                                color: 'white',
-                                lineHeight: '1.2' 
+                                marginBottom: '12px', 
+                                lineHeight: '1.1' 
                             }}>
                                 Bienvenue <span style={{ fontWeight: '400' }}>dans SurgiLink !</span>
                             </h1>
-                            <p style={{ 
-                                fontSize: '1.15rem', 
-                                opacity: 1, 
-                                color: 'white',
+                            <p className="onboarding-subtitle" style={{ 
+                                fontSize: '1.2rem', 
                                 fontWeight: '500'
                             }}>
                                 Votre assistant de suivi médical
@@ -196,18 +191,20 @@ export default function OnboardingFlow() {
                             display: 'flex', 
                             flexDirection: 'column', 
                             alignItems: 'center',
-                            marginTop: 'auto'
+                            justifyContent: 'flex-end',
+                            marginTop: 'auto',
+                            minHeight: '300px'
                         }}>
                             <img 
                                 src={medecinImg} 
                                 alt="Médecin" 
                                 style={{ 
                                     width: '100%', 
-                                    maxWidth: '500px',
+                                    maxWidth: '420px',
                                     height: 'auto', 
                                     display: 'block',
-                                    marginBottom: '-10px', /* Ensure it really touches the bottom */
-                                    filter: 'drop-shadow(0 0 30px rgba(0,0,0,0.3))'
+                                    marginBottom: '-5px',
+                                    filter: 'drop-shadow(0 -10px 30px rgba(0,0,0,0.15))'
                                 }} 
                             />
                             
@@ -216,12 +213,12 @@ export default function OnboardingFlow() {
                                 className="btn-primary"
                                 style={{ 
                                     position: 'absolute',
-                                    bottom: '25%', /* Positioning it relative to the image (roughly below arms) */
+                                    bottom: '30%', 
                                     width: '85%', 
                                     maxWidth: '280px',
-                                    padding: '1.1rem',
+                                    padding: '1.2rem',
                                     borderRadius: '50px',
-                                    fontSize: '1.1rem',
+                                    fontSize: '1.2rem',
                                     fontWeight: '800',
                                     display: 'flex',
                                     alignItems: 'center',
@@ -230,13 +227,13 @@ export default function OnboardingFlow() {
                                     background: 'var(--color-purple-600)',
                                     border: 'none',
                                     color: 'white',
-                                    boxShadow: '0 15px 35px rgba(124, 58, 237, 0.5)',
-                                    zIndex: 10,
+                                    boxShadow: '0 15px 40px rgba(124, 58, 237, 0.5)',
+                                    zIndex: 20,
                                     cursor: 'pointer',
                                     letterSpacing: '0.02em'
                                 }}
                             >
-                                CONTINUER <ArrowRight size={22} />
+                                CONTINUER <ArrowRight size={24} />
                             </button>
                         </div>
                     </div>
@@ -346,11 +343,22 @@ export default function OnboardingFlow() {
             </div>
 
             <style dangerouslySetInnerHTML={{ __html: `
+                .onboarding-title, .onboarding-info-container h2 { 
+                    color: #FFFFFF !important; 
+                    font-family: var(--font-family) !important; 
+                    text-shadow: 0 2px 10px rgba(0,0,0,0.2) !important;
+                }
+                .onboarding-subtitle, .onboarding-info-container p, .onboarding-info-container span { 
+                    color: #FFFFFF !important; 
+                    opacity: 1 !important; 
+                    font-family: var(--font-family) !important;
+                    text-shadow: 0 1px 5px rgba(0,0,0,0.2) !important;
+                }
                 .fadeIn {
-                    animation: fadeIn 0.5s ease forwards;
+                    animation: fadeIn 0.7s ease-out forwards;
                 }
                 @keyframes fadeIn {
-                    from { opacity: 0; transform: translateY(20px); }
+                    from { opacity: 0; transform: translateY(15px); }
                     to { opacity: 1; transform: translateY(0); }
                 }
             `}} />
