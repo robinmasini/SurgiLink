@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import wppPhone from '../assets/wpp-phone.png';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
@@ -116,7 +117,7 @@ export default function Patients() {
     };
 
     return (
-        <div style={{ display: 'flex', minHeight: '100vh', background: 'white' }}>
+        <div style={{ display: 'flex', minHeight: '100vh', backgroundImage: `url(${wppPhone})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
             <Sidebar />
             <main style={{ flex: 1, padding: 'var(--spacing-8)', marginLeft: 'var(--sidebar-width)' }}>
                 <Header

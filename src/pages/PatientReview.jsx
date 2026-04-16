@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import wppPhone from '../assets/wpp-phone.png';
 // Last Push Confirmation: 2026-03-19 14:58 (Antigravity)
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
@@ -546,7 +547,7 @@ export default function PatientReview() {
 
     if (isLoading) {
         return (
-            <div style={{ display: 'flex' }}>
+            <div style={{ display: 'flex', minHeight: '100vh', backgroundImage: `url(${wppPhone})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
                 <Sidebar />
                 <main className="main-content" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
                     <div style={{ textAlign: 'center' }}>
@@ -560,7 +561,7 @@ export default function PatientReview() {
 
     if (!patient) {
         return (
-            <div style={{ display: 'flex' }}>
+            <div style={{ display: 'flex', minHeight: '100vh', backgroundImage: `url(${wppPhone})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
                 <Sidebar />
                 <main className="main-content" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
                     <div style={{ textAlign: 'center', color: 'var(--color-gray-500)' }}>
@@ -573,7 +574,7 @@ export default function PatientReview() {
     }
 
     return (
-        <div style={{ display: 'flex' }}>
+        <div style={{ display: 'flex', minHeight: '100vh', backgroundImage: `url(${wppPhone})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
             <Sidebar />
             <main className="main-content">
                 {/* Header Actions */}

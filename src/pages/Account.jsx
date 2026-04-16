@@ -4,6 +4,7 @@ import Header from '../components/Header';
 import MobileNavbar from '../components/MobileNavbar';
 import christopheSignature from '../assets/christophe-signature.png';
 import welcomeCardV4 from '../assets/welcome-card-v4.jpg';
+import wppPhone from '../assets/wpp-phone.png';
 import welcomeCardInfirmier from '../assets/welcomecard-infirmier.png';
 import practitionerAvatar from '../assets/practitioner-avatar.png';
 import nurseAvatar from '../assets/nurse-avatar.png';
@@ -161,7 +162,17 @@ export default function Account() {
     };
 
     return (
-        <div className="dashboard-layout" data-mobile={isMobile}>
+        <div
+            className="dashboard-layout"
+            data-mobile={isMobile}
+            style={{
+                backgroundImage: `url(${wppPhone})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundAttachment: 'fixed',
+                minHeight: '100vh'
+            }}
+        >
             <Sidebar />
             <main className="main-content" data-mobile={isMobile}>
                 <Header

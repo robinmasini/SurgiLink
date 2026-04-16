@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import wppPhone from '../assets/wpp-phone.png';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import {
@@ -98,7 +99,7 @@ export default function Rentabilite() {
     };
 
     return (
-        <div style={{ display: 'flex' }}>
+        <div style={{ display: 'flex', minHeight: '100vh', backgroundImage: `url(${wppPhone})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
             <Sidebar />
             <main className="main-content">
                 <Header

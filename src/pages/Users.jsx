@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import wppPhone from '../assets/wpp-phone.png';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import { supabase } from '../lib/supabase';
@@ -157,7 +158,7 @@ export default function Users() {
     );
 
     return (
-        <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--color-gray-50)' }}>
+        <div style={{ display: 'flex', minHeight: '100vh', backgroundImage: `url(${wppPhone})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
             <Sidebar />
             <main style={{ flex: 1, padding: 'var(--spacing-8)', marginLeft: 'var(--sidebar-width)' }}>
                 <Header
