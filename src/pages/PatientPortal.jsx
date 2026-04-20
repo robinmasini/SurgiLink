@@ -658,9 +658,34 @@ export default function PatientPortal({ patient: initialPatient }) {
                     borderRadius: '40px',
                     overflow: 'hidden',
                     marginBottom: '32px',
-                    boxShadow: '0 20px 40px rgba(0,0,0,0.3)',
-                    background: 'rgba(255,255,255,0.05)'
+                    background: 'rgba(255,255,255,0.05)',
+                    animation: isUpToDate ? 'glowPulse 3s infinite alternate' : 'none'
                 }}>
+                    <style>{`
+                        @keyframes glowPulse {
+                            from { box-shadow: 0 20px 40px rgba(0,0,0,0.3), 0 0 0px rgba(255,255,255,0); }
+                            to { box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 25px rgba(255,255,255,0.2); }
+                        }
+                        @keyframes shineSweep {
+                            0% { transform: translateX(-100%) skewX(-15deg); }
+                            100% { transform: translateX(200%) skewX(-15deg); }
+                        }
+                    `}</style>
+                    
+                    {/* Liquid Shine Overlay */}
+                    {isUpToDate && (
+                        <div style={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            width: '40%',
+                            height: '100%',
+                            background: 'linear-gradient(to right, transparent, rgba(255,255,255,0.15), transparent)',
+                            zIndex: 4,
+                            animation: 'shineSweep 4s infinite linear'
+                        }} />
+                    )}
+
                     {/* Background Status Card */}
                     <img 
                         src={isUpToDate ? suiviCard : suiviCardBw} 
@@ -740,10 +765,10 @@ export default function PatientPortal({ patient: initialPatient }) {
 
                         <div>
                             <p style={{ fontSize: '13px', fontWeight: '400', color: 'rgba(255,255,255,0.7)', marginBottom: '4px' }}>
-                                {nextMilestoneLabel ? `Questionnaire ${nextMilestoneLabel} dans :` : t('Toutes les étapes validées !')}
+                                {nextMilestoneLabel ? `Questionnaire ${nextMilestoneLabel} dans :` : t('Parcours terminé !')}
                             </p>
                             <div style={{ fontSize: timeLeft.includes('j') ? '32px' : '36px', fontWeight: '800', letterSpacing: '0.05em', color: 'white' }}>
-                                {timeLeft}
+                                {nextMilestoneLabel && timeLeft !== '00:00:00' ? timeLeft : '00:00:00'}
                             </div>
                         </div>
                     </div>
