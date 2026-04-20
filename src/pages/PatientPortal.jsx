@@ -340,6 +340,9 @@ export default function PatientPortal({ patient: initialPatient }) {
                     const screen = row.screen;
                     
                     aggregated[itemId] = value;
+                    // Support legacy/incorrect mappings for portal local logic
+                    if (itemId === 'recommendation') aggregated['recommandation'] = value;
+                    else if (itemId === 'recommandation') aggregated['recommendation'] = value;
                     
                     if (screen) {
                         const lowerScreen = screen.toLowerCase();
@@ -547,21 +550,7 @@ export default function PatientPortal({ patient: initialPatient }) {
         // Check each step that is currently due
         for (const milestone of milestones) {
             if (diffDays <= milestone.offset) {
-                const items = getScreenItems(milestone.id);
-                const requiredItems = items.filter(item => 
-                    item.required !== false && 
-                    item.type !== 'text' && 
-                    item.type !== 'verbatim'
-                );
-
-                if (requiredItems.length > 0) {
-                    const isComplete = requiredItems.every(item => {
-                        const val = responses[item.id];
-                        return val !== undefined && val !== null && val !== '';
-                    });
-
-                    if (!isComplete) return false;
-                }
+                if (!isMilestoneComplete(milestone.id)) return false;
             }
         }
 
@@ -612,14 +601,13 @@ export default function PatientPortal({ patient: initialPatient }) {
                     {/* Liquid Glass Translation Menu */}
                     <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
                         <select 
-                            value={i18n.language || 'fr'} 
+                            value={i18n.language}
                             onChange={(e) => i18n.changeLanguage(e.target.value)}
                             style={{
-                                ...GLASS_STYLE,
-                                padding: '8px 32px 8px 16px',
+                                appearance: 'none',
+                                background: 'transparent',
                                 border: '1px solid rgba(255,255,255,0.1)',
                                 color: 'white',
-                                appearance: 'none',
                                 fontSize: '18px',
                                 fontWeight: '600',
                                 cursor: 'pointer',
@@ -732,7 +720,7 @@ export default function PatientPortal({ patient: initialPatient }) {
                                 letterSpacing: '-0.02em',
                                 lineHeight: 1.1
                             }}>
-                                Préparez-vous en<br />toute sérénité !
+                                {t('Préparez-vous en toute sérénité !')}
                             </h2>
                             <p style={{ 
                                 fontSize: '12px', 
@@ -741,7 +729,7 @@ export default function PatientPortal({ patient: initialPatient }) {
                                 lineHeight: 1.5,
                                 maxWidth: '200px'
                             }}>
-                                Répondez à des questions de suivi pour préparer votre opération
+                                {t('Répondez à des questions de suivi pour préparer votre opération')}
                             </p>
 
                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -765,7 +753,7 @@ export default function PatientPortal({ patient: initialPatient }) {
 
                         <div>
                             <p style={{ fontSize: '13px', fontWeight: '400', color: 'rgba(255,255,255,0.7)', marginBottom: '4px' }}>
-                                {nextMilestoneLabel ? `Questionnaire ${nextMilestoneLabel} dans :` : t('Parcours terminé !')}
+                                {nextMilestoneLabel ? `${t('Questionnaire')} ${nextMilestoneLabel} ${t('dans :')}` : t('Parcours terminé !')}
                             </p>
                             <div style={{ fontSize: timeLeft.includes('j') ? '32px' : '36px', fontWeight: '800', letterSpacing: '0.05em', color: 'white' }}>
                                 {nextMilestoneLabel && timeLeft !== '00:00:00' ? timeLeft : '00:00:00'}
@@ -783,20 +771,23 @@ export default function PatientPortal({ patient: initialPatient }) {
 
                 {/* Main Action Buttons */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '32px' }}>
-                    <button style={{
-                        width: '100%',
-                        padding: '18px',
-                        borderRadius: '20px',
-                        background: 'var(--grad-premium-purple)',
-                        color: 'white',
-                        border: 'none',
-                        fontSize: '15px',
-                        fontWeight: '800',
-                        letterSpacing: '0.05em',
-                        boxShadow: '0 10px 20px rgba(124, 58, 237, 0.3)',
-                        cursor: 'pointer',
-                        transition: 'transform 0.2s'
-                    }}
+                    <button 
+                        disabled={isUpToDate}
+                        style={{
+                            width: '100%',
+                            padding: '18px',
+                            borderRadius: '20px',
+                            background: isUpToDate ? 'rgba(255,255,255,0.1)' : 'var(--grad-premium-purple)',
+                            color: isUpToDate ? 'rgba(255,255,255,0.4)' : 'white',
+                            border: isUpToDate ? '1px solid rgba(255,255,255,0.1)' : 'none',
+                            fontSize: '15px',
+                            fontWeight: '800',
+                            letterSpacing: '0.05em',
+                            boxShadow: isUpToDate ? 'none' : '0 10px 20px rgba(124, 58, 237, 0.3)',
+                            cursor: isUpToDate ? 'not-allowed' : 'pointer',
+                            transition: 'all 0.2s',
+                            opacity: isUpToDate ? 0.7 : 1
+                        }}
                     onClick={() => {
                         const today = new Date();
                         const surgeryDate = patient.date ? new Date(patient.date) : null;
@@ -824,7 +815,7 @@ export default function PatientPortal({ patient: initialPatient }) {
                     onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
                     onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
                     >
-                        DÉMARRER MON QUESTIONNAIRE
+                        {t('DÉMARRER MON QUESTIONNAIRE')}
                     </button>
 
                     <button style={{
@@ -843,7 +834,7 @@ export default function PatientPortal({ patient: initialPatient }) {
                     onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.15)'}
                     onMouseOut={(e) => e.currentTarget.style.background = 'var(--glass-bg)'}
                     >
-                        MODIFIER MES RÉPONSES PRÉCÉDENTES
+                        {t('MODIFIER MES RÉPONSES PRÉCÉDENTES')}
                     </button>
                 </div>
 
@@ -855,7 +846,7 @@ export default function PatientPortal({ patient: initialPatient }) {
                     background: 'rgba(255,255,255,0.06)'
                 }}>
                     <h3 style={{ fontSize: '18px', fontWeight: '500', color: 'white', marginBottom: '20px' }}>
-                        Rappel de votre intervention
+                        {t('Rappel de votre intervention')}
                     </h3>
 
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
@@ -863,10 +854,10 @@ export default function PatientPortal({ patient: initialPatient }) {
                             <div style={{ width: '40px', height: '24px', borderRadius: '4px', overflow: 'hidden' }}>
                                 <img src={clinicImg} alt="Clinic" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                             </div>
-                            <span style={{ fontSize: '14px', fontWeight: '700' }}>{patient.clinic_name || 'Clinique de Vitrolles'}</span>
+                            <span style={{ fontSize: '14px', fontWeight: '700' }}>{patient.clinic_name || t('Clinique de Vitrolles')}</span>
                         </div>
                         <a 
-                            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(patient.clinic_address || "Vitrolles")}`}
+                            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(patient.clinic_address || t("Vitrolles"))}`}
                             target="_blank" rel="noopener noreferrer"
                             style={{
                                 padding: '8px 16px',
@@ -881,7 +872,7 @@ export default function PatientPortal({ patient: initialPatient }) {
                                 gap: '4px'
                             }}
                         >
-                            M'y rendre <ChevronRight size={12} />
+                            {t("M'y rendre")} <ChevronRight size={12} />
                         </a>
                     </div>
 
@@ -898,9 +889,9 @@ export default function PatientPortal({ patient: initialPatient }) {
                             <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                 <Clock size={16} />
                             </div>
-                            <span style={{ fontSize: '14px', fontWeight: '500' }}>
-                                {patient.surgery_time ? patient.surgery_time : 'Non-communiquée'}
-                            </span>
+                                <span style={{ fontSize: '14px', fontWeight: '500' }}>
+                                    {patient.surgery_time ? patient.surgery_time : t('Non-communiquée')}
+                                </span>
                         </div>
                     </div>
                 </div>
@@ -1044,6 +1035,8 @@ export default function PatientPortal({ patient: initialPatient }) {
                         customQuestions={customQuestions}
                     />
                 </div>
+            </div>
+            </div>
             </div>
         </div>
     </div>
