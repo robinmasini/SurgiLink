@@ -40,7 +40,6 @@ import logoSlMa from '../assets/logo-sl-ma.png';
 import suiviCard from '../assets/suivi-card.png';
 import suiviCardBw from '../assets/suivi-card-bw.png';
 import clinicImg from '../assets/clinic.jpg';
-import nurseImg from '../assets/welcomecard-infirmier.png';
 
 function ConsignesSection({ patientId }) {
     const { t } = useTranslation();
@@ -683,21 +682,7 @@ export default function PatientPortal({ patient: initialPatient }) {
                         style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
                     />
 
-                    {/* Nurse Illustration */}
-                    <img 
-                        src={nurseImg} 
-                        alt="" 
-                        style={{ 
-                            position: 'absolute', 
-                            right: '-10px', 
-                            bottom: '0', 
-                            height: '100%', 
-                            zIndex: 1,
-                            filter: isUpToDate ? 'none' : 'grayscale(1)',
-                            opacity: isUpToDate ? 1 : 0.8,
-                            transition: 'all 0.5s ease'
-                        }} 
-                    />
+
 
 
 
