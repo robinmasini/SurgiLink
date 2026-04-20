@@ -40,6 +40,7 @@ import logoSlMa from '../assets/logo-sl-ma.png';
 import suiviCard from '../assets/suivi-card.png';
 import suiviCardBw from '../assets/suivi-card-bw.png';
 import clinicImg from '../assets/clinic.jpg';
+import nurseImg from '../assets/welcomecard-infirmier.png';
 
 function ConsignesSection({ patientId }) {
     const { t } = useTranslation();
@@ -182,6 +183,7 @@ export default function PatientPortal({ patient: initialPatient }) {
             return val !== undefined && val !== null && val !== '';
         });
     };
+    
     useEffect(() => {
         if (!patient?.date) return;
 
@@ -683,7 +685,7 @@ export default function PatientPortal({ patient: initialPatient }) {
 
                     {/* Nurse Illustration */}
                     <img 
-                        src="/src/assets/welcomecard-infirmier.png" 
+                        src={nurseImg} 
                         alt="" 
                         style={{ 
                             position: 'absolute', 
@@ -753,7 +755,7 @@ export default function PatientPortal({ patient: initialPatient }) {
 
                         <div>
                             <p style={{ fontSize: '13px', fontWeight: '400', color: 'rgba(255,255,255,0.7)', marginBottom: '4px' }}>
-                                {nextMilestoneLabel ? `${t('Questionnaire')} ${nextMilestoneLabel} ${t('dans :')}` : t('Parcours terminé !')}
+                                {nextMilestoneLabel ? t('Questionnaire {{label}} dans :', { label: nextMilestoneLabel }) : t('Parcours terminé !')}
                             </p>
                             <div style={{ fontSize: timeLeft.includes('j') ? '32px' : '36px', fontWeight: '800', letterSpacing: '0.05em', color: 'white' }}>
                                 {nextMilestoneLabel && timeLeft !== '00:00:00' ? timeLeft : '00:00:00'}
@@ -1035,8 +1037,6 @@ export default function PatientPortal({ patient: initialPatient }) {
                         customQuestions={customQuestions}
                     />
                 </div>
-            </div>
-            </div>
             </div>
         </div>
     </div>
