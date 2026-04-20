@@ -78,7 +78,15 @@ export default function QuestionnaireFlow({
     }, [responses, initialRefreshed, allItems]);
 
     const currentItem = allItems[currentIndex];
-    const progress = ((currentIndex + 1) / allItems.length) * 100;
+    
+    // Safety check for blank page issues
+    if (!currentItem && allItems.length > 0) {
+        // If index gets out of bounds, reset to last or first
+        if (currentIndex < 0) setCurrentIndex(0);
+        else if (currentIndex >= allItems.length) setCurrentIndex(allItems.length - 1);
+    }
+
+    const progress = allItems.length > 0 ? ((currentIndex + 1) / allItems.length) * 100 : 0;
 
     const isFirst = currentIndex === 0;
     const isLast = currentIndex === allItems.length - 1;
@@ -87,25 +95,27 @@ export default function QuestionnaireFlow({
     // just one-by-one with attention. I'll add a "Next" button for clarity, but auto-submit on last.
 
     const handleNext = () => {
+        if (direction === 'out' || saving) return; // Prevent multiple clicks during transition
+        
         if (isLast) {
             onComplete();
         } else {
             setDirection('out');
             setTimeout(() => {
-                setCurrentIndex(prev => prev + 1);
+                setCurrentIndex(prev => Math.min(prev + 1, allItems.length - 1));
                 setDirection('in');
             }, 300);
         }
     };
 
     const handleBack = () => {
-        if (!isFirst) {
-            setDirection('out'); // Should ideally be a different direction for back, but keeping it simple
-            setTimeout(() => {
-                setCurrentIndex(prev => prev - 1);
-                setDirection('in');
-            }, 300);
-        }
+        if (direction === 'out' || isFirst) return;
+        
+        setDirection('out');
+        setTimeout(() => {
+            setCurrentIndex(prev => Math.max(prev - 1, 0));
+            setDirection('in');
+        }, 300);
     };
 
     // When answer changes, we might want a slight delay before auto-advancing if it's a simple choice
@@ -122,9 +132,10 @@ export default function QuestionnaireFlow({
         // Ludic: If it's a yes_no or select, we can auto-advance after 500ms
         if (currentItem.type === 'yes_no' || currentItem.type === 'select' || currentItem.type === 'tri_state') {
             setTimeout(() => {
+                // Re-verify currentItem inside timeout to be safe
                 if (currentIndex < allItems.length - 1) {
                     handleNext();
-                } else {
+                } else if (currentIndex === allItems.length - 1) {
                     // It's the last one, auto-submit
                     onComplete();
                 }
@@ -140,7 +151,7 @@ export default function QuestionnaireFlow({
                     <div>
                         <span className="q-badge">{t('Question')} {currentIndex + 1} {t('sur')} {allItems.length}</span>
                         <h4 style={{ margin: 0, fontSize: '14px', color: 'var(--color-gray-500)', fontWeight: 600 }}>
-                            {t(currentItem.sectionTitle)}
+                            {currentItem ? t(currentItem.sectionTitle) : ''}
                         </h4>
                     </div>
                     <div style={{ fontSize: '18px', fontWeight: 800, color: 'var(--color-primary-600)' }}>
@@ -154,13 +165,15 @@ export default function QuestionnaireFlow({
 
             {/* Question Container */}
             <div className={`question-flow-container ${direction === 'in' ? 'slide-in' : 'slide-out'}`}>
-                <QuestionRenderer
-                    key={currentItem.id}
-                    item={currentItem}
-                    value={responses[currentItem.id]?.main ?? responses[currentItem.id]}
-                    onChange={onQuestionAnswer}
-                    screen={screen}
-                />
+                {currentItem && (
+                    <QuestionRenderer
+                        key={currentItem.id}
+                        item={currentItem}
+                        value={responses[currentItem.id]?.main ?? responses[currentItem.id]}
+                        onChange={onQuestionAnswer}
+                        screen={screen}
+                    />
+                )}
             </div>
 
             {/* Navigation Controls */}
@@ -185,7 +198,7 @@ export default function QuestionnaireFlow({
                 <button
                     className={`btn btn-primary ${isLast ? 'btn-success' : ''}`}
                     onClick={handleNext}
-                    disabled={saving || (responses[currentItem.id] === undefined && currentItem.required !== false)}
+                    disabled={saving || !currentItem || (responses[currentItem.id] === undefined && currentItem.required !== false)}
                     style={{
                         flex: 2,
                         borderRadius: 'var(--radius-xl)',

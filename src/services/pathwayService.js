@@ -163,17 +163,38 @@ export async function calculateGlobalProgress(patientId) {
             console.warn('Using default status rules due to fetch error:', e);
         }
 
+        // Determine status based on milestones completion
+        const milestones = [
+            { id: 'Bienvenue', offset: 99 },
+            { id: 'J7', offset: 7 },
+            { id: 'J2', offset: 2 },
+            { id: 'J1_PreOp', offset: 1 },
+            { id: 'J1', offset: -1 },
+            { id: 'J4_Satisfaction', offset: -4 },
+            { id: 'ESATIS', offset: -4 }
+        ];
+
+        let allDueMilestonesComplete = true;
+        milestones.forEach(m => {
+            if (daysUntilSurgery <= m.offset) {
+                const mItems = getScreenItems(m.id);
+                const mRequired = mItems.filter(item =>
+                    item.required !== false &&
+                    item.type !== 'text' &&
+                    item.type !== 'verbatim'
+                );
+                if (mRequired.length > 0) {
+                    const mIsComplete = mRequired.every(item => {
+                        const val = responseMap[`${m.id}:${item.id}`];
+                        return val !== undefined && val !== null && val !== '';
+                    });
+                    if (!mIsComplete) allDueMilestonesComplete = false;
+                }
+            }
+        });
+
         // Determine status based on risks, progress, and timing
         let status = 'neutre';
-
-        // 1. Check for success (Green Bolt) - Assiduité or Progress Threshold
-        const isUpToDate = (
-            (daysUntilSurgery > rules.j7_incomplete_days) ||
-            (daysUntilSurgery <= rules.j7_incomplete_days && j7Status.isComplete)
-        ) && (
-                (daysUntilSurgery > 2) ||
-                (daysUntilSurgery <= 2 && j2Status.isComplete)
-            );
 
         if (progress === 100) {
             status = 'success';
@@ -182,9 +203,8 @@ export async function calculateGlobalProgress(patientId) {
         } else if (hasSoftRisk) {
             status = 'alerte';
         } else {
-            // Success if up to date and enabled, OR threshold reached
-            if ((rules.assiduité_success_enabled && isUpToDate && progress > 0) ||
-                (progress >= rules.progress_success_threshold && progress > 0)) {
+            // Success if all due milestones are complete and some progress is made
+            if (allDueMilestonesComplete && progress > 0) {
                 status = 'success';
             } else {
                 // Timing-based Alerte/Critique using dynamic rules

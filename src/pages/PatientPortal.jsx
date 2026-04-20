@@ -424,7 +424,7 @@ export default function PatientPortal({ patient: initialPatient }) {
         if (surgeryDate) surgeryDate.setHours(0, 0, 0, 0);
         const diffDays = surgeryDate ? Math.ceil((surgeryDate - today) / (1000 * 60 * 60 * 24)) : 999;
 
-        const steps = [
+        const milestones = [
             { id: 'Bienvenue', offset: 99 },
             { id: 'J7', offset: 7 },
             { id: 'J2', offset: 2 },
@@ -435,21 +435,23 @@ export default function PatientPortal({ patient: initialPatient }) {
         ];
 
         // Check each step that is currently due
-        for (const step of steps) {
-            if (diffDays <= step.offset) {
-                const items = getScreenItems(step.id);
+        for (const milestone of milestones) {
+            if (diffDays <= milestone.offset) {
+                const items = getScreenItems(milestone.id);
                 const requiredItems = items.filter(item => 
                     item.required !== false && 
                     item.type !== 'text' && 
                     item.type !== 'verbatim'
                 );
 
-                const isComplete = requiredItems.every(item => {
-                    const val = responses[item.id];
-                    return val !== undefined && val !== null && val !== '';
-                });
+                if (requiredItems.length > 0) {
+                    const isComplete = requiredItems.every(item => {
+                        const val = responses[item.id];
+                        return val !== undefined && val !== null && val !== '';
+                    });
 
-                if (!isComplete) return false;
+                    if (!isComplete) return false;
+                }
             }
         }
 
