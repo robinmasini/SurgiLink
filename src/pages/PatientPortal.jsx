@@ -605,21 +605,21 @@ export default function PatientPortal({ patient: initialPatient }) {
                             value={i18n.language}
                             onChange={(e) => i18n.changeLanguage(e.target.value)}
                             style={{
-                                appearance: 'none',
-                                background: 'transparent',
+                                ...GLASS_STYLE,
+                                padding: '8px 32px 8px 16px',
                                 border: '1px solid rgba(255,255,255,0.1)',
                                 color: 'white',
+                                appearance: 'none',
+                                background: 'rgba(255,255,255,0.05)',
+                                outline: 'none',
+                                cursor: 'pointer',
                                 fontSize: '18px',
                                 fontWeight: '600',
-                                cursor: 'pointer',
-                                outline: 'none',
                                 textAlign: 'center',
-                                minWidth: '70px',
-                                position: 'relative',
-                                zIndex: 2
+                                minWidth: '70px'
                             }}
                         >
-                            <option value="fr">🇫🇷</option>
+<option value="fr">🇫🇷</option>
                             <option value="en">🇬🇧</option>
                             <option value="nl">🇳🇱</option>
                         </select>
