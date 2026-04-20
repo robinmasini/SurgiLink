@@ -165,9 +165,102 @@ export default function PatientPortal({ patient: initialPatient }) {
     const [customQuestions, setCustomQuestions] = useState([]);
     const [answeringQuestionId, setAnsweringQuestionId] = useState(null);
     const [smsData, setSmsData] = useState([]);
+    const [timeLeft, setTimeLeft] = useState('00:00:00');
+    const [nextMilestoneLabel, setNextMilestoneLabel] = useState('');
     const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
     const reportRef = useRef(null);
+
+    // --- Countdown Timer Logic ---
+    useEffect(() => {
+        if (!patient?.date) return;
+
+        const updateTimer = () => {
+            const now = new Date();
+            const surgeryDate = new Date(patient.date);
+            
+            // Define all milestones with their offsets (days relative to surgery)
+            const milestones = [
+                { id: 'Bienvenue', label: 'Bienvenue', offset: 99 },
+                { id: 'J7', label: 'J-7', offset: 7 },
+                { id: 'J2', label: 'J-2', offset: 2 },
+                { id: 'J1_PreOp', label: 'J-1', offset: 1 },
+                { id: 'J1', label: 'J+1', offset: -1 },
+                { id: 'J4_Satisfaction', label: 'J+4', offset: -4 },
+                { id: 'ESATIS', label: 'e-Satis', offset: -4 }
+            ];
+
+            let nextTarget = null;
+            let currentLabel = '';
+            let isPastDueButIncomplete = false;
+
+            // 1. Check if any PAST or CURRENT milestone is NOT COMPLETED
+            for (const m of milestones) {
+                const targetDate = new Date(surgeryDate);
+                targetDate.setHours(0, 0, 0, 0);
+                targetDate.setDate(targetDate.getDate() - m.offset);
+                targetDate.setHours(8, 30, 0, 0);
+
+                // For Bienvenue, it's always "due" or "complete"
+                if (m.id === 'Bienvenue' && !responses['welcome_ok'] && !responses['welcome']) {
+                    isPastDueButIncomplete = true;
+                    currentLabel = m.label;
+                    break;
+                }
+
+                if (now >= targetDate) {
+                    // Check if this milestone is complete
+                    const items = getScreenItems(m.id);
+                    const required = items.filter(i => i.required !== false && i.type !== 'text' && i.type !== 'verbatim');
+                    const isComplete = required.every(i => responses[i.id] !== undefined && responses[i.id] !== null && responses[i.id] !== '');
+                    
+                    if (!isComplete && m.id !== 'Bienvenue') { // Already handled Bienvenue above
+                        isPastDueButIncomplete = true;
+                        currentLabel = m.label;
+                        break;
+                    }
+                } else {
+                    // This is the FIRST future milestone
+                    nextTarget = targetDate;
+                    currentLabel = m.label;
+                    break;
+                }
+            }
+
+            if (isPastDueButIncomplete) {
+                setTimeLeft('00:00:00');
+                setNextMilestoneLabel(currentLabel);
+                return;
+            }
+
+            if (!nextTarget) {
+                setTimeLeft('00:00:00');
+                setNextMilestoneLabel('');
+                return;
+            }
+
+            const diff = nextTarget - now;
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+            const minutes = Math.floor((diff / (1000 * 60)) % 60);
+            const seconds = Math.floor((diff / 1000) % 60);
+
+            let timerStr = '';
+            if (days > 0) {
+                timerStr = `${days}j ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            } else {
+                timerStr = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            }
+
+            setTimeLeft(timerStr);
+            setNextMilestoneLabel(currentLabel);
+        };
+
+        const interval = setInterval(updateTimer, 1000);
+        updateTimer(); 
+
+        return () => clearInterval(interval);
+    }, [patient?.date, responses]);
 
     useEffect(() => {
         const handleResize = () => {
@@ -648,10 +741,10 @@ export default function PatientPortal({ patient: initialPatient }) {
 
                         <div>
                             <p style={{ fontSize: '13px', fontWeight: '400', color: 'rgba(255,255,255,0.7)', marginBottom: '4px' }}>
-                                Prochaines questions dans :
+                                {nextMilestoneLabel ? `Questionnaire ${nextMilestoneLabel} dans :` : t('Toutes les étapes validées !')}
                             </p>
-                            <div style={{ fontSize: '36px', fontWeight: '800', letterSpacing: '0.05em', color: 'white' }}>
-                                {calculateDaysUntilSurgery(patient.date).includes('J') ? '00:00:00' : '00:00:00'}
+                            <div style={{ fontSize: timeLeft.includes('j') ? '32px' : '36px', fontWeight: '800', letterSpacing: '0.05em', color: 'white' }}>
+                                {timeLeft}
                             </div>
                         </div>
                     </div>
