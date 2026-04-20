@@ -263,9 +263,16 @@ export async function getResponses(patientId, screen) {
 
         if (error) throw error;
 
-        // Filter manually to be case-insensitive on screen if needed, 
-        // or just return items that match the requested screen (case-insensitive)
-        const filteredData = data.filter(r => r.screen.toLowerCase() === screen.toLowerCase());
+        // Filter manually to be case-insensitive and handle legacy J1PreOp / J1_PreOp
+        const filteredData = data.filter(r => {
+            const rowScreen = r.screen.toLowerCase();
+            const targetScreen = screen.toLowerCase();
+            if (rowScreen === targetScreen) return true;
+            // Map legacy J1PreOp to J1_PreOp and vice-versa
+            if ((rowScreen === 'j1preop' || rowScreen === 'j1_preop') && 
+                (targetScreen === 'j1preop' || targetScreen === 'j1_preop')) return true;
+            return false;
+        });
         
         const responses = {};
         filteredData.forEach(item => {

@@ -974,7 +974,8 @@ export default function PatientReview() {
                                             { id: 'distance_urgency', label: 'Distance Urgence', screen: 'J7' },
                                             { id: 'fasting_understood', label: 'Jeûne J-2', screen: 'J2' },
                                             { id: 'shower_understood', label: 'Douche J-2', screen: 'J2' },
-                                            { id: 'recent_health_check', label: 'Santé J-2', screen: 'J2' }
+                                            { id: 'recent_health_check', label: 'Santé J-2', screen: 'J2' },
+                                            { id: 'admission_confirmed', label: 'Confirmation J-1', screen: 'J1_PreOp' }
                                         ].map(item => (
                                             <div key={item.id} className="card" style={{ padding: 'var(--spacing-4)', background: 'rgba(255,255,255,0.4)', border: '1px solid var(--color-gray-100)' }}>
                                                 <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', marginBottom: '4px' }}>{item.label}</div>
