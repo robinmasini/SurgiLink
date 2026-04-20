@@ -119,10 +119,41 @@ export default function PatientSuccess({ patient: propPatient }) {
                     </div>
                 )}
 
-                {token && (
+                {token && !isComplete && (
                     <Link
                         to={`/patient-portal/${token}`}
+                        className="btn btn-secondary"
+                        style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            padding: '14px 28px',
+                            borderRadius: '16px',
+                            fontWeight: '700',
+                            fontSize: '15px',
+                            width: '100%',
+                            justifyContent: 'center',
+                            marginBottom: 'var(--spacing-3)',
+                            background: 'white',
+                            color: 'var(--color-primary-600)',
+                            border: '2px solid var(--color-primary-50)'
+                        }}
+                    >
+                        {t('Je continuerai plus tard')}
+                    </Link>
+                )}
+
+                {token && (
+                    <Link
+                        to={!isComplete ? `/patient-portal/${token}` : `/patient-portal/${token}`}
                         className="btn btn-primary"
+                        onClick={(e) => {
+                            if (!isComplete) {
+                                // For better UX, if they are not at 100%, the "Next Step" logic is in Portal
+                                // But we could ideally direct them straight to e-satis if it's the only one left
+                                // For now, portal will handle the smart redirection via its "Démarrer" button
+                            }
+                        }}
                         style={{
                             display: 'inline-flex',
                             alignItems: 'center',
@@ -137,8 +168,17 @@ export default function PatientSuccess({ patient: propPatient }) {
                             boxShadow: '0 10px 15px -3px rgba(var(--color-primary-rgb), 0.3)'
                         }}
                     >
-                        <ArrowLeft size={18} />
-                        {t('Retour au portail')}
+                        {!isComplete ? (
+                            <>
+                                {t('Continuer mon parcours')}
+                                <Sparkles size={18} />
+                            </>
+                        ) : (
+                            <>
+                                <ArrowLeft size={18} />
+                                {t('Retour au portail')}
+                            </>
+                        )}
                     </Link>
                 )}
 

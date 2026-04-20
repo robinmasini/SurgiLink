@@ -671,6 +671,9 @@ export default function PatientPortal({ patient: initialPatient }) {
                         if (diffDays <= 7 && !responses['anesthesia_consultation']) nextStep = 'j7';
                         else if (diffDays <= 2 && !responses['fasting_understood']) nextStep = 'j2';
                         else if (diffDays <= 1 && !responses['admission_confirmed']) nextStep = 'j1-preop';
+                        else if (diffDays <= -1 && !responses['pain_level']) nextStep = 'j1';
+                        else if (diffDays <= -4 && !responses['recommandation']) nextStep = 'j4';
+                        else if (diffDays <= -4 && !responses['global_experience']) nextStep = 'e-satis';
                         
                         navigate(`/patient-portal/${token}/${nextStep}`);
                     }}
@@ -789,6 +792,7 @@ export default function PatientPortal({ patient: initialPatient }) {
                                 { to: `j1-preop`, emoji: '🚿', label: 'Confirmation J-1', desc: 'Vérification finale', offset: 1 },
                                 { to: `j1`, emoji: '🌡️', label: 'Suivi J+1', desc: 'Bilan post-opératoire', offset: -1 },
                                 { to: `j4`, emoji: '⭐', label: 'Satisfaction J+4', desc: 'Votre avis nous intéresse', offset: -4 },
+                                { to: `e-satis`, emoji: '📊', label: 'Enquête Nationale', desc: 'e-Satis (National)', offset: -4 },
                             ].map((step, idx, arr) => {
                                 const isLocked = diffDays > step.offset;
                                 const isLast = idx === arr.length - 1;
