@@ -66,12 +66,16 @@ export async function calculateGlobalProgress(patientId) {
         // Create a map for quick lookup
         const responseMap = {};
         (responses || []).forEach(r => {
+            // Store with both original and lowercase screen name for robustness
             const key = `${r.screen}:${r.item_id}`;
+            const lowerKey = `${r.screen.toLowerCase()}:${r.item_id}`;
             responseMap[key] = r.response?.value;
+            responseMap[lowerKey] = r.response?.value;
 
             // Handle legacy screen/item IDs for backward compatibility and 100% reachability
-            if (r.screen === 'J1PreOp') {
+            if (r.screen.toLowerCase() === 'j1preop' || r.screen.toLowerCase() === 'j1_preop') {
                 responseMap[`J1_PreOp:${r.item_id}`] = r.response?.value;
+                responseMap[`j1_preop:${r.item_id}`] = r.response?.value;
             }
             if (r.item_id === 'hygiene_understood') {
                 responseMap[`${r.screen}:shower_understood`] = r.response?.value;
@@ -254,15 +258,17 @@ export async function getResponses(patientId, screen) {
     try {
         const { data, error } = await supabase
             .from('pathway_responses')
-            .select('*')
-            .eq('patient_id', patientId)
-            .eq('screen', screen);
+            .select('item_id, response, updated_at, screen')
+            .eq('patient_id', patientId);
 
         if (error) throw error;
 
-        // Convert to object map
+        // Filter manually to be case-insensitive on screen if needed, 
+        // or just return items that match the requested screen (case-insensitive)
+        const filteredData = data.filter(r => r.screen.toLowerCase() === screen.toLowerCase());
+        
         const responses = {};
-        (data || []).forEach(item => {
+        filteredData.forEach(item => {
             responses[item.item_id] = item.response?.value;
         });
 
