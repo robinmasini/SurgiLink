@@ -117,7 +117,7 @@ export default function Patients() {
     };
 
     return (
-        <div style={{ display: 'flex', minHeight: '100vh', backgroundImage: `url(${wppPhone})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
+        <div style={{ display: 'flex', minHeight: '100vh', background: 'white' }}>
             <Sidebar />
             <main style={{ flex: 1, padding: 'var(--spacing-8)', marginLeft: 'var(--sidebar-width)' }}>
                 <Header

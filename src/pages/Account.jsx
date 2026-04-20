@@ -162,17 +162,7 @@ export default function Account() {
     };
 
     return (
-        <div
-            className="dashboard-layout"
-            data-mobile={isMobile}
-            style={{
-                backgroundImage: `url(${wppPhone})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                backgroundAttachment: 'fixed',
-                minHeight: '100vh'
-            }}
-        >
+        <div className="dashboard-layout" data-mobile={isMobile}>
             <Sidebar />
             <main className="main-content" data-mobile={isMobile}>
                 <Header

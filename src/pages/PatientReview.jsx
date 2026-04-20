@@ -547,7 +547,7 @@ export default function PatientReview() {
 
     if (isLoading) {
         return (
-            <div style={{ display: 'flex', minHeight: '100vh', backgroundImage: `url(${wppPhone})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
+            <div style={{ display: 'flex' }}>
                 <Sidebar />
                 <main className="main-content" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
                     <div style={{ textAlign: 'center' }}>
@@ -561,7 +561,7 @@ export default function PatientReview() {
 
     if (!patient) {
         return (
-            <div style={{ display: 'flex', minHeight: '100vh', backgroundImage: `url(${wppPhone})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
+            <div style={{ display: 'flex' }}>
                 <Sidebar />
                 <main className="main-content" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
                     <div style={{ textAlign: 'center', color: 'var(--color-gray-500)' }}>
@@ -574,7 +574,7 @@ export default function PatientReview() {
     }
 
     return (
-        <div style={{ display: 'flex', minHeight: '100vh', backgroundImage: `url(${wppPhone})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
+        <div style={{ display: 'flex' }}>
             <Sidebar />
             <main className="main-content">
                 {/* Header Actions */}

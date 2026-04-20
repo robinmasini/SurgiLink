@@ -260,15 +260,8 @@ export default function Dashboard() {
 
     return (
         <div 
-            className="dashboard-layout" 
+        className="dashboard-layout"
             data-mobile={isMobile}
-            style={{
-                backgroundImage: `url(${wppPhone})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                backgroundAttachment: 'fixed',
-                minHeight: '100vh'
-            }}
         >
             <Sidebar />
             <main className="main-content" data-mobile={isMobile}>

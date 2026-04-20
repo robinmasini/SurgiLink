@@ -99,7 +99,7 @@ export default function Rentabilite() {
     };
 
     return (
-        <div style={{ display: 'flex', minHeight: '100vh', backgroundImage: `url(${wppPhone})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
+        <div style={{ display: 'flex' }}>
             <Sidebar />
             <main className="main-content">
                 <Header

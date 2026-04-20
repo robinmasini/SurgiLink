@@ -99,7 +99,7 @@ export default function Comments() {
     });
 
     return (
-        <div style={{ display: 'flex', minHeight: '100vh', backgroundImage: `url(${wppPhone})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
+        <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--color-gray-50)' }}>
             <Sidebar />
             <main style={{ flex: 1, padding: 'var(--spacing-8)', marginLeft: 'var(--sidebar-width)' }}>
                 <Header
