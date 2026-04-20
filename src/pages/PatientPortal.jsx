@@ -231,6 +231,7 @@ export default function PatientPortal({ patient: initialPatient }) {
                 const aggregated = {};
                 // Nested map for PDF report (grouped by screen)
                 const nested = {
+                    Bienvenue: {},
                     J7: {},
                     J2: {},
                     J1_PreOp: {},
@@ -240,15 +241,32 @@ export default function PatientPortal({ patient: initialPatient }) {
                 };
                 // Meta map for PDF timestamps
                 const meta = {};
+                
                 data.forEach(row => {
-                    aggregated[row.item_id] = row.response?.value;
-                    if (row.screen && nested[row.screen] !== undefined) {
-                        nested[row.screen][row.item_id] = row.response?.value;
-                        if (!meta[row.screen]) meta[row.screen] = {};
-                        meta[row.screen][row.item_id] = {
-                            updated_at: row.updated_at,
-                            user_id: row.user_id
-                        };
+                    const value = row.response?.value;
+                    const itemId = row.item_id;
+                    const screen = row.screen;
+                    
+                    aggregated[itemId] = value;
+                    
+                    if (screen) {
+                        const lowerScreen = screen.toLowerCase();
+                        let targetScreen = screen;
+                        
+                        // Handle legacy mapping for nested object
+                        if (lowerScreen === 'j1preop' || lowerScreen === 'j1_preop') targetScreen = 'J1_PreOp';
+                        else if (lowerScreen === 'bienvenue') targetScreen = 'Bienvenue';
+                        else if (lowerScreen === 'j4_satisfaction') targetScreen = 'J4_Satisfaction';
+                        else if (lowerScreen === 'esatis') targetScreen = 'ESATIS';
+                        
+                        if (nested[targetScreen] !== undefined) {
+                            nested[targetScreen][itemId] = value;
+                            if (!meta[targetScreen]) meta[targetScreen] = {};
+                            meta[targetScreen][itemId] = {
+                                updated_at: row.updated_at,
+                                user_id: row.user_id
+                            };
+                        }
                     }
                 });
                 setResponses(aggregated);

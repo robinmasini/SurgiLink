@@ -17,7 +17,7 @@ export const pathwayConfig = {
                         id: "welcome_ok",
                         type: "yes_no",
                         label: "Avez-vous bien reçu vos codes d'accès et compris le fonctionnement de l'application ?",
-                        required: true
+                        required: false
                     }
                 ]
             }
