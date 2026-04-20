@@ -81,6 +81,7 @@ export default function PatientReview() {
     const [isLoading, setIsLoading] = useState(true);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [clinicalResponses, setClinicalResponses] = useState({
+        Bienvenue: {},
         J7: {},
         J2: {},
         J1_PreOp: {},
@@ -140,7 +141,8 @@ export default function PatientReview() {
             else setRiskStatus('NORMAL');
 
             // Load clinical responses for all steps
-            const [respJ7, respJ2, respJ1Pre, respJ1, respJ4, respESatis] = await Promise.all([
+            const [respBienvenue, respJ7, respJ2, respJ1Pre, respJ1, respJ4, respESatis] = await Promise.all([
+                getResponses(id, 'Bienvenue'),
                 getResponses(id, 'J7'),
                 getResponses(id, 'J2'),
                 getResponses(id, 'J1_PreOp'),
@@ -150,6 +152,7 @@ export default function PatientReview() {
             ]);
 
             setClinicalResponses({
+                Bienvenue: respBienvenue || {},
                 J7: respJ7 || {},
                 J2: respJ2 || {},
                 J1_PreOp: respJ1Pre || {},
