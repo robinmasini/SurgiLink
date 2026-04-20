@@ -170,8 +170,18 @@ export default function PatientPortal({ patient: initialPatient }) {
     const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
     const reportRef = useRef(null);
-
-    // --- Countdown Timer Logic ---
+    
+    // Helper to check if a milestone is fully complete based on responses
+    const isMilestoneComplete = (milestoneId) => {
+        if (milestoneId === 'Bienvenue') return true; // Now optional
+        const items = getScreenItems(milestoneId);
+        const required = items.filter(i => i.required !== false && i.type !== 'text' && i.type !== 'verbatim');
+        if (required.length === 0) return true;
+        return required.every(i => {
+            const val = responses[i.id];
+            return val !== undefined && val !== null && val !== '';
+        });
+    };
     useEffect(() => {
         if (!patient?.date) return;
 
@@ -201,20 +211,9 @@ export default function PatientPortal({ patient: initialPatient }) {
                 targetDate.setDate(targetDate.getDate() - m.offset);
                 targetDate.setHours(8, 30, 0, 0);
 
-                // For Bienvenue, it's always "due" or "complete"
-                if (m.id === 'Bienvenue' && !responses['welcome_ok'] && !responses['welcome']) {
-                    isPastDueButIncomplete = true;
-                    currentLabel = m.label;
-                    break;
-                }
-
                 if (now >= targetDate) {
                     // Check if this milestone is complete
-                    const items = getScreenItems(m.id);
-                    const required = items.filter(i => i.required !== false && i.type !== 'text' && i.type !== 'verbatim');
-                    const isComplete = required.every(i => responses[i.id] !== undefined && responses[i.id] !== null && responses[i.id] !== '');
-                    
-                    if (!isComplete && m.id !== 'Bienvenue') { // Already handled Bienvenue above
+                    if (!isMilestoneComplete(m.id)) {
                         isPastDueButIncomplete = true;
                         currentLabel = m.label;
                         break;
@@ -779,12 +778,21 @@ export default function PatientPortal({ patient: initialPatient }) {
                         const diffDays = surgeryDate ? Math.ceil((surgeryDate - today) / (1000 * 60 * 60 * 24)) : 999;
                         
                         let nextStep = 'bienvenue';
-                        if (diffDays <= 7 && !responses['anesthesia_consultation']) nextStep = 'j7';
-                        else if (diffDays <= 2 && !responses['fasting_understood']) nextStep = 'j2';
-                        else if (diffDays <= 1 && !responses['admission_confirmed']) nextStep = 'j1-preop';
-                        else if (diffDays <= -1 && !responses['pain_level']) nextStep = 'j1';
-                        else if (diffDays <= -4 && !responses['recommandation']) nextStep = 'j4';
-                        else if (diffDays <= -4 && !responses['global_experience']) nextStep = 'e-satis';
+                        
+                        // Smart Routing: Find the first incomplete milestone that is due
+                        if (diffDays <= 7 && !isMilestoneComplete('J7')) nextStep = 'j7';
+                        else if (diffDays <= 2 && !isMilestoneComplete('J2')) nextStep = 'j2';
+                        else if (diffDays <= 1 && !isMilestoneComplete('J1_PreOp')) nextStep = 'j1-preop';
+                        else if (diffDays <= -1 && !isMilestoneComplete('J1')) nextStep = 'j1';
+                        else if (diffDays <= -4 && !isMilestoneComplete('J4_Satisfaction')) nextStep = 'j4';
+                        else if (diffDays <= -4 && !isMilestoneComplete('ESATIS')) nextStep = 'e-satis';
+                        else {
+                            // If everything is done or nothing is due, go to next upcoming or j7 by default
+                            if (diffDays > 7) nextStep = 'bienvenue';
+                            else if (diffDays > 2) nextStep = 'j7';
+                            else if (diffDays > 1) nextStep = 'j2';
+                            else nextStep = 'j7'; // Fallback
+                        }
                         
                         navigate(`/patient-portal/${token}/${nextStep}`);
                     }}
