@@ -958,13 +958,17 @@ export default function PatientReview() {
                                 {/* J-7 & J-2 Section */}
                                 <div>
                                     <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-gray-400)', textTransform: 'uppercase', marginBottom: 'var(--spacing-4)', letterSpacing: '0.05em' }}>
-                                        Bilan Pré-opératoire (J-7 & J-2)
+                                        Parcours de soins & Satisfaction
                                     </div>
                                     <div className="grid-3" style={{ gap: 'var(--spacing-4)' }}>
                                         {[
+                                            { id: 'welcome_ok', label: 'Activation Portale', screen: 'Bienvenue' },
                                             { id: 'anesthesia_consultation', label: 'Anesthésie', screen: 'J7' },
                                             { id: 'blood_work', label: 'Bilan sanguin', screen: 'J7' },
+                                            { id: 'recent_symptoms', label: 'Symptômes récents', screen: 'J7' },
                                             { id: 'companion_confirmed', label: 'Accompagnant', screen: 'J7' },
+                                            { id: 'night_companion', label: 'Accompagnant Nuit', screen: 'J7' },
+                                            { id: 'distance_urgency', label: 'Distance Urgence', screen: 'J7' },
                                             { id: 'fasting_understood', label: 'Jeûne J-2', screen: 'J2' },
                                             { id: 'shower_understood', label: 'Douche J-2', screen: 'J2' },
                                             { id: 'recent_health_check', label: 'Santé J-2', screen: 'J2' }
@@ -973,7 +977,8 @@ export default function PatientReview() {
                                                 <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', marginBottom: '4px' }}>{item.label}</div>
                                                 <div style={{ fontWeight: 'var(--font-weight-semibold)', color: clinicalResponses[item.screen][item.id] !== undefined ? 'var(--color-primary-600)' : 'var(--color-gray-300)', fontStyle: clinicalResponses[item.screen][item.id] === undefined ? 'italic' : 'normal' }}>
                                                     {clinicalResponses[item.screen][item.id] === true ? 'OUI' :
-                                                        clinicalResponses[item.screen][item.id] === false ? 'NON' : 'Non renseigné'}
+                                                        clinicalResponses[item.screen][item.id] === false ? 'NON' : 
+                                                        (clinicalResponses[item.screen][item.id] !== undefined && clinicalResponses[item.screen][item.id] !== null ? clinicalResponses[item.screen][item.id] : 'Non renseigné')}
                                                 </div>
                                                 {responsesMeta[item.screen]?.[item.id]?.updated_at && (
                                                     <div style={{ fontSize: '9px', color: 'var(--color-gray-400)', marginTop: '4px', fontStyle: 'italic' }}>
@@ -1239,7 +1244,9 @@ export default function PatientReview() {
                                         <div key={item.id} className="card" style={{ padding: 'var(--spacing-4)', background: 'rgba(255,255,255,0.4)', border: '1px solid var(--color-gray-100)' }}>
                                             <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', marginBottom: '4px' }}>{item.label}</div>
                                             <div style={{ fontWeight: 'var(--font-weight-semibold)', color: clinicalResponses.J1[item.id] !== undefined ? 'var(--color-primary-600)' : 'var(--color-gray-300)', fontStyle: clinicalResponses.J1[item.id] === undefined ? 'italic' : 'normal' }}>
-                                                {clinicalResponses.J1[item.id] === true ? 'OUI' : clinicalResponses.J1[item.id] === false ? 'NON' : 'Non renseigné'}
+                                                {clinicalResponses.J1[item.id] === true ? 'OUI' : 
+                                                 clinicalResponses.J1[item.id] === false ? 'NON' : 
+                                                 (clinicalResponses.J1[item.id] !== undefined && clinicalResponses.J1[item.id] !== null ? clinicalResponses.J1[item.id] : 'Non renseigné')}
                                             </div>
                                             {responsesMeta.J1?.[item.id]?.updated_at && (
                                                 <div style={{ fontSize: '9px', color: 'var(--color-gray-400)', marginTop: '4px', fontStyle: 'italic' }}>
@@ -1305,7 +1312,9 @@ export default function PatientReview() {
                                                     color: clinicalResponses.ESATIS[item.id] !== undefined ? 'var(--color-primary-600)' : 'var(--color-gray-300)',
                                                     fontStyle: clinicalResponses.ESATIS[item.id] === undefined ? 'italic' : 'normal'
                                                 }}>
-                                                    {clinicalResponses.ESATIS[item.id] === true ? 'OUI' : clinicalResponses.ESATIS[item.id] === false ? 'NON' : (clinicalResponses.ESATIS[item.id] || 'Non renseigné')}
+                                                    {clinicalResponses.ESATIS[item.id] === true ? 'OUI' : 
+                                                     clinicalResponses.ESATIS[item.id] === false ? 'NON' : 
+                                                     (clinicalResponses.ESATIS[item.id] !== undefined && clinicalResponses.ESATIS[item.id] !== null ? clinicalResponses.ESATIS[item.id] : 'Non renseigné')}
                                                 </div>
                                                 {responsesMeta.ESATIS?.[item.id]?.updated_at && (
                                                     <div style={{ fontSize: '9px', color: 'var(--color-gray-400)', marginTop: '4px', fontStyle: 'italic' }}>
