@@ -597,7 +597,7 @@ export default function PatientPortal({ patient: initialPatient }) {
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
                     <h1 style={{ fontSize: '24px', fontWeight: '500', color: 'white', margin: 0 }}>
-                        {t('Bienvenue,')} {patient?.name?.split(' ')[0] || 'Christophe'} !
+                        {t('Bienvenue')}, {patient?.name?.split(' ')[0] || 'Christophe'} !
                     </h1>
                     
                     {/* Liquid Glass Translation Menu */}
@@ -879,12 +879,12 @@ export default function PatientPortal({ patient: initialPatient }) {
                     </div>
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: 'rgba(255,255,255,0.9)' }}>
-                            <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <Calendar size={16} />
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <Calendar size={16} color="white" />
                             </div>
-                            <span style={{ fontSize: '14px', fontWeight: '500' }}>
-                                {patient.date ? new Date(patient.date).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) : t('Date à confirmer')}
+                            <span style={{ fontSize: '15px' }}>
+                                {patient.date ? new Date(patient.date).toLocaleDateString(i18n.language, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) : t('Date à confirmer')}
                             </span>
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: 'rgba(255,255,255,0.9)' }}>
