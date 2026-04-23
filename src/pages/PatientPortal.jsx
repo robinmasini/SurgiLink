@@ -635,12 +635,12 @@ export default function PatientPortal({ patient: initialPatient }) {
                     marginBottom: '32px',
                     background: '#f9fafb',
                     animation: isUpToDate ? 'glowPulse 3s infinite alternate' : 'none',
-                    boxShadow: '0 10px 30px rgba(0,0,0,0.05)'
+                    boxShadow: '0 10px 30px rgba(179, 150, 122, 0.1)'
                 }}>
                     <style>{`
                         @keyframes glowPulse {
-                            from { box-shadow: 0 20px 40px rgba(0,0,0,0.3), 0 0 0px rgba(255,255,255,0); }
-                            to { box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 25px rgba(255,255,255,0.2); }
+                            from { box-shadow: 0 10px 30px rgba(179, 150, 122, 0.1), 0 0 0px rgba(179, 150, 122, 0); }
+                            to { box-shadow: 0 15px 40px rgba(179, 150, 122, 0.25), 0 0 25px rgba(179, 150, 122, 0.15); }
                         }
                         @keyframes shineSweep {
                             0% { transform: translateX(-100%) skewX(-15deg); }
@@ -689,7 +689,7 @@ export default function PatientPortal({ patient: initialPatient }) {
                             <h2 style={{ 
                                 fontSize: '28px', 
                                 fontWeight: '500', 
-                                color: '#1f2937', 
+                                color: '#4b5563', 
                                 marginBottom: '8px',
                                 letterSpacing: '-0.02em',
                                 lineHeight: 1.1
@@ -698,7 +698,7 @@ export default function PatientPortal({ patient: initialPatient }) {
                             </h2>
                             <p style={{ 
                                 fontSize: '12px', 
-                                color: '#4b5563', 
+                                color: '#6b7280', 
                                 marginBottom: '24px',
                                 lineHeight: 1.5,
                                 maxWidth: '200px'
@@ -719,17 +719,17 @@ export default function PatientPortal({ patient: initialPatient }) {
                                 }}>
                                     <CheckCircle2 size={12} color="white" />
                                 </div>
-                                <span style={{ fontSize: '16px', fontWeight: '700', color: '#1f2937' }}>
+                                <span style={{ fontSize: '16px', fontWeight: '700', color: '#4b5563' }}>
                                     {isUpToDate ? t('Vous êtes à jour !') : t('Vous n’êtes pas à jour !')}
                                 </span>
                             </div>
                         </div>
 
                         <div>
-                            <p style={{ fontSize: '13px', fontWeight: '600', color: '#6b7280', marginBottom: '4px' }}>
+                            <p style={{ fontSize: '13px', fontWeight: '600', color: '#9ca3af', marginBottom: '4px' }}>
                                 {nextMilestoneLabel ? t('Prochaines questions dans :') : t('Parcours terminé !')}
                             </p>
-                            <div style={{ fontSize: timeLeft.includes('j') ? '32px' : '36px', fontWeight: '800', letterSpacing: '0.05em', color: '#111827' }}>
+                            <div style={{ fontSize: timeLeft.includes('j') ? '32px' : '36px', fontWeight: '800', letterSpacing: '0.05em', color: '#4b5563' }}>
                                 {nextMilestoneLabel && timeLeft !== '00:00:00' ? timeLeft : '00:00:00'}
                             </div>
                         </div>
@@ -751,16 +751,16 @@ export default function PatientPortal({ patient: initialPatient }) {
                             width: '100%',
                             padding: '18px',
                             borderRadius: '20px',
-                            background: isUpToDate ? 'rgba(255,255,255,0.1)' : 'var(--grad-premium-purple)',
-                            color: isUpToDate ? 'rgba(255,255,255,0.4)' : 'white',
-                            border: isUpToDate ? '1px solid rgba(255,255,255,0.1)' : 'none',
+                            background: isUpToDate ? '#f3f4f6' : 'var(--grad-premium-purple)',
+                            color: isUpToDate ? '#9ca3af' : 'white',
+                            border: isUpToDate ? '1px solid #e5e7eb' : 'none',
                             fontSize: '15px',
                             fontWeight: '800',
                             letterSpacing: '0.05em',
                             boxShadow: isUpToDate ? 'none' : '0 10px 20px rgba(124, 58, 237, 0.3)',
                             cursor: isUpToDate ? 'not-allowed' : 'pointer',
                             transition: 'all 0.2s',
-                            opacity: isUpToDate ? 0.7 : 1
+                            opacity: isUpToDate ? 0.8 : 1
                         }}
                     onClick={() => {
                         const today = new Date();
