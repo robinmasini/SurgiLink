@@ -491,13 +491,13 @@ export default function PatientPortal({ patient: initialPatient }) {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                background: 'var(--grad-premium-dark)'
+                background: '#ffffff'
             }}>
-                <div className="card" style={{ maxWidth: '500px', textAlign: 'center', background: 'rgba(255,255,255,0.05)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }}>
+                <div className="card" style={{ maxWidth: '500px', textAlign: 'center', background: '#f9fafb', border: '1px solid #e5e7eb', color: '#1f2937', padding: '32px', borderRadius: '24px' }}>
                     <AlertCircle size={64} style={{ margin: '0 auto var(--spacing-4)', color: '#ef4444' }} />
-                    <h2 style={{ marginBottom: 'var(--spacing-2)', color: 'white' }}>Accès non autorisé</h2>
-                    <p style={{ color: 'rgba(255,255,255,0.7)', marginBottom: 'var(--spacing-6)' }}>{error}</p>
-                    <p style={{ fontSize: 'var(--font-size-sm)', color: 'rgba(255,255,255,0.5)' }}>
+                    <h2 style={{ marginBottom: 'var(--spacing-2)', color: '#1f2937' }}>Accès non autorisé</h2>
+                    <p style={{ color: '#4b5563', marginBottom: 'var(--spacing-6)' }}>{error}</p>
+                    <p style={{ fontSize: 'var(--font-size-sm)', color: '#6b7280' }}>
                         Si vous pensez qu'il s'agit d'une erreur, veuillez contacter votre praticien.
                     </p>
                 </div>
@@ -507,11 +507,11 @@ export default function PatientPortal({ patient: initialPatient }) {
 
     if (!patient) {
         return (
-            <div className="patient-view" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', padding: 'var(--spacing-4)', background: 'var(--grad-premium-dark)' }}>
-                <div className="card" style={{ maxWidth: '400px', textAlign: 'center', background: 'rgba(255,255,255,0.05)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }}>
+            <div className="patient-view" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', padding: 'var(--spacing-4)', background: '#ffffff' }}>
+                <div className="card" style={{ maxWidth: '400px', textAlign: 'center', background: '#f9fafb', border: '1px solid #e5e7eb', color: '#1f2937', padding: '32px', borderRadius: '24px' }}>
                     <AlertCircle size={48} style={{ color: '#ef4444', marginBottom: 'var(--spacing-4)' }} />
-                    <h2 style={{ marginBottom: 'var(--spacing-2)', color: 'white' }}>Accès non autorisé</h2>
-                    <p style={{ color: 'rgba(255,255,255,0.7)' }}>
+                    <h2 style={{ marginBottom: 'var(--spacing-2)', color: '#1f2937' }}>Accès non autorisé</h2>
+                    <p style={{ color: '#4b5563' }}>
                         Impossible de charger les données de votre dossier. Veuillez contacter votre établissement de soins.
                     </p>
                 </div>
@@ -559,29 +559,14 @@ export default function PatientPortal({ patient: initialPatient }) {
     })();
 
     return (
-        <div style={{ position: 'relative', minHeight: '100vh', overflow: 'hidden' }}>
-            {/* Animated Background Layer */}
-            <div 
-                className="bg-animate-zoom"
-                style={{
-                    position: 'absolute',
-                    inset: 0,
-                    backgroundImage: `url(${wppPhone})`,
-
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                    backgroundAttachment: 'fixed',
-                    zIndex: -1
-                }}
-
-            />
+        <div style={{ position: 'relative', minHeight: '100vh', overflow: 'hidden', background: '#ffffff' }}>
 
             <div style={{
                 position: 'relative',
                 zIndex: 1,
                 minHeight: '100vh',
                 padding: '20px 16px',
-                color: 'white',
+                color: '#1f2937',
                 fontFamily: "var(--font-family)"
             }}>
 
@@ -595,28 +580,29 @@ export default function PatientPortal({ patient: initialPatient }) {
                 {/* Greeting & Language */}
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-                    <h1 style={{ fontSize: '24px', fontWeight: '500', color: 'white', margin: 0 }}>
+                    <h1 style={{ fontSize: '24px', fontWeight: '500', color: '#374151', margin: 0 }}>
                         {t('Bienvenue')}, {patient?.name?.split(' ')[0] || 'Christophe'} !
                     </h1>
                     
-                    {/* Liquid Glass Translation Menu */}
+                    {/* Translation Menu */}
                     <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
                         <select 
                             value={i18n.language}
                             onChange={(e) => i18n.changeLanguage(e.target.value)}
                             style={{
-                                ...GLASS_STYLE,
                                 padding: '8px 32px 8px 16px',
-                                border: '1px solid rgba(255,255,255,0.1)',
-                                color: 'white',
+                                border: '1px solid #e5e7eb',
+                                borderRadius: '16px',
+                                color: '#374151',
                                 appearance: 'none',
-                                background: 'rgba(255,255,255,0.05)',
+                                background: '#f9fafb',
                                 outline: 'none',
                                 cursor: 'pointer',
                                 fontSize: '18px',
                                 fontWeight: '600',
                                 textAlign: 'center',
-                                minWidth: '70px'
+                                minWidth: '70px',
+                                boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
                             }}
                         >
 <option value="fr">🇫🇷</option>
@@ -629,7 +615,7 @@ export default function PatientPortal({ patient: initialPatient }) {
                                 position: 'absolute',
                                 right: '12px',
                                 transform: 'rotate(90deg)', 
-                                opacity: 0.6,
+                                color: '#9ca3af',
                                 pointerEvents: 'none',
                                 zIndex: 3
                             }} 
@@ -647,8 +633,9 @@ export default function PatientPortal({ patient: initialPatient }) {
                     borderRadius: '40px',
                     overflow: 'hidden',
                     marginBottom: '32px',
-                    background: 'rgba(255,255,255,0.05)',
-                    animation: isUpToDate ? 'glowPulse 3s infinite alternate' : 'none'
+                    background: '#f9fafb',
+                    animation: isUpToDate ? 'glowPulse 3s infinite alternate' : 'none',
+                    boxShadow: '0 10px 30px rgba(0,0,0,0.05)'
                 }}>
                     <style>{`
                         @keyframes glowPulse {
@@ -694,7 +681,7 @@ export default function PatientPortal({ patient: initialPatient }) {
                         display: 'flex',
                         flexDirection: 'column',
                         justifyContent: 'space-between',
-                        background: 'linear-gradient(to right, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.2) 60%, transparent 100%)',
+                        background: 'transparent',
                         zIndex: 2
                     }}>
                         <div style={{ maxWidth: '75%', position: 'relative' }}>
@@ -702,7 +689,7 @@ export default function PatientPortal({ patient: initialPatient }) {
                             <h2 style={{ 
                                 fontSize: '28px', 
                                 fontWeight: '500', 
-                                color: 'white', 
+                                color: '#1f2937', 
                                 marginBottom: '8px',
                                 letterSpacing: '-0.02em',
                                 lineHeight: 1.1
@@ -711,7 +698,7 @@ export default function PatientPortal({ patient: initialPatient }) {
                             </h2>
                             <p style={{ 
                                 fontSize: '12px', 
-                                color: 'rgba(255,255,255,0.7)', 
+                                color: '#4b5563', 
                                 marginBottom: '24px',
                                 lineHeight: 1.5,
                                 maxWidth: '200px'
@@ -732,17 +719,17 @@ export default function PatientPortal({ patient: initialPatient }) {
                                 }}>
                                     <CheckCircle2 size={12} color="white" />
                                 </div>
-                                <span style={{ fontSize: '16px', fontWeight: '700', color: 'white' }}>
+                                <span style={{ fontSize: '16px', fontWeight: '700', color: '#1f2937' }}>
                                     {isUpToDate ? t('Vous êtes à jour !') : t('Vous n’êtes pas à jour !')}
                                 </span>
                             </div>
                         </div>
 
                         <div>
-                            <p style={{ fontSize: '13px', fontWeight: '400', color: 'rgba(255,255,255,0.7)', marginBottom: '4px' }}>
-                                {nextMilestoneLabel ? t('Questionnaire {{label}} dans :', { label: nextMilestoneLabel }) : t('Parcours terminé !')}
+                            <p style={{ fontSize: '13px', fontWeight: '600', color: '#6b7280', marginBottom: '4px' }}>
+                                {nextMilestoneLabel ? t('Prochaines questions dans :') : t('Parcours terminé !')}
                             </p>
-                            <div style={{ fontSize: timeLeft.includes('j') ? '32px' : '36px', fontWeight: '800', letterSpacing: '0.05em', color: 'white' }}>
+                            <div style={{ fontSize: timeLeft.includes('j') ? '32px' : '36px', fontWeight: '800', letterSpacing: '0.05em', color: '#111827' }}>
                                 {nextMilestoneLabel && timeLeft !== '00:00:00' ? timeLeft : '00:00:00'}
                             </div>
                         </div>
@@ -750,9 +737,9 @@ export default function PatientPortal({ patient: initialPatient }) {
 
                     {/* Progress Dots Bottom Right */}
                     <div style={{ position: 'absolute', right: '40px', bottom: '32px', display: 'flex', gap: '8px', zIndex: 3 }}>
-                        <div style={{ width: '28px', height: '4px', borderRadius: '2px', background: 'rgba(255,255,255,0.4)' }}></div>
-                        <div style={{ width: '28px', height: '4px', borderRadius: '2px', background: 'rgba(255,255,255,0.4)' }}></div>
-                        <div style={{ width: '28px', height: '4px', borderRadius: '2px', background: 'rgba(255,255,255,0.4)' }}></div>
+                        <div style={{ width: '28px', height: '4px', borderRadius: '2px', background: 'rgba(0,0,0,0.15)' }}></div>
+                        <div style={{ width: '28px', height: '4px', borderRadius: '2px', background: 'rgba(0,0,0,0.15)' }}></div>
+                        <div style={{ width: '28px', height: '4px', borderRadius: '2px', background: 'rgba(0,0,0,0.15)' }}></div>
                     </div>
                 </div>
 
@@ -806,20 +793,28 @@ export default function PatientPortal({ patient: initialPatient }) {
                     </button>
 
                     <button style={{
-                        ...GLASS_STYLE,
                         width: '100%',
                         padding: '18px',
                         borderRadius: '20px',
-                        color: 'rgba(255,255,255,0.9)',
+                        background: '#e5e7eb',
+                        border: 'none',
+                        color: '#4b5563',
                         fontSize: '15px',
                         fontWeight: '700',
                         letterSpacing: '0.05em',
                         cursor: 'pointer',
-                        transition: 'background 0.2s'
+                        transition: 'all 0.2s',
+                        boxShadow: '0 4px 6px rgba(0,0,0,0.05)'
                     }}
                     onClick={() => navigate(`/patient-portal/${token}/j7`)}
-                    onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.15)'}
-                    onMouseOut={(e) => e.currentTarget.style.background = 'var(--glass-bg)'}
+                    onMouseOver={(e) => {
+                        e.currentTarget.style.background = '#d1d5db';
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                    }}
+                    onMouseOut={(e) => {
+                        e.currentTarget.style.background = '#e5e7eb';
+                        e.currentTarget.style.transform = 'translateY(0)';
+                    }}
                     >
                         {t('MODIFIER MES RÉPONSES PRÉCÉDENTES')}
                     </button>
@@ -827,12 +822,14 @@ export default function PatientPortal({ patient: initialPatient }) {
 
                 {/* Intervention Reminder Card */}
                 <div style={{
-                    ...GLASS_STYLE,
                     padding: '24px',
                     marginBottom: '24px',
-                    background: 'rgba(255,255,255,0.06)'
+                    borderRadius: '24px',
+                    background: '#f3f4f6',
+                    border: '1px solid #e5e7eb',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.02)'
                 }}>
-                    <h3 style={{ fontSize: '18px', fontWeight: '500', color: 'white', marginBottom: '20px' }}>
+                    <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#1f2937', marginBottom: '20px' }}>
                         {t('Rappel de votre intervention')}
                     </h3>
 
@@ -841,7 +838,7 @@ export default function PatientPortal({ patient: initialPatient }) {
                             <div style={{ width: '40px', height: '24px', borderRadius: '4px', overflow: 'hidden' }}>
                                 <img src={clinicImg} alt="Clinic" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                             </div>
-                            <span style={{ fontSize: '14px', fontWeight: '700' }}>{patient.clinic_name || t('Clinique de Vitrolles')}</span>
+                            <span style={{ fontSize: '14px', fontWeight: '700', color: '#374151' }}>{patient.clinic_name || t('Clinique de Vitrolles')}</span>
                         </div>
                         <a 
                             href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(patient.clinic_address || t("Vitrolles"))}`}
@@ -849,14 +846,16 @@ export default function PatientPortal({ patient: initialPatient }) {
                             style={{
                                 padding: '8px 16px',
                                 borderRadius: '14px',
-                                background: 'rgba(255,255,255,0.15)',
-                                color: 'white',
+                                background: '#ffffff',
+                                color: '#4b5563',
+                                border: '1px solid #d1d5db',
                                 fontSize: '12px',
                                 fontWeight: '700',
                                 textDecoration: 'none',
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: '4px'
+                                gap: '4px',
+                                boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
                             }}
                         >
                             {t("M'y rendre")} <ChevronRight size={12} />
@@ -865,18 +864,18 @@ export default function PatientPortal({ patient: initialPatient }) {
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                            <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <Calendar size={16} color="white" />
+                            <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#ffffff', border: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <Calendar size={16} color="#6b7280" />
                             </div>
-                            <span style={{ fontSize: '15px' }}>
+                            <span style={{ fontSize: '15px', color: '#374151', fontWeight: '500' }}>
                                 {patient.date ? new Date(patient.date).toLocaleDateString(i18n.language, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) : t('Date à confirmer')}
                             </span>
                         </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: 'rgba(255,255,255,0.9)' }}>
-                            <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <Clock size={16} />
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: '#374151' }}>
+                            <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#ffffff', border: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <Clock size={16} color="#6b7280" />
                             </div>
-                                <span style={{ fontSize: '14px', fontWeight: '500' }}>
+                                <span style={{ fontSize: '14px', fontWeight: '600' }}>
                                     {patient.surgery_time ? patient.surgery_time : t('Non-communiquée')}
                                 </span>
                         </div>
@@ -885,16 +884,18 @@ export default function PatientPortal({ patient: initialPatient }) {
 
                 {/* Parcours de Soins (Care Pathway) - Premium Glass Design */}
                 <div style={{
-                    ...GLASS_STYLE,
                     marginBottom: '24px',
                     overflow: 'hidden',
-                    background: 'rgba(255,255,255,0.03)'
+                    borderRadius: '24px',
+                    background: '#f9fafb',
+                    border: '1px solid #e5e7eb',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.02)'
                 }}>
-                    <div style={{ padding: '16px 20px', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <h3 style={{ fontSize: '14px', fontWeight: '700', color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>
+                    <div style={{ padding: '16px 20px', borderBottom: '1px solid #e5e7eb', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <h3 style={{ fontSize: '14px', fontWeight: '700', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>
                             Votre Parcours de Soins
                         </h3>
-                        <div style={{ background: 'rgba(124, 58, 237, 0.2)', color: '#A78BFA', padding: '4px 12px', borderRadius: '20px', fontSize: '12px', fontWeight: '700' }}>
+                        <div style={{ background: '#ede9fe', color: '#7c3aed', padding: '4px 12px', borderRadius: '20px', fontSize: '12px', fontWeight: '700' }}>
                             {calculateDaysUntilSurgery(patient.date)}
                         </div>
                     </div>
@@ -925,22 +926,23 @@ export default function PatientPortal({ patient: initialPatient }) {
                                         display: 'flex', 
                                         alignItems: 'center', 
                                         gap: '14px', 
-                                        borderBottom: isLast ? 'none' : '1px solid rgba(255,255,255,0.05)', 
-                                        opacity: isLocked ? 0.3 : 1,
-                                        transition: 'background 0.2s'
+                                        borderBottom: isLast ? 'none' : '1px solid #e5e7eb', 
+                                        opacity: isLocked ? 0.5 : 1,
+                                        transition: 'background 0.2s',
+                                        background: isLocked ? 'transparent' : '#ffffff'
                                     }}>
                                         <div style={{ 
                                             fontSize: '20px', width: '36px', height: '36px', 
                                             display: 'flex', alignItems: 'center', justifyContent: 'center', 
-                                            borderRadius: '10px', background: 'rgba(255,255,255,0.1)', flexShrink: 0 
+                                            borderRadius: '10px', background: '#f3f4f6', flexShrink: 0 
                                         }}>
                                             {step.emoji}
                                         </div>
                                         <div style={{ flex: 1 }}>
-                                            <div style={{ fontWeight: '700', fontSize: '14px', color: 'white' }}>{step.label}</div>
-                                            <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', marginTop: '2px' }}>{step.desc}</div>
+                                            <div style={{ fontWeight: '700', fontSize: '14px', color: '#1f2937' }}>{step.label}</div>
+                                            <div style={{ fontSize: '11px', color: '#6b7280', marginTop: '2px' }}>{step.desc}</div>
                                         </div>
-                                        {isLocked ? <Lock size={14} style={{ color: 'rgba(255,255,255,0.4)' }} /> : <ChevronRight size={16} style={{ color: 'rgba(255,255,255,0.6)' }} />}
+                                        {isLocked ? <Lock size={14} style={{ color: '#9ca3af' }} /> : <ChevronRight size={16} style={{ color: '#9ca3af' }} />}
                                     </div>
                                 );
 
@@ -958,28 +960,30 @@ export default function PatientPortal({ patient: initialPatient }) {
                 {/* Footer Call & Ordonnance Buttons */}
                 <div style={{ display: 'flex', gap: '12px', marginBottom: '12px' }}>
                     <a href={`tel:${patient.clinic_phone || '0491159019'}`} style={{
-                        ...GLASS_STYLE,
                         flex: 1,
                         padding: '16px',
                         textAlign: 'center',
                         fontSize: '14px',
                         fontWeight: '600',
-                        color: 'white',
+                        color: '#4b5563',
                         textDecoration: 'none',
-                        background: 'rgba(255,255,255,0.08)'
+                        background: '#f3f4f6',
+                        borderRadius: '16px',
+                        border: '1px solid #e5e7eb'
                     }}>
                         Appeler clinique <ChevronRight size={14} style={{ verticalAlign: 'middle', transform: 'rotate(-45deg)' }} />
                     </a>
                     <a href={`tel:${patient.practitioner_phone || '0491159019'}`} style={{
-                        ...GLASS_STYLE,
                         flex: 1,
                         padding: '16px',
                         textAlign: 'center',
                         fontSize: '14px',
                         fontWeight: '600',
-                        color: 'white',
+                        color: '#4b5563',
                         textDecoration: 'none',
-                        background: 'rgba(255,255,255,0.08)'
+                        background: '#f3f4f6',
+                        borderRadius: '16px',
+                        border: '1px solid #e5e7eb'
                     }}>
                         Appeler cabinet <ChevronRight size={14} style={{ verticalAlign: 'middle', transform: 'rotate(-45deg)' }} />
                     </a>
@@ -988,14 +992,15 @@ export default function PatientPortal({ patient: initialPatient }) {
                 <div 
                     onClick={documents.length > 0 ? handleDownloadPrescription : undefined}
                     style={{
-                        ...GLASS_STYLE,
                         width: '100%',
                         padding: '16px',
                         textAlign: 'center',
                         fontSize: '14px',
                         fontWeight: '600',
-                        color: 'white',
-                        background: 'rgba(255,255,255,0.08)',
+                        color: '#4b5563',
+                        background: '#f3f4f6',
+                        border: '1px solid #e5e7eb',
+                        borderRadius: '16px',
                         cursor: documents.length > 0 ? 'pointer' : 'default',
                         opacity: documents.length > 0 ? 1 : 0.5,
                         marginBottom: '40px',
