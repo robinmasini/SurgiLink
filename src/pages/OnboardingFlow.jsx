@@ -133,9 +133,9 @@ export default function OnboardingFlow() {
                     inset: 0,
                     backgroundImage: `url(${isMobile ? wppPhone : wppDesktop})`,
                     backgroundSize: 'cover',
-                    backgroundPosition: 'center',
+                    backgroundPosition: isMobile ? 'center' : 'left center',
                     backgroundAttachment: 'fixed',
-                    zIndex: -1
+                    zIndex: 0
                 }}
             />
 

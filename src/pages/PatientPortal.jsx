@@ -559,7 +559,7 @@ export default function PatientPortal({ patient: initialPatient }) {
     })();
 
     return (
-        <div style={{ position: 'relative', minHeight: '100vh', overflow: 'hidden', background: '#ffffff' }}>
+        <div style={{ position: 'relative', minHeight: '100vh', overflow: 'hidden', backgroundColor: '#ffffff' }}>
             {/* Animated Background Layer */}
             <div 
                 className="bg-animate-zoom"
@@ -568,9 +568,9 @@ export default function PatientPortal({ patient: initialPatient }) {
                     inset: 0,
                     backgroundImage: `url(${isMobile ? wppPhone : wppDesktop})`,
                     backgroundSize: 'cover',
-                    backgroundPosition: 'center',
+                    backgroundPosition: isMobile ? 'center' : 'left center',
                     backgroundAttachment: 'fixed',
-                    zIndex: -1
+                    zIndex: 0
                 }}
             />
 
