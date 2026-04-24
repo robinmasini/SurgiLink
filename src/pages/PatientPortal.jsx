@@ -35,7 +35,7 @@ import { useTranslation } from 'react-i18next';
 // Premium Assets
 // Premium Assets
 import wppPhone from '../assets/wpp-phone-v2.png';
-import wppDesktop from '../assets/welcome-card-v2.png';
+import wppDesktop from '../assets/dashboard_welcome_bg_clean.png';
 
 import logoSlMa from '../assets/logo-sl-ma.png';
 import suiviCard from '../assets/suivi-card.png';
