@@ -10,7 +10,7 @@ import phoneExempleImg from '../assets/phone-exemple.png';
 import smsImg from '../assets/sms.png';
 import cardMedicalImg from '../assets/card-medical.png';
 import wppPhone from '../assets/wpp-phone-v2.png';
-import wppDesktop from '../assets/wpp-desktop-v2.png';
+import wppDesktop from '../assets/welcome-card-v2.png';
 import checkpointImg from '../assets/checkpoint.png';
 
 export default function OnboardingFlow() {
