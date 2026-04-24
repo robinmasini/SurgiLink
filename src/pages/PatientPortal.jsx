@@ -560,6 +560,19 @@ export default function PatientPortal({ patient: initialPatient }) {
 
     return (
         <div style={{ position: 'relative', minHeight: '100vh', overflow: 'hidden', background: '#ffffff' }}>
+            {/* Animated Background Layer */}
+            <div 
+                className="bg-animate-zoom"
+                style={{
+                    position: 'absolute',
+                    inset: 0,
+                    backgroundImage: `url(${isMobile ? wppPhone : wppDesktop})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    backgroundAttachment: 'fixed',
+                    zIndex: -1
+                }}
+            />
 
             <div style={{
                 position: 'relative',
