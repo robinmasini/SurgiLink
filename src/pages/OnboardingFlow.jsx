@@ -10,6 +10,7 @@ import phoneExempleImg from '../assets/phone-exemple.png';
 import smsImg from '../assets/sms.png';
 import cardMedicalImg from '../assets/card-medical.png';
 import wppPhone from '../assets/wpp-phone.png';
+import wppDesktop from '../assets/wpp-desktop.png';
 import checkpointImg from '../assets/checkpoint.png';
 
 export default function OnboardingFlow() {
@@ -19,6 +20,13 @@ export default function OnboardingFlow() {
     const [loading, setLoading] = useState(true);
     const [patient, setPatient] = useState(null);
     const [error, setError] = useState(null);
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth < 768);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     useEffect(() => {
         const checkStatus = async () => {
@@ -89,7 +97,7 @@ export default function OnboardingFlow() {
 
     if (loading) {
         return (
-            <div className="onboarding-page" style={{ background: `url(${wppPhone}) center/cover fixed` }}>
+            <div className="onboarding-page" style={{ background: `url(${isMobile ? wppPhone : wppDesktop}) center/cover fixed` }}>
                 <div className="onboarding-overlay" />
                 <div className="loading-container">Chargement...</div>
             </div>
@@ -98,7 +106,7 @@ export default function OnboardingFlow() {
 
     if (error) {
         return (
-            <div className="onboarding-page" style={{ background: `url(${wppPhone}) center/cover fixed` }}>
+            <div className="onboarding-page" style={{ background: `url(${isMobile ? wppPhone : wppDesktop}) center/cover fixed` }}>
                 <div className="onboarding-overlay" />
                 <div className="login-card" style={{ textAlign: 'center' }}>
                     <h2>Accès non autorisé</h2>
@@ -123,25 +131,15 @@ export default function OnboardingFlow() {
                 style={{
                     position: 'absolute',
                     inset: 0,
-                    backgroundImage: `url(${wppPhone})`,
+                    backgroundImage: `url(${isMobile ? wppPhone : wppDesktop})`,
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                     backgroundAttachment: 'fixed',
-                    zIndex: -1,
-                    scale: 1.2
+                    zIndex: -1
                 }}
             />
 
-            <div className="onboarding-overlay" style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                background: 'rgba(10, 15, 30, 0.4)',
-                backdropFilter: 'blur(5px)',
-                zIndex: 0
-            }} />
+
 
             <div className="onboarding-content" style={{ 
                 position: 'relative', 
@@ -178,13 +176,15 @@ export default function OnboardingFlow() {
                                 fontSize: '2.2rem', 
                                 fontWeight: '700', 
                                 marginBottom: '12px', 
-                                lineHeight: '1.1' 
+                                lineHeight: '1.1',
+                                color: '#1f2937'
                             }}>
                                 Bienvenue <span style={{ fontWeight: '400' }}>dans SurgiLink !</span>
                             </h1>
                             <p className="onboarding-subtitle" style={{ 
                                 fontSize: '1.2rem', 
-                                fontWeight: '500'
+                                fontWeight: '500',
+                                color: '#6b7280'
                             }}>
                                 Votre assistant de suivi médical
                             </p>
@@ -256,24 +256,24 @@ export default function OnboardingFlow() {
                             <img src={cardMedicalImg} alt="SurgiLink Medical" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                         </div>
 
-                        <div className="onboarding-info-container" style={{ color: 'white', flex: 1 }}>
-                            <h2 style={{ fontSize: '1.4rem', fontWeight: '700', marginBottom: 'var(--spacing-4)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <div className="onboarding-info-container" style={{ color: '#4b5563', flex: 1 }}>
+                            <h2 style={{ fontSize: '1.4rem', fontWeight: '700', marginBottom: 'var(--spacing-4)', display: 'flex', alignItems: 'center', gap: '8px', color: '#1f2937' }}>
                                 Nous restons à vos côtés ! 😉
                             </h2>
 
                             <div className="info-badge" style={{ 
-                                background: 'rgba(255, 255, 255, 0.1)', 
+                                background: '#f9fafb', 
                                 padding: '10px 20px', 
                                 borderRadius: '15px', 
                                 display: 'flex', 
                                 alignItems: 'center', 
                                 gap: '12px',
                                 marginBottom: 'var(--spacing-4)',
-                                border: '1px solid rgba(255, 255, 255, 0.2)',
-                                backdropFilter: 'blur(10px)'
+                                border: '1px solid #e5e7eb',
+                                boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
                             }}>
-                                <img src={smsImg} alt="SMS" style={{ height: '32px', filter: 'drop-shadow(0 2px 5px rgba(0,0,0,0.2))' }} />
-                                <span style={{ fontWeight: '600' }}>Suivi SMS : Questionnaires</span>
+                                <img src={smsImg} alt="SMS" style={{ height: '32px' }} />
+                                <span style={{ fontWeight: '600', color: '#374151' }}>Suivi SMS : Questionnaires</span>
                             </div>
 
                             <p style={{ fontSize: '0.95rem', lineHeight: '1.6', opacity: 0.9, marginBottom: 'var(--spacing-6)' }}>
@@ -295,7 +295,7 @@ export default function OnboardingFlow() {
                                     left: '0', 
                                     right: '0', 
                                     height: '2px', 
-                                    background: 'rgba(255, 255, 255, 0.2)',
+                                    background: '#e5e7eb',
                                     zIndex: 0
                                 }} />
                                 <div className="timeline-items" style={{ display: 'flex', justifyContent: 'space-between', position: 'relative', zIndex: 1, padding: '0 5px' }}>
@@ -305,10 +305,10 @@ export default function OnboardingFlow() {
                                                 width: '24px', 
                                                 height: '24px', 
                                                 borderRadius: '50%', 
-                                                background: 'rgba(255, 255, 255, 0.2)',
-                                                border: '1px solid rgba(255, 255, 255, 0.4)'
+                                                background: '#ffffff',
+                                                border: '2px solid #e5e7eb'
                                             }} />
-                                            <span style={{ fontSize: '0.75rem', fontWeight: '600', opacity: 0.8 }}>{day}</span>
+                                            <span style={{ fontSize: '0.75rem', fontWeight: '600', color: '#6b7280' }}>{day}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -348,16 +348,8 @@ export default function OnboardingFlow() {
             </div>
 
             <style dangerouslySetInnerHTML={{ __html: `
-                .onboarding-title, .onboarding-info-container h2 { 
-                    color: #FFFFFF !important; 
+                .onboarding-title, .onboarding-info-container h2, .onboarding-subtitle, .onboarding-info-container p, .onboarding-info-container span { 
                     font-family: var(--font-family) !important; 
-                    text-shadow: 0 2px 10px rgba(0,0,0,0.2) !important;
-                }
-                .onboarding-subtitle, .onboarding-info-container p, .onboarding-info-container span { 
-                    color: #FFFFFF !important; 
-                    opacity: 1 !important; 
-                    font-family: var(--font-family) !important;
-                    text-shadow: 0 1px 5px rgba(0,0,0,0.2) !important;
                 }
                 .fadeIn {
                     animation: fadeIn 0.7s ease-out forwards;
