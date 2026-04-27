@@ -4,7 +4,7 @@ import { ArrowRight, MessageSquare, CheckCircle2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { validateToken } from '../services/tokenService';
 import { saveResponse, markScreenCompleted } from '../services/pathwayService';
-import logoSlMa from '../assets/logo-sl-ma.png';
+import LogoText from '../components/LogoText';
 import medecinImg from '../assets/medecin.png';
 import phoneExempleImg from '../assets/phone-exemple.png';
 import smsImg from '../assets/sms.png';
@@ -164,7 +164,7 @@ export default function OnboardingFlow() {
                         height: '100%'
                     }}>
                         <div className="onboarding-logo-container" style={{ marginTop: '20px', marginBottom: '20px', width: '100%', display: 'flex', justifyContent: 'center' }}>
-                            <img src={logoSlMa} alt="SurgiLink" style={{ height: '70px', objectFit: 'contain' }} />
+                            <LogoText width="160px" />
                         </div>
                         <div className="onboarding-text-container" style={{ 
                             marginBottom: 'auto', 

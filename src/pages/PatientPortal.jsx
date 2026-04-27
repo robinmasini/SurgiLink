@@ -36,7 +36,7 @@ import { useTranslation } from 'react-i18next';
 import wppPhone from '../assets/wpp-phone-v2.png';
 import wppDesktop from '../assets/wpp-desktop-v2.png';
 
-import logoSlMa from '../assets/logo-sl-ma.png';
+import LogoText from '../components/LogoText';
 import suiviCard from '../assets/suivi-card.png';
 import suiviCardBw from '../assets/suivi-card-bw.png';
 import clinicImg from '../assets/clinic.jpg';
@@ -587,7 +587,7 @@ export default function PatientPortal({ patient: initialPatient }) {
             <div style={{ maxWidth: '500px', margin: '0 auto' }}>
                 {/* Top Bar Logo - Left Aligned with Content */}
                 <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', marginBottom: '32px', marginTop: '10px' }}>
-                    <img src={logoSlMa} alt="Logo" style={{ height: '80px', objectFit: 'contain' }} />
+                    <LogoText width="160px" />
                 </div>
 
                 {/* Greeting & Language */}
