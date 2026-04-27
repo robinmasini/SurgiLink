@@ -655,25 +655,8 @@ export default function PatientPortal({ patient: initialPatient }) {
                             from { box-shadow: 0 10px 30px rgba(179, 150, 122, 0.1), 0 0 0px rgba(179, 150, 122, 0); }
                             to { box-shadow: 0 15px 40px rgba(179, 150, 122, 0.25), 0 0 25px rgba(179, 150, 122, 0.15); }
                         }
-                        @keyframes shineSweep {
-                            0% { transform: translateX(-100%) skewX(-15deg); }
-                            100% { transform: translateX(200%) skewX(-15deg); }
-                        }
                     `}</style>
                     
-                    {/* Liquid Shine Overlay */}
-                    {isUpToDate && (
-                        <div style={{
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            width: '40%',
-                            height: '100%',
-                            background: 'linear-gradient(to right, transparent, rgba(255,255,255,0.15), transparent)',
-                            zIndex: 4,
-                            animation: 'shineSweep 4s infinite linear'
-                        }} />
-                    )}
 
                     {/* Background Status Card */}
                     <img 
@@ -748,12 +731,6 @@ export default function PatientPortal({ patient: initialPatient }) {
                         </div>
                     </div>
 
-                    {/* Progress Dots Bottom Right */}
-                    <div style={{ position: 'absolute', right: '40px', bottom: '32px', display: 'flex', gap: '8px', zIndex: 3 }}>
-                        <div style={{ width: '28px', height: '4px', borderRadius: '2px', background: 'rgba(0,0,0,0.15)' }}></div>
-                        <div style={{ width: '28px', height: '4px', borderRadius: '2px', background: 'rgba(0,0,0,0.15)' }}></div>
-                        <div style={{ width: '28px', height: '4px', borderRadius: '2px', background: 'rgba(0,0,0,0.15)' }}></div>
-                    </div>
                 </div>
 
                 {/* Main Action Buttons */}
