@@ -1,10 +1,12 @@
 import { supabase } from '../lib/supabase.js';
 import { smsTemplates, interpolateTemplate } from '../config/smsTemplates.js';
 
-// Base URL for API calls. Uses VITE_APP_URL if defined, otherwise empty string (relative path)
-const API_BASE_URL = (typeof process !== 'undefined' && process.env.VITE_APP_URL) || 
+// Base URL for API calls. In the browser, we use a relative path to hit the same origin.
+// In Node (e.g. testing), we use VITE_APP_URL or localhost.
+const API_BASE_URL = typeof window !== 'undefined' ? '' :
+    ((typeof process !== 'undefined' && process.env.VITE_APP_URL) || 
     (typeof import.meta.env !== 'undefined' && import.meta.env.VITE_APP_URL) || 
-    '';
+    'http://localhost:5173');
 
 export async function sendSMS(templateKey, to, variables, metadata = {}, supabaseClient = null) {
     const db = supabaseClient || supabase;
