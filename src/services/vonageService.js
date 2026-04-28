@@ -1,13 +1,10 @@
 import { supabase } from '../lib/supabase.js';
 import { smsTemplates, interpolateTemplate } from '../config/smsTemplates.js';
 
-const VONAGE_API_KEY = (typeof process !== 'undefined' && process.env.VITE_VONAGE_API_KEY) ||
-    (typeof import.meta.env !== 'undefined' && import.meta.env.VITE_VONAGE_API_KEY);
-const VONAGE_API_SECRET = (typeof process !== 'undefined' && process.env.VITE_VONAGE_API_SECRET) ||
-    (typeof import.meta.env !== 'undefined' && import.meta.env.VITE_VONAGE_API_SECRET);
-const VONAGE_FROM = (typeof process !== 'undefined' && process.env.VITE_VONAGE_FROM) ||
-    (typeof import.meta.env !== 'undefined' && import.meta.env.VITE_VONAGE_FROM) ||
-    'SurgiLink';
+// Base URL for API calls. Uses VITE_APP_URL if defined, otherwise empty string (relative path)
+const API_BASE_URL = (typeof process !== 'undefined' && process.env.VITE_APP_URL) || 
+    (typeof import.meta.env !== 'undefined' && import.meta.env.VITE_APP_URL) || 
+    '';
 
 export async function sendSMS(templateKey, to, variables, metadata = {}, supabaseClient = null) {
     const db = supabaseClient || supabase;
@@ -42,26 +39,17 @@ export async function sendSMS(templateKey, to, variables, metadata = {}, supabas
             metadata: { variables, ...metadata }
         };
 
-        if (!VONAGE_API_KEY || !VONAGE_API_SECRET) {
-            console.error('[sendSMS] CRITICAL: Vonage API credentials missing!');
-            throw new Error('Vonage API credentials not configured.');
-        }
-
         console.log(`[sendSMS] Sending to ${formattedPhone}: ${message}`);
 
-        const response = await fetch('https://rest.nexmo.com/sms/json', {
+        // Call our Vercel Serverless Function proxy to bypass CORS
+        const response = await fetch(`${API_BASE_URL}/api/send-sms`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                api_key: VONAGE_API_KEY,
-                api_secret: VONAGE_API_SECRET,
                 to: formattedPhone,
-                from: VONAGE_FROM,
-                text: message,
-                type: 'unicode' // Use unicode to safely support special characters, accents and emojis
+                text: message
             })
         });
 
