@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { Send, Clock, CheckCircle, AlertCircle, XCircle, Loader } from 'lucide-react';
 import { getPatientPathwayStatus, getIncompleteItemsWithReminders } from '../services/pathwayService';
 import { sendManualReminder } from '../services/reminderService';
-import { getSMSHistory, canSendReminder } from '../services/d7networksService';
+import { getSMSHistory, canSendReminder } from '../services/vonageService';
 import { getPatientTokens, generatePatientToken } from '../services/tokenService';
 import AlertBanner from './pathway/AlertBanner';
 import { ExternalLink, Copy, ShieldCheck } from 'lucide-react';

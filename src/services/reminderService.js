@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabase.js';
-import { sendSMS, canSendReminder } from './d7networksService.js';
+import { sendSMS, canSendReminder } from './vonageService.js';
 import { getIncompleteItemsWithReminders } from './pathwayService.js';
 
 /**
