@@ -109,7 +109,8 @@ export function interpolateTemplate(templateKey, variables) {
         message = message.replace(new RegExp(placeholder, 'g'), variables[key] || '');
     });
 
-    return message;
+    // Append a space and newline to prevent Vonage's trial suffix from gluing to URLs
+    return message + " \n";
 }
 
 /**

@@ -14,7 +14,8 @@ export async function sendSMS(templateKey, to, variables, metadata = {}, supabas
         let message;
         let isManual = !!metadata.manualMessage;
         if (isManual) {
-            message = metadata.manualMessage;
+            // Append space and newline to prevent Vonage's trial suffix from gluing to URLs in manual messages
+            message = metadata.manualMessage + " \n";
         } else {
             if (!smsTemplates[templateKey]) throw new Error(`Invalid SMS template: ${templateKey}`);
             message = interpolateTemplate(templateKey, variables);
