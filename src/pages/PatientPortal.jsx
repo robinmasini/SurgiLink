@@ -18,6 +18,7 @@ import {
     ShieldCheck,
     Clock,
     ChevronRight,
+    ChevronDown,
     Phone,
     Lock
 } from 'lucide-react';
@@ -169,6 +170,7 @@ export default function PatientPortal({ patient: initialPatient }) {
     const [nextMilestoneLabel, setNextMilestoneLabel] = useState('');
     const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+    const [isPathwayOpen, setIsPathwayOpen] = useState(false);
     const reportRef = useRef(null);
     
     // Helper to check if a milestone is fully complete based on responses
@@ -879,18 +881,44 @@ export default function PatientPortal({ patient: initialPatient }) {
                     borderRadius: '24px',
                     background: '#f9fafb',
                     border: '1px solid #e5e7eb',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.02)'
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.02)',
+                    transition: 'all 0.3s ease'
                 }}>
-                    <div style={{ padding: '16px 20px', borderBottom: '1px solid #e5e7eb', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <h3 style={{ fontSize: '14px', fontWeight: '700', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>
-                            Votre Parcours de Soins
-                        </h3>
+                    <div 
+                        onClick={() => setIsPathwayOpen(!isPathwayOpen)}
+                        style={{ 
+                            padding: '16px 20px', 
+                            borderBottom: isPathwayOpen ? '1px solid #e5e7eb' : 'none', 
+                            display: 'flex', 
+                            justifyContent: 'space-between', 
+                            alignItems: 'center',
+                            cursor: 'pointer',
+                            userSelect: 'none'
+                        }}
+                    >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <h3 style={{ fontSize: '14px', fontWeight: '700', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>
+                                Votre Parcours de Soins
+                            </h3>
+                            <ChevronDown 
+                                size={18} 
+                                style={{ 
+                                    color: '#6b7280', 
+                                    transform: isPathwayOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                                    transition: 'transform 0.3s ease'
+                                }} 
+                            />
+                        </div>
                         <div style={{ background: '#ede9fe', color: '#7c3aed', padding: '4px 12px', borderRadius: '20px', fontSize: '12px', fontWeight: '700' }}>
                             {calculateDaysUntilSurgery(patient.date)}
                         </div>
                     </div>
 
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <div style={{ 
+                        display: isPathwayOpen ? 'flex' : 'none', 
+                        flexDirection: 'column',
+                        animation: 'fadeIn 0.3s ease'
+                    }}>
                         {(() => {
                             const today = new Date();
                             today.setHours(0, 0, 0, 0);
