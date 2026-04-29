@@ -258,7 +258,7 @@ export default function OnboardingFlow() {
 
                         <div className="onboarding-info-container" style={{ color: '#4b5563', flex: 1 }}>
                             <h2 style={{ fontSize: '1.4rem', fontWeight: '700', marginBottom: 'var(--spacing-4)', display: 'flex', alignItems: 'center', gap: '8px', color: '#1f2937' }}>
-                                Nous restons à vos côtés ! 😉
+                                Tout au long de votre opération, nous restons à vos côtés !
                             </h2>
 
                             <div className="info-badge" style={{ 
@@ -277,15 +277,19 @@ export default function OnboardingFlow() {
                             </div>
 
                             <p style={{ fontSize: '0.95rem', lineHeight: '1.6', opacity: 0.9, marginBottom: 'var(--spacing-6)' }}>
-                                Vous recevrez des SMS avant votre opération, à chaque étape clé <strong>(J-7, J-2, etc.)</strong>, afin de vous accompagner sereinement jusqu’au jour J de votre opération.
+                                SurgiLink est un assistant de suivi chirurgical qui va vous accompagner avant et après votre intervention.
                             </p>
 
                             <p style={{ fontSize: '0.95rem', lineHeight: '1.6', opacity: 0.9, marginBottom: 'var(--spacing-6)' }}>
-                                Il est essentiel de bien les consulter et de <strong>répondre au questionnaire via le lien qui vous sera envoyé dans le message</strong> : Cela ne vous prendra que quelques petites secondes :)
+                                💬 Vous recevrez des SMS à chaque étape clé <strong>(J-7, J-2, etc.)</strong>, afin de vous accompagner sereinement.
+                            </p>
+
+                            <p style={{ fontSize: '0.95rem', lineHeight: '1.6', opacity: 0.9, marginBottom: 'var(--spacing-6)' }}>
+                                ⚠️ Il est essentiel de bien les consulter et de <strong>répondre au questionnaire via le lien qui vous sera envoyé dans le message</strong> : Cela ne vous prendra que quelques petites secondes !
                             </p>
 
                             <p style={{ fontSize: '0.95rem', lineHeight: '1.6', opacity: 0.9, marginBottom: 'var(--spacing-8)' }}>
-                                Avec SurgiLink, vous êtes accompagné(e) à chaque étape <strong>avec clarté et sérénité et bienveillance !</strong>
+                                Avec nous, vous êtes accompagné(e) <strong>avec clarté et sérénité tout au long de votre parcours de soins !</strong>
                             </p>
 
                             <div className="timeline-container" style={{ position: 'relative', marginBottom: 'var(--spacing-10)' }}>
