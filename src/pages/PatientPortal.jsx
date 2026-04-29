@@ -577,7 +577,7 @@ export default function PatientPortal({ patient: initialPatient }) {
             <div style={{ maxWidth: '500px', margin: '0 auto' }}>
                 {/* Top Bar Logo - Left Aligned with Content */}
                 <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', marginBottom: '32px', marginTop: '10px' }}>
-                    <img src={logoSlMa} alt="Logo" style={{ height: '80px', objectFit: 'contain' }} />
+                    <img src={logoSlMa} alt="Logo" style={{ height: '120px', objectFit: 'contain' }} />
                 </div>
 
                 {/* Greeting & Language */}
