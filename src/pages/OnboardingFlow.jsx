@@ -97,7 +97,7 @@ export default function OnboardingFlow() {
 
     if (loading) {
         return (
-            <div className="onboarding-page" style={{ background: `url(${isMobile ? wppPhone : wppDesktop}) center/cover fixed` }}>
+            <div className="onboarding-page" style={{ background: 'white' }}>
                 <div className="onboarding-overlay" />
                 <div className="loading-container">Chargement...</div>
             </div>
@@ -106,7 +106,7 @@ export default function OnboardingFlow() {
 
     if (error) {
         return (
-            <div className="onboarding-page" style={{ background: `url(${isMobile ? wppPhone : wppDesktop}) center/cover fixed` }}>
+            <div className="onboarding-page" style={{ background: 'white' }}>
                 <div className="onboarding-overlay" />
                 <div className="login-card" style={{ textAlign: 'center' }}>
                     <h2>Accès non autorisé</h2>
@@ -125,19 +125,7 @@ export default function OnboardingFlow() {
             overflowX: 'hidden',
             fontFamily: 'var(--font-family)'
         }}>
-            {/* Background identical to PatientPortal */}
-            <div 
-                className="bg-animate-zoom"
-                style={{
-                    position: 'absolute',
-                    inset: 0,
-                    backgroundImage: `url(${wppDesktop})`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: isMobile ? 'center' : 'left center',
-                    backgroundAttachment: 'fixed',
-                    zIndex: 0
-                }}
-            />
+
 
 
 
