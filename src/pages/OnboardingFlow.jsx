@@ -152,7 +152,7 @@ export default function OnboardingFlow() {
                         height: '100%'
                     }}>
                         <div className="onboarding-logo-container" style={{ marginTop: '20px', marginBottom: '20px', width: '100%', display: 'flex', justifyContent: 'center' }}>
-                            <img src={logoSlMa} alt="SurgiLink" style={{ height: '110px', objectFit: 'contain' }} />
+                            <img src={logoSlMa} alt="SurgiLink" style={{ height: isMobile ? '70px' : '110px', objectFit: 'contain', transition: 'height 0.3s ease' }} />
                         </div>
                         <div className="onboarding-text-container" style={{ 
                             marginBottom: 'auto', 
