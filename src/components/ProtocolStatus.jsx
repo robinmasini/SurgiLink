@@ -5,7 +5,7 @@ const statusConfigs = {
     'alerte': { color: '#FF9100', bg: '#FFF3E0' },
     'critique': { color: '#EF4444', bg: '#FEF2F2' },
     'ready': { color: '#10B981', bg: '#ECFDF5' },
-    'incomplete': { color: '#7C3AED', bg: '#F5F3FF' }
+    'incomplete': { color: '#6D8C7C', bg: '#F5F3FF' }
 };
 
 const getProgressColor = (progress) => {

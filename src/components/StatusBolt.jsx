@@ -39,7 +39,7 @@ const statusConfigs = {
         description: 'Protocole complété'
     },
     'incomplete': {
-        color: '#7C3AED', // Violet (Primary 600)
+        color: '#6D8C7C', // Vert premium
         bg: '#EFEBE9',
         label: 'En cours',
         description: 'Protocole en cours'
