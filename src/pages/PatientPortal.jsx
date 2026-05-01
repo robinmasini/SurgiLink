@@ -977,7 +977,7 @@ export default function PatientPortal({ patient: initialPatient }) {
                         borderRadius: '16px',
                         border: '1px solid #e5e7eb'
                     }}>
-                        Appeler clinique <ChevronRight size={14} style={{ verticalAlign: 'middle', transform: 'rotate(-45deg)' }} />
+                        Appeler clinique <Phone size={14} style={{ verticalAlign: 'middle', marginLeft: '4px' }} />
                     </a>
                     <a href={`tel:${patient.practitioner_phone || '0491159019'}`} style={{
                         flex: 1,
@@ -991,7 +991,7 @@ export default function PatientPortal({ patient: initialPatient }) {
                         borderRadius: '16px',
                         border: '1px solid #e5e7eb'
                     }}>
-                        Appeler cabinet <ChevronRight size={14} style={{ verticalAlign: 'middle', transform: 'rotate(-45deg)' }} />
+                        Appeler cabinet <Phone size={14} style={{ verticalAlign: 'middle', marginLeft: '4px' }} />
                     </a>
                 </div>
 
