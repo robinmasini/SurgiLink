@@ -98,7 +98,7 @@ export default function Sidebar() {
                 {isMobile ? (
                     <LogoIcon width="35px" className="sidebar-logo-img" />
                 ) : (
-                    <LogoPremium width="120px" className="sidebar-logo-img" />
+                    <LogoPremium width="160px" className="sidebar-logo-img" />
                 )}
             </div>
 
