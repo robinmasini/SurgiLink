@@ -23,15 +23,15 @@
   --color-gray-800: #1F2937;
   --color-gray-900: #111827;
 
-  /* Primary - Medical Premium Palette (Blue-Violet Rebrand) */
-  --color-primary-50: #F5F3FF;
-  --color-primary-100: #EDE9FE;
-  --color-primary-200: #DDD6FE;
-  --color-primary-300: #C4B5FD;
-  --color-primary-400: #A78BFA;
-  --color-primary-500: #8B5CF6;
-  --color-primary-600: #7C3AED;
-  --color-primary-700: #6D28D9;
+  /* Primary - Medical Premium Palette (Green Rebrand) */
+  --color-primary-50: #F3F7F5;
+  --color-primary-100: #E2EBE6;
+  --color-primary-200: #C7D8D0;
+  --color-primary-300: #A2BDB1;
+  --color-primary-400: #7A9F8E;
+  --color-primary-500: #6D8C7C;
+  --color-primary-600: #577364;
+  --color-primary-700: #465E51;
 
   /* Success - Soft Green */
   --color-success-50: #ECFDF5;
@@ -62,24 +62,24 @@
   --color-info-400: #22D3EE;
   --color-info-500: #06B6D4;
 
-  /* New Accent Palette - Blue-Violet (AllianceLAB style) */
-  --color-accent-50: #F5F3FF;
-  --color-accent-100: #EDE9FE;
-  --color-accent-200: #DDD6FE;
-  --color-accent-300: #C4B5FD;
-  --color-accent-400: #A78BFA;
-  --color-accent-500: #8B5CF6;
-  --color-accent-600: #7C3AED;
-  --color-accent-700: #6D28D9;
-  --color-accent-800: #5B21B6;
-  --color-accent-900: #4C1D95;
+  /* New Accent Palette - Green */
+  --color-accent-50: #F3F7F5;
+  --color-accent-100: #E2EBE6;
+  --color-accent-200: #C7D8D0;
+  --color-accent-300: #A2BDB1;
+  --color-accent-400: #7A9F8E;
+  --color-accent-500: #6D8C7C;
+  --color-accent-600: #577364;
+  --color-accent-700: #465E51;
+  --color-accent-800: #394C41;
+  --color-accent-900: #2F3F36;
 
-  --gradient-accent: linear-gradient(135deg, #7C3AED 0%, #6366F1 100%);
-  --gradient-sidebar: linear-gradient(180deg, #7C3AED 0%, #4C1D95 100%);
+  --gradient-accent: linear-gradient(135deg, #6D8C7C 0%, #A2BDB1 100%);
+  --gradient-sidebar: linear-gradient(180deg, #6D8C7C 0%, #465E51 100%);
 
-  /* Brown/Bronze accent */
-  --color-purple-500: #8B5CF6;
-  --color-purple-600: #7C3AED;
+  /* Replaced purple with green */
+  --color-purple-500: #6D8C7C;
+  --color-purple-600: #577364;
 
   /* Typography */
   --font-family: 'Aeonik', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -136,8 +136,8 @@
   --transition-slow: 300ms ease;
 
   /* RGB Values for shadows */
-  --color-primary-rgb: 124, 58, 237;
-  --color-accent-rgb: 139, 92, 246;
+  --color-primary-rgb: 109, 140, 124;
+  --color-accent-rgb: 109, 140, 124;
   --color-success-rgb: 16, 185, 129;
   --color-danger-rgb: 239, 68, 68;
 
@@ -157,7 +157,7 @@
   --glass-blur-sm: blur(8px);
 
   /* Premium Gradients */
-  --grad-premium-purple: linear-gradient(135deg, #7C3AED 0%, #3B82F6 100%);
+  --grad-premium-purple: linear-gradient(135deg, #6D8C7C 0%, #A2BDB1 100%);
   --grad-premium-dark: linear-gradient(180deg, #1E1E2E 0%, #0F0F1A 100%);
   --grad-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
 }
