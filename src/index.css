@@ -1588,7 +1588,7 @@ textarea.input {
   background: var(--color-primary-700);
   /* Darker shade for hover */
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+  box-shadow: 0 4px 12px rgba(var(--color-primary-rgb), 0.3);
 }
 
 /* Compact toggle for recovery section */

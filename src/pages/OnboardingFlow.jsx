@@ -220,7 +220,7 @@ export default function OnboardingFlow() {
                                     background: 'var(--color-purple-600)',
                                     border: 'none',
                                     color: 'white',
-                                    boxShadow: '0 15px 40px rgba(124, 58, 237, 0.5)',
+                                    boxShadow: '0 15px 40px rgba(109, 140, 124, 0.4)',
                                     zIndex: 20,
                                     cursor: 'pointer',
                                     letterSpacing: '0.02em'
@@ -325,7 +325,7 @@ export default function OnboardingFlow() {
                                         alignItems: 'center',
                                         justifyContent: 'center',
                                         gap: '12px',
-                                        boxShadow: '0 10px 30px rgba(139, 92, 246, 0.6)',
+                                        boxShadow: '0 10px 30px rgba(109, 140, 124, 0.4)',
                                         cursor: 'pointer',
                                         padding: '0 25px'
                                     }}

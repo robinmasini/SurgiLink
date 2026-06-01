@@ -272,7 +272,7 @@ export default function Dashboard() {
                     actions={
                         <>
                             <button className="btn btn-secondary hide-mobile" onClick={() => setIsAlarmsModalOpen(true)} style={{ borderRadius: '12px', padding: '10px 20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                <Zap size={18} style={{ color: '#8b5cf6' }} fill="#8b5cf6" />
+                                <Zap size={18} style={{ color: '#6D8C7C' }} fill="#6D8C7C" />
                                 <span>{t('Alarme vigilance')}</span>
                             </button>
                             <button

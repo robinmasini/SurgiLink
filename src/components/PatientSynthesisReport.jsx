@@ -57,11 +57,11 @@ export default function PatientSynthesisReport({
 
     const h2Style = {
         fontSize: '13px',
-        borderBottom: '2px solid #7C3AED',
+        borderBottom: '2px solid #6D8C7C',
         paddingBottom: '5px',
         marginTop: '16px',
         marginBottom: '10px',
-        color: '#7C3AED',
+        color: '#6D8C7C',
         fontWeight: '700'
     };
 
@@ -116,8 +116,8 @@ export default function PatientSynthesisReport({
             <path
                 opacity="0.956863"
                 d="M406.946 1.41211L412.116 2.74513V238.69H524.567L525.86 245.356L317.761 561.282L316.469 324.004H201.433L200.141 320.005L406.946 1.41211ZM381.096 102.722L257.012 292.011L401.776 294.677L344.905 326.67L347.49 462.639L471.573 273.349L324.224 270.683L381.096 241.357V102.722Z"
-                fill="#7C3AED"
-                stroke="#7C3AED"
+                fill="#6D8C7C"
+                stroke="#6D8C7C"
                 strokeWidth="2"
             />
             <path
@@ -170,7 +170,7 @@ export default function PatientSynthesisReport({
             </div>
             <div>
                 <div style={{ fontSize: '9px', color: '#888', textTransform: 'uppercase', fontWeight: '700', marginBottom: '3px' }}>Intervention</div>
-                <div style={{ fontSize: '13px', fontWeight: '700', color: '#7C3AED' }}>{patient.operation}</div>
+                <div style={{ fontSize: '13px', fontWeight: '700', color: '#6D8C7C' }}>{patient.operation}</div>
                 <div style={{ color: '#444' }}>Date : {patient.date ? formatDateFR(patient.date) : 'Non définie'}</div>
                 <div style={{ fontWeight: '600', marginTop: '4px' }}>
                     Statut : <span style={{ color: patient.status === 'critique' ? '#D32F2F' : patient.status === 'ready' ? '#2E7D32' : '#E65100' }}>

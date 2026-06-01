@@ -54,7 +54,7 @@ export default function CompactAppointmentCard({
                     display: 'flex',
                     alignItems: 'center',
                     gap: '12px',
-                    boxShadow: '0 2px 8px rgba(124, 58, 237, 0.08)'
+                    boxShadow: '0 2px 8px rgba(109, 140, 124, 0.08)'
                 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <Calendar size={18} style={{ color: 'var(--color-primary-500)' }} />
@@ -76,7 +76,7 @@ export default function CompactAppointmentCard({
                     display: 'flex',
                     alignItems: 'center',
                     gap: '8px',
-                    boxShadow: '0 4px 12px rgba(124, 58, 237, 0.2)'
+                    boxShadow: '0 4px 12px rgba(109, 140, 124, 0.2)'
                 }}>
                     <Zap size={18} fill="currentColor" />
                     <span style={{ fontWeight: '800', fontSize: '18px' }}>{jValue}</span>
@@ -126,7 +126,7 @@ export default function CompactAppointmentCard({
                             display: 'flex',
                             alignItems: 'center',
                             gap: '12px',
-                            boxShadow: '0 2px 8px rgba(124, 58, 237, 0.08)',
+                            boxShadow: '0 2px 8px rgba(109, 140, 124, 0.08)',
                             cursor: 'pointer',
                             fontSize: '14px',
                             fontWeight: '700',
@@ -206,7 +206,7 @@ export default function CompactAppointmentCard({
                     fontSize: '14px',
                     textDecoration: 'none',
                     transition: 'all 0.2s ease',
-                    boxShadow: '0 2px 8px rgba(124, 58, 237, 0.05)'
+                    boxShadow: '0 2px 8px rgba(109, 140, 124, 0.05)'
                 }}
                 onMouseOver={(e) => {
                     e.currentTarget.style.background = 'var(--color-primary-100)';

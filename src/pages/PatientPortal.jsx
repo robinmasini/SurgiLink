@@ -123,7 +123,7 @@ function ConsignesSection({ patientId }) {
                             alignItems: 'center',
                             justifyContent: 'center',
                             gap: '12px',
-                            boxShadow: '0 4px 12px rgba(124, 58, 237, 0.12)',
+                            boxShadow: '0 4px 12px rgba(109, 140, 124, 0.12)',
                             transition: 'all 0.2s'
                         }}
                         onMouseOver={(e) => {
@@ -737,7 +737,7 @@ export default function PatientPortal({ patient: initialPatient }) {
                             fontSize: '15px',
                             fontWeight: '800',
                             letterSpacing: '0.05em',
-                            boxShadow: isUpToDate ? 'none' : '0 10px 20px rgba(124, 58, 237, 0.3)',
+                            boxShadow: isUpToDate ? 'none' : '0 10px 20px rgba(109, 140, 124, 0.3)',
                             cursor: isUpToDate ? 'not-allowed' : 'pointer',
                             transition: 'all 0.2s',
                             opacity: isUpToDate ? 0.8 : 1
@@ -897,7 +897,7 @@ export default function PatientPortal({ patient: initialPatient }) {
                                 }} 
                             />
                         </div>
-                        <div style={{ background: '#ede9fe', color: '#7c3aed', padding: '4px 12px', borderRadius: '20px', fontSize: '12px', fontWeight: '700' }}>
+                        <div style={{ background: 'var(--color-primary-50)', color: 'var(--color-primary-600)', padding: '4px 12px', borderRadius: '20px', fontSize: '12px', fontWeight: '700' }}>
                             {calculateDaysUntilSurgery(patient.date)}
                         </div>
                     </div>

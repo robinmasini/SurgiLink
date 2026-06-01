@@ -692,7 +692,7 @@ export default function PatientReview() {
                                             alignItems: 'center',
                                             gap: '12px',
                                             border: '1px solid var(--color-primary-100)',
-                                            boxShadow: '0 2px 8px rgba(124, 58, 237, 0.08)'
+                                            boxShadow: '0 2px 8px rgba(109, 140, 124, 0.08)'
                                         }}>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                                 <Calendar size={18} style={{ color: 'var(--color-primary-500)' }} />
@@ -1151,7 +1151,7 @@ export default function PatientReview() {
                                                 background: 'white',
                                                 borderRadius: '16px',
                                                 border: '1px solid var(--color-primary-100)',
-                                                boxShadow: '0 2px 8px rgba(124, 58, 237, 0.05)',
+                                                boxShadow: '0 2px 8px rgba(109, 140, 124, 0.05)',
                                                 position: 'relative'
                                             }}>
                                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
@@ -1179,7 +1179,7 @@ export default function PatientReview() {
                                                 background: 'white',
                                                 borderRadius: '16px',
                                                 border: '1px solid var(--color-primary-100)',
-                                                boxShadow: '0 2px 8px rgba(124, 58, 237, 0.05)',
+                                                boxShadow: '0 2px 8px rgba(109, 140, 124, 0.05)',
                                                 position: 'relative'
                                             }}>
                                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
@@ -1406,7 +1406,7 @@ export default function PatientReview() {
                                         {pendingReminders.map(rem => (
                                             <div key={rem.id} style={{ padding: 'var(--spacing-3)', background: 'white', borderRadius: 'var(--border-radius-md)', border: '1px solid var(--color-gray-100)', boxShadow: 'var(--shadow-sm)' }}>
                                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                                                    <span style={{ fontWeight: 'var(--font-weight-bold)', fontSize: 'var(--font-size-sm)', color: 'var(--color-purple-700)' }}>{rem.screen}</span>
+                                                    <span style={{ fontWeight: 'var(--font-weight-bold)', fontSize: 'var(--font-size-sm)', color: 'var(--color-primary-700)' }}>{rem.screen}</span>
                                                     <span style={{ fontSize: '10px', color: 'var(--color-gray-400)' }}>
                                                         {new Date(rem.scheduled_for).toLocaleDateString('fr-FR')} {new Date(rem.scheduled_for).getHours()}:{String(new Date(rem.scheduled_for).getMinutes()).padStart(2, '0')}
                                                     </span>
