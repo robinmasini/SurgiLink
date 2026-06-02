@@ -44,17 +44,44 @@ export async function sendSMS(templateKey, to, variables, metadata = {}, supabas
 
         console.log(`[sendSMS] Sending to ${formattedPhone}: ${message}`);
 
-        // Call our Vercel Serverless Function proxy to bypass CORS
-        const response = await fetch(`${API_BASE_URL}/api/send-sms`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                to: formattedPhone,
-                text: message
-            })
-        });
+        // Call Vonage API directly if running in Node, otherwise use Vercel proxy to bypass CORS
+        let response;
+        if (typeof window === 'undefined') {
+            const VONAGE_API_KEY = process.env.VITE_VONAGE_API_KEY || (typeof process !== 'undefined' && process.env.VITE_VONAGE_API_KEY);
+            const VONAGE_API_SECRET = process.env.VITE_VONAGE_API_SECRET || (typeof process !== 'undefined' && process.env.VITE_VONAGE_API_SECRET);
+            const VONAGE_FROM = (process.env.VITE_VONAGE_FROM || (typeof process !== 'undefined' && process.env.VITE_VONAGE_FROM)) || 'SurgiLink';
+
+            if (!VONAGE_API_KEY || !VONAGE_API_SECRET) {
+                throw new Error('Vonage credentials missing in server environment');
+            }
+
+            response = await fetch('https://rest.nexmo.com/sms/json', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    api_key: VONAGE_API_KEY,
+                    api_secret: VONAGE_API_SECRET,
+                    to: formattedPhone,
+                    from: VONAGE_FROM,
+                    text: message,
+                    type: 'unicode'
+                })
+            });
+        } else {
+            response = await fetch(`${API_BASE_URL}/api/send-sms`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    to: formattedPhone,
+                    text: message
+                })
+            });
+        }
 
         const d7Data = await response.json();
         
