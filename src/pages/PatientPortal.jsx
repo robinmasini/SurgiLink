@@ -654,9 +654,9 @@ export default function PatientPortal({ patient: initialPatient }) {
                         alt="" 
                         style={{ 
                             position: 'absolute',
-                            right: '16px',
-                            top: '8%',
-                            height: '84%',
+                            right: '0px',
+                            bottom: '0px',
+                            height: '100%',
                             width: 'auto',
                             objectFit: 'contain',
                             zIndex: 1
