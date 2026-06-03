@@ -10,7 +10,6 @@ import {
     ExternalLink,
     ChevronRight,
     AlertCircle,
-    Sparkles,
     Copy,
     Check
 } from 'lucide-react';
@@ -233,7 +232,7 @@ export default function PatientDetailPanel({ patient, responses = [], onClose })
                             window.open(url, '_blank');
                         }}
                     >
-                        <Sparkles size={18} /> Ouvrir Portail Patient
+                        <ExternalLink size={18} /> Ouvrir Portail Patient
                     </button>
 
 

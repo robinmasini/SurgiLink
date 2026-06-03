@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     LogOut,
-    Sparkles,
     Heart,
     Thermometer,
     Activity,
@@ -216,11 +215,6 @@ export default function PatientPostOp() {
                     {t('Continuer')}
                 </button>
             </div>
-
-            {/* FAB */}
-            <button className="fab">
-                <Sparkles size={24} />
-            </button>
         </div>
     );
 }

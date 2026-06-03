@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { LogOut, Sparkles, AlertCircle } from 'lucide-react';
+import { LogOut, AlertCircle } from 'lucide-react';
 import { pathwayConfig } from '../config/pathway.config';
 import { saveResponse, getResponses, markScreenCompleted } from '../services/pathwayService';
 import QuestionRenderer from '../components/pathway/QuestionRenderer';
@@ -209,11 +209,6 @@ export default function PatientJ1({ patient: propPatient, token: propToken }) {
                     patientId={resolvedPatientId}
                 />
             </div>
-
-            {/* FAB */}
-            <button className="fab">
-                <Sparkles size={24} />
-            </button>
         </div>
     );
 }

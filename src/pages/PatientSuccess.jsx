@@ -1,5 +1,5 @@
 import { Link, useParams } from 'react-router-dom';
-import { CheckCircle, ArrowLeft, Trophy, Sparkles, Loader2 } from 'lucide-react';
+import { CheckCircle, ArrowLeft, Trophy, Loader2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { usePatientId } from '../hooks/usePatientId';
 import { supabase } from '../lib/supabase';

@@ -3,7 +3,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 import {
     LogOut,
     Clock,
-    Sparkles,
     Check,
     Info,
     Scissors,
@@ -273,11 +272,6 @@ export default function PatientChecklist() {
                     Valider et Envoyer mon dossier
                 </button>
             </div>
-
-            {/* FAB */}
-            <button className="fab">
-                <Sparkles size={24} />
-            </button>
         </div>
     );
 }

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Sparkles, AlertCircle } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 import { pathwayConfig } from '../config/pathway.config';
 import { saveResponse, getResponses, markScreenCompleted } from '../services/pathwayService';
 import QuestionnaireFlow from '../components/pathway/QuestionnaireFlow';
@@ -132,10 +132,6 @@ export default function Bienvenue({ patient: propPatient, token: propToken }) {
                     patientId={resolvedPatientId}
                 />
             </div>
-
-            <button className="fab">
-                <Sparkles size={24} />
-            </button>
         </div>
     );
 }
