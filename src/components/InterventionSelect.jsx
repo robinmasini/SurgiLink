@@ -135,7 +135,7 @@ export default function InterventionSelect({ value, onChange }) {
                     border: '1px solid var(--color-gray-200)',
                     borderRadius: 'var(--radius-lg)',
                     padding: '8px 12px',
-                    minHeight: '42px',
+                    minHeight: '46px',
                     cursor: 'pointer',
                     transition: 'all var(--transition-fast)',
                     boxShadow: isOpen ? '0 0 0 3px var(--color-primary-50)' : 'none',

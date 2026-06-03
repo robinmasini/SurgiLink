@@ -168,6 +168,7 @@ export default function AddPatientModal({ isOpen, onClose, onSuccess }) {
                             <input
                                 type="date"
                                 className="input"
+                                style={{ height: '46px', paddingTop: 0, paddingBottom: 0, boxSizing: 'border-box' }}
                                 value={formData.birthDate}
                                 onChange={(e) => setFormData({ ...formData, birthDate: e.target.value })}
                             />
@@ -212,7 +213,7 @@ export default function AddPatientModal({ isOpen, onClose, onSuccess }) {
                                 <input
                                     type="date"
                                     className="input"
-                                    style={{ paddingLeft: '40px' }}
+                                    style={{ paddingLeft: '40px', height: '46px', paddingTop: 0, paddingBottom: 0, boxSizing: 'border-box' }}
                                     value={formData.date}
                                     onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                                 />

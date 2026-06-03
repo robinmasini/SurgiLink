@@ -71,7 +71,10 @@ export default function PhoneInput({ value, onChange, placeholder = '6 00 00 00 
     };
 
     const handleCountrySelect = (country) => {
-        const rawValue = value ? value.replace(selectedCountry.code, '').replace(/\s/g, '') : '';
+        let rawValue = value ? value.replace(selectedCountry.code, '').replace(/\s/g, '') : '';
+        if (rawValue.startsWith('0')) {
+            rawValue = rawValue.substring(1);
+        }
         setSelectedCountry(country);
         const formatted = formatValue(rawValue, country.code);
         onChange(`${country.code} ${formatted}`);
@@ -86,8 +89,11 @@ export default function PhoneInput({ value, onChange, placeholder = '6 00 00 00 
             rawInput = rawInput.replace(selectedCountry.code, '');
         }
 
-        // Clean and reformat
-        const numbersOnly = rawInput.replace(/\D/g, '');
+        // Clean, strip leading 0, and reformat
+        let numbersOnly = rawInput.replace(/\D/g, '');
+        if (numbersOnly.startsWith('0')) {
+            numbersOnly = numbersOnly.substring(1);
+        }
         const formatted = formatValue(numbersOnly, selectedCountry.code);
 
         onChange(`${selectedCountry.code} ${formatted}`);
@@ -116,7 +122,7 @@ export default function PhoneInput({ value, onChange, placeholder = '6 00 00 00 
                         alignItems: 'center',
                         gap: '6px',
                         padding: '0 12px',
-                        height: '42px',
+                        height: '46px',
                         borderRight: '1px solid var(--color-gray-100)',
                         cursor: 'pointer',
                         background: 'var(--color-gray-50)',
@@ -144,7 +150,7 @@ export default function PhoneInput({ value, onChange, placeholder = '6 00 00 00 
                             border: 'none',
                             boxShadow: 'none',
                             paddingLeft: '34px',
-                            height: '42px',
+                            height: '46px',
                             width: '100%'
                         }}
                     />
