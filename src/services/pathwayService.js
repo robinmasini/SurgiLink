@@ -364,6 +364,9 @@ export async function markScreenCompleted(patientId, screen) {
 
         if (error) throw error;
 
+        // Recalculate progress/status after marking the screen completed
+        await calculateGlobalProgress(patientId);
+
         return { success: true };
     } catch (error) {
         console.error('Error marking screen completed:', error);

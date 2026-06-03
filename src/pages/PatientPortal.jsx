@@ -632,10 +632,10 @@ export default function PatientPortal({ patient: initialPatient }) {
                 <div style={{
                     position: 'relative',
                     width: '100%',
-                    height: '280px',
-                    borderRadius: '40px',
+                    height: '215px',
+                    borderRadius: '32px',
                     overflow: 'hidden',
-                    marginBottom: '32px',
+                    marginBottom: '24px',
                     background: '#f9fafb',
                     animation: isUpToDate ? 'glowPulse 3s infinite alternate' : 'none',
                     boxShadow: '0 10px 30px rgba(179, 150, 122, 0.1)'
@@ -663,59 +663,48 @@ export default function PatientPortal({ patient: initialPatient }) {
                     <div style={{
                         position: 'absolute',
                         inset: 0,
-                        padding: '32px 40px',
+                        padding: '20px 24px',
                         display: 'flex',
                         flexDirection: 'column',
                         justifyContent: 'space-between',
                         background: 'transparent',
                         zIndex: 2
                     }}>
-                        <div style={{ maxWidth: '75%', position: 'relative' }}>
+                        <div style={{ maxWidth: '65%', position: 'relative' }}>
 
                             <h2 style={{ 
-                                fontSize: '28px', 
+                                fontSize: '21px', 
                                 fontWeight: '500', 
                                 color: '#4b5563', 
-                                marginBottom: '8px',
+                                marginBottom: '4px',
                                 letterSpacing: '-0.02em',
-                                lineHeight: 1.1
+                                lineHeight: 1.15
                             }}>
                                 {t('Préparez-vous en toute sérénité !')}
                             </h2>
                             <p style={{ 
-                                fontSize: '12px', 
+                                fontSize: '11px', 
                                 color: '#6b7280', 
-                                marginBottom: '24px',
-                                lineHeight: 1.5,
-                                maxWidth: '200px'
+                                marginBottom: '12px',
+                                lineHeight: 1.4,
+                                maxWidth: '180px'
                             }}>
                                 {t('Répondez à des questions de suivi pour préparer votre opération')}
                             </p>
 
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                <div style={{
-                                    background: isUpToDate ? '#10B981' : '#F59E0B',
-                                    width: '24px',
-                                    height: '24px',
-                                    borderRadius: '50%',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    border: '1.5px solid white'
-                                }}>
-                                    <CheckCircle2 size={12} color="white" />
-                                </div>
-                                <span style={{ fontSize: '16px', fontWeight: '700', color: '#4b5563' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <CheckCircle2 size={16} color={isUpToDate ? '#10B981' : '#F59E0B'} style={{ flexShrink: 0 }} />
+                                <span style={{ fontSize: '13px', fontWeight: '600', color: '#4b5563' }}>
                                     {isUpToDate ? t('Vous êtes à jour !') : t('Vous n’êtes pas à jour !')}
                                 </span>
                             </div>
                         </div>
 
                         <div>
-                            <p style={{ fontSize: '13px', fontWeight: '600', color: '#9ca3af', marginBottom: '4px' }}>
+                            <p style={{ fontSize: '11px', fontWeight: '600', color: '#9ca3af', marginBottom: '2px' }}>
                                 {nextMilestoneLabel ? t('Prochaines questions dans :') : t('Parcours terminé !')}
                             </p>
-                            <div style={{ fontSize: timeLeft.includes('j') ? '32px' : '36px', fontWeight: '800', letterSpacing: '0.05em', color: '#4b5563' }}>
+                            <div style={{ fontSize: timeLeft.includes('j') ? '24px' : '28px', fontWeight: '800', letterSpacing: '0.05em', color: '#4b5563' }}>
                                 {nextMilestoneLabel && timeLeft !== '00:00:00' ? timeLeft : '00:00:00'}
                             </div>
                         </div>

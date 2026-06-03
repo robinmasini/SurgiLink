@@ -124,9 +124,9 @@ export default function QuestionnaireFlow({
             // Save to custom_questions table
             await answerCustomQuestion(currentItem.originalId, value);
             // Update local responses state via parent
-            onChange(itemId, value);
+            await onChange(itemId, value);
         } else {
-            onChange(itemId, value);
+            await onChange(itemId, value);
         }
 
         // Ludic: If it's a yes_no or select, we can auto-advance after 500ms
