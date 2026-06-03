@@ -49,6 +49,7 @@ import { getCustomQuestions, addCustomQuestion, deleteCustomQuestion } from '../
 import LogoPremium from '../components/LogoPremium';
 import clinicImage from '../assets/clinic.png';
 import StatusBolt from '../components/StatusBolt';
+import LogoIcon from '../components/LogoIcon';
 
 const Drawer = ({ isOpen, onClose, title, icon, children }) => {
     return (
@@ -927,10 +928,9 @@ export default function PatientReview() {
                                     <button
                                         onClick={handleDownloadSynthesis}
                                         disabled={isGeneratingPDF}
-                                        className="btn btn-secondary btn-sm"
-                                        style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+                                        className="btn-pdf-synthesis"
                                     >
-                                        {isGeneratingPDF ? <RefreshCw size={14} className="animate-spin" /> : <Download size={14} />}
+                                        {isGeneratingPDF ? <RefreshCw size={14} className="animate-spin" /> : <LogoIcon width="16px" />}
                                         Synthèse PDF
                                     </button>
                                     <button
@@ -1567,6 +1567,36 @@ export default function PatientReview() {
                     align-items: center;
                     gap: 12px;
                     flex-wrap: wrap;
+                }
+
+                .btn-pdf-synthesis {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    padding: 8px 16px;
+                    background: var(--color-primary-50);
+                    border: 1.5px solid var(--color-primary-500);
+                    color: var(--color-primary-700);
+                    font-weight: 700;
+                    font-size: var(--font-size-sm);
+                    border-radius: var(--radius-lg);
+                    cursor: pointer;
+                    transition: all var(--transition-fast);
+                    box-shadow: 0 2px 8px rgba(109, 140, 124, 0.15);
+                }
+
+                .btn-pdf-synthesis:hover {
+                    background: var(--color-primary-100);
+                    border-color: var(--color-primary-600);
+                    color: var(--color-primary-800);
+                    transform: translateY(-1px);
+                    box-shadow: 0 4px 12px rgba(109, 140, 124, 0.25);
+                }
+
+                .btn-pdf-synthesis:disabled {
+                    opacity: 0.6;
+                    cursor: not-allowed;
+                    transform: none;
                 }
 
                 .patient-date-badge {
