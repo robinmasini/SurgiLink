@@ -379,12 +379,12 @@ export async function scheduleTimeBasedReminders(patientId, interventionDate, ti
 
     const tpJ7 = getTP('j7', 8, 30);
     const tpJ2 = getTP('j2', 8, 30);
-    const tpJ1 = getTP('j1', 18, 0); // J-1 typically evening
+    const tpJ1 = getTP('j1', 8, 30); // J-1 aligned to 8:30
     const tpJ1Post = getTP('j1_postop', 8, 30);
-    const tpJ4Sat = getTP('j4_satisfaction', 11, 0);
-    const tpJ4Esat = getTP('j4_esatis', 11, 30);
+    const tpJ4Sat = getTP('j4_satisfaction', 8, 30); // J+4 aligned to 8:30
+    const tpJ4Esat = getTP('j4_esatis', 8, 30); // E-SATIS aligned to 8:30
     const tpWelcome = getTP('welcome', 8, 30);
-    const tpJJ = getTP('j0', 7, 30); // Default 7:30 AM for surgery day
+    const tpJJ = getTP('j0', 8, 30); // Day of surgery aligned to 8:30
 
     const j7Date = setParisTime(new Date(interventionDate).getTime() + (offsets.j7 * 86400000), tpJ7.h, tpJ7.m);
     const j2Date = setParisTime(new Date(interventionDate).getTime() + (offsets.j2 * 86400000), tpJ2.h, tpJ2.m);

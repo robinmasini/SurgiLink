@@ -143,7 +143,7 @@ export default function PatientDetailPanel({ patient, responses = [], onClose })
                 .eq('patient_id', patient.id)
                 .eq('status', 'pending')
                 .order('scheduled_for', { ascending: true })
-                .limit(3);
+                .limit(15);
 
             if (error) throw error;
             setPendingReminders(data || []);
@@ -304,7 +304,7 @@ export default function PatientDetailPanel({ patient, responses = [], onClose })
                         <Calendar size={14} style={{ color: 'var(--color-gray-400)' }} />
                     </div>
 
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-2)' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-2)', maxHeight: '280px', overflowY: 'auto', paddingRight: '4px' }}>
                         {pendingReminders.length === 0 ? (
                             <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-400)', textAlign: 'center', padding: 'var(--spacing-2)', border: '1px dashed var(--color-gray-100)', borderRadius: 'var(--radius-md)' }}>
                                 Aucun rappel planifié

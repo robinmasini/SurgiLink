@@ -3,6 +3,7 @@ import { Edit2, X, User, Clipboard, Mail, Phone, MapPin, Calendar, Clock } from 
 import { supabase } from '../lib/supabase';
 import PhoneInput from './PhoneInput';
 import InterventionSelect from './InterventionSelect';
+import { scheduleTimeBasedReminders } from '../services/reminderService';
 
 export default function EditPatientModal({ isOpen, onClose, patient, onPatientUpdated }) {
     const [formData, setFormData] = useState({
@@ -73,6 +74,9 @@ export default function EditPatientModal({ isOpen, onClose, patient, onPatientUp
         setIsSaving(true);
         try {
             const fullName = `${formData.firstName.trim()} ${formData.lastName.trim()}`;
+            const dateChanged = formData.date !== (patient.date || '');
+            const timeChanged = formData.reminderTime !== (patient.reminder_time || '08:30');
+
             const { data, error } = await supabase
                 .from('patients')
                 .update({
@@ -96,6 +100,23 @@ export default function EditPatientModal({ isOpen, onClose, patient, onPatientUp
                 console.error('Error updating patient:', error);
                 alert(`Erreur lors de la mise à jour : ${error.message}`);
             } else {
+                if (dateChanged || timeChanged) {
+                    try {
+                        console.log('Changement de date ou d\'heure détecté. Régénération du planning des SMS...');
+                        // 1. Delete pending reminders
+                        await supabase
+                            .from('reminder_queue')
+                            .delete()
+                            .eq('patient_id', patient.id)
+                            .eq('status', 'pending');
+
+                        // 2. Reschedule with the new values
+                        await scheduleTimeBasedReminders(patient.id, formData.date || null, { default: formData.reminderTime });
+                    } catch (schedErr) {
+                        console.error('Error automatic rescheduling:', schedErr);
+                    }
+                }
+
                 alert(`Patient ${fullName} mis à jour avec succès !`);
                 if (onPatientUpdated) onPatientUpdated(data[0]);
                 onClose();

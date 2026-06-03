@@ -30,6 +30,7 @@ export default function Patients() {
     const [responses, setResponses] = useState({});
     const [isLoading, setIsLoading] = useState(true);
     const [selectedPatientId, setSelectedPatientId] = useState(null);
+    const [nextReminders, setNextReminders] = useState({});
 
     const tabs = ['J-10', 'J-7', 'J-2', 'J-1', 'Jour J', 'J+1', 'J+4', 'Tous', 'Archivés'];
 
@@ -100,6 +101,24 @@ export default function Patients() {
                     respMap[r.patient_id].push(r);
                 });
                 setResponses(respMap);
+
+                // Fetch next pending reminders for each patient
+                const { data: remindersData, error: remindersError } = await supabase
+                    .from('reminder_queue')
+                    .select('patient_id, screen, scheduled_for')
+                    .in('patient_id', formattedPatients.map(p => p.id))
+                    .eq('status', 'pending')
+                    .order('scheduled_for', { ascending: true });
+
+                if (!remindersError && remindersData) {
+                    const remindersMap = {};
+                    remindersData.forEach(r => {
+                        if (!remindersMap[r.patient_id]) {
+                            remindersMap[r.patient_id] = r;
+                        }
+                    });
+                    setNextReminders(remindersMap);
+                }
             }
         } catch (err) {
             console.error('Error loading patients:', err);
@@ -217,7 +236,7 @@ export default function Patients() {
                                         <th style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-500)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t('Patient')}</th>
                                         <th style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-500)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t('Retours patient')}</th>
                                         <th className="hide-tablet" style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-500)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t('Étape')}</th>
-                                        <th className="hide-mobile" style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-500)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t('SMS Envoyé')}</th>
+                                        <th className="hide-mobile" style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-500)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t('Planification SMS')}</th>
                                         {!selectedPatientId && (
                                             <>
                                                 <th className="hide-tablet" style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-500)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t('Date')}</th>
@@ -268,7 +287,28 @@ export default function Patients() {
                                                         {patient.name.split(' ').map(n => n[0]).join('')}
                                                     </div>
                                                     <div>
-                                                        <div style={{ fontWeight: '600', color: 'var(--color-gray-900)' }}>{patient.name}</div>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                            <div style={{ fontWeight: '600', color: 'var(--color-gray-900)' }}>{patient.name}</div>
+                                                            {patient.onboarding_completed_at && (
+                                                                <div style={{ 
+                                                                    display: 'inline-flex', 
+                                                                    alignItems: 'center', 
+                                                                    gap: '2px', 
+                                                                    color: 'var(--color-success-600)',
+                                                                    fontWeight: '700',
+                                                                    fontSize: '9px',
+                                                                    background: 'var(--color-success-50)',
+                                                                    padding: '2px 6px',
+                                                                    borderRadius: '4px',
+                                                                    border: '1px solid var(--color-success-100)',
+                                                                    lineHeight: '1',
+                                                                    whiteSpace: 'nowrap'
+                                                                }}>
+                                                                    <CheckCircle2 size={10} />
+                                                                    {t('Tuto OK')}
+                                                                </div>
+                                                            )}
+                                                        </div>
                                                         <div style={{ fontSize: '11px', color: 'var(--color-gray-500)' }}>{patient.operation}</div>
                                                     </div>
                                                 </div>
@@ -294,20 +334,26 @@ export default function Patients() {
                                             </td>
                                             <td className="hide-mobile" style={{ padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-500)' }}>
                                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-1)' }}>
-                                                        <Clock size={12} />
-                                                        {patient.daysUntil === 'J-0' ? t('Intervention du jour') : t('Consulté')}
-                                                    </div>
-                                                    {patient.onboarding_completed_at && (
-                                                        <div style={{ 
-                                                            display: 'inline-flex', 
-                                                            alignItems: 'center', 
-                                                            gap: '4px', 
-                                                            color: 'var(--color-success-600)',
-                                                            fontWeight: '600'
-                                                        }}>
+                                                    {nextReminders[patient.id] ? (
+                                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'var(--color-primary-700)', fontWeight: '600' }}>
+                                                                <Clock size={12} />
+                                                                <span>{nextReminders[patient.id].screen}</span>
+                                                            </div>
+                                                            <div style={{ fontSize: '10px', color: 'var(--color-gray-600)' }}>
+                                                                {new Date(nextReminders[patient.id].scheduled_for).toLocaleDateString('fr-FR', {
+                                                                    day: 'numeric',
+                                                                    month: 'short'
+                                                                })} à {new Date(nextReminders[patient.id].scheduled_for).toLocaleTimeString('fr-FR', {
+                                                                    hour: '2-digit',
+                                                                    minute: '2-digit'
+                                                                })}
+                                                            </div>
+                                                        </div>
+                                                    ) : (
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'var(--color-gray-400)' }}>
                                                             <CheckCircle2 size={12} />
-                                                            {t('Tuto OK')}
+                                                            <span>Aucun rappel à venir</span>
                                                         </div>
                                                     )}
                                                 </div>
