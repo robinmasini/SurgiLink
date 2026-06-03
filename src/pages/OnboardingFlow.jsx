@@ -4,7 +4,8 @@ import { ArrowRight, MessageSquare, CheckCircle2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { validateToken } from '../services/tokenService';
 import { saveResponse, markScreenCompleted } from '../services/pathwayService';
-import logoSlMa from '../assets/logo-sl-ma.png';
+import logoSurgilinkGreen from '../assets/logo_surgilink_premium_green.png';
+import logoMedicalAlliance from '../assets/logo-medical-alliance.png';
 import medecinImg from '../assets/medecin.png';
 import smsImg from '../assets/sms.png';
 import cardMedicalImg from '../assets/card-medical.png';
@@ -118,10 +119,11 @@ export default function OnboardingFlow() {
     return (
         <div className="onboarding-page" style={{ 
             position: 'relative',
-            minHeight: '100vh',
+            height: isMobile ? '100dvh' : 'auto',
+            minHeight: isMobile ? 'none' : '100vh',
             display: 'flex',
             flexDirection: 'column',
-            overflowX: 'hidden',
+            overflow: 'hidden',
             fontFamily: 'var(--font-family)'
         }}>
 
@@ -134,11 +136,14 @@ export default function OnboardingFlow() {
                 flex: 1,
                 display: 'flex',
                 flexDirection: 'column',
-                padding: step === 1 ? '20px 0 0 0' : '20px 16px',
+                padding: isMobile ? '12px 16px' : '20px 16px',
                 maxWidth: '500px',
                 margin: '0 auto',
-                width: '100%'
+                width: '100%',
+                height: '100%',
+                boxSizing: 'border-box'
             }}>
+                
                               {step === 1 && (
                     <div className="step-container fadeIn" style={{ 
                         flex: 1, 
@@ -147,32 +152,57 @@ export default function OnboardingFlow() {
                         alignItems: 'center', 
                         textAlign: 'center',
                         justifyContent: 'space-between',
-                        minHeight: isMobile ? 'calc(100vh - 40px)' : '650px',
-                        paddingBottom: '24px'
+                        height: '100%',
+                        paddingBottom: isMobile ? '8px' : '24px'
                     }}>
-                        <div className="onboarding-logo-container" style={{ marginTop: '20px', marginBottom: '16px', width: '100%', display: 'flex', justifyContent: 'center' }}>
-                            <img src={logoSlMa} alt="SurgiLink" style={{ height: isMobile ? '65px' : '100px', objectFit: 'contain', transition: 'height 0.3s ease' }} />
+                        <div className="onboarding-logo-container" style={{ 
+                            marginTop: isMobile ? '10px' : '20px', 
+                            marginBottom: isMobile ? '12px' : '20px', 
+                            width: '100%', 
+                            display: 'flex', 
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            gap: isMobile ? '6px' : '10px'
+                        }}>
+                            <img 
+                                src={logoSurgilinkGreen} 
+                                alt="SurgiLink" 
+                                style={{ 
+                                    height: isMobile ? '55px' : '85px', 
+                                    objectFit: 'contain', 
+                                    transition: 'height 0.3s ease' 
+                                }} 
+                            />
+                            <img 
+                                src={logoMedicalAlliance} 
+                                alt="Medical Alliance" 
+                                style={{ 
+                                    height: isMobile ? '22px' : '32px', 
+                                    objectFit: 'contain', 
+                                    transition: 'height 0.3s ease' 
+                                }} 
+                            />
                         </div>
                         <div className="onboarding-text-container" style={{ 
-                            marginBottom: '16px', 
+                            marginBottom: isMobile ? '12px' : '20px', 
                             padding: '0 20px',
                             zIndex: 5
                         }}>
                             <h1 className="onboarding-title" style={{ 
-                                fontSize: isMobile ? '1.8rem' : '2.2rem', 
+                                fontSize: isMobile ? '1.55rem' : '2.0rem', 
                                 fontWeight: '700', 
-                                marginBottom: '10px', 
-                                lineHeight: '1.15',
+                                marginBottom: '8px', 
+                                lineHeight: '1.2',
                                 color: '#1f2937'
                             }}>
                                 Bienvenue <span style={{ fontWeight: '400' }}>dans SurgiLink !</span>
                             </h1>
                             <p className="onboarding-subtitle" style={{ 
-                                fontSize: isMobile ? '1.05rem' : '1.2rem', 
+                                fontSize: isMobile ? '0.95rem' : '1.15rem', 
                                 fontWeight: '500',
                                 color: '#6b7280'
                             }}>
-                                Votre assistant de suivi médical
+                                Votre assistant de suivi médical personnalisé
                             </p>
                         </div>
 
@@ -182,15 +212,17 @@ export default function OnboardingFlow() {
                             justifyContent: 'center',
                             alignItems: 'center',
                             flex: 1,
+                            minHeight: 0,
                             margin: '10px 0'
                         }}>
                             <img 
                                 src={medecinImg} 
                                 alt="Médecin" 
                                 style={{ 
-                                    width: '75%', 
-                                    maxWidth: '280px',
-                                    height: 'auto', 
+                                    maxHeight: '100%',
+                                    width: 'auto', 
+                                    maxWidth: '240px',
+                                    height: 'auto',
                                     display: 'block',
                                     opacity: 0.85,
                                     filter: 'drop-shadow(0 -5px 15px rgba(0,0,0,0.06))',
@@ -199,16 +231,16 @@ export default function OnboardingFlow() {
                             />
                         </div>
 
-                        <div style={{ width: '100%', display: 'flex', justifyContent: 'center', padding: '16px 20px 0 20px', zIndex: 10 }}>
+                        <div style={{ width: '100%', display: 'flex', justifyContent: 'center', padding: '12px 20px 0 20px', zIndex: 10, flexShrink: 0 }}>
                             <button 
                                 onClick={() => setStep(2)}
                                 className="btn-primary"
                                 style={{ 
                                     width: '100%', 
                                     maxWidth: '280px',
-                                    height: '52px', 
+                                    height: '50px', 
                                     borderRadius: '30px',
-                                    fontSize: '1.1rem',
+                                    fontSize: '1.05rem',
                                     fontWeight: '800',
                                     display: 'flex',
                                     alignItems: 'center',
@@ -222,7 +254,7 @@ export default function OnboardingFlow() {
                                     letterSpacing: '0.02em'
                                 }}
                             >
-                                CONTINUER <ArrowRight size={20} />
+                                CONTINUER <ArrowRight size={18} />
                             </button>
                         </div>
                     </div>
@@ -234,23 +266,41 @@ export default function OnboardingFlow() {
                         display: 'flex', 
                         flexDirection: 'column', 
                         justifyContent: 'space-between',
-                        minHeight: isMobile ? 'calc(100vh - 40px)' : '650px',
-                        paddingBottom: '24px'
+                        height: '100%',
+                        paddingBottom: isMobile ? '8px' : '24px'
                     }}>
-                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: isMobile ? '16px' : '24px', width: '100%' }}>
+                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: isMobile ? '12px' : '20px', width: '100%', minHeight: 0 }}>
                             <div className="onboarding-header-card" style={{ 
                                 borderRadius: '30px', 
                                 overflow: 'hidden', 
-                                height: isMobile ? '140px' : '200px',
-                                boxShadow: '0 15px 30px rgba(0,0,0,0.15)',
-                                width: '100%'
+                                height: isMobile ? '120px' : '180px',
+                                boxShadow: '0 15px 30px rgba(0,0,0,0.12)',
+                                width: '100%',
+                                flexShrink: 0
                             }}>
-                                <img src={cardMedicalImg} alt="SurgiLink Medical" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                <img 
+                                    src={cardMedicalImg} 
+                                    alt="SurgiLink Medical" 
+                                    style={{ 
+                                        width: '100%', 
+                                        height: '100%', 
+                                        objectFit: 'cover',
+                                        objectPosition: 'center bottom'
+                                    }} 
+                                />
                             </div>
 
-                            <div className="onboarding-info-container" style={{ color: '#4b5563', display: 'flex', flexDirection: 'column', gap: isMobile ? '12px' : '16px' }}>
+                            <div className="onboarding-info-container" style={{ 
+                                color: '#4b5563', 
+                                display: 'flex', 
+                                flexDirection: 'column', 
+                                gap: isMobile ? '10px' : '14px',
+                                flex: 1,
+                                overflowY: 'auto',
+                                paddingRight: '4px'
+                            }}>
                                 <h2 style={{ 
-                                    fontSize: isMobile ? '1.25rem' : '1.4rem', 
+                                    fontSize: isMobile ? '1.15rem' : '1.35rem', 
                                     fontWeight: '700', 
                                     color: '#1f2937',
                                     lineHeight: 1.25,
@@ -261,41 +311,41 @@ export default function OnboardingFlow() {
 
                                 <div className="info-badge" style={{ 
                                     background: '#f9fafb', 
-                                    padding: '8px 16px', 
-                                    borderRadius: '15px', 
+                                    padding: '6px 12px', 
+                                    borderRadius: '12px', 
                                     display: 'flex', 
                                     alignItems: 'center', 
-                                    gap: '12px',
+                                    gap: '10px',
                                     border: '1px solid #e5e7eb',
                                     boxShadow: '0 2px 4px rgba(0,0,0,0.02)',
                                     alignSelf: 'flex-start'
                                 }}>
-                                    <img src={smsImg} alt="SMS" style={{ height: '26px' }} />
-                                    <span style={{ fontWeight: '600', color: '#374151', fontSize: '14px' }}>Suivi SMS : Questionnaires</span>
+                                    <img src={smsImg} alt="SMS" style={{ height: '22px' }} />
+                                    <span style={{ fontWeight: '600', color: '#374151', fontSize: '13px' }}>Suivi SMS : Questionnaires</span>
                                 </div>
 
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                                    <p style={{ fontSize: '0.9rem', lineHeight: '1.5', opacity: 0.9, margin: 0 }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                    <p style={{ fontSize: '0.85rem', lineHeight: '1.45', opacity: 0.9, margin: 0 }}>
                                         SurgiLink est un assistant de suivi chirurgical qui va vous accompagner avant et après votre intervention.
                                     </p>
 
-                                    <p style={{ fontSize: '0.9rem', lineHeight: '1.5', opacity: 0.9, margin: 0 }}>
+                                    <p style={{ fontSize: '0.85rem', lineHeight: '1.45', opacity: 0.9, margin: 0 }}>
                                         💬 Vous recevrez des SMS à chaque étape clé <strong>(J-7, J-2, etc.)</strong>, afin de vous accompagner sereinement.
                                     </p>
 
-                                    <p style={{ fontSize: '0.9rem', lineHeight: '1.5', opacity: 0.9, margin: 0 }}>
+                                    <p style={{ fontSize: '0.85rem', lineHeight: '1.45', opacity: 0.9, margin: 0 }}>
                                         ⚠️ Il est essentiel de bien les consulter et de <strong>répondre au questionnaire via le lien qui vous sera envoyé dans le message</strong> : Cela ne vous prendra que quelques petites secondes !
                                     </p>
 
-                                    <p style={{ fontSize: '0.9rem', lineHeight: '1.5', opacity: 0.9, margin: 0 }}>
+                                    <p style={{ fontSize: '0.85rem', lineHeight: '1.45', opacity: 0.9, margin: 0 }}>
                                         Avec nous, vous êtes accompagné(e) <strong>avec clarté et sérénité tout au long de votre parcours de soins !</strong>
                                     </p>
                                 </div>
 
-                                <div className="timeline-container" style={{ position: 'relative', marginTop: '8px' }}>
+                                <div className="timeline-container" style={{ position: 'relative', marginTop: '6px', marginBottom: '4px' }}>
                                     <div className="timeline-line" style={{ 
                                         position: 'absolute', 
-                                        top: isMobile ? '16px' : '22px', 
+                                        top: isMobile ? '12px' : '18px', 
                                         left: '0', 
                                         right: '0', 
                                         height: '2px', 
@@ -304,15 +354,15 @@ export default function OnboardingFlow() {
                                     }} />
                                     <div className="timeline-items" style={{ display: 'flex', justifyContent: 'space-between', position: 'relative', zIndex: 1, padding: '0 5px' }}>
                                         {['J-7', 'J-2', 'J-1', 'J-J', 'J+1', 'J+2', 'J+7'].map((day) => (
-                                            <div key={day} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+                                            <div key={day} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
                                                 <div style={{ 
-                                                    width: isMobile ? '12px' : '18px', 
-                                                    height: isMobile ? '12px' : '18px', 
+                                                    width: isMobile ? '10px' : '16px', 
+                                                    height: isMobile ? '10px' : '16px', 
                                                     borderRadius: '50%', 
                                                     background: '#ffffff',
                                                     border: '2px solid #e5e7eb'
                                                 }} />
-                                                <span style={{ fontSize: isMobile ? '0.65rem' : '0.75rem', fontWeight: '600', color: '#6b7280' }}>{day}</span>
+                                                <span style={{ fontSize: '0.6rem', fontWeight: '600', color: '#6b7280' }}>{day}</span>
                                             </div>
                                         ))}
                                     </div>
@@ -325,15 +375,16 @@ export default function OnboardingFlow() {
                             alignItems: 'center', 
                             justifyContent: 'center',
                             width: '100%',
-                            padding: '16px 20px 0 20px',
-                            zIndex: 10
+                            padding: '12px 20px 0 20px',
+                            zIndex: 10,
+                            flexShrink: 0
                         }}>
                             <button 
                                 onClick={handleComplete}
                                 style={{ 
                                     width: '100%',
                                     maxWidth: '280px',
-                                    height: '52px', 
+                                    height: '50px', 
                                     borderRadius: '30px', 
                                     background: 'var(--color-purple-600)',
                                     border: 'none',
@@ -347,12 +398,12 @@ export default function OnboardingFlow() {
                                     padding: '0 25px'
                                 }}
                             >
-                                <span style={{ fontWeight: '800', fontSize: '1.1rem', letterSpacing: '0.02em' }}>CONTINUER</span>
-                                <ArrowRight size={20} />
+                                <span style={{ fontWeight: '800', fontSize: '1.05rem', letterSpacing: '0.02em' }}>CONTINUER</span>
+                                <ArrowRight size={18} />
                             </button>
+                        </div>
                     </div>
-                </div>
-            )}
+                )}
         </div>
 
             <style dangerouslySetInnerHTML={{ __html: `
