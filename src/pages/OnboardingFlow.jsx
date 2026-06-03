@@ -176,7 +176,7 @@ export default function OnboardingFlow() {
                                     src={logoSurgilinkGreen} 
                                     alt="SurgiLink" 
                                     style={{ 
-                                        height: isMobile ? '95px' : '135px', 
+                                        height: isMobile ? '105px' : '150px', 
                                         objectFit: 'contain', 
                                         transition: 'height 0.3s ease' 
                                     }} 
@@ -192,7 +192,7 @@ export default function OnboardingFlow() {
                                 />
                             </div>
                             <div className="onboarding-text-container" style={{ 
-                                marginTop: isMobile ? '14px' : '22px',
+                                marginTop: isMobile ? '52px' : '38px',
                                 marginBottom: isMobile ? '8px' : '14px', 
                                 padding: '0 20px',
                                 zIndex: 5
