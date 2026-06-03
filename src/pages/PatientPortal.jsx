@@ -820,7 +820,7 @@ export default function PatientPortal({ patient: initialPatient }) {
                             <span style={{ fontSize: '14px', fontWeight: '700', color: '#374151' }}>{patient.clinic_name || t('Clinique de Vitrolles')}</span>
                         </div>
                         <a 
-                            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(patient.clinic_address || t("Vitrolles"))}`}
+                            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(patient.clinic_address || "La Tuilière II, Rue Bel air, 13127 Vitrolles")}`}
                             target="_blank" rel="noopener noreferrer"
                             style={{
                                 padding: '8px 16px',
