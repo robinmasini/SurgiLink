@@ -331,7 +331,7 @@ export default function OnboardingFlow() {
                                     <span style={{ fontWeight: '600', color: '#374151', fontSize: '13px' }}>Suivi SMS : Questionnaires</span>
                                 </div>
 
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? '12px' : '16px' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? '16px' : '22px', padding: isMobile ? '0 4px' : '0 8px' }}>
                                     <p style={{ fontSize: '0.85rem', lineHeight: '1.45', opacity: 0.9, margin: 0 }}>
                                         SurgiLink est un assistant de suivi chirurgical qui va vous accompagner avant et après votre intervention.
                                     </p>
