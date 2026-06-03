@@ -33,6 +33,15 @@ export default function MobileNavbar() {
     return (
         <nav className="mobile-navbar">
             <div className="mobile-navbar-container">
+                <svg className="mobile-navbar-svg-bg" viewBox="0 0 360 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M 36,0 L 144,0 C 156,0 160,32 180,32 C 200,32 204,0 216,0 L 324,0 A 36,36 0 0 1 360,36 A 36,36 0 0 1 324,72 L 36,72 A 36,36 0 0 1 0,36 A 36,36 0 0 1 36,0 Z"
+                        fill="rgba(255, 255, 255, 0.85)"
+                        stroke="rgba(255, 255, 255, 0.4)"
+                        strokeWidth="1"
+                    />
+                </svg>
+
                 <Link
                     to={navItems[0].path}
                     className={`mobile-nav-item ${location.pathname === navItems[0].path ? 'active' : ''}`}

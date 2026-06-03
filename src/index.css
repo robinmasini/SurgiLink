@@ -1378,19 +1378,28 @@ textarea.input {
 }
 
 .mobile-navbar-container {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  border-radius: 40px;
+  position: relative;
   height: 72px;
   padding: 0 var(--spacing-6);
   display: flex;
   align-items: center;
   justify-content: space-between;
+  width: 360px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.mobile-navbar-svg-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
-  max-width: 400px;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+  height: 100%;
+  z-index: -1;
+  filter: drop-shadow(0 12px 30px rgba(0, 0, 0, 0.12));
 }
 
 .mobile-nav-item {
