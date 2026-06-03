@@ -39,7 +39,6 @@ import wppDesktop from '../assets/wpp-desktop-v2.png';
 
 import logoSlMa from '../assets/logo-sl-ma.png';
 import suiviCard from '../assets/suivi-card.png';
-import suiviCardBw from '../assets/suivi-card-bw.png';
 import clinicImg from '../assets/clinic.jpg';
 
 function ConsignesSection({ patientId }) {
@@ -650,7 +649,7 @@ export default function PatientPortal({ patient: initialPatient }) {
 
                     {/* Background Status Card */}
                     <img 
-                        src={isUpToDate ? suiviCard : suiviCardBw} 
+                        src={suiviCard} 
                         alt="" 
                         style={{ 
                             position: 'absolute',
@@ -659,7 +658,10 @@ export default function PatientPortal({ patient: initialPatient }) {
                             height: '100%',
                             width: 'auto',
                             objectFit: 'contain',
-                            zIndex: 1
+                            zIndex: 1,
+                            filter: isUpToDate ? 'none' : 'grayscale(100%)',
+                            opacity: isUpToDate ? 1 : 0.75,
+                            transition: 'all 0.5s ease-in-out'
                         }} 
                     />
 
