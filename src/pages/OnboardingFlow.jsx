@@ -156,69 +156,79 @@ export default function OnboardingFlow() {
                         paddingBottom: isMobile ? '8px' : '24px',
                         position: 'relative'
                     }}>
-                        <div className="onboarding-logo-container" style={{ 
-                            marginTop: isMobile ? '12px' : '20px', 
-                            marginBottom: isMobile ? '12px' : '20px', 
-                            width: '100%', 
+                        {/* Grouped Logos and Text to center them nicely on the page */}
+                        <div style={{ 
                             display: 'flex', 
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            gap: isMobile ? '8px' : '12px'
-                        }}>
-                            <img 
-                                src={logoSurgilinkGreen} 
-                                alt="SurgiLink" 
-                                style={{ 
-                                    height: isMobile ? '95px' : '135px', 
-                                    objectFit: 'contain', 
-                                    transition: 'height 0.3s ease' 
-                                }} 
-                            />
-                            <img 
-                                src={logoMedicalAlliance} 
-                                alt="Medical Alliance" 
-                                style={{ 
-                                    height: isMobile ? '68px' : '90px', 
-                                    objectFit: 'contain', 
-                                    transition: 'height 0.3s ease' 
-                                }} 
-                            />
-                        </div>
-                        <div className="onboarding-text-container" style={{ 
-                            marginBottom: isMobile ? '8px' : '14px', 
-                            padding: '0 20px',
+                            flexDirection: 'column', 
+                            alignItems: 'center', 
+                            width: '100%',
+                            marginTop: isMobile ? '8px' : '24px',
                             zIndex: 5
                         }}>
-                            <h1 className="onboarding-title" style={{ 
-                                fontSize: isMobile ? '1.4rem' : '1.85rem', 
-                                fontWeight: '700', 
-                                marginBottom: '6px', 
-                                lineHeight: '1.2',
-                                color: '#1f2937'
+                            <div className="onboarding-logo-container" style={{ 
+                                width: '100%', 
+                                display: 'flex', 
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                gap: isMobile ? '12px' : '18px'
                             }}>
-                                Bienvenue <span style={{ fontWeight: '400' }}>dans SurgiLink !</span>
-                            </h1>
-                            <p className="onboarding-subtitle" style={{ 
-                                fontSize: isMobile ? '0.85rem' : '1.0rem', 
-                                fontWeight: '500',
-                                color: '#6b7280'
+                                <img 
+                                    src={logoSurgilinkGreen} 
+                                    alt="SurgiLink" 
+                                    style={{ 
+                                        height: isMobile ? '95px' : '135px', 
+                                        objectFit: 'contain', 
+                                        transition: 'height 0.3s ease' 
+                                    }} 
+                                />
+                                <img 
+                                    src={logoMedicalAlliance} 
+                                    alt="Medical Alliance" 
+                                    style={{ 
+                                        height: isMobile ? '78px' : '105px', 
+                                        objectFit: 'contain', 
+                                        transition: 'height 0.3s ease' 
+                                    }} 
+                                />
+                            </div>
+                            <div className="onboarding-text-container" style={{ 
+                                marginTop: isMobile ? '14px' : '22px',
+                                marginBottom: isMobile ? '8px' : '14px', 
+                                padding: '0 20px',
+                                zIndex: 5
                             }}>
-                                Votre assistant de suivi médical personnalisé
-                            </p>
+                                <h1 className="onboarding-title" style={{ 
+                                    fontSize: isMobile ? '1.4rem' : '1.85rem', 
+                                    fontWeight: '700', 
+                                    marginBottom: '6px', 
+                                    lineHeight: '1.2',
+                                    color: '#1f2937'
+                                }}>
+                                    Bienvenue <span style={{ fontWeight: '400' }}>dans SurgiLink !</span>
+                                </h1>
+                                <p className="onboarding-subtitle" style={{ 
+                                    fontSize: isMobile ? '0.85rem' : '1.0rem', 
+                                    fontWeight: '500',
+                                    color: '#6b7280'
+                                }}>
+                                    Votre assistant de suivi médical personnalisé
+                                </p>
+                            </div>
                         </div>
 
+                        {/* Nurse image standing exactly at the top of the CTA button (height 50px + bottom spacing) */}
                         <img 
                             src={medecinImg} 
                             alt="Médecin" 
                             style={{ 
                                 position: 'absolute',
-                                bottom: '0',
+                                bottom: isMobile ? '58px' : '74px',
                                 left: '50%',
                                 transform: 'translateX(-50%)',
                                 zIndex: 1,
-                                maxHeight: isMobile ? '255px' : '345px',
+                                maxHeight: isMobile ? '290px' : '390px',
                                 width: 'auto', 
-                                maxWidth: isMobile ? '290px' : '380px',
+                                maxWidth: isMobile ? '330px' : '440px',
                                 height: 'auto',
                                 display: 'block',
                                 opacity: 0.8,
