@@ -269,7 +269,7 @@ export default function OnboardingFlow() {
                         height: '100%',
                         paddingBottom: isMobile ? '8px' : '24px'
                     }}>
-                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: isMobile ? '12px' : '20px', width: '100%', minHeight: 0 }}>
+                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: isMobile ? '18px' : '26px', width: '100%', minHeight: 0 }}>
                             <div className="onboarding-header-card" style={{ 
                                 borderRadius: '30px', 
                                 overflow: 'hidden', 
@@ -294,7 +294,7 @@ export default function OnboardingFlow() {
                                 color: '#4b5563', 
                                 display: 'flex', 
                                 flexDirection: 'column', 
-                                gap: isMobile ? '10px' : '14px',
+                                gap: isMobile ? '16px' : '20px',
                                 flex: 1,
                                 overflowY: 'auto',
                                 paddingRight: '4px'
@@ -324,7 +324,7 @@ export default function OnboardingFlow() {
                                     <span style={{ fontWeight: '600', color: '#374151', fontSize: '13px' }}>Suivi SMS : Questionnaires</span>
                                 </div>
 
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? '12px' : '16px' }}>
                                     <p style={{ fontSize: '0.85rem', lineHeight: '1.45', opacity: 0.9, margin: 0 }}>
                                         SurgiLink est un assistant de suivi chirurgical qui va vous accompagner avant et après votre intervention.
                                     </p>
