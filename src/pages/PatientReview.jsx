@@ -596,7 +596,7 @@ export default function PatientReview() {
                     <div style={{ display: 'flex', gap: 'var(--spacing-3)' }}>
                         <button 
                             onClick={() => setIsQuestionsModalOpen(true)}
-                            className="btn btn-secondary btn-sm"
+                            className="btn btn-secondary btn-sm hide-mobile"
                             style={{ display: 'flex', alignItems: 'center', gap: '8px', borderRadius: '12px' }}
                         >
                             <ClipboardList size={18} />

@@ -1,15 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     X,
     ClipboardList,
     AlertTriangle,
-    HelpCircle,
     Info,
     Star,
-    Check,
-    ChevronDown,
-    Sliders,
-    MessageSquare
+    ChevronDown
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { pathwayConfig } from '../config/pathway.config';
@@ -17,6 +13,15 @@ import { pathwayConfig } from '../config/pathway.config';
 export default function QuestionsPreviewModal({ isOpen, onClose }) {
     const { t } = useTranslation();
     const [activeTab, setActiveTab] = useState('J7'); // D7 by default since it has the most important prep questions
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= 768);
+        };
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     if (!isOpen) return null;
 
@@ -37,8 +42,7 @@ export default function QuestionsPreviewModal({ isOpen, onClose }) {
             case 'yes_no':
                 return (
                     <div style={{ display: 'flex', gap: 'var(--spacing-3)', marginTop: 'var(--spacing-3)' }}>
-                        <button
-                            disabled
+                        <div
                             style={{
                                 padding: '8px 24px',
                                 borderRadius: '20px',
@@ -47,13 +51,13 @@ export default function QuestionsPreviewModal({ isOpen, onClose }) {
                                 color: 'var(--color-primary-700)',
                                 fontWeight: '700',
                                 fontSize: 'var(--font-size-sm)',
-                                cursor: 'not-allowed'
+                                cursor: 'not-allowed',
+                                userSelect: 'none'
                             }}
                         >
                             Oui
-                        </button>
-                        <button
-                            disabled
+                        </div>
+                        <div
                             style={{
                                 padding: '8px 24px',
                                 borderRadius: '20px',
@@ -62,11 +66,12 @@ export default function QuestionsPreviewModal({ isOpen, onClose }) {
                                 color: 'var(--color-gray-400)',
                                 fontWeight: '700',
                                 fontSize: 'var(--font-size-sm)',
-                                cursor: 'not-allowed'
+                                cursor: 'not-allowed',
+                                userSelect: 'none'
                             }}
                         >
                             Non
-                        </button>
+                        </div>
                     </div>
                 );
             case 'slider_0_10':
@@ -185,49 +190,55 @@ export default function QuestionsPreviewModal({ isOpen, onClose }) {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            zIndex: 1100, // Make sure it sits above normal pages and detail panels
+            zIndex: 1500, // High Z-Index to avoid overlaps
             backdropFilter: 'blur(8px)',
-            padding: '20px'
+            padding: isMobile ? '0' : '20px'
         }}>
             <div className="card fade-in" style={{
                 width: '100%',
-                maxWidth: '900px',
+                maxWidth: isMobile ? '100%' : '900px',
+                height: isMobile ? '100vh' : 'auto',
                 background: 'white',
-                borderRadius: 'var(--radius-2xl)',
+                borderRadius: isMobile ? '0' : 'var(--radius-2xl)',
                 boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
                 overflow: 'hidden',
                 display: 'flex',
                 flexDirection: 'column',
-                maxHeight: '90vh'
+                maxHeight: isMobile ? '100vh' : '90vh'
             }}>
                 {/* Header */}
                 <div style={{
-                    padding: 'var(--spacing-6) var(--spacing-8)',
+                    padding: isMobile ? 'var(--spacing-4)' : 'var(--spacing-5) var(--spacing-8)',
                     background: 'linear-gradient(135deg, var(--color-primary-600), var(--color-primary-800))',
                     color: 'white',
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center'
                 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)' }}>
-                        <div style={{
-                            background: 'rgba(255, 255, 255, 0.2)',
-                            width: '40px',
-                            height: '40px',
-                            borderRadius: '12px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center'
-                        }}>
-                            <ClipboardList size={24} />
-                        </div>
-                        <div>
-                            <h2 style={{ fontSize: 'var(--font-size-xl)', fontWeight: '800', margin: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)', flex: 1, minWidth: 0 }}>
+                        {!isMobile && (
+                            <div style={{
+                                background: 'rgba(255, 255, 255, 0.2)',
+                                width: '40px',
+                                height: '40px',
+                                borderRadius: '12px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                flexShrink: 0
+                            }}>
+                                <ClipboardList size={24} />
+                            </div>
+                        )}
+                        <div style={{ minWidth: 0 }}>
+                            <h2 style={{ fontSize: isMobile ? '16px' : 'var(--font-size-xl)', fontWeight: '800', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                 {t('Aperçu global du questionnaire')}
                             </h2>
-                            <p style={{ fontSize: '12px', opacity: 0.8, margin: 0 }}>
-                                {t('Consultez toutes les questions posées aux patients à chaque étape de leur parcours')}
-                            </p>
+                            {!isMobile && (
+                                <p style={{ fontSize: '12px', opacity: 0.8, margin: 0 }}>
+                                    {t('Consultez toutes les questions posées aux patients à chaque étape de leur parcours')}
+                                </p>
+                            )}
                         </div>
                     </div>
                     <button onClick={onClose} style={{
@@ -241,7 +252,9 @@ export default function QuestionsPreviewModal({ isOpen, onClose }) {
                         alignItems: 'center',
                         justifyContent: 'center',
                         cursor: 'pointer',
-                        transition: 'background 0.2s'
+                        transition: 'background 0.2s',
+                        marginLeft: 'var(--spacing-3)',
+                        flexShrink: 0
                     }}
                     onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)'}
                     onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'}
@@ -253,47 +266,55 @@ export default function QuestionsPreviewModal({ isOpen, onClose }) {
                 {/* Tabs Bar */}
                 <div style={{
                     display: 'flex',
-                    gap: 'var(--spacing-1)',
-                    overflowX: 'auto',
+                    gap: isMobile ? '0' : 'var(--spacing-1)',
+                    overflowX: isMobile ? 'visible' : 'auto',
                     borderBottom: '1px solid var(--color-gray-100)',
-                    padding: 'var(--spacing-4) var(--spacing-6) 0',
+                    padding: isMobile ? '0' : 'var(--spacing-4) var(--spacing-6) 0',
                     background: 'var(--color-gray-50)',
                     scrollbarWidth: 'none',
+                    width: '100%',
+                    justifyContent: 'space-between'
                 }}>
                     {tabs.map((tab) => {
                         const isActive = activeTab === tab.key;
                         return (
-                            <button
+                            <div
                                 key={tab.key}
                                 onClick={() => setActiveTab(tab.key)}
+                                role="button"
                                 style={{
                                     display: 'flex',
                                     flexDirection: 'column',
                                     alignItems: 'center',
-                                    gap: '4px',
-                                    padding: '10px 16px 14px',
-                                    border: 'none',
-                                    background: 'transparent',
+                                    gap: '2px',
+                                    padding: isMobile ? '12px 6px 10px' : '10px 16px 14px',
                                     borderBottom: isActive ? '3px solid var(--color-primary-500)' : '3px solid transparent',
                                     color: isActive ? 'var(--color-primary-600)' : 'var(--color-gray-500)',
                                     cursor: 'pointer',
                                     transition: 'all 0.2s',
                                     whiteSpace: 'nowrap',
-                                    outline: 'none'
+                                    outline: 'none',
+                                    userSelect: 'none',
+                                    flex: isMobile ? '1' : 'none',
+                                    textAlign: 'center'
                                 }}
                             >
-                                <span style={{ fontSize: '18px' }}>{tab.icon}</span>
-                                <span style={{ fontSize: '13px', fontWeight: isActive ? '700' : '500' }}>{t(tab.label)}</span>
-                                <span style={{ fontSize: '10px', color: 'var(--color-gray-400)', fontWeight: '400' }}>{t(tab.subtitle)}</span>
-                            </button>
+                                <span style={{ fontSize: isMobile ? '20px' : '18px' }}>{tab.icon}</span>
+                                {!isMobile && (
+                                    <>
+                                        <span style={{ fontSize: '13px', fontWeight: isActive ? '700' : '500' }}>{t(tab.label)}</span>
+                                        <span style={{ fontSize: '10px', color: 'var(--color-gray-400)', fontWeight: '400' }}>{t(tab.subtitle)}</span>
+                                    </>
+                                )}
+                            </div>
                         );
                     })}
                 </div>
 
                 {/* Scrollable Questions Content */}
-                <div style={{ padding: 'var(--spacing-6) var(--spacing-8)', overflowY: 'auto', flex: 1, background: '#F8FAFC' }}>
+                <div style={{ padding: isMobile ? 'var(--spacing-4)' : 'var(--spacing-6) var(--spacing-8)', overflowY: 'auto', flex: 1, background: '#F8FAFC' }}>
                     {currentScreenConfig ? (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-6)' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? 'var(--spacing-4)' : 'var(--spacing-6)' }}>
                             
                             {/* Milestone Title Banner */}
                             <div style={{
@@ -305,11 +326,11 @@ export default function QuestionsPreviewModal({ isOpen, onClose }) {
                                 flexDirection: 'column',
                                 gap: '4px'
                             }}>
-                                <h3 style={{ fontSize: '16px', fontWeight: '800', color: 'var(--color-gray-900)', margin: 0 }}>
+                                <h3 style={{ fontSize: '15px', fontWeight: '800', color: 'var(--color-gray-900)', margin: 0 }}>
                                     {t(currentScreenConfig.title)}
                                 </h3>
                                 {currentScreenConfig.subtitle && (
-                                    <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-500)', margin: 0 }}>
+                                    <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', margin: 0 }}>
                                         {t(currentScreenConfig.subtitle)}
                                     </p>
                                 )}
@@ -327,7 +348,7 @@ export default function QuestionsPreviewModal({ isOpen, onClose }) {
                                     {/* Section Divider / Title */}
                                     <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)', marginTop: 'var(--spacing-2)' }}>
                                         <span style={{ fontSize: '18px' }}>{section.icon}</span>
-                                        <h4 style={{ fontSize: '13px', fontWeight: '800', color: 'var(--color-gray-500)', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>
+                                        <h4 style={{ fontSize: '12px', fontWeight: '800', color: 'var(--color-gray-500)', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>
                                             {t(section.title)}
                                         </h4>
                                         <div style={{ flex: 1, height: '1px', background: 'var(--color-gray-200)', marginLeft: 'var(--spacing-2)' }}></div>
@@ -337,26 +358,15 @@ export default function QuestionsPreviewModal({ isOpen, onClose }) {
                                     <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 'var(--spacing-4)' }}>
                                         {section.items.map((item) => (
                                             <div key={item.id} className="card" style={{
-                                                padding: 'var(--spacing-5)',
+                                                padding: 'var(--spacing-4)',
                                                 background: 'white',
                                                 borderRadius: 'var(--radius-xl)',
                                                 border: '1px solid var(--color-gray-100)',
                                                 boxShadow: 'var(--shadow-sm)',
                                                 display: 'flex',
                                                 flexDirection: 'column',
-                                                gap: 'var(--spacing-2)',
-                                                transition: 'transform 0.2s, box-shadow 0.2s',
-                                                cursor: 'default'
-                                            }}
-                                            onMouseEnter={(e) => {
-                                                e.currentTarget.style.transform = 'translateY(-1px)';
-                                                e.currentTarget.style.boxShadow = 'var(--shadow-md)';
-                                            }}
-                                            onMouseLeave={(e) => {
-                                                e.currentTarget.style.transform = 'none';
-                                                e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
-                                            }}
-                                            >
+                                                gap: 'var(--spacing-2)'
+                                            }}>
                                                 {/* Header Line of Question Card */}
                                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
                                                     <span style={{
@@ -385,7 +395,7 @@ export default function QuestionsPreviewModal({ isOpen, onClose }) {
                                                 </div>
 
                                                 {/* Question Text */}
-                                                <div style={{ fontSize: 'var(--font-size-md)', fontWeight: '700', color: 'var(--color-gray-900)', lineHeight: '1.4' }}>
+                                                <div style={{ fontSize: 'var(--font-size-sm)', fontWeight: '700', color: 'var(--color-gray-900)', lineHeight: '1.4' }}>
                                                     {t(item.label)}
                                                 </div>
 
@@ -464,15 +474,17 @@ export default function QuestionsPreviewModal({ isOpen, onClose }) {
 
                 {/* Footer */}
                 <div style={{
-                    padding: 'var(--spacing-4) var(--spacing-8)',
+                    padding: isMobile ? 'var(--spacing-4)' : 'var(--spacing-4) var(--spacing-8)',
                     background: 'var(--color-gray-50)',
                     borderTop: '1px solid var(--color-gray-100)',
                     display: 'flex',
+                    flexDirection: isMobile ? 'column-reverse' : 'row',
                     justifyContent: 'space-between',
-                    alignItems: 'center'
+                    alignItems: isMobile ? 'stretch' : 'center',
+                    gap: '12px'
                 }}>
-                    <span style={{ fontSize: '11px', color: 'var(--color-gray-400)', fontWeight: '600' }}>
-                        * Les praticiens peuvent également ajouter des questions complémentaires à la fiche de chaque patient.
+                    <span style={{ fontSize: '10px', color: 'var(--color-gray-400)', fontWeight: '600', textAlign: isMobile ? 'center' : 'left' }}>
+                        * Les praticiens peuvent également ajouter des questions complémentaires.
                     </span>
                     <button
                         onClick={onClose}

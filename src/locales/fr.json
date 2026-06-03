@@ -192,5 +192,18 @@
   "Condition d'alerte": "Condition d'alerte",
   "Raison médicale": "Raison médicale",
   "Obligatoire": "Obligatoire",
-  "Optionnelle": "Optionnelle"
+  "Optionnelle": "Optionnelle",
+  "Pré-admission (J-7)": "Pré-admission (J-7)",
+  "Consignes (J-2)": "Consignes (J-2)",
+  "Admission (J-1)": "Admission (J-1)",
+  "Suivi J+1": "Suivi J+1",
+  "Satisfaction (J+4)": "Satisfaction (J+4)",
+  "e-Satis": "e-Satis",
+  "Activation": "Activation",
+  "Sécurité & Anesthésie": "Sécurité & Anesthésie",
+  "Jeûne & Douche": "Jeûne & Douche",
+  "Confirmation venue": "Confirmation venue",
+  "Récupération & Douleur": "Récupération & Douleur",
+  "Enquête clinique": "Enquête clinique",
+  "Enquête nationale": "Enquête nationale"
 }

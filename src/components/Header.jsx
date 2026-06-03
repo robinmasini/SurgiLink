@@ -17,6 +17,7 @@ export default function Header({ title, subtitle, actions, hideTitleMobile = fal
             <div className="header-right" style={{ display: 'flex', gap: 'var(--spacing-4)', alignItems: 'center' }}>
                 <button
                     onClick={() => setIsQuestionsModalOpen(true)}
+                    className="hide-mobile"
                     style={{
                         display: 'flex',
                         alignItems: 'center',
@@ -43,7 +44,7 @@ export default function Header({ title, subtitle, actions, hideTitleMobile = fal
                     }}
                 >
                     <ClipboardList size={16} />
-                    <span className="hide-mobile">{t('Aperçu des questions')}</span>
+                    <span>{t('Aperçu des questions')}</span>
                 </button>
                 <LanguageSelector />
                 {actions}

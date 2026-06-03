@@ -175,5 +175,18 @@
   "Condition d'alerte": "Alarmvoorwaarde",
   "Raison médicale": "Medische reden",
   "Obligatoire": "Verplicht",
-  "Optionnelle": "Optioneel"
+  "Optionnelle": "Optioneel",
+  "Pré-admission (J-7)": "Pre-opname (D-7)",
+  "Consignes (J-2)": "Instructies (D-2)",
+  "Admission (J-1)": "Opname (D-1)",
+  "Suivi J+1": "Opvolging D+1",
+  "Satisfaction (J+4)": "Tevredenheid D+4",
+  "e-Satis": "e-Satis",
+  "Activation": "Activatie",
+  "Sécurité & Anesthésie": "Veiligheid & Anesthesie",
+  "Jeûne & Douche": "Vasten & Douchen",
+  "Confirmation venue": "Aankomstbevestiging",
+  "Récupération & Douleur": "Herstel & Pijn",
+  "Enquête clinique": "Klinische enquête",
+  "Enquête nationale": "Nationale enquête"
 }

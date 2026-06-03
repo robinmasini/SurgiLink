@@ -175,5 +175,18 @@
   "Condition d'alerte": "Alert condition",
   "Raison médicale": "Medical rationale",
   "Obligatoire": "Mandatory",
-  "Optionnelle": "Optional"
+  "Optionnelle": "Optional",
+  "Pré-admission (J-7)": "Pre-admission (D-7)",
+  "Consignes (J-2)": "Instructions (D-2)",
+  "Admission (J-1)": "Admission (D-1)",
+  "Suivi J+1": "Follow-up D+1",
+  "Satisfaction (J+4)": "Satisfaction D+4",
+  "e-Satis": "e-Satis",
+  "Activation": "Activation",
+  "Sécurité & Anesthésie": "Security & Anesthesia",
+  "Jeûne & Douche": "Fasting & Showering",
+  "Confirmation venue": "Arrival Confirmation",
+  "Récupération & Douleur": "Recovery & Pain",
+  "Enquête clinique": "Clinical Survey",
+  "Enquête nationale": "National Survey"
 }
