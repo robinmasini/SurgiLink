@@ -160,7 +160,7 @@ export default function Users() {
     return (
         <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--color-gray-50)' }}>
             <Sidebar />
-            <main style={{ flex: 1, padding: 'var(--spacing-8)', marginLeft: 'var(--sidebar-width)' }}>
+            <main className="main-content">
                 <Header
                     title="Gestion des Utilisateurs"
                     subtitle={`${profiles.length} comptes actifs au sein du cabinet`}
