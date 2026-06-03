@@ -168,5 +168,12 @@
   "Questionnaire {{label}} dans :": "Questionnaire {{label}} in:",
   "VOTRE PARCOURS DE SOINS": "YOUR CARE PROGRAMME",
   "Planification SMS": "SMS Schedule",
-  "Tuto OK": "Tutorial OK"
+  "Tuto OK": "Tutorial OK",
+  "Aperçu des questions": "Questionnaire preview",
+  "Aperçu global du questionnaire": "Global questionnaire preview",
+  "Consultez toutes les questions posées aux patients à chaque étape de leur parcours": "View all questions asked to patients at each stage of their journey",
+  "Condition d'alerte": "Alert condition",
+  "Raison médicale": "Medical rationale",
+  "Obligatoire": "Mandatory",
+  "Optionnelle": "Optional"
 }

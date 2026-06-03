@@ -185,5 +185,12 @@
   "Questionnaire {{label}} dans :": "Questionnaire {{label}} dans :",
   "VOTRE PARCOURS DE SOINS": "VOTRE PARCOURS DE SOINS",
   "Planification SMS": "Planification SMS",
-  "Tuto OK": "Tuto OK"
+  "Tuto OK": "Tuto OK",
+  "Aperçu des questions": "Aperçu des questions",
+  "Aperçu global du questionnaire": "Aperçu global du questionnaire",
+  "Consultez toutes les questions posées aux patients à chaque étape de leur parcours": "Consultez toutes les questions posées aux patients à chaque étape de leur parcours",
+  "Condition d'alerte": "Condition d'alerte",
+  "Raison médicale": "Raison médicale",
+  "Obligatoire": "Obligatoire",
+  "Optionnelle": "Optionnelle"
 }

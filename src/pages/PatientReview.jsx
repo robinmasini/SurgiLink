@@ -7,12 +7,15 @@ import EditPatientModal from '../components/EditPatientModal';
 import EditSMSModal from '../components/EditSMSModal';
 import CustomSMSModal from '../components/CustomSMSModal';
 import AddQuestionModal from '../components/AddQuestionModal';
+import QuestionsPreviewModal from '../components/QuestionsPreviewModal';
 import ClinicAppointmentCard from '../components/ClinicAppointmentCard';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
     Calendar,
     User,
     Clipboard,
+    ClipboardList,
     History,
     ChevronLeft,
     Clock,
@@ -77,10 +80,12 @@ const Drawer = ({ isOpen, onClose, title, icon, children }) => {
 export default function PatientReview() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const { t } = useTranslation();
     const [patient, setPatient] = useState(null);
     const [medicalHistory, setMedicalHistory] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isQuestionsModalOpen, setIsQuestionsModalOpen] = useState(false);
     const [clinicalResponses, setClinicalResponses] = useState({
         Bienvenue: {},
         J7: {},
@@ -589,6 +594,14 @@ export default function PatientReview() {
                     </button>
 
                     <div style={{ display: 'flex', gap: 'var(--spacing-3)' }}>
+                        <button 
+                            onClick={() => setIsQuestionsModalOpen(true)}
+                            className="btn btn-secondary btn-sm"
+                            style={{ display: 'flex', alignItems: 'center', gap: '8px', borderRadius: '12px' }}
+                        >
+                            <ClipboardList size={18} />
+                            {t('Aperçu des questions')}
+                        </button>
                         <button 
                             onClick={() => setIsSecureLinkDrawerOpen(true)}
                             className="btn btn-secondary btn-sm"
@@ -1777,6 +1790,11 @@ export default function PatientReview() {
                 isOpen={isAddQuestionModalOpen}
                 onClose={() => setIsAddQuestionModalOpen(false)}
                 onSave={handleAddCustomQuestion}
+            />
+
+            <QuestionsPreviewModal
+                isOpen={isQuestionsModalOpen}
+                onClose={() => setIsQuestionsModalOpen(false)}
             />
             {/* Hidden Report for PDF Generation */}
             <div style={{ position: 'absolute', left: '-9999px', top: '-9999px' }}>
