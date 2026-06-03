@@ -272,20 +272,24 @@ export default function Patients() {
                                         >
                                             <td style={{ padding: 'var(--spacing-3) var(--spacing-4)' }}>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)' }}>
-                                                    <div style={{
-                                                        width: '36px',
-                                                        height: '36px',
-                                                        borderRadius: '50%',
-                                                        background: 'var(--color-primary-100)',
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        justifyContent: 'center',
-                                                        fontSize: 'var(--font-size-sm)',
-                                                        fontWeight: 'var(--font-weight-bold)',
-                                                        color: 'var(--color-primary-700)'
-                                                    }}>
-                                                        {patient.name.split(' ').map(n => n[0]).join('')}
-                                                    </div>
+                                                    <div 
+                                                         className="hide-mobile"
+                                                         style={{
+                                                             width: '36px',
+                                                             height: '36px',
+                                                             borderRadius: '50%',
+                                                             background: 'var(--color-primary-100)',
+                                                             display: 'flex',
+                                                             alignItems: 'center',
+                                                             justifyContent: 'center',
+                                                             fontSize: 'var(--font-size-sm)',
+                                                             fontWeight: 'var(--font-weight-bold)',
+                                                             color: 'var(--color-primary-700)',
+                                                             flexShrink: 0
+                                                         }}
+                                                     >
+                                                         {patient.name.split(' ').map(n => n[0]).join('')}
+                                                     </div>
                                                     <div>
                                                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                                                             <div style={{ fontWeight: '600', color: 'var(--color-gray-900)' }}>{patient.name}</div>
