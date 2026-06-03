@@ -612,34 +612,49 @@ export default function PatientReview() {
                     <div className="patient-review-main">
 
                         {/* 1. Patient Card */}
-                        <div className="card glass-effect" style={{ padding: 'var(--spacing-8)', position: 'relative' }}>
-                            <div style={{ position: 'absolute', top: 'var(--spacing-6)', right: 'var(--spacing-8)' }}>
-                                <StatusBolt status={patient.status} showLabel={true} size={24} />
-                            </div>
+                        <div className="card glass-effect patient-card">
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-6)', position: 'relative' }}>
                                 <div style={{ flex: 1 }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)', marginBottom: 'var(--spacing-2)' }}>
-                                    </div>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)', marginBottom: 'var(--spacing-2)' }}>
-                                        <div style={{
-                                            width: '48px',
-                                            height: '48px',
-                                            borderRadius: '50%',
-                                            background: 'var(--color-primary-100)',
-                                            color: 'var(--color-primary-600)',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            fontSize: 'var(--font-size-lg)',
-                                            fontWeight: 'var(--font-weight-black)',
-                                            flexShrink: 0
-                                        }}>
-                                            {patient.name?.split(' ').map(n => n?.[0]).join('') || '?'}
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 'var(--spacing-4)', flexWrap: 'wrap', marginBottom: 'var(--spacing-2)' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)', flexWrap: 'wrap' }}>
+                                            <div className="hide-mobile" style={{
+                                                width: '48px',
+                                                height: '48px',
+                                                borderRadius: '50%',
+                                                background: 'var(--color-primary-100)',
+                                                color: 'var(--color-primary-600)',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                fontSize: 'var(--font-size-lg)',
+                                                fontWeight: 'var(--font-weight-black)',
+                                                flexShrink: 0
+                                            }}>
+                                                {patient.name?.split(' ').map(n => n?.[0]).join('') || '?'}
+                                            </div>
+                                            <h2 style={{ fontSize: 'var(--font-size-3xl)', margin: 0, fontWeight: 'var(--font-weight-black)' }}>{patient.name}</h2>
+                                            
+                                            <StatusBolt status={patient.status} showLabel={true} size={24} />
                                         </div>
-                                        <h2 style={{ fontSize: 'var(--font-size-3xl)', margin: 0, fontWeight: 'var(--font-weight-black)' }}>{patient.name}</h2>
 
-                                        {/* Critical Signal Badges */}
-                                        <div style={{ display: 'flex', gap: '8px', marginLeft: 'var(--spacing-2)' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                            <button onClick={() => setIsEditModalOpen(true)} style={{ background: 'transparent', border: 'none', color: 'var(--color-gray-400)', cursor: 'pointer' }}>
+                                                <Edit2 size={18} />
+                                            </button>
+                                            <button
+                                                onClick={handleDeletePatient}
+                                                style={{ background: 'transparent', border: 'none', color: 'var(--color-gray-400)', cursor: 'pointer' }}
+                                                className="btn-hover-danger"
+                                                title="Supprimer le patient"
+                                            >
+                                                <Trash2 size={18} />
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {/* Critical Signal Badges */}
+                                    {(clinicalResponses.J1?.pain_level > 3 || clinicalResponses.J1?.site_check === true || clinicalResponses.J1?.worry_check === true || clinicalResponses.J1?.general_state === 'Inquiétant') && (
+                                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: 'var(--spacing-3)' }}>
                                             {clinicalResponses.J1?.pain_level > 3 && (
                                                 <span className="badge badge-danger" style={{ fontSize: '10px', padding: '4px 12px', fontWeight: '700', boxShadow: 'var(--shadow-sm)' }}>
                                                     DOULEUR SIGNALÉE
@@ -656,19 +671,8 @@ export default function PatientReview() {
                                                 </span>
                                             )}
                                         </div>
+                                    )}
 
-                                        <button onClick={() => setIsEditModalOpen(true)} style={{ background: 'transparent', border: 'none', color: 'var(--color-gray-400)', cursor: 'pointer', marginLeft: 'auto' }}>
-                                            <Edit2 size={18} />
-                                        </button>
-                                        <button
-                                            onClick={handleDeletePatient}
-                                            style={{ background: 'transparent', border: 'none', color: 'var(--color-gray-400)', cursor: 'pointer' }}
-                                            className="btn-hover-danger"
-                                            title="Supprimer le patient"
-                                        >
-                                            <Trash2 size={18} />
-                                        </button>
-                                    </div>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-4)', color: 'var(--color-gray-500)', fontSize: 'var(--font-size-md)', marginTop: 'var(--spacing-3)' }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-1)' }}>
                                             <Calendar size={16} />
@@ -683,22 +687,12 @@ export default function PatientReview() {
 
                                     {/* Row 1: Date & Countdown */}
                                     <div style={{ display: 'flex', gap: 'var(--spacing-3)', marginTop: 'var(--spacing-8)', flexWrap: 'wrap', alignItems: 'center' }}>
-                                        <div style={{
-                                            background: 'white',
-                                            color: 'var(--color-primary-700)',
-                                            padding: '10px 24px',
-                                            borderRadius: '25px',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            gap: '12px',
-                                            border: '1px solid var(--color-primary-100)',
-                                            boxShadow: '0 2px 8px rgba(109, 140, 124, 0.08)'
-                                        }}>
+                                        <div className="patient-date-badge">
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                                 <Calendar size={18} style={{ color: 'var(--color-primary-500)' }} />
                                                 <span style={{ fontWeight: '700' }}>{patient.date ? formatDateFR(patient.date) : 'Date non définie'}</span>
                                             </div>
-                                            <div style={{ width: '1px', height: '16px', background: 'var(--color-primary-100)', margin: '0 4px' }} />
+                                            <div className="separator" style={{ width: '1px', height: '16px', background: 'var(--color-primary-100)', margin: '0 4px' }} />
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                                 <Clock size={18} style={{ color: 'var(--color-primary-500)' }} />
                                                 <span style={{ fontWeight: '700' }}>{patient.surgery_time || 'Non-communiquée'}</span>
@@ -743,7 +737,7 @@ export default function PatientReview() {
                                     </div>
 
                                     {/* Row 2: Stay Type & Operation */}
-                                    <div style={{ display: 'flex', gap: 'var(--spacing-3)', marginTop: 'var(--spacing-4)', flexWrap: 'wrap' }}>
+                                    <div style={{ display: 'flex', gap: 'var(--spacing-3)', marginTop: 'var(--spacing-4)', flexWrap: 'wrap', alignItems: 'center' }}>
                                         <span className="badge" style={{
                                             background: '#F5F7FA',
                                             color: '#263238',
@@ -755,36 +749,34 @@ export default function PatientReview() {
                                         }}>
                                             {patient.stay_type || 'Ambulatoire'}
                                         </span>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                            {(patient.operation || '').split(', ').filter(Boolean).map((op, i) => (
-                                                <span key={i} className="badge" style={{
-                                                    background: 'var(--color-primary-50)',
-                                                    color: 'var(--color-primary-600)',
-                                                    padding: '8px 24px',
-                                                    border: '1px solid var(--color-primary-100)',
-                                                    fontSize: '14px',
-                                                    fontWeight: '700',
-                                                    borderRadius: '20px'
-                                                }}>
-                                                    {op}
-                                                </span>
-                                            ))}
-                                            <button
-                                                onClick={() => setIsEditModalOpen(true)}
-                                                style={{
-                                                    background: 'transparent',
-                                                    border: 'none',
-                                                    color: 'var(--color-gray-400)',
-                                                    cursor: 'pointer',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    padding: '4px'
-                                                }}
-                                                title="Modifier l'intervention"
-                                            >
-                                                <Edit2 size={16} />
-                                            </button>
-                                        </div>
+                                        {(patient.operation || '').split(', ').filter(Boolean).map((op, i) => (
+                                            <span key={i} className="badge" style={{
+                                                background: 'var(--color-primary-50)',
+                                                color: 'var(--color-primary-600)',
+                                                padding: '8px 24px',
+                                                border: '1px solid var(--color-primary-100)',
+                                                fontSize: '14px',
+                                                fontWeight: '700',
+                                                borderRadius: '20px'
+                                            }}>
+                                                {op}
+                                            </span>
+                                        ))}
+                                        <button
+                                            onClick={() => setIsEditModalOpen(true)}
+                                            style={{
+                                                background: 'transparent',
+                                                border: 'none',
+                                                color: 'var(--color-gray-400)',
+                                                cursor: 'pointer',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                padding: '4px'
+                                            }}
+                                            title="Modifier l'intervention"
+                                        >
+                                            <Edit2 size={16} />
+                                        </button>
                                     </div>
 
                                     {/* Detailed Info Grid */}
@@ -840,7 +832,7 @@ export default function PatientReview() {
                                                 <Mail size={12} style={{ color: 'var(--color-primary-400)' }} />
                                                 Email
                                             </div>
-                                            <div style={{ fontWeight: '700', color: 'var(--color-gray-900)', fontSize: '16px' }}>
+                                            <div style={{ fontWeight: '700', color: 'var(--color-gray-900)', fontSize: '16px', wordBreak: 'break-all' }}>
                                                 {patient.email || 'Non renseigné'}
                                             </div>
                                         </div>
@@ -851,8 +843,8 @@ export default function PatientReview() {
 
 
                         {/* 3. Clinical Data Area */}
-                        <div className="card glass-effect" style={{ padding: 'var(--spacing-8)' }}>
-                            <div className="card-header" style={{ marginBottom: 'var(--spacing-8)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div className="card glass-effect patient-card">
+                            <div className="patient-card-header">
                                 <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-4)' }}>
                                     <div className="card-icon card-icon-primary" style={{ background: 'var(--color-primary-50)', color: 'var(--color-primary-600)', padding: '0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                         <svg viewBox="0 0 727 745" width="24" height="24" fill="currentColor">
@@ -861,7 +853,7 @@ export default function PatientReview() {
                                     </div>
                                     <h3>Données Cliniques</h3>
                                 </div>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <div className="clinical-header-actions">
                                     {/* Onboarding Status & Reset Button */}
                                     {patient.onboarding_completed_at ? (
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -1073,7 +1065,7 @@ export default function PatientReview() {
                                                             <FileText size={14} />
                                                         </div>
                                                         <div style={{ flex: 1 }}>
-                                                            <div style={{ fontSize: '13px', fontWeight: 'var(--font-weight-medium)' }}>{doc.name}</div>
+                                                            <div style={{ fontSize: '13px', fontWeight: 'var(--font-weight-medium)', wordBreak: 'break-all' }}>{doc.name}</div>
                                                             <div style={{ fontSize: '11px', color: 'var(--color-gray-400)' }}>{doc.size}</div>
                                                         </div>
                                                         <div style={{ display: 'flex', gap: '2px' }}>
@@ -1557,6 +1549,38 @@ export default function PatientReview() {
                     gap: var(--spacing-8);
                 }
 
+                .patient-card {
+                    padding: var(--spacing-8);
+                    position: relative;
+                }
+
+                .patient-card-header {
+                    margin-bottom: var(--spacing-8);
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    gap: var(--spacing-4);
+                }
+
+                .clinical-header-actions {
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    flex-wrap: wrap;
+                }
+
+                .patient-date-badge {
+                    background: white;
+                    color: var(--color-primary-700);
+                    padding: 10px 24px;
+                    border-radius: 25px;
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    border: 1px solid var(--color-primary-100);
+                    box-shadow: 0 2px 8px rgba(109, 140, 124, 0.08);
+                }
+
                 .patient-details-grid {
                     display: grid;
                     grid-template-columns: 1fr;
@@ -1600,6 +1624,36 @@ export default function PatientReview() {
                 @media (min-width: 640px) {
                     .grid-2 {
                         grid-template-columns: 1fr 1fr;
+                    }
+                }
+
+                @media (max-width: 768px) {
+                    .patient-card {
+                        padding: var(--spacing-4) !important;
+                    }
+                    .patient-card-header {
+                        flex-direction: column;
+                        align-items: flex-start;
+                        gap: var(--spacing-4);
+                    }
+                    .clinical-header-actions {
+                        width: 100%;
+                        justify-content: flex-start;
+                        gap: 8px;
+                    }
+                }
+
+                @media (max-width: 480px) {
+                    .patient-date-badge {
+                        flex-direction: column;
+                        align-items: flex-start;
+                        gap: var(--spacing-2);
+                        border-radius: 16px;
+                        padding: 12px 16px;
+                        width: 100%;
+                    }
+                    .patient-date-badge .separator {
+                        display: none !important;
                     }
                 }
 
