@@ -156,19 +156,19 @@ export default function OnboardingFlow() {
                         paddingBottom: isMobile ? '8px' : '24px'
                     }}>
                         <div className="onboarding-logo-container" style={{ 
-                            marginTop: isMobile ? '10px' : '20px', 
-                            marginBottom: isMobile ? '12px' : '20px', 
+                            marginTop: isMobile ? '16px' : '28px', 
+                            marginBottom: isMobile ? '16px' : '28px', 
                             width: '100%', 
                             display: 'flex', 
                             flexDirection: 'column',
                             alignItems: 'center',
-                            gap: isMobile ? '6px' : '10px'
+                            gap: isMobile ? '8px' : '14px'
                         }}>
                             <img 
                                 src={logoSurgilinkGreen} 
                                 alt="SurgiLink" 
                                 style={{ 
-                                    height: isMobile ? '55px' : '85px', 
+                                    height: isMobile ? '80px' : '110px', 
                                     objectFit: 'contain', 
                                     transition: 'height 0.3s ease' 
                                 }} 
@@ -177,7 +177,7 @@ export default function OnboardingFlow() {
                                 src={logoMedicalAlliance} 
                                 alt="Medical Alliance" 
                                 style={{ 
-                                    height: isMobile ? '22px' : '32px', 
+                                    height: isMobile ? '55px' : '75px', 
                                     objectFit: 'contain', 
                                     transition: 'height 0.3s ease' 
                                 }} 
