@@ -1262,6 +1262,10 @@ textarea.input {
   text-align: right;
 }
 
+.show-mobile {
+  display: none !important;
+}
+
 @media (max-width: 1024px) {
   .sidebar {
     display: none !important;
@@ -1294,6 +1298,11 @@ textarea.input {
   /* Hide element on mobile */
   .hide-mobile {
     display: none !important;
+  }
+
+  /* Show element on mobile */
+  .show-mobile {
+    display: flex !important;
   }
 
   .header {

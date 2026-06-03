@@ -9,46 +9,85 @@ export default function Header({ title, subtitle, actions, hideTitleMobile = fal
     const [isQuestionsModalOpen, setIsQuestionsModalOpen] = useState(false);
 
     return (
-        <header className="header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div className={`header-left ${hideTitleMobile ? 'hide-mobile' : ''}`}>
-                <h1>{title}</h1>
-                {subtitle && <p>{subtitle}</p>}
+        <header className="header-container" style={{ display: 'flex', flexDirection: 'column', width: '100%', marginBottom: 'var(--spacing-8)' }}>
+            <div className="header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: 0, width: '100%' }}>
+                <div className={`header-left ${hideTitleMobile ? 'hide-mobile' : ''}`}>
+                    <h1>{title}</h1>
+                    {subtitle && <p>{subtitle}</p>}
+                </div>
+                <div className="header-right" style={{ display: 'flex', gap: 'var(--spacing-4)', alignItems: 'center' }}>
+                    <button
+                        onClick={() => setIsQuestionsModalOpen(true)}
+                        className="hide-mobile"
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 'var(--spacing-2)',
+                            padding: '8px 14px',
+                            borderRadius: '12px',
+                            border: '1px solid var(--color-primary-100)',
+                            background: 'white',
+                            color: 'var(--color-primary-600)',
+                            fontSize: 'var(--font-size-sm)',
+                            fontWeight: '700',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s',
+                            boxShadow: 'var(--shadow-sm)',
+                            height: '38px'
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.border = '1px solid var(--color-primary-200)';
+                            e.currentTarget.style.background = 'var(--color-primary-50)';
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.border = '1px solid var(--color-primary-100)';
+                            e.currentTarget.style.background = 'white';
+                        }}
+                    >
+                        <ClipboardList size={16} />
+                        <span>{t('Aperçu des questions')}</span>
+                    </button>
+                    <LanguageSelector />
+                    {actions}
+                </div>
             </div>
-            <div className="header-right" style={{ display: 'flex', gap: 'var(--spacing-4)', alignItems: 'center' }}>
-                <button
-                    onClick={() => setIsQuestionsModalOpen(true)}
-                    className="hide-mobile"
-                    style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 'var(--spacing-2)',
-                        padding: '8px 14px',
-                        borderRadius: '12px',
-                        border: '1px solid var(--color-primary-100)',
-                        background: 'white',
-                        color: 'var(--color-primary-600)',
-                        fontSize: 'var(--font-size-sm)',
-                        fontWeight: '700',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s',
-                        boxShadow: 'var(--shadow-sm)',
-                        height: '38px'
-                    }}
-                    onMouseEnter={(e) => {
-                        e.currentTarget.style.border = '1px solid var(--color-primary-200)';
-                        e.currentTarget.style.background = 'var(--color-primary-50)';
-                    }}
-                    onMouseLeave={(e) => {
-                        e.currentTarget.style.border = '1px solid var(--color-primary-100)';
-                        e.currentTarget.style.background = 'white';
-                    }}
-                >
-                    <ClipboardList size={16} />
-                    <span>{t('Aperçu des questions')}</span>
-                </button>
-                <LanguageSelector />
-                {actions}
-            </div>
+
+            {/* Mobile Button - rendered below Translation and Add Patient actions */}
+            <button
+                onClick={() => setIsQuestionsModalOpen(true)}
+                className="show-mobile"
+                style={{
+                    display: 'none', // Overridden by CSS media query on mobile
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 'var(--spacing-2)',
+                    padding: '10px 16px',
+                    borderRadius: '12px',
+                    border: '1px solid var(--color-primary-100)',
+                    background: 'white',
+                    color: 'var(--color-primary-600)',
+                    fontSize: 'var(--font-size-sm)',
+                    fontWeight: '700',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    boxShadow: 'var(--shadow-sm)',
+                    height: '42px',
+                    width: '100%',
+                    marginTop: 'var(--spacing-3)'
+                }}
+                onMouseEnter={(e) => {
+                    e.currentTarget.style.border = '1px solid var(--color-primary-200)';
+                    e.currentTarget.style.background = 'var(--color-primary-50)';
+                }}
+                onMouseLeave={(e) => {
+                    e.currentTarget.style.border = '1px solid var(--color-primary-100)';
+                    e.currentTarget.style.background = 'white';
+                }}
+            >
+                <ClipboardList size={16} />
+                <span>{t('Aperçu des questions')}</span>
+            </button>
+
             <QuestionsPreviewModal isOpen={isQuestionsModalOpen} onClose={() => setIsQuestionsModalOpen(false)} />
         </header>
     );
