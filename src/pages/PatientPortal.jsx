@@ -636,7 +636,7 @@ export default function PatientPortal({ patient: initialPatient }) {
                     borderRadius: '32px',
                     overflow: 'hidden',
                     marginBottom: '24px',
-                    background: '#f9fafb',
+                    background: '#e2e8e5',
                     animation: isUpToDate ? 'glowPulse 3s infinite alternate' : 'none',
                     boxShadow: '0 10px 30px rgba(179, 150, 122, 0.1)'
                 }}>
@@ -652,7 +652,15 @@ export default function PatientPortal({ patient: initialPatient }) {
                     <img 
                         src={isUpToDate ? suiviCard : suiviCardBw} 
                         alt="" 
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                        style={{ 
+                            position: 'absolute',
+                            right: '16px',
+                            top: '8%',
+                            height: '84%',
+                            width: 'auto',
+                            objectFit: 'contain',
+                            zIndex: 1
+                        }} 
                     />
 
 
