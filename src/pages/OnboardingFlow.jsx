@@ -6,7 +6,6 @@ import { validateToken } from '../services/tokenService';
 import { saveResponse, markScreenCompleted } from '../services/pathwayService';
 import logoSlMa from '../assets/logo-sl-ma.png';
 import medecinImg from '../assets/medecin.png';
-import phoneExempleImg from '../assets/phone-exemple.png';
 import smsImg from '../assets/sms.png';
 import cardMedicalImg from '../assets/card-medical.png';
 import wppPhone from '../assets/wpp-phone-v2.png';
@@ -232,58 +231,68 @@ export default function OnboardingFlow() {
                     </div>
                 )}
 
-                {step === 2 && (
+                 {step === 2 && (
                     <div className="step-container fadeIn" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                         <div className="onboarding-header-card" style={{ 
                             borderRadius: '30px', 
                             overflow: 'hidden', 
-                            height: '240px',
-                            boxShadow: '0 20px 40px rgba(0,0,0,0.3)',
-                            marginBottom: 'var(--spacing-6)'
+                            height: isMobile ? '130px' : '240px',
+                            boxShadow: '0 15px 30px rgba(0,0,0,0.15)',
+                            marginBottom: isMobile ? '12px' : 'var(--spacing-6)',
+                            transition: 'height 0.3s ease'
                         }}>
                             <img src={cardMedicalImg} alt="SurgiLink Medical" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                         </div>
 
                         <div className="onboarding-info-container" style={{ color: '#4b5563', flex: 1 }}>
-                            <h2 style={{ fontSize: '1.4rem', fontWeight: '700', marginBottom: 'var(--spacing-4)', display: 'flex', alignItems: 'center', gap: '8px', color: '#1f2937' }}>
+                            <h2 style={{ 
+                                fontSize: isMobile ? '1.15rem' : '1.4rem', 
+                                fontWeight: '700', 
+                                marginBottom: isMobile ? '10px' : 'var(--spacing-4)', 
+                                display: 'flex', 
+                                alignItems: 'center', 
+                                gap: '8px', 
+                                color: '#1f2937',
+                                lineHeight: 1.25
+                            }}>
                                 Tout au long de votre opération, nous restons à vos côtés !
                             </h2>
 
                             <div className="info-badge" style={{ 
                                 background: '#f9fafb', 
-                                padding: '10px 20px', 
+                                padding: isMobile ? '8px 16px' : '10px 20px', 
                                 borderRadius: '15px', 
                                 display: 'flex', 
                                 alignItems: 'center', 
                                 gap: '12px',
-                                marginBottom: 'var(--spacing-4)',
+                                marginBottom: isMobile ? '10px' : 'var(--spacing-4)',
                                 border: '1px solid #e5e7eb',
                                 boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
                             }}>
-                                <img src={smsImg} alt="SMS" style={{ height: '32px' }} />
-                                <span style={{ fontWeight: '600', color: '#374151' }}>Suivi SMS : Questionnaires</span>
+                                <img src={smsImg} alt="SMS" style={{ height: isMobile ? '26px' : '32px' }} />
+                                <span style={{ fontWeight: '600', color: '#374151', fontSize: isMobile ? '14px' : '16px' }}>Suivi SMS : Questionnaires</span>
                             </div>
 
-                            <p style={{ fontSize: '0.95rem', lineHeight: '1.6', opacity: 0.9, marginBottom: 'var(--spacing-6)' }}>
+                            <p style={{ fontSize: isMobile ? '0.85rem' : '0.95rem', lineHeight: '1.5', opacity: 0.9, marginBottom: isMobile ? '8px' : 'var(--spacing-6)' }}>
                                 SurgiLink est un assistant de suivi chirurgical qui va vous accompagner avant et après votre intervention.
                             </p>
 
-                            <p style={{ fontSize: '0.95rem', lineHeight: '1.6', opacity: 0.9, marginBottom: 'var(--spacing-6)' }}>
+                            <p style={{ fontSize: isMobile ? '0.85rem' : '0.95rem', lineHeight: '1.5', opacity: 0.9, marginBottom: isMobile ? '8px' : 'var(--spacing-6)' }}>
                                 💬 Vous recevrez des SMS à chaque étape clé <strong>(J-7, J-2, etc.)</strong>, afin de vous accompagner sereinement.
                             </p>
 
-                            <p style={{ fontSize: '0.95rem', lineHeight: '1.6', opacity: 0.9, marginBottom: 'var(--spacing-6)' }}>
+                            <p style={{ fontSize: isMobile ? '0.85rem' : '0.95rem', lineHeight: '1.5', opacity: 0.9, marginBottom: isMobile ? '8px' : 'var(--spacing-6)' }}>
                                 ⚠️ Il est essentiel de bien les consulter et de <strong>répondre au questionnaire via le lien qui vous sera envoyé dans le message</strong> : Cela ne vous prendra que quelques petites secondes !
                             </p>
 
-                            <p style={{ fontSize: '0.95rem', lineHeight: '1.6', opacity: 0.9, marginBottom: 'var(--spacing-8)' }}>
+                            <p style={{ fontSize: isMobile ? '0.85rem' : '0.95rem', lineHeight: '1.5', opacity: 0.9, marginBottom: isMobile ? '12px' : 'var(--spacing-8)' }}>
                                 Avec nous, vous êtes accompagné(e) <strong>avec clarté et sérénité tout au long de votre parcours de soins !</strong>
                             </p>
 
-                            <div className="timeline-container" style={{ position: 'relative', marginBottom: 'var(--spacing-10)' }}>
+                            <div className="timeline-container" style={{ position: 'relative', marginBottom: isMobile ? '16px' : 'var(--spacing-10)' }}>
                                 <div className="timeline-line" style={{ 
                                     position: 'absolute', 
-                                    top: '30px', 
+                                    top: isMobile ? '18px' : '30px', 
                                     left: '0', 
                                     right: '0', 
                                     height: '2px', 
@@ -292,31 +301,32 @@ export default function OnboardingFlow() {
                                 }} />
                                 <div className="timeline-items" style={{ display: 'flex', justifyContent: 'space-between', position: 'relative', zIndex: 1, padding: '0 5px' }}>
                                     {['J-7', 'J-2', 'J-1', 'J-J', 'J+1', 'J+2', 'J+7'].map((day) => (
-                                        <div key={day} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                                        <div key={day} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: isMobile ? '4px' : '8px' }}>
                                             <div style={{ 
-                                                width: '24px', 
-                                                height: '24px', 
+                                                width: isMobile ? '14px' : '24px', 
+                                                height: isMobile ? '14px' : '24px', 
                                                 borderRadius: '50%', 
                                                 background: '#ffffff',
                                                 border: '2px solid #e5e7eb'
                                             }} />
-                                            <span style={{ fontSize: '0.75rem', fontWeight: '600', color: '#6b7280' }}>{day}</span>
+                                            <span style={{ fontSize: isMobile ? '0.65rem' : '0.75rem', fontWeight: '600', color: '#6b7280' }}>{day}</span>
                                         </div>
                                     ))}
                                 </div>
                             </div>
 
-                            <div className="onboarding-bottom-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '20px' }}>
-                                <div className="phone-preview" style={{ width: '100px' }}>
-                                    <img src={phoneExempleImg} alt="App Preview" style={{ width: '100%', filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.5))' }} />
-                                </div>
-
+                            <div className="onboarding-bottom-row" style={{ 
+                                display: 'flex', 
+                                alignItems: 'center', 
+                                justifyContent: 'center',
+                                marginTop: isMobile ? '8px' : '20px'
+                            }}>
                                 <button 
                                     onClick={handleComplete}
                                     style={{ 
-                                        flex: 1,
-                                        maxWidth: '220px',
-                                        height: '60px', 
+                                        width: '100%',
+                                        maxWidth: '280px',
+                                        height: isMobile ? '50px' : '60px', 
                                         borderRadius: '30px', 
                                         background: 'var(--color-purple-600)',
                                         border: 'none',
@@ -330,8 +340,8 @@ export default function OnboardingFlow() {
                                         padding: '0 25px'
                                     }}
                                 >
-                                    <span style={{ fontWeight: '800', fontSize: '1.1rem', letterSpacing: '0.02em' }}>CONTINUER</span>
-                                    <ArrowRight size={24} />
+                                    <span style={{ fontWeight: '800', fontSize: isMobile ? '1rem' : '1.1rem', letterSpacing: '0.02em' }}>CONTINUER</span>
+                                    <ArrowRight size={isMobile ? 20 : 24} />
                                 </button>
                             </div>
                         </div>
