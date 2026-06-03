@@ -41,23 +41,23 @@ export default function MobileNavbar() {
                 </Link>
 
                 <Link
-                    to={navItems[1].path}
-                    className={`mobile-nav-item ${location.pathname === navItems[1].path ? 'active' : ''}`}
-                >
-                    <Stethoscope size={24} />
-                </Link>
-
-                <div className="mobile-nav-logo-prominent">
-                    <div className="mobile-nav-logo-bg">
-                        <LogoIcon width="32px" />
-                    </div>
-                </div>
-
-                <Link
                     to={navItems[2].path}
                     className={`mobile-nav-item ${location.pathname === navItems[2].path ? 'active' : ''}`}
                 >
                     <Users size={24} />
+                </Link>
+
+                <div className="mobile-nav-logo-prominent">
+                    <div className="mobile-nav-logo-bg">
+                        <LogoIcon width="22px" />
+                    </div>
+                </div>
+
+                <Link
+                    to={navItems[1].path}
+                    className={`mobile-nav-item ${location.pathname === navItems[1].path ? 'active' : ''}`}
+                >
+                    <Stethoscope size={24} />
                 </Link>
 
                 <Link
