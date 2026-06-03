@@ -25,7 +25,7 @@ export default function MobileNavbar() {
 
     const navItems = [
         { path: '/dashboard', icon: LayoutDashboard },
-        { path: '/review/active', icon: Stethoscope },
+        { path: '/hopital-manager', icon: Stethoscope },
         { path: '/patients', icon: Users },
         { path: '/rentabilite', icon: TrendingUp },
     ];

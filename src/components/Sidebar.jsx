@@ -20,6 +20,7 @@ import { useTranslation } from 'react-i18next';
 const navItems = [
     { path: '/dashboard', label: 'Tableau de bord', icon: LayoutDashboard },
     { path: '/patients', label: 'Listes patients', icon: Users },
+    { path: '/hopital-manager', label: 'Hopital Manager', icon: Stethoscope },
     { path: '/comments', label: 'Commentaires Patients', icon: MessageSquare },
     { path: '/rentabilite', label: 'Rentabilité ROI', icon: BarChart3 },
     { path: '/users', label: 'Utilisateurs', icon: UserCog },

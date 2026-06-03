@@ -20,6 +20,7 @@ import PatientPathwayTracker from './components/PatientPathwayTracker';
 import PatientPortal from './pages/PatientPortal';
 import OnboardingFlow from './pages/OnboardingFlow';
 import Comments from './pages/Comments';
+import HopitalManager from './pages/HopitalManager';
 import ProtectedRoute from './components/ProtectedRoute';
 import PatientTokenRoute from './components/PatientTokenRoute';
 import MobileNavbar from './components/MobileNavbar';
@@ -37,6 +38,7 @@ function App() {
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/patients" element={<ProtectedRoute><Patients /></ProtectedRoute>} />
         <Route path="/comments" element={<ProtectedRoute><Comments /></ProtectedRoute>} />
+        <Route path="/hopital-manager" element={<ProtectedRoute><HopitalManager /></ProtectedRoute>} />
         <Route path="/rentabilite" element={<ProtectedRoute><Rentabilite /></ProtectedRoute>} />
         <Route path="/users" element={<ProtectedRoute requiredRole="practitioner"><Users /></ProtectedRoute>} />
         <Route path="/patient/:id" element={<ProtectedRoute><PatientReview /></ProtectedRoute>} />
