@@ -80,6 +80,15 @@ export async function queueReminder(patientId, screen, itemId, scheduledFor, rem
 export async function processPendingReminders(supabaseClient = null) {
     const db = supabaseClient || supabase;
     try {
+        // Guard: only allow automated sends between 8:00 AM and 8:00 PM Paris time
+        const now = new Date();
+        const parisTime = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Paris' }));
+        const parisHour = parisTime.getHours();
+        if (parisHour < 8 || parisHour >= 20) {
+            console.log(`[ReminderService] Execution blocked: Current Paris hour is ${parisHour}h, which is outside the authorized window (08:00 - 20:00).`);
+            return { processed: 0, sent: 0, failed: 0, blocked: true, reason: 'outside_authorized_hours' };
+        }
+
         // Get pending reminders that are due
         const { data: reminders, error } = await db
             .from('reminder_queue')
