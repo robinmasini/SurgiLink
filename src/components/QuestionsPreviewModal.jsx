@@ -282,30 +282,40 @@ export default function QuestionsPreviewModal({ isOpen, onClose }) {
                                 key={tab.key}
                                 onClick={() => setActiveTab(tab.key)}
                                 role="button"
+                                title={`${t(tab.label)} (${t(tab.subtitle)})`}
                                 style={{
                                     display: 'flex',
                                     flexDirection: 'column',
                                     alignItems: 'center',
-                                    gap: '2px',
-                                    padding: isMobile ? '12px 6px 10px' : '10px 16px 14px',
-                                    borderBottom: isActive ? '3px solid var(--color-primary-500)' : '3px solid transparent',
+                                    justifyContent: 'center',
+                                    padding: isMobile ? '12px 6px 10px' : '14px 24px',
+                                    borderBottom: isActive ? '3.5px solid var(--color-primary-500)' : '3.5px solid transparent',
                                     color: isActive ? 'var(--color-primary-600)' : 'var(--color-gray-500)',
                                     cursor: 'pointer',
                                     transition: 'all 0.2s',
-                                    whiteSpace: 'nowrap',
                                     outline: 'none',
                                     userSelect: 'none',
                                     flex: isMobile ? '1' : 'none',
-                                    textAlign: 'center'
+                                    textAlign: 'center',
+                                    opacity: isActive ? 1 : 0.65
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.opacity = '1';
+                                }}
+                                onMouseLeave={(e) => {
+                                    if (!isActive) e.currentTarget.style.opacity = '0.65';
                                 }}
                             >
-                                <span style={{ fontSize: isMobile ? '20px' : '18px' }}>{tab.icon}</span>
-                                {!isMobile && (
-                                    <>
-                                        <span style={{ fontSize: '13px', fontWeight: isActive ? '700' : '500' }}>{t(tab.label)}</span>
-                                        <span style={{ fontSize: '10px', color: 'var(--color-gray-400)', fontWeight: '400' }}>{t(tab.subtitle)}</span>
-                                    </>
-                                )}
+                                <span 
+                                    style={{ 
+                                        fontSize: isMobile ? '20px' : '26px', 
+                                        transition: 'transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
+                                    }}
+                                    onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.25)'}
+                                    onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                                >
+                                    {tab.icon}
+                                </span>
                             </div>
                         );
                     })}
