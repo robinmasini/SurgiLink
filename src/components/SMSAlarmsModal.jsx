@@ -1,104 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {
     X,
-    Send,
-    Save,
-    AlertTriangle,
     Clock,
-    TrendingDown,
-    RefreshCw,
-    CheckCircle2,
+    ShieldCheck,
     Zap,
-    Bell
+    Smartphone
 } from 'lucide-react';
-import { supabase } from '../lib/supabase';
 
-export default function SMSAlarmsModal({ isOpen, onClose, onSuccess }) {
-    const [isLoading, setIsLoading] = useState(false);
-    const [isSaving, setIsSaving] = useState(false);
-    const [settings, setSettings] = useState({
-        financial_impact_unit: 2450,
-        status_rules: {
-            no_portal_access_hours: 24,
-            j7_incomplete_days: 7,
-            j2_incomplete_days: 2,
-            j3_critical_upgrade: 3,
-            progress_warning_threshold: 50,
-            progress_critical_threshold: 80,
-            progress_success_threshold: 100,
-            assiduité_success_enabled: true
-        },
-        reminder_offsets: {
-            welcome: -10,
-            j7: -7,
-            j2: -2,
-            j1: -1,
-            j0: 0,
-            j1_postop: 1,
-            j4_satisfaction: 4,
-            esatis: 4
-        }
-    });
-
-    useEffect(() => {
-        if (isOpen) {
-            loadSettings();
-        }
-    }, [isOpen]);
-
-    const loadSettings = async () => {
-        setIsLoading(true);
-        try {
-            const { data, error } = await supabase
-                .from('app_settings')
-                .select('*');
-
-            if (error) throw error;
-
-            if (data && data.length > 0) {
-                const newSettings = { ...settings };
-                data.forEach(item => {
-                    if (item.key === 'financial_impact_unit') {
-                        newSettings.financial_impact_unit = parseInt(item.value);
-                    } else if (item.key === 'status_rules' || item.key === 'reminder_offsets') {
-                        newSettings[item.key] = typeof item.value === 'string' ? JSON.parse(item.value) : item.value;
-                    }
-                });
-                setSettings(newSettings);
-            }
-        } catch (err) {
-            console.error('Error loading settings:', err);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const handleSave = async () => {
-        setIsSaving(true);
-        try {
-            const updates = [
-                { key: 'financial_impact_unit', value: settings.financial_impact_unit.toString() },
-                { key: 'status_rules', value: settings.status_rules },
-                { key: 'reminder_offsets', value: settings.reminder_offsets }
-            ];
-
-            for (const update of updates) {
-                const { error } = await supabase
-                    .from('app_settings')
-                    .upsert(update);
-                if (error) throw error;
-            }
-
-            if (onSuccess) onSuccess();
-            onClose();
-        } catch (err) {
-            console.error('Error saving settings:', err);
-            alert('Erreur lors de la sauvegarde : ' + err.message);
-        } finally {
-            setIsSaving(false);
-        }
-    };
-
+export default function SMSAlarmsModal({ isOpen, onClose }) {
     if (!isOpen) return null;
 
     return (
@@ -118,7 +27,7 @@ export default function SMSAlarmsModal({ isOpen, onClose, onSuccess }) {
         }}>
             <div className="card fade-in" style={{
                 width: '100%',
-                maxWidth: '650px',
+                maxWidth: '600px',
                 background: 'white',
                 borderRadius: 'var(--radius-2xl)',
                 boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
@@ -146,11 +55,11 @@ export default function SMSAlarmsModal({ isOpen, onClose, onSuccess }) {
                             alignItems: 'center',
                             justifyContent: 'center'
                         }}>
-                            <Bell size={24} fill="currentColor" />
+                            <Smartphone size={24} />
                         </div>
                         <div>
-                            <h2 style={{ fontSize: 'var(--font-size-xl)', fontWeight: '800', margin: 0 }}>Alarme vigilance & Pilotage</h2>
-                            <p style={{ fontSize: '12px', opacity: 0.8, margin: 0 }}>Configurez les seuils de vigilance et l'impact économique</p>
+                            <h2 style={{ fontSize: 'var(--font-size-xl)', fontWeight: '800', margin: 0 }}>Planification & Délivrance SMS</h2>
+                            <p style={{ fontSize: '12px', opacity: 0.8, margin: 0 }}>Règles d'envoi et conformité légale de l'assistant</p>
                         </div>
                     </div>
                     <button onClick={onClose} style={{
@@ -169,223 +78,120 @@ export default function SMSAlarmsModal({ isOpen, onClose, onSuccess }) {
                     </button>
                 </div>
 
-                <div style={{ padding: 'var(--spacing-8)', overflowY: 'auto' }}>
-                    {isLoading ? (
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'var(--spacing-4)', padding: 'var(--spacing-8)' }}>
-                            <RefreshCw size={40} className="animate-spin" style={{ color: 'var(--color-primary-500)' }} />
-                            <p style={{ color: 'var(--color-gray-500)', fontWeight: '600' }}>Chargement des réglages...</p>
+                {/* Content */}
+                <div style={{ padding: 'var(--spacing-8)', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 'var(--spacing-6)' }}>
+                    
+                    {/* Time Window Section */}
+                    <div className="card" style={{ 
+                        padding: 'var(--spacing-5)', 
+                        background: 'linear-gradient(135deg, #FFFDF5 0%, #FFF 100%)', 
+                        border: '1px solid #FEF3C7',
+                        borderRadius: '16px'
+                    }}>
+                        <div style={{ display: 'flex', gap: 'var(--spacing-4)' }}>
+                            <div style={{
+                                width: '40px',
+                                height: '40px',
+                                borderRadius: '10px',
+                                background: '#FEF3C7',
+                                color: '#D97706',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                flexShrink: 0
+                            }}>
+                                <Clock size={22} />
+                            </div>
+                            <div>
+                                <h3 style={{ fontSize: '15px', fontWeight: '800', color: '#92400E', margin: '0 0 6px 0' }}>
+                                    Créneau Légal Obligatoire (8h00 - 20h00)
+                                </h3>
+                                <p style={{ fontSize: '13px', color: '#78350F', lineHeight: '1.5', margin: 0 }}>
+                                    Conformément à la réglementation française des télécommunications, aucun SMS automatisé n'est expédié en dehors de la plage <strong>08h00 - 20h00</strong>. Les envois de nuit ou tôt le matin sont strictement bloqués pour le respect des patients.
+                                </p>
+                            </div>
                         </div>
-                    ) : (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-8)' }}>
+                    </div>
 
-                            {/* Financial Impact */}
-                            <section>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)', marginBottom: 'var(--spacing-4)' }}>
-                                    <TrendingDown size={18} style={{ color: 'var(--color-danger-500)' }} />
-                                    <h3 style={{ fontSize: '14px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-gray-500)', margin: 0 }}>
-                                        Impact Financier Potentiel
-                                    </h3>
-                                </div>
-                                <div className="card" style={{ padding: 'var(--spacing-5)', background: 'var(--color-gray-50)', border: '1px solid var(--color-gray-100)' }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-4)' }}>
-                                        <div style={{ flex: 1 }}>
-                                            <label style={{ display: 'block', fontSize: '13px', fontWeight: '700', marginBottom: '8px' }}>
-                                                Coût moyen par patient non-validé (€)
-                                            </label>
-                                            <input
-                                                type="number"
-                                                className="input"
-                                                value={settings.financial_impact_unit}
-                                                onChange={(e) => setSettings({ ...settings, financial_impact_unit: parseInt(e.target.value) || 0 })}
-                                                style={{ fontSize: '18px', fontWeight: '800' }}
-                                            />
-                                        </div>
-                                        <div style={{
-                                            padding: '12px 20px',
-                                            background: 'white',
-                                            borderRadius: '12px',
-                                            border: '1px solid var(--color-gray-200)',
-                                            textAlign: 'center'
-                                        }}>
-                                            <div style={{ fontSize: '10px', color: 'var(--color-gray-400)', fontWeight: '700', textTransform: 'uppercase' }}>Exemple (4 patients)</div>
-                                            <div style={{ fontSize: '20px', fontWeight: '900', color: 'var(--color-danger-600)' }}>-{settings.financial_impact_unit * 4}€</div>
-                                        </div>
+                    {/* Automatic Triggers Section */}
+                    <div className="card" style={{ 
+                        padding: 'var(--spacing-5)', 
+                        background: 'var(--color-gray-50)', 
+                        border: '1px solid var(--color-gray-100)',
+                        borderRadius: '16px'
+                    }}>
+                        <div style={{ display: 'flex', gap: 'var(--spacing-4)' }}>
+                            <div style={{
+                                width: '40px',
+                                height: '40px',
+                                borderRadius: '10px',
+                                background: 'var(--color-primary-50)',
+                                color: 'var(--color-primary-600)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                flexShrink: 0
+                            }}>
+                                <Zap size={22} />
+                            </div>
+                            <div style={{ flex: 1 }}>
+                                <h3 style={{ fontSize: '15px', fontWeight: '800', color: 'var(--color-primary-900)', margin: '0 0 6px 0' }}>
+                                    Déclenchement Automatique Quotidien
+                                </h3>
+                                <p style={{ fontSize: '13px', color: 'var(--color-gray-600)', lineHeight: '1.5', margin: '0 0 12px 0' }}>
+                                    Les rappels de dossier (Bienvenue, J-7, J-2, J-1, Jour J) programmés à <strong>8h30</strong> sont traités automatiquement via deux tâches planifiées indépendantes sur nos serveurs :
+                                </p>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', fontWeight: '600', color: 'var(--color-gray-700)' }}>
+                                        <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--color-primary-500)' }} />
+                                        <span><strong>Tâche Matin (8h30 locale)</strong> : Déclenchement à 8h30 en été (6h30 UTC) et 8h30 en hiver (7h30 UTC).</span>
+                                    </div>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', fontWeight: '600', color: 'var(--color-gray-700)' }}>
+                                        <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--color-primary-500)' }} />
+                                        <span><strong>Tâche Soir (18h00 locale)</strong> : Passage de sécurité à 18h00 en été (16h00 UTC) et 17h00 en hiver (16h00 UTC).</span>
                                     </div>
                                 </div>
-                            </section>
-
-                            {/* Status Rules */}
-                            <section>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)', marginBottom: 'var(--spacing-4)' }}>
-                                    <AlertTriangle size={18} style={{ color: 'var(--color-warning-500)' }} />
-                                    <h3 style={{ fontSize: '14px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-gray-500)', margin: 0 }}>
-                                        Règles de Vigilance
-                                    </h3>
-                                </div>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-4)' }}>
-                                    <div className="card" style={{ padding: 'var(--spacing-4)' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                                            <Zap size={16} color="var(--color-warning-500)" fill="var(--color-warning-500)" style={{ flexShrink: 0 }} />
-                                            <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: 'var(--color-gray-700)', margin: 0 }}>
-                                                Protocole incomplet (Consulté mais réponses manquantes)
-                                            </label>
-                                        </div>
-                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                                            <div>
-                                                <span style={{ fontSize: '11px', color: 'var(--color-gray-500)' }}>Pas d'accès au portail après :</span>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
-                                                    <input
-                                                        type="number"
-                                                        className="input"
-                                                        value={settings.status_rules.no_portal_access_hours}
-                                                        onChange={(e) => setSettings({ ...settings, status_rules: { ...settings.status_rules, no_portal_access_hours: parseInt(e.target.value) || 0 } })}
-                                                        style={{ padding: '4px 8px', width: '60px' }}
-                                                    />
-                                                    <span style={{ fontSize: '12px', fontWeight: '600' }}>Heures</span>
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <span style={{ fontSize: '11px', color: 'var(--color-gray-500)' }}>Questionnaire J-7 non-fait à :</span>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
-                                                    <input
-                                                        type="number"
-                                                        className="input"
-                                                        value={settings.status_rules.j7_incomplete_days}
-                                                        onChange={(e) => setSettings({ ...settings, status_rules: { ...settings.status_rules, j7_incomplete_days: parseInt(e.target.value) || 0 } })}
-                                                        style={{ padding: '4px 8px', width: '60px' }}
-                                                    />
-                                                    <span style={{ fontSize: '12px', fontWeight: '600' }}>Jours</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="card" style={{ padding: 'var(--spacing-4)' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                                            <Zap size={16} color="var(--color-danger-500)" fill="var(--color-danger-500)" style={{ flexShrink: 0 }} />
-                                            <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: 'var(--color-gray-700)', margin: 0 }}>
-                                                Aucune réponse (Déjà contacté, 0 interaction)
-                                            </label>
-                                        </div>
-                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                                            <div>
-                                                <span style={{ fontSize: '11px', color: 'var(--color-gray-500)' }}>Protocole incomplet à partir de :</span>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
-                                                    <input
-                                                        type="number"
-                                                        className="input"
-                                                        value={settings.status_rules.j3_critical_upgrade}
-                                                        onChange={(e) => setSettings({ ...settings, status_rules: { ...settings.status_rules, j3_critical_upgrade: parseInt(e.target.value) || 0 } })}
-                                                        style={{ padding: '4px 8px', width: '60px' }}
-                                                    />
-                                                    <span style={{ fontSize: '12px', fontWeight: '600' }}>J-(x)</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="card" style={{ padding: 'var(--spacing-4)', gridColumn: 'span 2' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                                            <Zap size={16} color="var(--color-success-500)" fill="var(--color-success-500)" style={{ flexShrink: 0 }} />
-                                            <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: 'var(--color-gray-700)', margin: 0 }}>
-                                                Performance (Succès et assiduité)
-                                            </label>
-                                        </div>
-                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                                <div style={{
-                                                    width: '32px',
-                                                    height: '32px',
-                                                    borderRadius: '50%',
-                                                    background: 'var(--color-success-50)',
-                                                    color: 'var(--color-success-600)',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center'
-                                                }}>
-                                                    <Zap size={16} fill="currentColor" />
-                                                </div>
-                                                <div style={{ flex: 1 }}>
-                                                    <div style={{ fontSize: '11px', color: 'var(--color-gray-500)' }}>Cercle vert si assiduité à 100% :</div>
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
-                                                        <label className="switch" style={{ display: 'inline-flex', alignItems: 'center', cursor: 'pointer' }}>
-                                                            <input
-                                                                type="checkbox"
-                                                                checked={settings.status_rules.assiduité_success_enabled}
-                                                                onChange={(e) => setSettings({ ...settings, status_rules: { ...settings.status_rules, assiduité_success_enabled: e.target.checked } })}
-                                                                style={{ width: 'auto', marginRight: '8px' }}
-                                                            />
-                                                            <span style={{ fontSize: '12px', fontWeight: '600' }}>Activé</span>
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <span style={{ fontSize: '11px', color: 'var(--color-gray-500)' }}>OU Seuil de succès de complétion :</span>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
-                                                    <input
-                                                        type="number"
-                                                        className="input"
-                                                        value={settings.status_rules.progress_success_threshold}
-                                                        onChange={(e) => setSettings({ ...settings, status_rules: { ...settings.status_rules, progress_success_threshold: parseInt(e.target.value) || 0 } })}
-                                                        style={{ padding: '4px 8px', width: '60px' }}
-                                                    />
-                                                    <span style={{ fontSize: '12px', fontWeight: '600' }}>%</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </section>
-
-                            {/* SMS Schedule */}
-                            <section>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)', marginBottom: 'var(--spacing-4)' }}>
-                                    <Clock size={18} style={{ color: 'var(--color-primary-500)' }} />
-                                    <h3 style={{ fontSize: '14px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-gray-500)', margin: 0 }}>
-                                        Délais des Rappels SMS (Planification)
-                                    </h3>
-                                </div>
-                                <div className="card" style={{ padding: 'var(--spacing-5)' }}>
-                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 'var(--spacing-4)' }}>
-                                        {['j7', 'j2', 'j1', 'j0'].map(key => (
-                                            <div key={key}>
-                                                <label style={{ display: 'block', fontSize: '10px', fontWeight: '800', color: 'var(--color-gray-400)', textTransform: 'uppercase', marginBottom: '4px' }}>
-                                                    {key.toUpperCase()}
-                                                </label>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                                    <input
-                                                        type="number"
-                                                        className="input"
-                                                        value={settings.reminder_offsets[key]}
-                                                        onChange={(e) => setSettings({
-                                                            ...settings,
-                                                            reminder_offsets: { ...settings.reminder_offsets, [key]: parseInt(e.target.value) || 0 }
-                                                        })}
-                                                        style={{ padding: '4px 8px', fontWeight: '700' }}
-                                                    />
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                    <div style={{
-                                        marginTop: 'var(--spacing-4)',
-                                        padding: 'var(--spacing-3)',
-                                        background: 'var(--color-primary-50)',
-                                        borderRadius: '8px',
-                                        fontSize: '11px',
-                                        color: 'var(--color-primary-700)',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '8px'
-                                    }}>
-                                        <Clock size={14} />
-                                        Ces délais s'appliquent lors de la création d'un nouveau patient.
-                                    </div>
-                                </div>
-                            </section>
-
+                            </div>
                         </div>
-                    )}
+                    </div>
+
+                    {/* Anti-Spam and Safety Section */}
+                    <div className="card" style={{ 
+                        padding: 'var(--spacing-5)', 
+                        background: 'linear-gradient(135deg, #F0FDF4 0%, #FFF 100%)', 
+                        border: '1px solid #DCFCE7',
+                        borderRadius: '16px'
+                    }}>
+                        <div style={{ display: 'flex', gap: 'var(--spacing-4)' }}>
+                            <div style={{
+                                width: '40px',
+                                height: '40px',
+                                borderRadius: '10px',
+                                background: '#DCFCE7',
+                                color: '#16A34A',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                flexShrink: 0
+                            }}>
+                                <ShieldCheck size={22} />
+                            </div>
+                            <div>
+                                <h3 style={{ fontSize: '15px', fontWeight: '800', color: '#166534', margin: '0 0 6px 0' }}>
+                                    Sécurités & Règles Anti-Spam
+                                </h3>
+                                <p style={{ fontSize: '13px', color: '#14532D', lineHeight: '1.5', margin: '0 0 10px 0' }}>
+                                    Pour éviter toute sur-sollicitation et garantir le confort du patient, l'assistant applique les règles de sécurité suivantes :
+                                </p>
+                                <ul style={{ fontSize: '12px', color: '#14532D', margin: 0, paddingLeft: '20px', lineHeight: '1.6' }}>
+                                    <li><strong>Garde-fou horaire strict</strong> : Le code bloque instantanément l'exécution si une tâche automatique démarre avant 08h00 ou après 20h00 (par exemple à 7h30 en hiver).</li>
+                                    <li><strong>Limite d'envoi</strong> : Un délai minimal de <strong>24 heures</strong> est imposé entre deux SMS pour un même patient.</li>
+                                    <li><strong>Nombre maximal de rappels</strong> : 3 rappels automatiques au maximum sont envoyés par étape de suivi.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
 
                 {/* Footer */}
@@ -394,31 +200,18 @@ export default function SMSAlarmsModal({ isOpen, onClose, onSuccess }) {
                     background: 'var(--color-gray-50)',
                     borderTop: '1px solid var(--color-gray-100)',
                     display: 'flex',
-                    justifyContent: 'flex-end',
-                    gap: 'var(--spacing-4)'
+                    justifyContent: 'flex-end'
                 }}>
                     <button
                         onClick={onClose}
-                        className="btn btn-secondary"
-                        style={{ padding: '10px 24px', borderRadius: '12px' }}
-                    >
-                        Annuler
-                    </button>
-                    <button
-                        onClick={handleSave}
-                        disabled={isSaving || isLoading}
                         className="btn btn-primary"
                         style={{
                             padding: '10px 32px',
                             borderRadius: '12px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 'var(--spacing-2)',
                             boxShadow: '0 4px 12px rgba(var(--color-primary-500-rgb), 0.3)'
                         }}
                     >
-                        {isSaving ? <RefreshCw size={18} className="animate-spin" /> : <Save size={18} />}
-                        <span>{isSaving ? 'Enregistrement...' : 'Valider les réglages'}</span>
+                        J'ai compris
                     </button>
                 </div>
             </div>
