@@ -12,7 +12,7 @@
         },
         {
             "path": "/api/process-reminders",
-            "schedule": "55 9 * * *"
+            "schedule": "05 10 * * *"
         }
     ]
 }
