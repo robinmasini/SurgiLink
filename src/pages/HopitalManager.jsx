@@ -169,7 +169,7 @@ export default function HopitalManager() {
                 const base64Content = previewUrl.split(',')[1];
                 const mimeType = selectedFile.type;
 
-                const prompt = `Tu es un extracteur de données médicales à partir de captures d'écran du logiciel Hospital Manager.
+                const prompt = `Tu es un extracteur de données médicales à partir de captures d'écran du logiciel Hopital Manager.
 Analyse l'image et extrait les informations suivantes sous forme de JSON structuré. Ne retourne AUCUN blabla, uniquement du JSON valide.
 Les clés doivent être exactement :
 {
@@ -520,7 +520,7 @@ Les clés doivent être exactement :
                                 <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)' }}>
                                     <img src={hmIcon} alt="HM Icon" style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
                                     <div>
-                                        <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '700' }}>Scanner Patient Hospital Manager</h3>
+                                        <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '700' }}>Scanner Patient Hopital Manager</h3>
                                         <span style={{ fontSize: '11px', color: 'var(--color-gray-400)' }}>Intégration DPI via Screenshot</span>
                                     </div>
                                 </div>

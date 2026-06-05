@@ -381,7 +381,7 @@ export default function EditPatientModal({ isOpen, onClose, patient, onPatientUp
                             </div>
                         </div>
 
-                        {/* Hospital Manager Fields */}
+                        {/* Hopital Manager Fields */}
                         <div style={{
                             marginTop: 'var(--spacing-5)',
                             paddingTop: 'var(--spacing-5)',
@@ -392,7 +392,7 @@ export default function EditPatientModal({ isOpen, onClose, patient, onPatientUp
                                 fontWeight: 'var(--font-weight-semibold)',
                                 color: 'var(--color-gray-700)',
                                 marginBottom: 'var(--spacing-3)'
-                            }}>Dossier Hospital Manager (DPI)</h4>
+                            }}>Dossier Hopital Manager (DPI)</h4>
 
                             <div style={{ display: 'grid', gap: 'var(--spacing-3)' }}>
                                 <div className="grid-2">

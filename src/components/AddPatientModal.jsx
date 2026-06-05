@@ -160,7 +160,7 @@ export default function AddPatientModal({ isOpen, onClose, onSuccess }) {
                 const base64Content = previewUrl.split(',')[1];
                 const mimeType = selectedFile.type;
 
-                const prompt = `Tu es un extracteur de données médicales à partir de captures d'écran du logiciel Hospital Manager.
+                const prompt = `Tu es un extracteur de données médicales à partir de captures d'écran du logiciel Hopital Manager.
 Analyse l'image et extrait les informations suivantes sous forme de JSON structuré. Ne retourne AUCUN blabla, uniquement du JSON valide.
 Les clés doivent être exactement :
 {
@@ -435,7 +435,7 @@ Les clés doivent être exactement :
                             padding: '10px'
                         }}
                     >
-                        <Sparkles size={16} /> {isScannerOpen ? "Retour au formulaire manuel" : "Scanner une capture Hospital Manager"}
+                        <Sparkles size={16} /> {isScannerOpen ? "Retour au formulaire manuel" : "Scanner une capture Hopital Manager"}
                     </button>
 
                     {/* Integrated Scanner Workspace */}
@@ -572,7 +572,7 @@ Les clés doivent être exactement :
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(16, 185, 129, 0.08)', padding: '8px 12px', borderRadius: 'var(--radius-lg)', border: '1px solid rgba(16, 185, 129, 0.2)', fontSize: '12px' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#10B981', fontWeight: '600' }}>
                                         <CheckCircle2 size={14} style={{ color: '#10B981' }} />
-                                        <span>Données Hospital Manager importées avec succès !</span>
+                                        <span>Données Hopital Manager importées avec succès !</span>
                                     </div>
                                     <button 
                                         onClick={() => {

@@ -857,7 +857,7 @@ export default function PatientReview() {
                             </div>
                         </div>
 
-                        {/* 2. Hospital Manager DPI Card */}
+                        {/* 2. Hopital Manager DPI Card */}
                         {(patient.ipp || patient.stay_number || patient.weight || patient.height || patient.room_number || patient.referring_doctor || patient.address || patient.admission_datetime || patient.discharge_datetime) ? (
                             <div className="card glass-effect patient-card" style={{ marginTop: 'var(--spacing-6)' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)', marginBottom: 'var(--spacing-6)', borderBottom: '1px solid rgba(0,0,0,0.05)', paddingBottom: 'var(--spacing-4)' }}>
@@ -865,7 +865,7 @@ export default function PatientReview() {
                                         <img src={hmIcon} alt="HM Icon" style={{ width: '30px', height: '30px', objectFit: 'contain' }} />
                                     </div>
                                     <div>
-                                        <h3 style={{ margin: 0, fontSize: 'var(--font-size-lg)', fontWeight: '700' }}>Dossier Hospital Manager (DPI)</h3>
+                                        <h3 style={{ margin: 0, fontSize: 'var(--font-size-lg)', fontWeight: '700' }}>Dossier Hopital Manager (DPI)</h3>
                                         <span style={{ fontSize: '11px', color: 'var(--color-gray-400)' }}>Informations importées automatiquement par capture d'écran</span>
                                     </div>
                                 </div>

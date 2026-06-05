@@ -142,7 +142,7 @@ export default function HMScannerModal({ isOpen, onClose, onSuccess }) {
                 const base64Content = previewUrl.split(',')[1];
                 const mimeType = selectedFile.type;
 
-                const prompt = `Tu es un extracteur de données médicales à partir de captures d'écran du logiciel Hospital Manager.
+                const prompt = `Tu es un extracteur de données médicales à partir de captures d'écran du logiciel Hopital Manager.
 Analyse l'image et extrait les informations suivantes sous forme de JSON structuré. Ne retourne AUCUN blabla, uniquement du JSON valide.
 Les clés doivent être exactement :
 {
@@ -392,7 +392,7 @@ Les clés doivent être exactement :
                             <img src={hmIcon} alt="HM Icon" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
                         </div>
                         <div>
-                            <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '700' }}>Scanner Patient Hospital Manager</h3>
+                            <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '700' }}>Scanner Patient Hopital Manager</h3>
                             <span style={{ fontSize: '11px', color: 'var(--color-gray-400)' }}>Intégration intelligente DPI par screenshot</span>
                         </div>
                     </div>
