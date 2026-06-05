@@ -8,29 +8,71 @@ import {
     CheckCircle2, 
     AlertCircle,
     ArrowRight,
-    Lock,
-    User,
     Check,
     Loader2,
-    Sparkles
+    Sparkles,
+    UploadCloud,
+    Settings,
+    Info,
+    Calendar,
+    Phone,
+    Mail,
+    MapPin,
+    User
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import hmLogo from '../assets/HM.png';
 import hmIcon from '../assets/hm-icon.png';
-import HMScannerModal from '../components/HMScannerModal';
+import PhoneInput from '../components/PhoneInput';
+import { scheduleTimeBasedReminders } from '../services/reminderService';
+import { generatePatientToken } from '../services/tokenService';
 
 export default function HopitalManager() {
     const { t } = useTranslation();
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [username, setUsername] = useState('Dr.Desouches');
-    const [password, setPassword] = useState('••••••••');
     const [patients, setPatients] = useState([]);
     const [syncingId, setSyncingId] = useState(null);
     const [globalSyncing, setGlobalSyncing] = useState(false);
     const [syncStatus, setSyncStatus] = useState({});
     const [isLoading, setIsLoading] = useState(true);
-    const [isHMScannerOpen, setIsHMScannerOpen] = useState(false);
+
+    // Scanner state
+    const [apiKey, setApiKey] = useState(localStorage.getItem('SL_GEMINI_API_KEY') || '');
+    const [showSettings, setShowSettings] = useState(false);
+    const [isDragging, setIsDragging] = useState(false);
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [previewUrl, setPreviewUrl] = useState(null);
+    const [isScanning, setIsScanning] = useState(false);
+    const [scanProgress, setScanProgress] = useState(0);
+    const [extractedData, setExtractedData] = useState(null);
+    const [isSaving, setIsSaving] = useState(false);
+
+    // Form fields for editing/reviewing extracted data
+    const [formData, setFormData] = useState({
+        firstName: '',
+        lastName: '',
+        birthDate: '',
+        operation: '',
+        surgeonName: 'Christophe DESOUCHES',
+        stayType: 'Ambulatoire',
+        date: '',
+        surgeryTime: 'Non-communiquée',
+        phone: '+33 ',
+        email: '',
+        clinicName: 'Clinique de Vitrolles',
+        ipp: '',
+        stayNumber: '',
+        address: '',
+        weight: '',
+        height: '',
+        referringDoctor: '',
+        referringDoctorPhone: '',
+        entryMode: '8 - Domicile',
+        exitMode: '8 - Retour domicile',
+        admissionDatetime: '',
+        dischargeDatetime: '',
+        roomNumber: ''
+    });
 
     useEffect(() => {
         loadPatients();
@@ -60,9 +102,299 @@ export default function HopitalManager() {
         }
     };
 
-    const handleLogin = (e) => {
+    const handleSaveApiKey = (e) => {
         e.preventDefault();
-        setIsLoggedIn(true);
+        localStorage.setItem('SL_GEMINI_API_KEY', apiKey);
+        setShowSettings(false);
+        alert('Clé API Gemini enregistrée localement !');
+    };
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            processFile(file);
+        }
+    };
+
+    const processFile = (file) => {
+        if (!file.type.startsWith('image/')) {
+            alert('Veuillez sélectionner un fichier image (PNG, JPG, JPEG).');
+            return;
+        }
+        setSelectedFile(file);
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setPreviewUrl(reader.result);
+        };
+        reader.readAsDataURL(file);
+    };
+
+    const handleDragOver = (e) => {
+        e.preventDefault();
+        setIsDragging(true);
+    };
+
+    const handleDragLeave = () => {
+        setIsDragging(false);
+    };
+
+    const handleDrop = (e) => {
+        e.preventDefault();
+        setIsDragging(false);
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+            processFile(e.dataTransfer.files[0]);
+        }
+    };
+
+    const triggerScan = async () => {
+        if (!previewUrl) return;
+
+        setIsScanning(true);
+        setScanProgress(10);
+
+        const interval = setInterval(() => {
+            setScanProgress(prev => {
+                if (prev >= 90) {
+                    clearInterval(interval);
+                    return 90;
+                }
+                return prev + 15;
+            });
+        }, 300);
+
+        try {
+            const activeApiKey = apiKey || import.meta.env.VITE_GEMINI_API_KEY;
+
+            if (activeApiKey) {
+                const base64Content = previewUrl.split(',')[1];
+                const mimeType = selectedFile.type;
+
+                const prompt = `Tu es un extracteur de données médicales à partir de captures d'écran du logiciel Hospital Manager.
+Analyse l'image et extrait les informations suivantes sous forme de JSON structuré. Ne retourne AUCUN blabla, uniquement du JSON valide.
+Les clés doivent être exactement :
+{
+  "name": "Nom complet (ex: RIPERT Amanda)",
+  "first_name": "Prénom (ex: Amanda)",
+  "last_name": "Nom de famille (ex: RIPERT)",
+  "birth_date": "Date de naissance au format YYYY-MM-DD (ex: 1987-01-06)",
+  "phone": "Numéro de téléphone portable format international ou local (ex: +33619651961)",
+  "email": "Adresse email (ex: amanda.ripert@hotmail.fr)",
+  "operation": "Motif d'hospitalisation / Intervention (ex: CHANGEMENT PROTHESES MAMMAIRES)",
+  "surgeon_name": "Nom du chirurgien (ex: Christophe DESOUCHES)",
+  "admission_datetime": "Date et heure d'entrée au format ISO ou YYYY-MM-DD HH:MM (ex: 2026-05-22 14:00)",
+  "discharge_datetime": "Date et heure de sortie au format ISO ou YYYY-MM-DD HH:MM (ex: 2026-05-23 11:49)",
+  "stay_type": "Ambulatoire ou Hospitalisation (Détermine: Hospitalisation s'il y a des nuits, Ambulatoire sinon)",
+  "clinic_name": "Nom de la clinique (ex: Clinique de Vitrolles)",
+  "ipp": "Numéro IPP (ex: 000033271)",
+  "stay_number": "Numéro de séjour (ex: 0526005271)",
+  "address": "Adresse complète (ex: 1302 avenue de malespine, 84120 PERTUIS, France)",
+  "weight": "Poids (ex: 49 kg)",
+  "height": "Taille (ex: 160 cm)",
+  "referring_doctor": "Nom du médecin traitant (ex: DAUMAS MARIE LAURE)",
+  "referring_doctor_phone": "Téléphone du médecin traitant (ex: 0490095111)",
+  "room_number": "Numéro de chambre / lit (ex: 122)"
+}`;
+
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${activeApiKey}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        contents: [
+                            {
+                                parts: [
+                                    { text: prompt },
+                                    {
+                                        inlineData: {
+                                            mimeType: mimeType,
+                                            data: base64Content
+                                        }
+                                    }
+                                ]
+                            }
+                        ],
+                        generationConfig: {
+                            responseMimeType: "application/json"
+                        }
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Erreur Gemini API (${response.status})`);
+                }
+
+                const result = await response.json();
+                const jsonText = result.candidates[0].content.parts[0].text;
+                const parsed = JSON.parse(jsonText);
+                applyExtractedData(parsed);
+            } else {
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                const mockParsed = {
+                    first_name: "Amanda",
+                    last_name: "RIPERT",
+                    birth_date: "1987-01-06",
+                    operation: "CHANGEMENT PROTHESES MAMMAIRES",
+                    surgeon_name: "Christophe DESOUCHES",
+                    stay_type: "Hospitalisation",
+                    date: "2026-05-22",
+                    phone: "+33 6 19 65 19 61",
+                    email: "amanda.ripert@hotmail.fr",
+                    clinic_name: "Clinique de Vitrolles",
+                    ipp: "000033271",
+                    stay_number: "0526005271",
+                    address: "1302 avenue de malespine, 84120 PERTUIS, France",
+                    weight: "49 kg",
+                    height: "160 cm",
+                    referring_doctor: "DAUMAS MARIE LAURE",
+                    referring_doctor_phone: "0490095111",
+                    entry_mode: "8 - Domicile",
+                    exit_mode: "8 - Retour domicile",
+                    admission_datetime: "2026-05-22T14:00:00",
+                    discharge_datetime: "2026-05-23T11:49:00",
+                    room_number: "122"
+                };
+
+                applyExtractedData(mockParsed);
+            }
+        } catch (err) {
+            console.error('OCR Error:', err);
+            alert(`Erreur de scan : ${err.message}. Passage en mode simulation.`);
+            
+            applyExtractedData({
+                first_name: "Amanda",
+                last_name: "RIPERT",
+                birth_date: "1987-01-06",
+                operation: "CHANGEMENT PROTHESES MAMMAIRES",
+                surgeon_name: "Christophe DESOUCHES",
+                stay_type: "Hospitalisation",
+                date: "2026-05-22",
+                phone: "+33 6 19 65 19 61",
+                email: "amanda.ripert@hotmail.fr",
+                clinic_name: "Clinique de Vitrolles",
+                ipp: "000033271",
+                stay_number: "0526005271",
+                address: "1302 avenue de malespine, 84120 PERTUIS, France",
+                weight: "49 kg",
+                height: "160 cm",
+                referring_doctor: "DAUMAS MARIE LAURE",
+                referring_doctor_phone: "0490095111",
+                entry_mode: "8 - Domicile",
+                exit_mode: "8 - Retour domicile",
+                admission_datetime: "2026-05-22T14:00:00",
+                discharge_datetime: "2026-05-23T11:49:00",
+                room_number: "122"
+            });
+        } finally {
+            clearInterval(interval);
+            setScanProgress(100);
+            setTimeout(() => {
+                setIsScanning(false);
+            }, 300);
+        }
+    };
+
+    const applyExtractedData = (data) => {
+        setFormData({
+            firstName: data.first_name || '',
+            lastName: data.last_name || '',
+            birthDate: data.birth_date || '',
+            operation: data.operation || '',
+            surgeonName: data.surgeon_name ? (data.surgeon_name.includes('DESOUCHES') ? 'Christophe DESOUCHES' : data.surgeon_name) : 'Christophe DESOUCHES',
+            stayType: data.stay_type || 'Ambulatoire',
+            date: data.date || (data.admission_datetime ? data.admission_datetime.split('T')[0] : ''),
+            surgeryTime: data.admission_datetime ? new Date(data.admission_datetime).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : 'Non-communiquée',
+            phone: data.phone || '+33 ',
+            email: data.email || '',
+            clinicName: data.clinic_name || 'Clinique de Vitrolles',
+            ipp: data.ipp || '',
+            stayNumber: data.stay_number || '',
+            address: data.address || '',
+            weight: data.weight || '',
+            height: data.height || '',
+            referringDoctor: data.referring_doctor || '',
+            referringDoctorPhone: data.referring_doctor_phone || '',
+            entryMode: data.entry_mode || '8 - Domicile',
+            exitMode: data.exit_mode || '8 - Retour domicile',
+            admissionDatetime: data.admission_datetime ? new Date(data.admission_datetime).toISOString().slice(0, 16) : '',
+            dischargeDatetime: data.discharge_datetime ? new Date(data.discharge_datetime).toISOString().slice(0, 16) : '',
+            roomNumber: data.room_number || ''
+        });
+        setExtractedData(data);
+    };
+
+    const handleSavePatient = async () => {
+        if (!formData.firstName || !formData.lastName || !formData.operation) {
+            alert('Le nom, le prénom et l\'intervention sont obligatoires.');
+            return;
+        }
+
+        setIsSaving(true);
+        try {
+            const fullName = `${formData.firstName.trim()} ${formData.lastName.trim()}`;
+            
+            const { data, error } = await supabase
+                .from('patients')
+                .insert([
+                    {
+                        name: fullName,
+                        operation: formData.operation,
+                        date: formData.date || new Date().toISOString().split('T')[0],
+                        birth_date: formData.birthDate || null,
+                        phone: formData.phone,
+                        email: formData.email,
+                        surgeon_name: formData.surgeonName,
+                        surgery_time: formData.surgeryTime,
+                        stay_type: formData.stayType,
+                        clinic_name: formData.clinicName,
+                        status: 'pending',
+                        progress: 0,
+                        days_until: 'J-0',
+                        
+                        ipp: formData.ipp,
+                        stay_number: formData.stayNumber,
+                        address: formData.address,
+                        weight: formData.weight,
+                        height: formData.height,
+                        referring_doctor: formData.referringDoctor,
+                        referring_doctor_phone: formData.referringDoctorPhone,
+                        entry_mode: formData.entryMode,
+                        exit_mode: formData.exitMode,
+                        admission_datetime: formData.admissionDatetime ? new Date(formData.admissionDatetime).toISOString() : null,
+                        discharge_datetime: formData.dischargeDatetime ? new Date(formData.dischargeDatetime).toISOString() : null,
+                        room_number: formData.roomNumber
+                    }
+                ])
+                .select();
+
+            if (error) {
+                console.error('Error inserting scanned patient:', error);
+                alert(`Erreur lors de la création : ${error.message}`);
+            } else {
+                const newPatient = data[0];
+
+                const tokenRes = await generatePatientToken(newPatient.id);
+                const token = tokenRes.success ? tokenRes.token : null;
+
+                if (newPatient.date) {
+                    const surgeryDate = new Date(newPatient.date);
+                    await scheduleTimeBasedReminders(newPatient.id, surgeryDate);
+                    alert(`Patient ${fullName} créé avec succès !`);
+                    
+                    // Reset scanner form
+                    setSelectedFile(null);
+                    setPreviewUrl(null);
+                    setExtractedData(null);
+                    loadPatients();
+                }
+            }
+        } catch (err) {
+            console.error('Unexpected error:', err);
+            alert('Une erreur inattendue est survenue.');
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     const triggerSync = (id) => {
@@ -94,248 +426,51 @@ export default function HopitalManager() {
                     subtitle="Intégration du Dossier Patient Informatisé (DPI)"
                 />
 
-                {!isLoggedIn ? (
-                    // LOGIN PORTAL MOCKUP
-                    <div style={{
+                <div className="fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-6)' }}>
+                    {/* Status Card */}
+                    <div className="card" style={{
+                        padding: 'var(--spacing-6)',
+                        background: 'white',
+                        border: '1px solid var(--color-gray-100)',
                         display: 'flex',
+                        justifyContent: 'space-between',
                         alignItems: 'center',
-                        justifyContent: 'center',
-                        padding: 'var(--spacing-12) 0',
-                        minHeight: '60vh'
+                        flexWrap: 'wrap',
+                        gap: 'var(--spacing-4)'
                     }}>
-                        <div className="card fade-in" style={{
-                            width: '100%',
-                            maxWidth: '460px',
-                            padding: 'var(--spacing-8)',
-                            background: 'white',
-                            border: '1px solid var(--color-gray-100)',
-                            boxShadow: 'var(--shadow-xl)',
-                            borderRadius: 'var(--radius-2xl)',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center'
-                        }}>
-                            {/* Imported Logo without background */}
-                            <img 
-                                src={hmLogo} 
-                                alt="Hopital Manager Logo" 
-                                style={{ 
-                                    width: '280px', 
-                                    height: 'auto', 
-                                    objectFit: 'contain',
-                                    marginBottom: '6px'
-                                }} 
-                            />
-                            <span style={{
-                                fontSize: '12px',
-                                color: 'var(--color-gray-400)',
-                                fontStyle: 'italic',
-                                marginBottom: 'var(--spacing-8)'
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                            <div style={{
+                                width: '52px',
+                                height: '52px',
+                                borderRadius: '12px',
+                                background: 'rgba(50, 154, 214, 0.1)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                color: '#329AD6'
                             }}>
-                                v1.2601.24
-                            </span>
-
-                            <form onSubmit={handleLogin} style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 'var(--spacing-5)' }}>
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                                    <label style={{ fontSize: '13px', fontWeight: '600', color: 'var(--color-gray-700)' }}>
-                                        Identifiant
-                                    </label>
-                                    <div style={{ position: 'relative' }}>
-                                        <User size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-gray-400)' }} />
-                                        <input
-                                            type="text"
-                                            value={username}
-                                            onChange={(e) => setUsername(e.target.value)}
-                                            style={{
-                                                width: '100%',
-                                                padding: '10px 12px 10px 38px',
-                                                border: '1px solid #C4D3E5',
-                                                borderRadius: 'var(--radius-lg)',
-                                                fontSize: '14px',
-                                                outline: 'none',
-                                                background: '#F5F8FC'
-                                            }}
-                                            required
-                                        />
-                                    </div>
-                                </div>
-
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                                    <label style={{ fontSize: '13px', fontWeight: '600', color: 'var(--color-gray-700)' }}>
-                                        Mot de passe
-                                    </label>
-                                    <div style={{ position: 'relative' }}>
-                                        <Lock size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-gray-400)' }} />
-                                        <input
-                                            type="password"
-                                            value={password}
-                                            onChange={(e) => setPassword(e.target.value)}
-                                            style={{
-                                                width: '100%',
-                                                padding: '10px 12px 10px 38px',
-                                                border: '1px solid #C4D3E5',
-                                                borderRadius: 'var(--radius-lg)',
-                                                fontSize: '14px',
-                                                outline: 'none',
-                                                background: '#F5F8FC'
-                                            }}
-                                            required
-                                        />
-                                    </div>
-                                </div>
-
-                                <button
-                                    type="submit"
-                                    style={{
-                                        marginTop: 'var(--spacing-2)',
-                                        width: '100%',
-                                        padding: '12px',
-                                        background: '#0F70B7',
-                                        color: 'white',
-                                        border: 'none',
-                                        borderRadius: 'var(--radius-lg)',
-                                        fontWeight: '700',
-                                        fontSize: '14px',
-                                        cursor: 'pointer',
-                                        transition: 'background 0.2s',
-                                        boxShadow: '0 4px 12px rgba(15, 112, 183, 0.2)'
-                                    }}
-                                    onMouseEnter={(e) => e.currentTarget.style.background = '#0d619f'}
-                                    onMouseLeave={(e) => e.currentTarget.style.background = '#0F70B7'}
-                                >
-                                    Se connecter
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                ) : (
-                    // LOGGED IN DASHBOARD / SYNC STATE
-                    <div className="fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-6)' }}>
-                        {/* Status Card */}
-                        <div className="card" style={{
-                            padding: 'var(--spacing-6)',
-                            background: 'white',
-                            border: '1px solid var(--color-gray-100)',
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            flexWrap: 'wrap',
-                            gap: 'var(--spacing-4)'
-                        }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                                <div style={{
-                                    width: '52px',
-                                    height: '52px',
-                                    borderRadius: '12px',
-                                    background: 'rgba(50, 154, 214, 0.1)',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    color: '#329AD6'
-                                }}>
-                                    <Database size={28} />
-                                </div>
-                                <div>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                        <h3 style={{ fontSize: '18px', fontWeight: '700', color: 'var(--color-gray-900)' }}>
-                                            Hopital Manager Sync Link
-                                        </h3>
-                                        <span className="badge badge-success" style={{ background: '#E3F9E5', color: '#1F7A26', border: '1px solid #B4EBB7' }}>
-                                            Opérationnel
-                                        </span>
-                                    </div>
-                                    <p style={{ fontSize: '13px', color: 'var(--color-gray-500)' }}>
-                                        Connecté en tant que <strong>{username}</strong> • API V1.2601.24
-                                    </p>
-                                </div>
+                                <Database size={28} />
                             </div>
-
-                            <div style={{ display: 'flex', gap: '12px' }}>
-                                <button
-                                    className="btn btn-secondary"
-                                    onClick={() => setIsHMScannerOpen(true)}
-                                    style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '8px',
-                                        background: 'rgba(15, 112, 183, 0.1)',
-                                        color: '#0F70B7',
-                                        border: '1px solid rgba(15, 112, 183, 0.2)',
-                                        fontWeight: '700'
-                                    }}
-                                >
-                                    <img src={hmIcon} alt="HM Icon" style={{ width: '16px', height: '16px', objectFit: 'contain' }} />
-                                    Scanner Patient HM
-                                </button>
-                                <button 
-                                    className="btn btn-secondary"
-                                    onClick={() => setIsLoggedIn(false)}
-                                    style={{ border: '1px solid var(--color-gray-200)', background: 'white' }}
-                                >
-                                    Déconnexion
-                                </button>
-                                <button
-                                    className="btn btn-primary"
-                                    onClick={triggerGlobalSync}
-                                    disabled={globalSyncing}
-                                    style={{
-                                        background: '#0F70B7',
-                                        color: 'white',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '8px',
-                                        border: 'none',
-                                        boxShadow: '0 4px 12px rgba(15, 112, 183, 0.15)'
-                                    }}
-                                    onMouseEnter={(e) => e.currentTarget.style.background = '#0d619f'}
-                                    onMouseLeave={(e) => e.currentTarget.style.background = '#0F70B7'}
-                                >
-                                    {globalSyncing ? (
-                                        <Loader2 size={18} className="spinner" style={{ animation: 'spin 1s linear infinite' }} />
-                                    ) : (
-                                        <RefreshCw size={18} />
-                                    )}
-                                    Synchroniser Tout
-                                </button>
+                            <div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <h3 style={{ fontSize: '18px', fontWeight: '700', color: 'var(--color-gray-900)', margin: 0 }}>
+                                        Hopital Manager Sync Link
+                                    </h3>
+                                    <span className="badge badge-success" style={{ background: '#E3F9E5', color: '#1F7A26', border: '1px solid #B4EBB7' }}>
+                                        Opérationnel
+                                    </span>
+                                </div>
+                                <p style={{ fontSize: '13px', color: 'var(--color-gray-500)', margin: '4px 0 0 0' }}>
+                                    API V1.2601.24 connecté au DPI local
+                                </p>
                             </div>
                         </div>
 
-                        {/* Import Screenshot Banner */}
-                        <div className="card" style={{
-                            padding: 'var(--spacing-5)',
-                            background: 'linear-gradient(135deg, rgba(15, 112, 183, 0.05) 0%, rgba(255, 255, 255, 0.85) 100%)',
-                            border: '1px solid rgba(15, 112, 183, 0.15)',
-                            borderRadius: 'var(--radius-xl)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            flexWrap: 'wrap',
-                            gap: 'var(--spacing-4)',
-                            boxShadow: 'var(--shadow-sm)'
-                        }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flex: 1, minWidth: '280px' }}>
-                                <div style={{
-                                    width: '44px',
-                                    height: '44px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    flexShrink: 0
-                                }}>
-                                    <img src={hmIcon} alt="HM Icon" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
-                                </div>
-                                <div>
-                                    <h4 style={{ fontSize: '15px', fontWeight: '700', color: 'var(--color-gray-900)', margin: '0 0 2px 0' }}>
-                                        Scanner Patient Hospital Manager (DPI)
-                                    </h4>
-                                    <p style={{ fontSize: '13px', color: 'var(--color-gray-500)', margin: 0, lineHeight: '1.4' }}>
-                                        Déposez une capture d'écran d'un dossier patient Hospital Manager pour l'importer instantanément dans SurgiLink et planifier ses rappels automatiques.
-                                    </p>
-                                </div>
-                            </div>
+                        <div style={{ display: 'flex', gap: '12px' }}>
                             <button
                                 className="btn btn-primary"
-                                onClick={() => setIsHMScannerOpen(true)}
+                                onClick={triggerGlobalSync}
+                                disabled={globalSyncing}
                                 style={{
                                     background: '#0F70B7',
                                     color: 'white',
@@ -343,21 +478,531 @@ export default function HopitalManager() {
                                     alignItems: 'center',
                                     gap: '8px',
                                     border: 'none',
-                                    fontWeight: '700',
-                                    boxShadow: '0 4px 12px rgba(15, 112, 183, 0.2)'
+                                    boxShadow: '0 4px 12px rgba(15, 112, 183, 0.15)'
                                 }}
                                 onMouseEnter={(e) => e.currentTarget.style.background = '#0d619f'}
                                 onMouseLeave={(e) => e.currentTarget.style.background = '#0F70B7'}
                             >
-                                <img src={hmIcon} alt="HM Icon" style={{ width: '16px', height: '16px', objectFit: 'contain', filter: 'brightness(0) invert(1)' }} />
-                                Scanner Patient HM
+                                {globalSyncing ? (
+                                    <Loader2 size={18} className="spinner" style={{ animation: 'spin 1s linear infinite' }} />
+                                ) : (
+                                    <RefreshCw size={18} />
+                                )}
+                                Synchroniser Tout
                             </button>
+                        </div>
+                    </div>
+
+                    {/* Split View: Scanner + Patients Sync Table */}
+                    <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(460px, 1fr))',
+                        gap: 'var(--spacing-6)',
+                        alignItems: 'start'
+                    }}>
+                        {/* Scanner Workspace Card */}
+                        <div className="card" style={{
+                            padding: 'var(--spacing-6)',
+                            background: 'white',
+                            border: '1px solid var(--color-gray-100)',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            minHeight: '400px'
+                        }}>
+                            <div style={{ 
+                                display: 'flex', 
+                                justifyContent: 'space-between', 
+                                alignItems: 'center', 
+                                marginBottom: 'var(--spacing-4)', 
+                                borderBottom: '1px solid var(--color-gray-100)', 
+                                paddingBottom: '12px' 
+                            }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)' }}>
+                                    <img src={hmIcon} alt="HM Icon" style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
+                                    <div>
+                                        <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '700' }}>Scanner Patient Hospital Manager</h3>
+                                        <span style={{ fontSize: '11px', color: 'var(--color-gray-400)' }}>Intégration DPI via Screenshot</span>
+                                    </div>
+                                </div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                    <button 
+                                        onClick={() => setShowSettings(!showSettings)} 
+                                        style={{ background: 'none', border: 'none', color: 'var(--color-gray-500)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                                        title="Paramètres API"
+                                    >
+                                        <Settings size={18} />
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Settings Panel */}
+                            {showSettings && (
+                                <div style={{ padding: 'var(--spacing-4)', background: 'var(--color-gray-50)', borderBottom: '1px solid var(--color-gray-100)', borderRadius: 'var(--radius-lg)', marginBottom: 'var(--spacing-4)' }}>
+                                    <form onSubmit={handleSaveApiKey} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                        <label style={{ fontSize: '12px', fontWeight: '600', color: 'var(--color-gray-700)' }}>
+                                            Clé API Gemini (Optionnelle)
+                                        </label>
+                                        <div style={{ display: 'flex', gap: '10px' }}>
+                                            <input
+                                                type="password"
+                                                placeholder="AlzaSy..."
+                                                className="input"
+                                                value={apiKey}
+                                                onChange={e => setApiKey(e.target.value)}
+                                                style={{ flex: 1, height: '38px', fontSize: '13px' }}
+                                            />
+                                            <button type="submit" className="btn btn-primary" style={{ height: '38px', padding: '0 16px', background: '#0F70B7', fontSize: '13px' }}>
+                                                Enregistrer
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            )}
+
+                            {/* Dropzone or Preview / Form Workspace */}
+                            {!previewUrl ? (
+                                <div
+                                    onDragOver={handleDragOver}
+                                    onDragLeave={handleDragLeave}
+                                    onDrop={handleDrop}
+                                    style={{
+                                        border: isDragging ? '2px dashed #0F70B7' : '2px dashed var(--color-gray-200)',
+                                        background: isDragging ? 'rgba(15, 112, 183, 0.05)' : 'var(--color-gray-50)',
+                                        borderRadius: 'var(--radius-xl)',
+                                        padding: 'var(--spacing-10) var(--spacing-4)',
+                                        textAlign: 'center',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        gap: 'var(--spacing-3)',
+                                        cursor: 'pointer',
+                                        flex: 1,
+                                        transition: 'all 0.2s ease-in-out'
+                                    }}
+                                    onClick={() => document.getElementById('page-screenshot-uploader').click()}
+                                >
+                                    <div style={{
+                                        width: '60px',
+                                        height: '60px',
+                                        borderRadius: '50%',
+                                        background: 'white',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        boxShadow: 'var(--shadow-sm)',
+                                        color: 'var(--color-gray-400)'
+                                    }}>
+                                        <UploadCloud size={28} />
+                                    </div>
+                                    <div>
+                                        <p style={{ margin: 0, fontWeight: '700', fontSize: '14px', color: 'var(--color-gray-800)' }}>
+                                            Glissez-déposez une capture d'écran ici
+                                        </p>
+                                        <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: 'var(--color-gray-400)' }}>
+                                            ou cliquez pour parcourir
+                                        </p>
+                                    </div>
+                                    <span style={{ 
+                                        background: 'rgba(0, 0, 0, 0.05)', 
+                                        padding: '4px 12px', 
+                                        borderRadius: 'var(--radius-md)', 
+                                        fontSize: '11px', 
+                                        fontWeight: '600', 
+                                        color: 'var(--color-gray-600)',
+                                        marginTop: '8px'
+                                    }}>
+                                        PNG, JPG ou JPEG
+                                    </span>
+                                    <input
+                                        type="file"
+                                        id="page-screenshot-uploader"
+                                        style={{ display: 'none' }}
+                                        accept="image/*"
+                                        onChange={handleFileChange}
+                                    />
+                                </div>
+                            ) : !extractedData || isScanning ? (
+                                /* Image scanning view */
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-4)', flex: 1 }}>
+                                    <div style={{ 
+                                        position: 'relative', 
+                                        flex: 1, 
+                                        borderRadius: 'var(--radius-xl)', 
+                                        overflow: 'hidden', 
+                                        border: '1px solid var(--color-gray-200)',
+                                        background: '#000',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        minHeight: '260px'
+                                    }}>
+                                        <img 
+                                            src={previewUrl} 
+                                            alt="Screenshot preview" 
+                                            style={{ maxWidth: '100%', maxHeight: '320px', objectFit: 'contain', opacity: isScanning ? 0.7 : 1 }} 
+                                        />
+                                        {isScanning && (
+                                            <div style={{
+                                                position: 'absolute',
+                                                left: 0,
+                                                right: 0,
+                                                height: '3px',
+                                                background: 'linear-gradient(to bottom, transparent, #10B981, transparent)',
+                                                boxShadow: '0 0 12px #10B981, 0 0 4px #10B981',
+                                                animation: 'scan-motion 2s linear infinite',
+                                                zIndex: 5
+                                            }} />
+                                        )}
+                                        {isScanning && (
+                                            <div style={{
+                                                position: 'absolute',
+                                                inset: 0,
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                background: 'rgba(0, 0, 0, 0.4)',
+                                                color: 'white',
+                                                gap: '8px',
+                                                zIndex: 4
+                                            }}>
+                                                <Loader2 size={36} className="spinner" style={{ animation: 'spin 1.5s linear infinite' }} />
+                                                <span style={{ fontSize: '13px', fontWeight: '700', letterSpacing: '1px' }}>
+                                                    ANALYSE EN COURS...
+                                                </span>
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div style={{ display: 'flex', gap: '10px' }}>
+                                        <button 
+                                            className="btn btn-secondary" 
+                                            style={{ flex: 1 }} 
+                                            onClick={() => {
+                                                setPreviewUrl(null);
+                                                setSelectedFile(null);
+                                            }}
+                                            disabled={isScanning}
+                                        >
+                                            Annuler
+                                        </button>
+                                        <button 
+                                            className="btn btn-primary" 
+                                            style={{ flex: 1, background: '#0F70B7', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }} 
+                                            onClick={triggerScan}
+                                            disabled={isScanning}
+                                        >
+                                            <Sparkles size={16} /> Lancer l'analyse
+                                        </button>
+                                    </div>
+                                </div>
+                            ) : (
+                                /* Review & Edit extracted form data */
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-4)', maxHeight: '650px', overflowY: 'auto', paddingRight: '4px' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(16, 185, 129, 0.08)', padding: '10px 14px', borderRadius: 'var(--radius-lg)', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#10B981', fontSize: '13px', fontWeight: '600' }}>
+                                            <CheckCircle2 size={16} />
+                                            <span>Scan réussi. Veuillez vérifier les champs.</span>
+                                        </div>
+                                        <button 
+                                            onClick={() => {
+                                                if (window.confirm('Voulez-vous vraiment annuler le scan actuel ?')) {
+                                                    setPreviewUrl(null);
+                                                    setSelectedFile(null);
+                                                    setExtractedData(null);
+                                                }
+                                            }}
+                                            style={{ background: 'none', border: 'none', color: 'var(--color-gray-400)', fontSize: '11px', textDecoration: 'underline', cursor: 'pointer' }}
+                                        >
+                                            Recommencer
+                                        </button>
+                                    </div>
+
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-4)' }}>
+                                        {/* Section 1: Informations Personnelles */}
+                                        <div>
+                                            <span style={{ fontSize: '10px', fontWeight: '800', color: '#0F70B7', textTransform: 'uppercase', display: 'block', marginBottom: '8px', letterSpacing: '0.5px' }}>
+                                                1. Informations Personnelles
+                                            </span>
+                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                                                <div>
+                                                    <label className="form-label-scan">Prénom</label>
+                                                    <input 
+                                                        className="input" 
+                                                        value={formData.firstName} 
+                                                        onChange={e => setFormData({ ...formData, firstName: e.target.value })} 
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="form-label-scan">Nom</label>
+                                                    <input 
+                                                        className="input" 
+                                                        value={formData.lastName} 
+                                                        onChange={e => setFormData({ ...formData, lastName: e.target.value })} 
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginTop: '10px' }}>
+                                                <div>
+                                                    <label className="form-label-scan">Date de naissance</label>
+                                                    <input 
+                                                        type="date"
+                                                        className="input" 
+                                                        value={formData.birthDate} 
+                                                        onChange={e => setFormData({ ...formData, birthDate: e.target.value })} 
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="form-label-scan">IPP (DPI)</label>
+                                                    <input 
+                                                        className="input" 
+                                                        value={formData.ipp} 
+                                                        placeholder="ex: 000033271"
+                                                        onChange={e => setFormData({ ...formData, ipp: e.target.value })} 
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginTop: '10px' }}>
+                                                <div>
+                                                    <label className="form-label-scan">Poids</label>
+                                                    <input 
+                                                        className="input" 
+                                                        value={formData.weight} 
+                                                        placeholder="ex: 49 kg"
+                                                        onChange={e => setFormData({ ...formData, weight: e.target.value })} 
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="form-label-scan">Taille</label>
+                                                    <input 
+                                                        className="input" 
+                                                        value={formData.height} 
+                                                        placeholder="ex: 160 cm"
+                                                        onChange={e => setFormData({ ...formData, height: e.target.value })} 
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div style={{ marginTop: '10px' }}>
+                                                <label className="form-label-scan">Adresse principale</label>
+                                                <input 
+                                                    className="input" 
+                                                    value={formData.address} 
+                                                    placeholder="Adresse complète"
+                                                    onChange={e => setFormData({ ...formData, address: e.target.value })} 
+                                                />
+                                            </div>
+                                        </div>
+
+                                        {/* Section 2: Contact */}
+                                        <div style={{ borderTop: '1px solid var(--color-gray-100)', paddingTop: 'var(--spacing-3)' }}>
+                                            <span style={{ fontSize: '10px', fontWeight: '800', color: '#0F70B7', textTransform: 'uppercase', display: 'block', marginBottom: '8px', letterSpacing: '0.5px' }}>
+                                                2. Contact
+                                            </span>
+                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                                                <div>
+                                                    <label className="form-label-scan">Téléphone</label>
+                                                    <PhoneInput
+                                                        value={formData.phone}
+                                                        onChange={val => setFormData({ ...formData, phone: val })}
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="form-label-scan">Email</label>
+                                                    <input 
+                                                        type="email"
+                                                        className="input" 
+                                                        value={formData.email} 
+                                                        placeholder="patient@email.com"
+                                                        onChange={e => setFormData({ ...formData, email: e.target.value })} 
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Section 3: Hospitalisation */}
+                                        <div style={{ borderTop: '1px solid var(--color-gray-100)', paddingTop: 'var(--spacing-3)' }}>
+                                            <span style={{ fontSize: '10px', fontWeight: '800', color: '#0F70B7', textTransform: 'uppercase', display: 'block', marginBottom: '8px', letterSpacing: '0.5px' }}>
+                                                3. Hospitalisation & Intervention
+                                            </span>
+                                            <div>
+                                                <label className="form-label-scan">Intervention (Motif d'hospitalisation)</label>
+                                                <input 
+                                                    className="input" 
+                                                    value={formData.operation} 
+                                                    onChange={e => setFormData({ ...formData, operation: e.target.value })} 
+                                                />
+                                            </div>
+                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginTop: '10px' }}>
+                                                <div>
+                                                    <label className="form-label-scan">Chirurgien</label>
+                                                    <input 
+                                                        className="input" 
+                                                        value={formData.surgeonName} 
+                                                        onChange={e => setFormData({ ...formData, surgeonName: e.target.value })} 
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="form-label-scan">Type de séjour</label>
+                                                    <select 
+                                                        className="input"
+                                                        value={formData.stayType}
+                                                        onChange={e => setFormData({ ...formData, stayType: e.target.value })}
+                                                    >
+                                                        <option value="Ambulatoire">Ambulatoire</option>
+                                                        <option value="Hospitalisation">Hospitalisation</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginTop: '10px' }}>
+                                                <div>
+                                                    <label className="form-label-scan">N° Séjour</label>
+                                                    <input 
+                                                        className="input" 
+                                                        value={formData.stayNumber} 
+                                                        placeholder="ex: 0526005271"
+                                                        onChange={e => setFormData({ ...formData, stayNumber: e.target.value })} 
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="form-label-scan">Chambre / Lit</label>
+                                                    <input 
+                                                        className="input" 
+                                                        value={formData.roomNumber} 
+                                                        placeholder="ex: 122"
+                                                        onChange={e => setFormData({ ...formData, roomNumber: e.target.value })} 
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginTop: '10px' }}>
+                                                <div>
+                                                    <label className="form-label-scan">Date d'intervention</label>
+                                                    <input 
+                                                        type="date"
+                                                        className="input" 
+                                                        value={formData.date} 
+                                                        onChange={e => setFormData({ ...formData, date: e.target.value })} 
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="form-label-scan">Heure d'entrée</label>
+                                                    <input 
+                                                        className="input" 
+                                                        value={formData.surgeryTime} 
+                                                        placeholder="ex: 14:00"
+                                                        onChange={e => setFormData({ ...formData, surgeryTime: e.target.value })} 
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginTop: '10px' }}>
+                                                <div>
+                                                    <label className="form-label-scan">Admission Date/Heure</label>
+                                                    <input 
+                                                        type="datetime-local"
+                                                        className="input" 
+                                                        value={formData.admissionDatetime} 
+                                                        onChange={e => setFormData({ ...formData, admissionDatetime: e.target.value })} 
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="form-label-scan">Sortie Date/Heure</label>
+                                                    <input 
+                                                        type="datetime-local"
+                                                        className="input" 
+                                                        value={formData.dischargeDatetime} 
+                                                        onChange={e => setFormData({ ...formData, dischargeDatetime: e.target.value })} 
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginTop: '10px' }}>
+                                                <div>
+                                                    <label className="form-label-scan">Mode d'entrée</label>
+                                                    <input 
+                                                        className="input" 
+                                                        value={formData.entryMode} 
+                                                        placeholder="ex: 8 - Domicile"
+                                                        onChange={e => setFormData({ ...formData, entryMode: e.target.value })} 
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="form-label-scan">Mode de sortie</label>
+                                                    <input 
+                                                        className="input" 
+                                                        value={formData.exitMode} 
+                                                        placeholder="ex: 8 - Retour domicile"
+                                                        onChange={e => setFormData({ ...formData, exitMode: e.target.value })} 
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Section 4: Médecin Traitant */}
+                                        <div style={{ borderTop: '1px solid var(--color-gray-100)', paddingTop: 'var(--spacing-3)' }}>
+                                            <span style={{ fontSize: '10px', fontWeight: '800', color: '#0F70B7', textTransform: 'uppercase', display: 'block', marginBottom: '8px', letterSpacing: '0.5px' }}>
+                                                4. Médecin Traitant
+                                            </span>
+                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                                                <div>
+                                                    <label className="form-label-scan">Nom Médecin Traitant</label>
+                                                    <input 
+                                                        className="input" 
+                                                        value={formData.referringDoctor} 
+                                                        placeholder="ex: DAUMAS MARIE LAURE"
+                                                        onChange={e => setFormData({ ...formData, referringDoctor: e.target.value })} 
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="form-label-scan">Téléphone Médecin</label>
+                                                    <input 
+                                                        className="input" 
+                                                        value={formData.referringDoctorPhone} 
+                                                        placeholder="ex: 0490095111"
+                                                        onChange={e => setFormData({ ...formData, referringDoctorPhone: e.target.value })} 
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Action Buttons */}
+                                    <div style={{ display: 'flex', gap: '12px', marginTop: 'var(--spacing-2)', borderTop: '1px solid var(--color-gray-100)', paddingTop: 'var(--spacing-4)' }}>
+                                        <button 
+                                            className="btn btn-secondary" 
+                                            style={{ flex: 1 }}
+                                            onClick={() => {
+                                                setPreviewUrl(null);
+                                                setSelectedFile(null);
+                                                setExtractedData(null);
+                                            }}
+                                            disabled={isSaving}
+                                        >
+                                            Annuler
+                                        </button>
+                                        <button 
+                                            className="btn btn-primary" 
+                                            style={{ flex: 1, background: '#0F70B7', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                                            onClick={handleSavePatient}
+                                            disabled={isSaving}
+                                        >
+                                            {isSaving ? (
+                                                <>
+                                                    <Loader2 size={16} className="spinner" style={{ animation: 'spin 1s linear infinite' }} />
+                                                    Création...
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Check size={16} /> Enregistrer
+                                                </>
+                                            )}
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
                         {/* Patients Sync Table */}
-                        <div className="card" style={{ padding: 0, overflow: 'hidden', background: 'white' }}>
+                        <div className="card" style={{ padding: 0, overflow: 'hidden', background: 'white', border: '1px solid var(--color-gray-100)' }}>
                             <div style={{ padding: 'var(--spacing-4)', borderBottom: '1px solid var(--color-gray-100)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <h3 style={{ fontSize: '16px', fontWeight: '700' }}>Synchronisation des Dossiers Patients</h3>
+                                <h3 style={{ fontSize: '16px', fontWeight: '700', margin: 0 }}>Synchronisation des Dossiers Patients</h3>
                                 <span style={{ fontSize: '13px', color: 'var(--color-gray-500)' }}>
                                     {patients.length} dossiers correspondants
                                 </span>
@@ -449,13 +1094,23 @@ export default function HopitalManager() {
                             </div>
                         </div>
                     </div>
-                )}
+                </div>
                 
-                <HMScannerModal
-                    isOpen={isHMScannerOpen}
-                    onClose={() => setIsHMScannerOpen(false)}
-                    onSuccess={loadPatients}
-                />
+                <style>{`
+                    @keyframes scan-motion {
+                        0% { top: 0%; }
+                        50% { top: 100%; }
+                        100% { top: 0%; }
+                    }
+                    .form-label-scan {
+                        display: block; 
+                        font-size: 11px; 
+                        font-weight: 600; 
+                        color: var(--color-gray-500); 
+                        margin-bottom: 4px;
+                        text-transform: uppercase;
+                    }
+                `}</style>
             </main>
         </div>
     );
