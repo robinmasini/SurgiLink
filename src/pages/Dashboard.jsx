@@ -6,6 +6,7 @@ import MobileNavbar from '../components/MobileNavbar';
 import Header from '../components/Header';
 import AddPatientModal from '../components/AddPatientModal';
 import HMScannerModal from '../components/HMScannerModal';
+import hmIcon from '../assets/hm-icon.png';
 import practitionerAvatar from '../assets/practitioner-avatar.png';
 import welcomeCardV4 from '../assets/welcome-card-v4.jpg';
 import welcomeCardInfirmier from '../assets/welcomecard-infirmier.png';
@@ -289,11 +290,12 @@ export default function Dashboard() {
                                     gap: '8px',
                                     background: 'rgba(15, 112, 183, 0.1)',
                                     color: '#0F70B7',
-                                    border: '1px solid rgba(15, 112, 183, 0.2)'
+                                    border: '1px solid rgba(15, 112, 183, 0.2)',
+                                    fontWeight: '700'
                                 }}
                             >
-                                <Sparkles size={18} />
-                                <span>{t('Importer Capture HM')}</span>
+                                <img src={hmIcon} alt="HM Icon" style={{ width: '18px', height: '18px', objectFit: 'contain' }} />
+                                <span>{t('Scanner Patient HM')}</span>
                             </button>
                             <button
                                 className="btn btn-primary"

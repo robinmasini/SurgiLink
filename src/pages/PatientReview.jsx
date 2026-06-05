@@ -52,6 +52,7 @@ import { sendManualReminder, getNextPendingReminder, getPendingReminders, sendOv
 import { getCustomQuestions, addCustomQuestion, deleteCustomQuestion } from '../services/customQuestionService';
 import LogoPremium from '../components/LogoPremium';
 import clinicImage from '../assets/clinic.png';
+import hmIcon from '../assets/hm-icon.png';
 import StatusBolt from '../components/StatusBolt';
 import LogoIcon from '../components/LogoIcon';
 
@@ -860,8 +861,8 @@ export default function PatientReview() {
                         {(patient.ipp || patient.stay_number || patient.weight || patient.height || patient.room_number || patient.referring_doctor || patient.address || patient.admission_datetime || patient.discharge_datetime) ? (
                             <div className="card glass-effect patient-card" style={{ marginTop: 'var(--spacing-6)' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)', marginBottom: 'var(--spacing-6)', borderBottom: '1px solid rgba(0,0,0,0.05)', paddingBottom: 'var(--spacing-4)' }}>
-                                    <div className="card-icon" style={{ background: 'rgba(15, 112, 183, 0.1)', color: '#0F70B7', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '36px', height: '36px', borderRadius: '8px' }}>
-                                        <Sparkles size={18} />
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '36px', height: '36px' }}>
+                                        <img src={hmIcon} alt="HM Icon" style={{ width: '30px', height: '30px', objectFit: 'contain' }} />
                                     </div>
                                     <div>
                                         <h3 style={{ margin: 0, fontSize: 'var(--font-size-lg)', fontWeight: '700' }}>Dossier Hospital Manager (DPI)</h3>

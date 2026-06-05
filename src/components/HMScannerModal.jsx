@@ -19,6 +19,7 @@ import { supabase } from '../lib/supabase';
 import { scheduleTimeBasedReminders } from '../services/reminderService';
 import { generatePatientToken } from '../services/tokenService';
 import PhoneInput from './PhoneInput';
+import hmIcon from '../assets/hm-icon.png';
 
 export default function HMScannerModal({ isOpen, onClose, onSuccess }) {
     const [apiKey, setApiKey] = useState(localStorage.getItem('SL_GEMINI_API_KEY') || '');
@@ -387,11 +388,11 @@ Les clés doivent être exactement :
                 {/* Header */}
                 <div style={{ padding: 'var(--spacing-5)', borderBottom: '1px solid rgba(0,0,0,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)' }}>
-                        <div className="card-icon card-icon-primary" style={{ width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(15, 112, 183, 0.1)', color: '#0F70B7' }}>
-                            <Sparkles size={18} />
+                        <div style={{ width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <img src={hmIcon} alt="HM Icon" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
                         </div>
                         <div>
-                            <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '700' }}>Scanner de Capture Hospital Manager</h3>
+                            <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '700' }}>Scanner Patient Hospital Manager</h3>
                             <span style={{ fontSize: '11px', color: 'var(--color-gray-400)' }}>Intégration intelligente DPI par screenshot</span>
                         </div>
                     </div>
@@ -591,7 +592,7 @@ Les clés doivent être exactement :
                                         onClick={triggerScan}
                                         disabled={isScanning}
                                     >
-                                        <Sparkles size={16} /> Analyser
+                                        <img src={hmIcon} alt="HM Icon" style={{ width: '16px', height: '16px', objectFit: 'contain', filter: 'brightness(0) invert(1)' }} /> Analyser
                                     </button>
                                 </div>
                             </div>

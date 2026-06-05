@@ -17,6 +17,7 @@ import {
 import { useTranslation } from 'react-i18next';
 
 import hmLogo from '../assets/HM.png';
+import hmIcon from '../assets/hm-icon.png';
 import HMScannerModal from '../components/HMScannerModal';
 
 export default function HopitalManager() {
@@ -263,8 +264,8 @@ export default function HopitalManager() {
                                         fontWeight: '700'
                                     }}
                                 >
-                                    <Sparkles size={16} />
-                                    Scanner Capture HM
+                                    <img src={hmIcon} alt="HM Icon" style={{ width: '16px', height: '16px', objectFit: 'contain' }} />
+                                    Scanner Patient HM
                                 </button>
                                 <button 
                                     className="btn btn-secondary"
@@ -316,19 +317,16 @@ export default function HopitalManager() {
                                 <div style={{
                                     width: '44px',
                                     height: '44px',
-                                    borderRadius: '10px',
-                                    background: 'rgba(15, 112, 183, 0.1)',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                    color: '#0F70B7',
                                     flexShrink: 0
                                 }}>
-                                    <Sparkles size={22} />
+                                    <img src={hmIcon} alt="HM Icon" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
                                 </div>
                                 <div>
                                     <h4 style={{ fontSize: '15px', fontWeight: '700', color: 'var(--color-gray-900)', margin: '0 0 2px 0' }}>
-                                        Importation par Capture d'Écran Hospital Manager
+                                        Scanner Patient Hospital Manager (DPI)
                                     </h4>
                                     <p style={{ fontSize: '13px', color: 'var(--color-gray-500)', margin: 0, lineHeight: '1.4' }}>
                                         Déposez une capture d'écran d'un dossier patient Hospital Manager pour l'importer instantanément dans SurgiLink et planifier ses rappels automatiques.
@@ -351,8 +349,8 @@ export default function HopitalManager() {
                                 onMouseEnter={(e) => e.currentTarget.style.background = '#0d619f'}
                                 onMouseLeave={(e) => e.currentTarget.style.background = '#0F70B7'}
                             >
-                                <Sparkles size={16} />
-                                Déposer une Capture d'Écran
+                                <img src={hmIcon} alt="HM Icon" style={{ width: '16px', height: '16px', objectFit: 'contain', filter: 'brightness(0) invert(1)' }} />
+                                Scanner Patient HM
                             </button>
                         </div>
 
