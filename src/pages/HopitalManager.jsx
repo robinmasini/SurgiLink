@@ -11,11 +11,13 @@ import {
     Lock,
     User,
     Check,
-    Loader2
+    Loader2,
+    Sparkles
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import hmLogo from '../assets/HM.png';
+import HMScannerModal from '../components/HMScannerModal';
 
 export default function HopitalManager() {
     const { t } = useTranslation();
@@ -27,6 +29,7 @@ export default function HopitalManager() {
     const [globalSyncing, setGlobalSyncing] = useState(false);
     const [syncStatus, setSyncStatus] = useState({});
     const [isLoading, setIsLoading] = useState(true);
+    const [isHMScannerOpen, setIsHMScannerOpen] = useState(false);
 
     useEffect(() => {
         loadPatients();
@@ -247,6 +250,22 @@ export default function HopitalManager() {
                             </div>
 
                             <div style={{ display: 'flex', gap: '12px' }}>
+                                <button
+                                    className="btn btn-secondary"
+                                    onClick={() => setIsHMScannerOpen(true)}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '8px',
+                                        background: 'rgba(15, 112, 183, 0.1)',
+                                        color: '#0F70B7',
+                                        border: '1px solid rgba(15, 112, 183, 0.2)',
+                                        fontWeight: '700'
+                                    }}
+                                >
+                                    <Sparkles size={16} />
+                                    Scanner Capture HM
+                                </button>
                                 <button 
                                     className="btn btn-secondary"
                                     onClick={() => setIsLoggedIn(false)}
@@ -278,6 +297,63 @@ export default function HopitalManager() {
                                     Synchroniser Tout
                                 </button>
                             </div>
+                        </div>
+
+                        {/* Import Screenshot Banner */}
+                        <div className="card" style={{
+                            padding: 'var(--spacing-5)',
+                            background: 'linear-gradient(135deg, rgba(15, 112, 183, 0.05) 0%, rgba(255, 255, 255, 0.85) 100%)',
+                            border: '1px solid rgba(15, 112, 183, 0.15)',
+                            borderRadius: 'var(--radius-xl)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            flexWrap: 'wrap',
+                            gap: 'var(--spacing-4)',
+                            boxShadow: 'var(--shadow-sm)'
+                        }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flex: 1, minWidth: '280px' }}>
+                                <div style={{
+                                    width: '44px',
+                                    height: '44px',
+                                    borderRadius: '10px',
+                                    background: 'rgba(15, 112, 183, 0.1)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    color: '#0F70B7',
+                                    flexShrink: 0
+                                }}>
+                                    <Sparkles size={22} />
+                                </div>
+                                <div>
+                                    <h4 style={{ fontSize: '15px', fontWeight: '700', color: 'var(--color-gray-900)', margin: '0 0 2px 0' }}>
+                                        Importation par Capture d'Écran Hospital Manager
+                                    </h4>
+                                    <p style={{ fontSize: '13px', color: 'var(--color-gray-500)', margin: 0, lineHeight: '1.4' }}>
+                                        Déposez une capture d'écran d'un dossier patient Hospital Manager pour l'importer instantanément dans SurgiLink et planifier ses rappels automatiques.
+                                    </p>
+                                </div>
+                            </div>
+                            <button
+                                className="btn btn-primary"
+                                onClick={() => setIsHMScannerOpen(true)}
+                                style={{
+                                    background: '#0F70B7',
+                                    color: 'white',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '8px',
+                                    border: 'none',
+                                    fontWeight: '700',
+                                    boxShadow: '0 4px 12px rgba(15, 112, 183, 0.2)'
+                                }}
+                                onMouseEnter={(e) => e.currentTarget.style.background = '#0d619f'}
+                                onMouseLeave={(e) => e.currentTarget.style.background = '#0F70B7'}
+                            >
+                                <Sparkles size={16} />
+                                Déposer une Capture d'Écran
+                            </button>
                         </div>
 
                         {/* Patients Sync Table */}
@@ -376,6 +452,12 @@ export default function HopitalManager() {
                         </div>
                     </div>
                 )}
+                
+                <HMScannerModal
+                    isOpen={isHMScannerOpen}
+                    onClose={() => setIsHMScannerOpen(false)}
+                    onSuccess={loadPatients}
+                />
             </main>
         </div>
     );

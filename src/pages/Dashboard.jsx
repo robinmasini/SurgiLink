@@ -5,6 +5,7 @@ import Sidebar from '../components/Sidebar';
 import MobileNavbar from '../components/MobileNavbar';
 import Header from '../components/Header';
 import AddPatientModal from '../components/AddPatientModal';
+import HMScannerModal from '../components/HMScannerModal';
 import practitionerAvatar from '../assets/practitioner-avatar.png';
 import welcomeCardV4 from '../assets/welcome-card-v4.jpg';
 import welcomeCardInfirmier from '../assets/welcomecard-infirmier.png';
@@ -27,7 +28,8 @@ import {
     LogOut,
     Settings,
     Zap,
-    Plus
+    Plus,
+    Sparkles
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { calculateDaysUntilSurgery } from '../utils/dateUtils';
@@ -41,6 +43,7 @@ export default function Dashboard() {
     const navigate = useNavigate();
     const [isAddModalOpen, setIsAddModalOpen] = useState(false); // Renamed from isModalOpen
     const [isAlarmsModalOpen, setIsAlarmsModalOpen] = useState(false); // Added
+    const [isHMScannerOpen, setIsHMScannerOpen] = useState(false);
     const [allPatients, setAllPatients] = useState([]);
     const [patients, setPatients] = useState([]);
     const [responses, setResponses] = useState({});
@@ -274,6 +277,23 @@ export default function Dashboard() {
                             <button className="btn btn-secondary hide-mobile" onClick={() => setIsAlarmsModalOpen(true)} style={{ borderRadius: '12px', padding: '10px 20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                                 <Zap size={18} style={{ color: '#6D8C7C' }} fill="#6D8C7C" />
                                 <span>{t('Alarme vigilance')}</span>
+                            </button>
+                            <button 
+                                className="btn btn-secondary hide-mobile" 
+                                onClick={() => setIsHMScannerOpen(true)} 
+                                style={{ 
+                                    borderRadius: '12px', 
+                                    padding: '10px 20px', 
+                                    display: 'flex', 
+                                    alignItems: 'center', 
+                                    gap: '8px',
+                                    background: 'rgba(15, 112, 183, 0.1)',
+                                    color: '#0F70B7',
+                                    border: '1px solid rgba(15, 112, 183, 0.2)'
+                                }}
+                            >
+                                <Sparkles size={18} />
+                                <span>{t('Importer Capture HM')}</span>
                             </button>
                             <button
                                 className="btn btn-primary"
@@ -628,6 +648,11 @@ export default function Dashboard() {
                 <AddPatientModal
                     isOpen={isAddModalOpen}
                     onClose={() => setIsAddModalOpen(false)}
+                    onSuccess={loadDashboard}
+                />
+                <HMScannerModal
+                    isOpen={isHMScannerOpen}
+                    onClose={() => setIsHMScannerOpen(false)}
                     onSuccess={loadDashboard}
                 />
                 <SMSAlarmsModal

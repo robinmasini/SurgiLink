@@ -19,7 +19,19 @@ export default function EditPatientModal({ isOpen, onClose, patient, onPatientUp
         surgeonName: '',
         surgeryTime: '',
         stayType: '',
-        reminderTime: '08:30'
+        reminderTime: '08:30',
+        ipp: '',
+        stayNumber: '',
+        address: '',
+        weight: '',
+        height: '',
+        referringDoctor: '',
+        referringDoctorPhone: '',
+        entryMode: '8 - Domicile',
+        exitMode: '8 - Retour domicile',
+        admissionDatetime: '',
+        dischargeDatetime: '',
+        roomNumber: ''
     });
     const [isSaving, setIsSaving] = useState(false);
 
@@ -58,7 +70,19 @@ export default function EditPatientModal({ isOpen, onClose, patient, onPatientUp
                 surgeonName: patient.surgeon_name || '',
                 surgeryTime: patient.surgery_time || '07:30',
                 stayType: patient.stay_type || 'Ambulatoire',
-                reminderTime: patient.reminder_time || '08:30'
+                reminderTime: patient.reminder_time || '08:30',
+                ipp: patient.ipp || '',
+                stayNumber: patient.stay_number || '',
+                address: patient.address || '',
+                weight: patient.weight || '',
+                height: patient.height || '',
+                referringDoctor: patient.referring_doctor || '',
+                referringDoctorPhone: patient.referring_doctor_phone || '',
+                entryMode: patient.entry_mode || '8 - Domicile',
+                exitMode: patient.exit_mode || '8 - Retour domicile',
+                admissionDatetime: patient.admission_datetime ? new Date(patient.admission_datetime).toISOString().slice(0, 16) : '',
+                dischargeDatetime: patient.discharge_datetime ? new Date(patient.discharge_datetime).toISOString().slice(0, 16) : '',
+                roomNumber: patient.room_number || ''
             });
         }
     }, [patient]);
@@ -91,7 +115,19 @@ export default function EditPatientModal({ isOpen, onClose, patient, onPatientUp
                     surgeon_name: formData.surgeonName,
                     surgery_time: formData.surgeryTime,
                     stay_type: formData.stayType,
-                    reminder_time: formData.reminderTime
+                    reminder_time: formData.reminderTime,
+                    ipp: formData.ipp,
+                    stay_number: formData.stayNumber,
+                    address: formData.address,
+                    weight: formData.weight,
+                    height: formData.height,
+                    referring_doctor: formData.referringDoctor,
+                    referring_doctor_phone: formData.referringDoctorPhone,
+                    entry_mode: formData.entryMode,
+                    exit_mode: formData.exitMode,
+                    admission_datetime: formData.admissionDatetime ? new Date(formData.admissionDatetime).toISOString() : null,
+                    discharge_datetime: formData.dischargeDatetime ? new Date(formData.dischargeDatetime).toISOString() : null,
+                    room_number: formData.roomNumber
                 })
                 .eq('id', patient.id)
                 .select();
@@ -343,6 +379,150 @@ export default function EditPatientModal({ isOpen, onClose, patient, onPatientUp
                                     </div>
                                 </div>
                             </div>
+                        </div>
+
+                        {/* Hospital Manager Fields */}
+                        <div style={{
+                            marginTop: 'var(--spacing-5)',
+                            paddingTop: 'var(--spacing-5)',
+                            borderTop: '1px solid var(--color-gray-200)'
+                        }}>
+                            <h4 style={{
+                                fontSize: 'var(--font-size-sm)',
+                                fontWeight: 'var(--font-weight-semibold)',
+                                color: 'var(--color-gray-700)',
+                                marginBottom: 'var(--spacing-3)'
+                            }}>Dossier Hospital Manager (DPI)</h4>
+
+                            <div style={{ display: 'grid', gap: 'var(--spacing-3)' }}>
+                                <div className="grid-2">
+                                    <div>
+                                        <label className="form-label-edit">IPP</label>
+                                        <input
+                                            className="input"
+                                            value={formData.ipp}
+                                            onChange={(e) => setFormData({ ...formData, ipp: e.target.value })}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="form-label-edit">N° séjour</label>
+                                        <input
+                                            className="input"
+                                            value={formData.stayNumber}
+                                            onChange={(e) => setFormData({ ...formData, stayNumber: e.target.value })}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="grid-2">
+                                    <div>
+                                        <label className="form-label-edit">Poids</label>
+                                        <input
+                                            className="input"
+                                            value={formData.weight}
+                                            onChange={(e) => setFormData({ ...formData, weight: e.target.value })}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="form-label-edit">Taille</label>
+                                        <input
+                                            className="input"
+                                            value={formData.height}
+                                            onChange={(e) => setFormData({ ...formData, height: e.target.value })}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="grid-2">
+                                    <div>
+                                        <label className="form-label-edit">Chambre</label>
+                                        <input
+                                            className="input"
+                                            value={formData.roomNumber}
+                                            onChange={(e) => setFormData({ ...formData, roomNumber: e.target.value })}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="form-label-edit">Adresse</label>
+                                        <input
+                                            className="input"
+                                            value={formData.address}
+                                            onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="grid-2">
+                                    <div>
+                                        <label className="form-label-edit">Médecin traitant</label>
+                                        <input
+                                            className="input"
+                                            value={formData.referringDoctor}
+                                            onChange={(e) => setFormData({ ...formData, referringDoctor: e.target.value })}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="form-label-edit">Téléphone Médecin</label>
+                                        <input
+                                            className="input"
+                                            value={formData.referringDoctorPhone}
+                                            onChange={(e) => setFormData({ ...formData, referringDoctorPhone: e.target.value })}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="grid-2">
+                                    <div>
+                                        <label className="form-label-edit">Mode d'entrée</label>
+                                        <input
+                                            className="input"
+                                            value={formData.entryMode}
+                                            placeholder="ex: 8 - Domicile"
+                                            onChange={(e) => setFormData({ ...formData, entryMode: e.target.value })}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="form-label-edit">Mode de sortie</label>
+                                        <input
+                                            className="input"
+                                            value={formData.exitMode}
+                                            placeholder="ex: 8 - Retour domicile"
+                                            onChange={(e) => setFormData({ ...formData, exitMode: e.target.value })}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="grid-2">
+                                    <div>
+                                        <label className="form-label-edit">Admission Date/Heure</label>
+                                        <input
+                                            type="datetime-local"
+                                            className="input"
+                                            value={formData.admissionDatetime}
+                                            onChange={(e) => setFormData({ ...formData, admissionDatetime: e.target.value })}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="form-label-edit">Sortie Date/Heure</label>
+                                        <input
+                                            type="datetime-local"
+                                            className="input"
+                                            value={formData.dischargeDatetime}
+                                            onChange={(e) => setFormData({ ...formData, dischargeDatetime: e.target.value })}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                            <style>{`
+                                .form-label-edit {
+                                    display: block;
+                                    font-size: var(--font-size-xs);
+                                    font-weight: var(--font-weight-medium);
+                                    color: var(--color-gray-500);
+                                    margin-bottom: 4px;
+                                    text-transform: uppercase;
+                                }
+                            `}</style>
                         </div>
                     </div>
 

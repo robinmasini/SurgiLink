@@ -297,6 +297,65 @@ export default function PatientDetailPanel({ patient, responses = [], onClose })
                     <div style={{ fontSize: 'var(--font-size-sm)', fontWeight: '700', color: 'var(--color-primary-900)' }}>{patient.operation || 'Non renseignée'}</div>
                 </div>
 
+                {/* Hospital Manager Extracted Fields */}
+                {(patient.ipp || patient.stay_number || patient.weight || patient.height || patient.room_number || patient.referring_doctor) && (
+                    <div style={{ 
+                        marginBottom: 'var(--spacing-6)',
+                        padding: 'var(--spacing-4)',
+                        background: 'linear-gradient(to bottom, #F9FBFC, #F4F7F6)',
+                        border: '1px solid #E2E8F0',
+                        borderRadius: 'var(--radius-lg)'
+                    }}>
+                        <div style={{ 
+                            fontSize: '10px', 
+                            fontWeight: '800', 
+                            color: '#0F70B7', 
+                            textTransform: 'uppercase', 
+                            letterSpacing: '0.5px',
+                            marginBottom: 'var(--spacing-3)'
+                        }}>
+                            Dossier Hospital Manager (DPI)
+                        </div>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', fontSize: '12px' }}>
+                            {patient.ipp && (
+                                <div>
+                                    <div style={{ color: 'var(--color-gray-400)', fontSize: '10px', textTransform: 'uppercase' }}>IPP</div>
+                                    <div style={{ fontWeight: '600', color: 'var(--color-gray-800)' }}>{patient.ipp}</div>
+                                </div>
+                            )}
+                            {patient.stay_number && (
+                                <div>
+                                    <div style={{ color: 'var(--color-gray-400)', fontSize: '10px', textTransform: 'uppercase' }}>N° séjour</div>
+                                    <div style={{ fontWeight: '600', color: 'var(--color-gray-800)' }}>{patient.stay_number}</div>
+                                </div>
+                            )}
+                            {patient.room_number && (
+                                <div>
+                                    <div style={{ color: 'var(--color-gray-400)', fontSize: '10px', textTransform: 'uppercase' }}>Chambre</div>
+                                    <div style={{ fontWeight: '600', color: 'var(--color-gray-800)' }}>{patient.room_number}</div>
+                                </div>
+                            )}
+                            {(patient.weight || patient.height) && (
+                                <div>
+                                    <div style={{ color: 'var(--color-gray-400)', fontSize: '10px', textTransform: 'uppercase' }}>Taille / Poids</div>
+                                    <div style={{ fontWeight: '600', color: 'var(--color-gray-800)' }}>
+                                        {patient.height || '—'} / {patient.weight || '—'}
+                                    </div>
+                                </div>
+                            )}
+                            {patient.referring_doctor && (
+                                <div style={{ gridColumn: 'span 2' }}>
+                                    <div style={{ color: 'var(--color-gray-400)', fontSize: '10px', textTransform: 'uppercase' }}>Médecin traitant</div>
+                                    <div style={{ fontWeight: '600', color: 'var(--color-gray-800)' }}>
+                                        {patient.referring_doctor}
+                                        {patient.referring_doctor_phone && ` (${patient.referring_doctor_phone})`}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )}
+
                 {/* Reminder Queue */}
                 <div style={{ marginBottom: 'var(--spacing-6)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-3)' }}>

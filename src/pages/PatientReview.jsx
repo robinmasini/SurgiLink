@@ -38,7 +38,8 @@ import {
     Link as LinkIcon,
     Copy,
     RefreshCw,
-    ShieldCheck
+    ShieldCheck,
+    Sparkles
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { calculateAge, calculateDaysUntilSurgery, formatDateFR, formatDateTimeFR } from '../utils/dateUtils';
@@ -854,6 +855,109 @@ export default function PatientReview() {
                                 </div>
                             </div>
                         </div>
+
+                        {/* 2. Hospital Manager DPI Card */}
+                        {(patient.ipp || patient.stay_number || patient.weight || patient.height || patient.room_number || patient.referring_doctor || patient.address || patient.admission_datetime || patient.discharge_datetime) ? (
+                            <div className="card glass-effect patient-card" style={{ marginTop: 'var(--spacing-6)' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)', marginBottom: 'var(--spacing-6)', borderBottom: '1px solid rgba(0,0,0,0.05)', paddingBottom: 'var(--spacing-4)' }}>
+                                    <div className="card-icon" style={{ background: 'rgba(15, 112, 183, 0.1)', color: '#0F70B7', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '36px', height: '36px', borderRadius: '8px' }}>
+                                        <Sparkles size={18} />
+                                    </div>
+                                    <div>
+                                        <h3 style={{ margin: 0, fontSize: 'var(--font-size-lg)', fontWeight: '700' }}>Dossier Hospital Manager (DPI)</h3>
+                                        <span style={{ fontSize: '11px', color: 'var(--color-gray-400)' }}>Informations importées automatiquement par capture d'écran</span>
+                                    </div>
+                                </div>
+
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 'var(--spacing-6)' }}>
+                                    {/* Column 1: Identifiants & Logistique */}
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-4)' }}>
+                                        <h4 style={{ margin: 0, fontSize: '12px', fontWeight: '800', color: 'var(--color-primary-600)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                                            Identifiants & Logistique
+                                        </h4>
+                                        {patient.ipp && (
+                                            <div>
+                                                <div style={{ fontSize: '11px', color: 'var(--color-gray-400)', textTransform: 'uppercase' }}>IPP Patient</div>
+                                                <div style={{ fontWeight: '700', color: 'var(--color-gray-900)', fontSize: '14px', fontFamily: 'monospace' }}>{patient.ipp}</div>
+                                            </div>
+                                        )}
+                                        {patient.stay_number && (
+                                            <div>
+                                                <div style={{ fontSize: '11px', color: 'var(--color-gray-400)', textTransform: 'uppercase' }}>N° Séjour</div>
+                                                <div style={{ fontWeight: '700', color: 'var(--color-gray-900)', fontSize: '14px', fontFamily: 'monospace' }}>{patient.stay_number}</div>
+                                            </div>
+                                        )}
+                                        {patient.room_number && (
+                                            <div>
+                                                <div style={{ fontSize: '11px', color: 'var(--color-gray-400)', textTransform: 'uppercase' }}>Chambre / Lit</div>
+                                                <div style={{ fontWeight: '700', color: 'var(--color-gray-900)', fontSize: '14px' }}>{patient.room_number}</div>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Column 2: Paramètres Physiques & Contacts */}
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-4)' }}>
+                                        <h4 style={{ margin: 0, fontSize: '12px', fontWeight: '800', color: 'var(--color-primary-600)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                                            Paramètres & Contacts
+                                        </h4>
+                                        {(patient.weight || patient.height) && (
+                                            <div>
+                                                <div style={{ fontSize: '11px', color: 'var(--color-gray-400)', textTransform: 'uppercase' }}>Taille & Poids</div>
+                                                <div style={{ fontWeight: '700', color: 'var(--color-gray-900)', fontSize: '14px' }}>
+                                                    {patient.height || '—'} / {patient.weight || '—'}
+                                                </div>
+                                            </div>
+                                        )}
+                                        {patient.address && (
+                                            <div>
+                                                <div style={{ fontSize: '11px', color: 'var(--color-gray-400)', textTransform: 'uppercase' }}>Adresse Principale</div>
+                                                <div style={{ fontWeight: '700', color: 'var(--color-gray-900)', fontSize: '13px', lineHeight: '1.4' }}>{patient.address}</div>
+                                            </div>
+                                        )}
+                                        {patient.referring_doctor && (
+                                            <div>
+                                                <div style={{ fontSize: '11px', color: 'var(--color-gray-400)', textTransform: 'uppercase' }}>Médecin Traitant</div>
+                                                <div style={{ fontWeight: '700', color: 'var(--color-gray-900)', fontSize: '14px' }}>{patient.referring_doctor}</div>
+                                                {patient.referring_doctor_phone && (
+                                                    <div style={{ fontSize: '12px', color: 'var(--color-gray-500)', marginTop: '2px' }}>Tél: {patient.referring_doctor_phone}</div>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Column 3: Admission & Flux */}
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-4)' }}>
+                                        <h4 style={{ margin: 0, fontSize: '12px', fontWeight: '800', color: 'var(--color-primary-600)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                                            Admission & Parcours
+                                        </h4>
+                                        {patient.admission_datetime && (
+                                            <div>
+                                                <div style={{ fontSize: '11px', color: 'var(--color-gray-400)', textTransform: 'uppercase' }}>Date/Heure d'Entrée</div>
+                                                <div style={{ fontWeight: '700', color: 'var(--color-gray-900)', fontSize: '13px' }}>
+                                                    {new Date(patient.admission_datetime).toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })} à {new Date(patient.admission_datetime).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                                                </div>
+                                            </div>
+                                        )}
+                                        {patient.discharge_datetime && (
+                                            <div>
+                                                <div style={{ fontSize: '11px', color: 'var(--color-gray-400)', textTransform: 'uppercase' }}>Date/Heure de Sortie</div>
+                                                <div style={{ fontWeight: '700', color: 'var(--color-gray-900)', fontSize: '13px' }}>
+                                                    {new Date(patient.discharge_datetime).toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })} à {new Date(patient.discharge_datetime).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                                                </div>
+                                            </div>
+                                        )}
+                                        {(patient.entry_mode || patient.exit_mode) && (
+                                            <div>
+                                                <div style={{ fontSize: '11px', color: 'var(--color-gray-400)', textTransform: 'uppercase' }}>Flux Entrée / Sortie</div>
+                                                <div style={{ fontWeight: '700', color: 'var(--color-gray-900)', fontSize: '12px', lineHeight: '1.4' }}>
+                                                    {patient.entry_mode || '—'} <br /> <span style={{ color: 'var(--color-gray-400)', fontWeight: 'normal' }}>vers</span> <br /> {patient.exit_mode || '—'}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        ) : null}
 
 
                         {/* 3. Clinical Data Area */}

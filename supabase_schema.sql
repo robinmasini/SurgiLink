@@ -21,7 +21,19 @@ CREATE TABLE IF NOT EXISTS public.patients (
     clinic_image_url TEXT,
     appointment_datetime TIMESTAMPTZ,
     score_status TEXT DEFAULT 'SAIN',
-    user_id UUID REFERENCES auth.users(id) DEFAULT auth.uid()
+    user_id UUID REFERENCES auth.users(id) DEFAULT auth.uid(),
+    ipp TEXT,
+    stay_number TEXT,
+    address TEXT,
+    weight TEXT,
+    height TEXT,
+    referring_doctor TEXT,
+    referring_doctor_phone TEXT,
+    entry_mode TEXT,
+    exit_mode TEXT,
+    admission_datetime TIMESTAMPTZ,
+    discharge_datetime TIMESTAMPTZ,
+    room_number TEXT
 );
 
 -- Enable RLS
@@ -139,6 +151,12 @@ CREATE POLICY "Users can update their own patients" ON public.patients FOR UPDAT
 CREATE POLICY "Portal: Patients can view own data via token" ON public.patients FOR SELECT TO anon USING (
     EXISTS (SELECT 1 FROM public.patient_review_tokens WHERE patient_id = patients.id AND is_active = true AND (expires_at IS NULL OR expires_at > NOW()))
 );
+CREATE POLICY "Portal: Patients can update own data via token" ON public.patients FOR UPDATE TO anon USING (
+    EXISTS (SELECT 1 FROM public.patient_review_tokens WHERE patient_id = patients.id AND is_active = true AND (expires_at IS NULL OR expires_at > NOW()))
+) WITH CHECK (
+    EXISTS (SELECT 1 FROM public.patient_review_tokens WHERE patient_id = patients.id AND is_active = true AND (expires_at IS NULL OR expires_at > NOW()))
+);
+
 
 -- Medical History
 CREATE POLICY "Users can view their patients' history" ON public.medical_history FOR SELECT TO authenticated USING (auth.uid() = user_id);
