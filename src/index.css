@@ -1397,8 +1397,6 @@ textarea.input {
   background: transparent;
   border: none;
   box-shadow: none;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
 }
 
 .mobile-navbar-svg-bg {
