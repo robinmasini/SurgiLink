@@ -7,6 +7,7 @@ import Header from '../components/Header';
 import AddPatientModal from '../components/AddPatientModal';
 import HMScannerModal from '../components/HMScannerModal';
 import hmIcon from '../assets/hm-icon.png';
+import LogoIcon from '../components/LogoIcon';
 import practitionerAvatar from '../assets/practitioner-avatar.png';
 import welcomeCardV4 from '../assets/welcome-card-v4.jpg';
 import welcomeCardInfirmier from '../assets/welcomecard-infirmier.png';
@@ -276,7 +277,7 @@ export default function Dashboard() {
                     actions={
                         <>
                             <button className="btn btn-secondary hide-mobile" onClick={() => setIsAlarmsModalOpen(true)} style={{ borderRadius: '12px', padding: '10px 20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                <Zap size={18} style={{ color: '#6D8C7C' }} fill="#6D8C7C" />
+                                <LogoIcon width="16px" />
                                 <span>{t('Alarme vigilance')}</span>
                             </button>
                             <button 
