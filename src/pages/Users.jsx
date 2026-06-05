@@ -15,15 +15,50 @@ import {
 } from 'lucide-react';
 import practitionerAvatar from '../assets/practitioner-avatar.png';
 import nurseAvatar from '../assets/nurse-avatar.png';
+import christopheSignature from '../assets/christophe-signature.png';
+import welcomeCardV4 from '../assets/welcome-card-v4.jpg';
+import welcomeCardInfirmier from '../assets/welcomecard-infirmier.png';
 
 export default function Users() {
     const [profiles, setProfiles] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
+    const [profile, setProfile] = useState(null);
 
     useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth <= 1024);
+        window.addEventListener('resize', handleResize);
+
         loadProfiles();
+        loadProfile();
+
+        return () => window.removeEventListener('resize', handleResize);
     }, []);
+
+    const loadProfile = async () => {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+            const { data } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', session.user.id)
+                .single();
+
+            if (data) {
+                setProfile(data);
+            } else {
+                // Fallback
+                const email = session.user.email?.toLowerCase() || '';
+                const isNurse = email.includes('infirmier') || email.includes('nurse');
+                setProfile({
+                    full_name: isNurse ? 'Infirmier Cabinet' : 'Dr. Christophe DESOUCHES',
+                    role: isNurse ? 'nurse' : 'practitioner',
+                    email: email
+                });
+            }
+        }
+    };
 
     const loadProfiles = async () => {
         setIsLoading(true);
@@ -172,6 +207,50 @@ export default function Users() {
                 />
 
                 <div className="users-container fade-in" style={{ maxWidth: '1000px' }}>
+                    {/* Welcome Banner - Mobile Only */}
+                    {isMobile && (
+                        <div className="welcome-banner" style={{ marginBottom: 'var(--spacing-6)' }}>
+                            <div className="welcome-banner-content">
+                                <div></div>
+                                <div>
+                                    <div className="welcome-banner-welcome">Bonjour,</div>
+                                    {profile?.role === 'practitioner' ? (
+                                        <a
+                                            href="https://www.desouches-chirurgien-esthetique.com/"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="welcome-banner-signature-link"
+                                        >
+                                            <img src={christopheSignature} alt="Christophe DESOUCHES" className="welcome-banner-signature" />
+                                        </a>
+                                    ) : (
+                                        <div className="welcome-banner-greeting" style={{ fontSize: '24px', fontWeight: '800', margin: '10px 0' }}>
+                                            {profile?.full_name || 'Infirmier Cabinet'}
+                                        </div>
+                                    )}
+                                    <div className="welcome-banner-greeting">Ravi de vous revoir !</div>
+                                    <div className="welcome-banner-instruction">Votre espace {profile?.role === 'practitioner' ? 'praticien' : 'infirmier'} est à jour</div>
+                                </div>
+                                <div>
+                                    <div className="welcome-banner-date-label">Date d'aujourd'hui</div>
+                                    <div className="welcome-banner-date-value">
+                                        {new Date().toLocaleDateString('fr-FR', {
+                                            weekday: 'long',
+                                            day: 'numeric',
+                                            month: 'long',
+                                            year: 'numeric'
+                                        }).replace(/^\w/, (c) => c.toUpperCase())}
+                                    </div>
+                                </div>
+                            </div>
+                            <img
+                                src={profile?.role === 'nurse' ? welcomeCardInfirmier : welcomeCardV4}
+                                alt="Espace Opératoire"
+                                className="welcome-banner-image"
+                            />
+                        </div>
+                    )}
+
                     {/* Search & Stats Section */}
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-6)', gap: 'var(--spacing-4)' }}>
                         <div style={{ position: 'relative', flex: 1, maxWidth: '400px' }}>
