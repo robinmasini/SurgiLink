@@ -316,6 +316,51 @@ export default function Dashboard() {
 
                     {isMobile && (
                         <>
+                            {/* Responsive mobile buttons row */}
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '8px' }}>
+                                <button 
+                                    className="btn btn-secondary" 
+                                    onClick={() => setIsAlarmsModalOpen(true)} 
+                                    style={{ 
+                                        borderRadius: '12px', 
+                                        padding: '10px 14px', 
+                                        display: 'flex', 
+                                        alignItems: 'center', 
+                                        justifyContent: 'center',
+                                        gap: '8px',
+                                        fontSize: '13px',
+                                        fontWeight: '700',
+                                        background: 'white',
+                                        border: '1px solid var(--color-gray-200)',
+                                        boxShadow: 'var(--shadow-sm)'
+                                    }}
+                                >
+                                    <LogoIcon width="16px" />
+                                    <span>{t('Alarme vigilance')}</span>
+                                </button>
+                                <button 
+                                    className="btn btn-secondary" 
+                                    onClick={() => setIsHMScannerOpen(true)} 
+                                    style={{ 
+                                        borderRadius: '12px', 
+                                        padding: '10px 14px', 
+                                        display: 'flex', 
+                                        alignItems: 'center', 
+                                        justifyContent: 'center',
+                                        gap: '8px',
+                                        background: 'rgba(15, 112, 183, 0.08)',
+                                        color: '#0F70B7',
+                                        border: '1px solid rgba(15, 112, 183, 0.15)',
+                                        fontWeight: '700',
+                                        fontSize: '13px',
+                                        boxShadow: 'var(--shadow-sm)'
+                                    }}
+                                >
+                                    <img src={hmIcon} alt="HM Icon" style={{ width: '16px', height: '16px', objectFit: 'contain' }} />
+                                    <span>{t('Scanner HM')}</span>
+                                </button>
+                            </div>
+
                             <div className="mobile-profile-card-new">
                                 <div className="mobile-profile-left">
                                     <img
