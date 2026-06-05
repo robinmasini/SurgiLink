@@ -432,11 +432,9 @@ export async function scheduleTimeBasedReminders(patientId, interventionDate, ti
 
         if (result.success) {
             if (isPast) {
-                // For "late-created" patients (created in last 24h), keep Welcome and J-7 even if in the past
-                const isLateWelcomeOrJ7 = (reminder.screen === 'Bienvenue' || reminder.screen === 'J-7') && patientCreatedRecently;
-
-                if (isLateWelcomeOrJ7) {
-                    console.log(`[ReminderService] Keeping past reminder ${reminder.screen} for late-created Patient ${patientId}`);
+                // For recently created patients (created in last 24h), keep all reminders of the protocol even if in the past
+                if (patientCreatedRecently) {
+                    console.log(`[ReminderService] Keeping past reminder ${reminder.screen} for recently created Patient ${patientId}`);
                     reminders.push(result.data);
                 } else {
                     // Mark as cancelled immediately so it doesn't get sent by the cron
