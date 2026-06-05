@@ -9,7 +9,6 @@ import {
     Calendar, 
     Clock, 
     UploadCloud, 
-    Sparkles, 
     Loader2, 
     Check, 
     Info, 
@@ -435,7 +434,12 @@ Les clés doivent être exactement :
                             padding: '10px'
                         }}
                     >
-                        <Sparkles size={16} /> {isScannerOpen ? "Retour au formulaire manuel" : "Scanner une capture Hopital Manager"}
+                        {isScannerOpen ? (
+                            <Clipboard size={16} />
+                        ) : (
+                            <img src={hmIcon} alt="HM" style={{ width: '18px', height: '18px', objectFit: 'contain' }} />
+                        )}
+                        {isScannerOpen ? "Retour au formulaire manuel" : "Scanner une capture Hopital Manager"}
                     </button>
 
                     {/* Integrated Scanner Workspace */}
@@ -559,7 +563,7 @@ Les clés doivent être exactement :
                                             onClick={triggerScan}
                                             disabled={isScanning}
                                         >
-                                            <Sparkles size={16} /> Lancer l'analyse
+                                            <img src={hmIcon} alt="HM" style={{ width: '16px', height: '16px', objectFit: 'contain' }} /> Lancer l'analyse
                                         </button>
                                     </div>
                                 </div>
