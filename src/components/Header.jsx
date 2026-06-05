@@ -5,7 +5,7 @@ import LanguageSelector from './LanguageSelector';
 import QuestionsPreviewModal from './QuestionsPreviewModal';
 import logoSlMa from '../assets/logo-sl-ma.png';
 
-export default function Header({ title, subtitle, actions, hideTitleMobile = false }) {
+export default function Header({ title, subtitle, actions, hideTitleMobile = false, hideQuestionsPreviewMobile = false }) {
     const { t } = useTranslation();
     const [isQuestionsModalOpen, setIsQuestionsModalOpen] = useState(false);
 
@@ -62,40 +62,42 @@ export default function Header({ title, subtitle, actions, hideTitleMobile = fal
             </div>
 
             {/* Mobile Button - rendered below Translation and Add Patient actions */}
-            <button
-                onClick={() => setIsQuestionsModalOpen(true)}
-                className="show-mobile"
-                style={{
-                    display: 'none', // Overridden by CSS media query on mobile
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: 'var(--spacing-2)',
-                    padding: '10px 16px',
-                    borderRadius: '12px',
-                    border: '1px solid var(--color-primary-100)',
-                    background: 'white',
-                    color: 'var(--color-primary-600)',
-                    fontSize: 'var(--font-size-sm)',
-                    fontWeight: '700',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                    boxShadow: 'var(--shadow-sm)',
-                    height: '42px',
-                    width: '100%',
-                    marginTop: 'var(--spacing-3)'
-                }}
-                onMouseEnter={(e) => {
-                    e.currentTarget.style.border = '1px solid var(--color-primary-200)';
-                    e.currentTarget.style.background = 'var(--color-primary-50)';
-                }}
-                onMouseLeave={(e) => {
-                    e.currentTarget.style.border = '1px solid var(--color-primary-100)';
-                    e.currentTarget.style.background = 'white';
-                }}
-            >
-                <ClipboardList size={16} />
-                <span>{t('Aperçu des questions')}</span>
-            </button>
+            {!hideQuestionsPreviewMobile && (
+                <button
+                    onClick={() => setIsQuestionsModalOpen(true)}
+                    className="show-mobile"
+                    style={{
+                        display: 'none', // Overridden by CSS media query on mobile
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 'var(--spacing-2)',
+                        padding: '10px 16px',
+                        borderRadius: '12px',
+                        border: '1px solid var(--color-primary-100)',
+                        background: 'white',
+                        color: 'var(--color-primary-600)',
+                        fontSize: 'var(--font-size-sm)',
+                        fontWeight: '700',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s',
+                        boxShadow: 'var(--shadow-sm)',
+                        height: '42px',
+                        width: '100%',
+                        marginTop: 'var(--spacing-3)'
+                    }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.border = '1px solid var(--color-primary-200)';
+                        e.currentTarget.style.background = 'var(--color-primary-50)';
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.border = '1px solid var(--color-primary-100)';
+                        e.currentTarget.style.background = 'white';
+                    }}
+                >
+                    <ClipboardList size={16} />
+                    <span>{t('Aperçu des questions')}</span>
+                </button>
+            )}
 
             <QuestionsPreviewModal isOpen={isQuestionsModalOpen} onClose={() => setIsQuestionsModalOpen(false)} />
         </header>

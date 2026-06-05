@@ -39,6 +39,7 @@ import StatusBolt from '../components/StatusBolt';
 import PatientStatusBadges from '../components/PatientStatusBadges';
 import PatientDetailPanel from '../components/PatientDetailPanel';
 import SMSAlarmsModal from '../components/SMSAlarmsModal'; // Added
+import QuestionsPreviewModal from '../components/QuestionsPreviewModal';
 
 export default function Dashboard() {
     const { t } = useTranslation();
@@ -46,6 +47,7 @@ export default function Dashboard() {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false); // Renamed from isModalOpen
     const [isAlarmsModalOpen, setIsAlarmsModalOpen] = useState(false); // Added
     const [isHMScannerOpen, setIsHMScannerOpen] = useState(false);
+    const [isQuestionsPreviewOpen, setIsQuestionsPreviewOpen] = useState(false);
     const [allPatients, setAllPatients] = useState([]);
     const [patients, setPatients] = useState([]);
     const [responses, setResponses] = useState({});
@@ -274,6 +276,7 @@ export default function Dashboard() {
                     title={t("Tableau de Bord")}
                     subtitle={t("Vue d'ensemble de vos patients et indicateurs clés")}
                     hideTitleMobile={true}
+                    hideQuestionsPreviewMobile={true}
                     actions={
                         <>
                             <button className="btn btn-secondary hide-mobile" onClick={() => setIsAlarmsModalOpen(true)} style={{ borderRadius: '12px', padding: '10px 20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -360,6 +363,34 @@ export default function Dashboard() {
                                     <span>{t('Scanner HM')}</span>
                                 </button>
                             </div>
+
+                            {/* Mobile Questions Preview Button */}
+                            <button
+                                onClick={() => setIsQuestionsPreviewOpen(true)}
+                                className="btn btn-secondary"
+                                style={{
+                                    width: '100%',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: 'var(--spacing-2)',
+                                    padding: '10px 16px',
+                                    borderRadius: '12px',
+                                    border: '1px solid var(--color-primary-100)',
+                                    background: 'white',
+                                    color: 'var(--color-primary-600)',
+                                    fontSize: 'var(--font-size-sm)',
+                                    fontWeight: '700',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.2s',
+                                    boxShadow: 'var(--shadow-sm)',
+                                    height: '42px',
+                                    marginBottom: 'var(--spacing-3)'
+                                }}
+                            >
+                                <Clipboard size={16} />
+                                <span>{t('Aperçu des questions')}</span>
+                            </button>
 
                             <div className="mobile-profile-card-new">
                                 <div className="mobile-profile-left">
@@ -707,6 +738,10 @@ export default function Dashboard() {
                     isOpen={isAlarmsModalOpen}
                     onClose={() => setIsAlarmsModalOpen(false)}
                     onSuccess={loadDashboard}
+                />
+                <QuestionsPreviewModal
+                    isOpen={isQuestionsPreviewOpen}
+                    onClose={() => setIsQuestionsPreviewOpen(false)}
                 />
             </main>
         </div>
