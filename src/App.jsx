@@ -2,7 +2,6 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Patients from './pages/Patients';
-import Rentabilite from './pages/Rentabilite';
 import Users from './pages/Users';
 import PatientChecklist from './pages/PatientChecklist';
 import PatientSuccess from './pages/PatientSuccess';
@@ -39,7 +38,6 @@ function App() {
         <Route path="/patients" element={<ProtectedRoute><Patients /></ProtectedRoute>} />
         <Route path="/comments" element={<ProtectedRoute><Comments /></ProtectedRoute>} />
         <Route path="/hopital-manager" element={<ProtectedRoute><HopitalManager /></ProtectedRoute>} />
-        <Route path="/rentabilite" element={<ProtectedRoute><Rentabilite /></ProtectedRoute>} />
         <Route path="/users" element={<ProtectedRoute requiredRole="practitioner"><Users /></ProtectedRoute>} />
         <Route path="/patient/:id" element={<ProtectedRoute><PatientReview /></ProtectedRoute>} />
         <Route path="/account" element={<ProtectedRoute><Account /></ProtectedRoute>} />

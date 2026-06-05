@@ -10,7 +10,6 @@ import {
     Stethoscope,
     Users,
     MessageSquare,
-    BarChart3,
     UserCog,
     User,
     LogOut
@@ -24,7 +23,6 @@ const navItems = [
     { path: '/patients', label: 'Listes patients', icon: Users },
     { path: '/hopital-manager', label: 'Hopital Manager', icon: hmIcon, isCustomIcon: true },
     { path: '/comments', label: 'Commentaires Patients', icon: MessageSquare },
-    { path: '/rentabilite', label: 'Rentabilité ROI', icon: BarChart3 },
     { path: '/users', label: 'Utilisateurs', icon: Stethoscope },
     { path: '/account', label: 'Mon compte', icon: User },
 ];

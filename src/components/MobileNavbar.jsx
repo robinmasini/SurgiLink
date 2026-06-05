@@ -4,8 +4,7 @@ import LogoIcon from './LogoIcon';
 import {
     LayoutDashboard,
     Stethoscope,
-    Users,
-    TrendingUp
+    Users
 } from 'lucide-react';
 import hmIcon from '../assets/hm-icon.png';
 
@@ -28,7 +27,7 @@ export default function MobileNavbar() {
         { path: '/dashboard', icon: LayoutDashboard },
         { path: '/hopital-manager', icon: hmIcon, isCustomIcon: true },
         { path: '/patients', icon: Users },
-        { path: '/rentabilite', icon: TrendingUp },
+        { path: '/users', icon: Stethoscope },
     ];
 
     return (
@@ -83,7 +82,7 @@ export default function MobileNavbar() {
                     to={navItems[3].path}
                     className={`mobile-nav-item ${location.pathname === navItems[3].path ? 'active' : ''}`}
                 >
-                    <TrendingUp size={24} />
+                    <Stethoscope size={24} />
                 </Link>
             </div>
         </nav>
