@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { ClipboardList } from 'lucide-react';
 import LanguageSelector from './LanguageSelector';
 import QuestionsPreviewModal from './QuestionsPreviewModal';
+import logoSlMa from '../assets/logo-sl-ma.png';
 
 export default function Header({ title, subtitle, actions, hideTitleMobile = false }) {
     const { t } = useTranslation();
@@ -11,11 +12,19 @@ export default function Header({ title, subtitle, actions, hideTitleMobile = fal
     return (
         <header className="header-container" style={{ display: 'flex', flexDirection: 'column', width: '100%', marginBottom: 'var(--spacing-8)' }}>
             <div className="header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: 0, width: '100%' }}>
-                <div className={`header-left ${hideTitleMobile ? 'hide-mobile' : ''}`}>
+                {/* Desktop Left: Title */}
+                <div className="header-left hide-mobile">
                     <h1>{title}</h1>
                     {subtitle && <p>{subtitle}</p>}
                 </div>
-                <div className="header-right" style={{ display: 'flex', gap: 'var(--spacing-4)', alignItems: 'center' }}>
+
+                {/* Mobile Left: Combined Logo */}
+                <div className="show-mobile" style={{ display: 'none', alignItems: 'center' }}>
+                    <img src={logoSlMa} alt="SurgiLink / Medical Alliance" style={{ height: '36px', objectFit: 'contain' }} />
+                </div>
+
+                {/* Right: Actions */}
+                <div className="header-right" style={{ display: 'flex', gap: 'var(--spacing-3)', alignItems: 'center' }}>
                     <button
                         onClick={() => setIsQuestionsModalOpen(true)}
                         className="hide-mobile"
