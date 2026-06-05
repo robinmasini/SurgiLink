@@ -17,13 +17,15 @@ import {
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
+import hmIcon from '../assets/hm-icon.png';
+
 const navItems = [
     { path: '/dashboard', label: 'Tableau de bord', icon: LayoutDashboard },
     { path: '/patients', label: 'Listes patients', icon: Users },
-    { path: '/hopital-manager', label: 'Hopital Manager', icon: Stethoscope },
+    { path: '/hopital-manager', label: 'Hopital Manager', icon: hmIcon, isCustomIcon: true },
     { path: '/comments', label: 'Commentaires Patients', icon: MessageSquare },
     { path: '/rentabilite', label: 'Rentabilité ROI', icon: BarChart3 },
-    { path: '/users', label: 'Utilisateurs', icon: UserCog },
+    { path: '/users', label: 'Utilisateurs', icon: Stethoscope },
     { path: '/account', label: 'Mon compte', icon: User },
 ];
 
@@ -115,7 +117,20 @@ export default function Sidebar() {
                             className={`sidebar-item ${isActive ? 'active' : ''}`}
                         >
                             <span className="sidebar-item-icon">
-                                <Icon size={isMobile ? 24 : 20} />
+                                {item.isCustomIcon ? (
+                                    <img 
+                                        src={item.icon} 
+                                        alt={item.label} 
+                                        style={{ 
+                                            width: isMobile ? '24px' : '20px', 
+                                            height: isMobile ? '24px' : '20px', 
+                                            objectFit: 'contain',
+                                            opacity: isActive ? 1 : 0.7 
+                                        }} 
+                                    />
+                                ) : (
+                                    <Icon size={isMobile ? 24 : 20} />
+                                )}
                             </span>
                             {!isMobile && <span className="sidebar-item-label">{t(item.label)}</span>}
                         </Link>

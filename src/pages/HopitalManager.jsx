@@ -3,7 +3,6 @@ import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import { supabase } from '../lib/supabase';
 import { 
-    Database, 
     RefreshCw, 
     CheckCircle2, 
     AlertCircle,
@@ -443,13 +442,11 @@ Les clés doivent être exactement :
                                 width: '52px',
                                 height: '52px',
                                 borderRadius: '12px',
-                                background: 'rgba(50, 154, 214, 0.1)',
                                 display: 'flex',
                                 alignItems: 'center',
-                                justifyContent: 'center',
-                                color: '#329AD6'
+                                justifyContent: 'center'
                             }}>
-                                <Database size={28} />
+                                <img src={hmLogo} alt="HM Logo" style={{ width: '48px', height: 'auto', objectFit: 'contain' }} />
                             </div>
                             <div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>

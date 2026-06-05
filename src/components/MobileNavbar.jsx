@@ -7,6 +7,7 @@ import {
     Users,
     TrendingUp
 } from 'lucide-react';
+import hmIcon from '../assets/hm-icon.png';
 
 export default function MobileNavbar() {
     const location = useLocation();
@@ -25,7 +26,7 @@ export default function MobileNavbar() {
 
     const navItems = [
         { path: '/dashboard', icon: LayoutDashboard },
-        { path: '/hopital-manager', icon: Stethoscope },
+        { path: '/hopital-manager', icon: hmIcon, isCustomIcon: true },
         { path: '/patients', icon: Users },
         { path: '/rentabilite', icon: TrendingUp },
     ];
@@ -66,7 +67,16 @@ export default function MobileNavbar() {
                     to={navItems[1].path}
                     className={`mobile-nav-item ${location.pathname === navItems[1].path ? 'active' : ''}`}
                 >
-                    <Stethoscope size={24} />
+                    <img 
+                        src={navItems[1].icon} 
+                        alt="HM" 
+                        style={{ 
+                            width: '24px', 
+                            height: '24px', 
+                            objectFit: 'contain',
+                            opacity: location.pathname === navItems[1].path ? 1 : 0.7 
+                        }} 
+                    />
                 </Link>
 
                 <Link
