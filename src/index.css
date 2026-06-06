@@ -2542,4 +2542,23 @@ textarea.input {
 
 .bg-animate-zoom {
   animation: slowZoom 40s ease-in-out infinite;
-} 
+}
+
+/* Mobile Center Modals */
+@media (max-width: 1024px) {
+  .patient-detail-panel {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 90% !important;
+    max-width: 450px !important;
+    z-index: 1000 !important;
+    max-height: 85vh !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25) !important;
+  }
+  
+  body:has(.patient-detail-panel) {
+    overflow: hidden;
+  }
+}

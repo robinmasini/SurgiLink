@@ -493,7 +493,7 @@ Les clés doivent être exactement :
                     {/* Split View: Scanner + Patients Sync Table */}
                     <div style={{
                         display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fit, minmax(460px, 1fr))',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 460px), 1fr))',
                         gap: 'var(--spacing-6)',
                         alignItems: 'start'
                     }}>

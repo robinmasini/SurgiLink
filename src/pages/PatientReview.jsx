@@ -39,7 +39,8 @@ import {
     Copy,
     RefreshCw,
     ShieldCheck,
-    Sparkles
+    Sparkles,
+    ExternalLink
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { calculateAge, calculateDaysUntilSurgery, formatDateFR, formatDateTimeFR } from '../utils/dateUtils';
@@ -286,6 +287,33 @@ export default function PatientReview() {
         } finally {
             setIsGeneratingToken(false);
         }
+    };
+
+    const handleOpenPortal = async () => {
+        let currentToken = tokenData?.token;
+        if (!currentToken) {
+            try {
+                const res = await generatePatientToken(id);
+                if (res.success) {
+                    currentToken = res.token;
+                    setTokenData({
+                        id: res.tokenId,
+                        token: res.token,
+                        expires_at: res.expiresAt,
+                        is_active: true
+                    });
+                } else {
+                    alert(`Erreur lors de la génération du lien portail : ${res.error}`);
+                    return;
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Erreur lors de la génération du lien portail.');
+                return;
+            }
+        }
+        const url = `${window.location.origin}/patient-portal/${currentToken}`;
+        window.open(url, '_blank');
     };
 
     const copyToClipboard = async (text) => {
@@ -1050,6 +1078,13 @@ export default function PatientReview() {
                                     >
                                         {isGeneratingPDF ? <RefreshCw size={14} className="animate-spin" /> : <LogoIcon width="16px" />}
                                         Synthèse PDF
+                                    </button>
+                                    <button
+                                        onClick={handleOpenPortal}
+                                        className="btn-open-portal"
+                                    >
+                                        <ExternalLink size={16} />
+                                        Ouvrir Portail Patient
                                     </button>
                                     <button
                                         onClick={() => setIsAddQuestionModalOpen(true)}
