@@ -10,7 +10,7 @@ export default function Header({ title, subtitle, actions, hideTitleMobile = fal
     const [isQuestionsModalOpen, setIsQuestionsModalOpen] = useState(false);
 
     return (
-        <header className="header-container" style={{ display: 'flex', flexDirection: 'column', width: '100%', marginBottom: 'var(--spacing-8)' }}>
+        <header className="header-container" style={{ display: 'flex', flexDirection: 'column', width: '100%', marginBottom: 'var(--spacing-4)' }}>
             <div className="header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: 0, width: '100%' }}>
                 {/* Desktop Left: Title */}
                 <div className="header-left hide-mobile">

@@ -315,12 +315,12 @@ export default function Dashboard() {
                 {/* Welcome Banner Removed from Dashboard as requested */}
 
 
-                <div className="dashboard-grid-top" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: 'var(--spacing-6)' }}>
+                <div className="dashboard-grid-top" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: 'var(--spacing-4)' }}>
 
                     {isMobile && (
                         <>
                             {/* Responsive mobile buttons row */}
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '8px' }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '4px' }}>
                                 <button 
                                     className="btn btn-secondary" 
                                     onClick={() => setIsAlarmsModalOpen(true)} 
@@ -385,7 +385,7 @@ export default function Dashboard() {
                                     transition: 'all 0.2s',
                                     boxShadow: 'var(--shadow-sm)',
                                     height: '42px',
-                                    marginBottom: 'var(--spacing-3)'
+                                    marginBottom: 'var(--spacing-2)'
                                 }}
                             >
                                 <Clipboard size={16} />
@@ -523,7 +523,7 @@ export default function Dashboard() {
                     <div className="card fade-in" style={{
                         background: 'linear-gradient(135deg, #FFF5F5 0%, #FFF 100%)',
                         border: '1px solid #FEB2B2',
-                        marginBottom: 'var(--spacing-6)',
+                        marginBottom: 'var(--spacing-4)',
                         padding: 'var(--spacing-4)',
                         cursor: 'pointer'
                     }} onClick={() => setIsAlarmsModalOpen(true)}>
@@ -559,7 +559,7 @@ export default function Dashboard() {
                 )}
 
                 {/* Main Action Bar & Risk Banner */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-6)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-4)' }}>
                     <div className="tabs" style={{ display: 'flex', gap: 'var(--spacing-2)', overflowX: 'auto', paddingBottom: 'var(--spacing-2)' }}>
                         {tabs.map(tab => (
                             <button
