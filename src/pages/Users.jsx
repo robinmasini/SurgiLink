@@ -200,7 +200,26 @@ export default function Users() {
                     title="Gestion des Utilisateurs"
                     subtitle={`${profiles.length} comptes actifs au sein du cabinet`}
                     actions={
-                        <button className="btn btn-primary" onClick={() => alert('L\'ajout d\'utilisateurs nécessite des privilèges administrateur Supabase.')}>
+                        <button className="btn btn-primary hide-mobile" onClick={() => alert('L\'ajout d\'utilisateurs nécessite des privilèges administrateur Supabase.')}>
+                            <Plus size={18} /> Inviter un membre
+                        </button>
+                    }
+                    mobileActions={
+                        <button 
+                            className="btn btn-primary" 
+                            onClick={() => alert('L\'ajout d\'utilisateurs nécessite des privilèges administrateur Supabase.')}
+                            style={{
+                                width: '100%',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: 'var(--spacing-2)',
+                                borderRadius: '12px',
+                                height: '42px',
+                                fontWeight: '700',
+                                boxShadow: 'var(--shadow-sm)'
+                            }}
+                        >
                             <Plus size={18} /> Inviter un membre
                         </button>
                     }

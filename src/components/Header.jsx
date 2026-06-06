@@ -5,7 +5,7 @@ import LanguageSelector from './LanguageSelector';
 import QuestionsPreviewModal from './QuestionsPreviewModal';
 import logoSlMa from '../assets/logo-sl-ma.png';
 
-export default function Header({ title, subtitle, actions, hideTitleMobile = false, hideQuestionsPreviewMobile = false }) {
+export default function Header({ title, subtitle, actions, hideTitleMobile = false, hideQuestionsPreviewMobile = false, mobileActions }) {
     const { t } = useTranslation();
     const [isQuestionsModalOpen, setIsQuestionsModalOpen] = useState(false);
 
@@ -60,6 +60,13 @@ export default function Header({ title, subtitle, actions, hideTitleMobile = fal
                     {actions}
                 </div>
             </div>
+
+            {/* Additional mobile actions above Aperçu des questions */}
+            {mobileActions && (
+                <div className="show-mobile" style={{ width: '100%', marginTop: 'var(--spacing-3)' }}>
+                    {mobileActions}
+                </div>
+            )}
 
             {/* Mobile Button - rendered below Translation and Add Patient actions */}
             {!hideQuestionsPreviewMobile && (

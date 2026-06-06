@@ -302,7 +302,7 @@ export default function Dashboard() {
                                 <span>{t('Scanner Patient HM')}</span>
                             </button>
                             <button
-                                className="btn btn-primary"
+                                className="btn btn-primary hide-mobile"
                                 onClick={() => setIsAddModalOpen(true)}
                                 style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)' }}
                             >
@@ -363,6 +363,26 @@ export default function Dashboard() {
                                     <span>{t('Scanner HM')}</span>
                                 </button>
                             </div>
+
+                            {/* Mobile Ajouter un patient Button */}
+                            <button
+                                className="btn btn-primary"
+                                onClick={() => setIsAddModalOpen(true)}
+                                style={{
+                                    width: '100%',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: 'var(--spacing-2)',
+                                    marginBottom: 'var(--spacing-2)',
+                                    borderRadius: '12px',
+                                    height: '42px',
+                                    fontWeight: '700',
+                                    boxShadow: 'var(--shadow-sm)'
+                                }}
+                            >
+                                <Plus size={18} /> {t('Ajouter un patient')}
+                            </button>
 
                             {/* Mobile Questions Preview Button */}
                             <button
