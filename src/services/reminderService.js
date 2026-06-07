@@ -84,8 +84,8 @@ export async function processPendingReminders(supabaseClient = null) {
         const now = new Date();
         const parisTime = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Paris' }));
         const parisHour = parisTime.getHours();
-        if (parisHour < 8 || parisHour >= 20) {
-            console.log(`[ReminderService] Execution blocked: Current Paris hour is ${parisHour}h, which is outside the authorized window (08:00 - 20:00).`);
+        if (parisHour < 8 || parisHour >= 23) {
+            console.log(`[ReminderService] Execution blocked: Current Paris hour is ${parisHour}h, which is outside the authorized window (08:00 - 23:00).`);
             return { processed: 0, sent: 0, failed: 0, blocked: true, reason: 'outside_authorized_hours' };
         }
 
