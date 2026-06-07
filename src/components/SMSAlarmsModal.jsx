@@ -4,10 +4,36 @@ import {
     Clock,
     ShieldCheck,
     Zap,
-    Smartphone
+    Smartphone,
+    RefreshCw,
+    Loader2
 } from 'lucide-react';
+import { processPendingReminders } from '../services/reminderService';
+import { supabase } from '../lib/supabase';
 
 export default function SMSAlarmsModal({ isOpen, onClose }) {
+    const [isProcessingCron, setIsProcessingCron] = React.useState(false);
+
+    const handleForceCron = async () => {
+        if (!window.confirm("Voulez-vous forcer l'analyse et l'envoi de tous les SMS en attente pour aujourd'hui ?")) {
+            return;
+        }
+        setIsProcessingCron(true);
+        try {
+            const result = await processPendingReminders(supabase);
+            if (result.blocked) {
+                alert(`L'envoi automatique est bloqué : en dehors des heures autorisées (08h00 - 23h00).`);
+            } else {
+                alert(`Synchronisation terminée.\nSMS traités : ${result.processed}\nSMS envoyés avec succès : ${result.sent}\nÉchecs : ${result.failed}`);
+            }
+        } catch (error) {
+            console.error("Erreur:", error);
+            alert("Une erreur est survenue lors de l'envoi des SMS.");
+        } finally {
+            setIsProcessingCron(false);
+        }
+    };
+
     if (!isOpen) return null;
 
     return (
@@ -200,8 +226,28 @@ export default function SMSAlarmsModal({ isOpen, onClose }) {
                     background: 'var(--color-gray-50)',
                     borderTop: '1px solid var(--color-gray-100)',
                     display: 'flex',
-                    justifyContent: 'flex-end'
+                    justifyContent: 'space-between',
+                    alignItems: 'center'
                 }}>
+                    <button
+                        onClick={handleForceCron}
+                        disabled={isProcessingCron}
+                        className="btn btn-secondary"
+                        style={{
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            gap: 'var(--spacing-2)', 
+                            border: '1px solid var(--color-primary-200)', 
+                            background: 'white', 
+                            color: 'var(--color-primary-600)', 
+                            borderRadius: '12px', 
+                            padding: '10px 16px', 
+                            fontWeight: '600'
+                        }}
+                    >
+                        {isProcessingCron ? <Loader2 size={18} className="spin" /> : <RefreshCw size={18} />}
+                        <span>Forcer le scan SMS maintenant</span>
+                    </button>
                     <button
                         onClick={onClose}
                         className="btn btn-primary"
