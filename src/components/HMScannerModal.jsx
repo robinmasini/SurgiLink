@@ -587,8 +587,8 @@ Les clés doivent être exactement :
                                         Changer d'image
                                     </button>
                                     <button 
-                                        className="btn btn-primary" 
-                                        style={{ flex: 1, background: '#0F70B7', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }} 
+                                        className="btn btn-primary btn-scanner-animate" 
+                                        style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }} 
                                         onClick={triggerScan}
                                         disabled={isScanning}
                                     >

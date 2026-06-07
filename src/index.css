@@ -2562,3 +2562,44 @@ textarea.input {
     overflow: hidden;
   }
 }
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes scan-motion {
+  0% { top: 0; opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+
+@keyframes scanner-sweep {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.btn-scanner-animate {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(90deg, #0F70B7 0%, #1b8eeb 40%, #4eb6ff 50%, #1b8eeb 60%, #0F70B7 100%) !important;
+  background-size: 200% auto !important;
+  animation: scanner-sweep 3s linear infinite !important;
+  color: white !important;
+  border: none !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 4px 12px rgba(15, 112, 183, 0.3) !important;
+}
+
+.btn-scanner-animate:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(15, 112, 183, 0.4) !important;
+}
+
+.btn-scanner-animate:disabled {
+  background: #9ca3af !important;
+  animation: none !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
