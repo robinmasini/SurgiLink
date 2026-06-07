@@ -89,12 +89,13 @@ export async function processPendingReminders(supabaseClient = null) {
             return { processed: 0, sent: 0, failed: 0, blocked: true, reason: 'outside_authorized_hours' };
         }
 
-        // Get pending reminders that are due
+        // Get pending reminders that are due (add 5 min buffer in case cron runs slightly early)
+        const checkTime = new Date(Date.now() + 5 * 60 * 1000).toISOString();
         const { data: reminders, error } = await db
             .from('reminder_queue')
             .select('*, patients(*)')
             .eq('status', 'pending')
-            .lte('scheduled_for', new Date().toISOString())
+            .lte('scheduled_for', checkTime)
             .limit(50); // Process in batches
 
         if (error) throw error;
