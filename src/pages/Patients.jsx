@@ -11,7 +11,10 @@ import {
     Clock,
     Phone,
     CheckCircle2,
+    RefreshCw,
+    Loader2
 } from 'lucide-react';
+import { processPendingReminders } from '../services/reminderService';
 import { supabase } from '../lib/supabase';
 import { calculateDaysUntilSurgery } from '../utils/dateUtils';
 import StatusBolt from '../components/StatusBolt';
@@ -31,6 +34,7 @@ export default function Patients() {
     const [isLoading, setIsLoading] = useState(true);
     const [selectedPatientId, setSelectedPatientId] = useState(null);
     const [nextReminders, setNextReminders] = useState({});
+    const [isProcessingCron, setIsProcessingCron] = useState(false);
 
     const tabs = ['J-10', 'J-7', 'J-2', 'J-1', 'Jour J', 'J+1', 'J+4', 'Tous', 'Archivés'];
 
@@ -127,6 +131,31 @@ export default function Patients() {
         }
     };
 
+    const handleForceCron = async () => {
+        if (!window.confirm("Voulez-vous forcer l'analyse et l'envoi de tous les SMS en attente pour aujourd'hui ?")) {
+            return;
+        }
+        setIsProcessingCron(true);
+        try {
+            const result = await processPendingReminders(supabase);
+            if (result.blocked) {
+                alert(`L'envoi automatique est bloqué : en dehors des heures autorisées (08h00 - 23h00).`);
+            } else {
+                alert(`Synchronisation terminée.\nSMS traités : ${result.processed}\nSMS envoyés avec succès : ${result.sent}\nÉchecs : ${result.failed}`);
+            }
+            loadPatients(); // Reload to update statuses
+        } catch (error) {
+            console.error("Erreur lors de l'exécution manuelle du cron:", error);
+            alert("Une erreur est survenue lors de l'envoi des SMS.");
+        } finally {
+            setIsProcessingCron(false);
+        }
+    };
+
+    const handleSelectPatient = (patientId) => {
+        setSelectedPatientId(patientId);
+    };
+
     const handlePatientAdded = () => {
         loadPatients();
     };
@@ -208,11 +237,21 @@ export default function Patients() {
                             />
                         </div>
                         <button
+                            className="btn btn-secondary"
+                            onClick={handleForceCron}
+                            disabled={isProcessingCron}
+                            style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)', border: '1px solid var(--color-primary-200)', background: 'white', color: 'var(--color-primary-600)', borderRadius: 'var(--radius-lg)', padding: '10px 16px', fontWeight: '600' }}
+                            title="Analyser et envoyer tous les SMS en attente pour aujourd'hui"
+                        >
+                            {isProcessingCron ? <Loader2 size={18} className="spin" /> : <RefreshCw size={18} />}
+                            <span className="hide-mobile">{t("Forcer l'envoi SMS")}</span>
+                        </button>
+                        <button
                             className="btn btn-primary"
                             onClick={() => setIsModalOpen(true)}
                             style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)' }}
                         >
-                            <Plus size={18} /> {t('Ajouter un patient')}
+                            <Plus size={18} /> <span className="hide-mobile">{t('Ajouter un patient')}</span>
                         </button>
                     </div>
                 </div>
