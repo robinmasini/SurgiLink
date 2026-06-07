@@ -11,11 +11,14 @@ import {
     ChevronRight,
     AlertCircle,
     Copy,
-    Check
+    Check,
+    Edit2,
+    Trash2
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import PatientStatusBadges from './PatientStatusBadges';
 import { generatePatientToken } from '../services/tokenService';
+import EditPatientModal from './EditPatientModal';
 
 
 const STYLES = {
@@ -69,11 +72,12 @@ const STYLES = {
 };
 
 export default function PatientDetailPanel({ patient, responses = [], onClose }) {
-    const [smsLogs, setSmsLogs] = useState([]);
-    const [pendingReminders, setPendingReminders] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
     const [token, setToken] = useState(null);
     const [copied, setCopied] = useState(false);
+    const [smsLogs, setSmsLogs] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [pendingReminders, setPendingReminders] = useState([]);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
     useEffect(() => {
         if (patient) {
@@ -152,6 +156,28 @@ export default function PatientDetailPanel({ patient, responses = [], onClose })
         }
     };
 
+    const handleDeletePatient = async () => {
+        if (!window.confirm(`Êtes-vous sûr de vouloir supprimer définitivement le patient ${patient.name} ?`)) {
+            return;
+        }
+
+        try {
+            const { error } = await supabase
+                .from('patients')
+                .delete()
+                .eq('id', patient.id);
+
+            if (error) throw error;
+
+            alert('Patient supprimé avec succès.');
+            onClose();
+            window.location.reload();
+        } catch (err) {
+            console.error('Erreur lors de la suppression du patient:', err);
+            alert('Une erreur est survenue lors de la suppression du patient.');
+        }
+    };
+
     if (!patient) return null;
 
     const portalUrl = token ? `${window.location.origin}/patient-portal/${token}` : null;
@@ -174,12 +200,29 @@ export default function PatientDetailPanel({ patient, responses = [], onClose })
                         <span>Chirurgie le {patient.formattedDate}</span>
                     </div>
                 </div>
-                <button
-                    onClick={onClose}
-                    style={{ background: 'white', border: '1px solid var(--color-gray-200)', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
-                >
-                    <X size={18} />
-                </button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <button
+                        onClick={() => setIsEditModalOpen(true)}
+                        style={{ background: 'white', border: '1px solid var(--color-gray-200)', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--color-gray-500)' }}
+                        title="Modifier le patient"
+                    >
+                        <Edit2 size={16} />
+                    </button>
+                    <button
+                        onClick={handleDeletePatient}
+                        style={{ background: 'white', border: '1px solid var(--color-danger-200)', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--color-danger-500)' }}
+                        title="Supprimer le patient"
+                    >
+                        <Trash2 size={16} />
+                    </button>
+                    <div style={{ width: '1px', height: '24px', background: 'var(--color-gray-200)', margin: '0 4px' }} />
+                    <button
+                        onClick={onClose}
+                        style={{ background: 'white', border: '1px solid var(--color-gray-200)', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--color-gray-700)' }}
+                    >
+                        <X size={18} />
+                    </button>
+                </div>
             </div>
 
             <div style={{ padding: 'var(--spacing-5)', overflowY: 'auto', flex: 1 }}>
@@ -498,6 +541,17 @@ export default function PatientDetailPanel({ patient, responses = [], onClose })
                     </button>
                 </div>
             </div>
+            
+            <EditPatientModal
+                isOpen={isEditModalOpen}
+                onClose={() => setIsEditModalOpen(false)}
+                patient={patient}
+                onPatientUpdated={() => {
+                    setIsEditModalOpen(false);
+                    onClose();
+                    window.location.reload();
+                }}
+            />
         </div>
     );
 }
