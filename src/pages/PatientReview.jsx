@@ -1752,6 +1752,29 @@ export default function PatientReview() {
                     transform: none;
                 }
 
+                .btn-open-portal {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    padding: 8px 16px;
+                    background: white;
+                    border: 1px solid var(--color-gray-300);
+                    color: var(--color-gray-700);
+                    font-weight: 600;
+                    font-size: var(--font-size-sm);
+                    border-radius: var(--radius-lg);
+                    cursor: pointer;
+                    transition: all var(--transition-fast);
+                    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+                }
+
+                .btn-open-portal:hover {
+                    background: var(--color-gray-50);
+                    color: var(--color-gray-900);
+                    border-color: var(--color-gray-400);
+                    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                }
+
                 .patient-date-badge {
                     background: white;
                     color: var(--color-primary-700);
