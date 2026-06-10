@@ -226,34 +226,56 @@ export default function SMSAlarmsModal({ isOpen, onClose }) {
                     background: 'var(--color-gray-50)',
                     borderTop: '1px solid var(--color-gray-100)',
                     display: 'flex',
+                    flexWrap: 'wrap-reverse',
+                    gap: '16px',
                     justifyContent: 'space-between',
                     alignItems: 'center'
                 }}>
                     <button
                         onClick={handleForceCron}
                         disabled={isProcessingCron}
-                        className="btn btn-secondary"
                         style={{
                             display: 'flex', 
                             alignItems: 'center', 
-                            gap: 'var(--spacing-2)', 
-                            border: '1px solid var(--color-primary-200)', 
-                            background: 'white', 
-                            color: 'var(--color-primary-600)', 
-                            borderRadius: '12px', 
-                            padding: '10px 16px', 
-                            fontWeight: '600'
+                            justifyContent: 'center',
+                            gap: '8px', 
+                            border: '1px solid rgba(109, 140, 124, 0.2)', 
+                            background: 'linear-gradient(135deg, #f8faf9 0%, #eef2f0 100%)', 
+                            color: 'var(--color-primary-700)', 
+                            borderRadius: '14px', 
+                            padding: '12px 20px', 
+                            fontWeight: '700',
+                            cursor: isProcessingCron ? 'not-allowed' : 'pointer',
+                            boxShadow: '0 2px 8px rgba(109, 140, 124, 0.08)',
+                            transition: 'all 0.2s ease',
+                            flex: '1 1 auto',
+                            minWidth: '200px'
+                        }}
+                        onMouseOver={(e) => {
+                            if (isProcessingCron) return;
+                            e.currentTarget.style.transform = 'translateY(-2px)';
+                            e.currentTarget.style.boxShadow = '0 6px 16px rgba(109, 140, 124, 0.15)';
+                            e.currentTarget.style.background = 'linear-gradient(135deg, #ffffff 0%, #f3f6f4 100%)';
+                        }}
+                        onMouseOut={(e) => {
+                            if (isProcessingCron) return;
+                            e.currentTarget.style.transform = 'translateY(0)';
+                            e.currentTarget.style.boxShadow = '0 2px 8px rgba(109, 140, 124, 0.08)';
+                            e.currentTarget.style.background = 'linear-gradient(135deg, #f8faf9 0%, #eef2f0 100%)';
                         }}
                     >
                         {isProcessingCron ? <Loader2 size={18} className="spin" /> : <RefreshCw size={18} />}
-                        <span>Forcer le scan SMS maintenant</span>
+                        <span>Forcer le scan SMS</span>
                     </button>
                     <button
                         onClick={onClose}
                         className="btn btn-primary"
                         style={{
-                            padding: '10px 32px',
-                            borderRadius: '12px',
+                            padding: '12px 32px',
+                            borderRadius: '14px',
+                            fontWeight: '700',
+                            flex: '1 1 auto',
+                            minWidth: '150px',
                             boxShadow: '0 4px 12px rgba(var(--color-primary-500-rgb), 0.3)'
                         }}
                     >
