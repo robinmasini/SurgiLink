@@ -568,12 +568,6 @@ export default function Dashboard() {
                                     </p>
                                 </div>
                             </div>
-                            <div style={{ textAlign: 'right' }}>
-                                <div style={{ fontSize: '10px', color: '#C53030', fontWeight: '700', textTransform: 'uppercase' }}>Impact financier potentiel</div>
-                                <div style={{ fontSize: 'var(--font-size-xl)', fontWeight: '800', color: '#EF4444' }}>
-                                    -{allPatients.filter(p => (p.daysUntil === 'J-1' || p.daysUntil === 'J-0') && p.status !== 'ready').length * financialImpactUnit}€
-                                </div>
-                            </div>
                         </div>
                     </div>
                 )}
