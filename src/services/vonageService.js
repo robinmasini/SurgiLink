@@ -21,6 +21,9 @@ export async function sendSMS(templateKey, to, variables, metadata = {}, supabas
             message = interpolateTemplate(templateKey, variables);
         }
 
+        // Prefix every SMS with the clinic name
+        message = `Medical Alliance - ${message}`;
+
         // Phone formatting: Vonage requires numbers in E.164 format without the '+'
         let cleanedPhone = to.replace(/[\s\.\-\(\)\+]/g, '');
 
