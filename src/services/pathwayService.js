@@ -135,8 +135,15 @@ export async function calculateGlobalProgress(patientId) {
         const createdAt = new Date(patient.created_at);
         const surgeryDate = patient.date ? new Date(patient.date) : null;
         const now = new Date();
+        
+        // Zero out times to match PatientPortal.jsx exactly and avoid timezone edge cases
+        const todayForDiff = new Date();
+        todayForDiff.setHours(0, 0, 0, 0);
+        const surgeryDateForDiff = patient.date ? new Date(patient.date) : null;
+        if (surgeryDateForDiff) surgeryDateForDiff.setHours(0, 0, 0, 0);
+        
         const hoursSinceCreation = (now - createdAt) / (1000 * 60 * 60);
-        const daysUntilSurgery = surgeryDate ? Math.ceil((surgeryDate - now) / (1000 * 60 * 60 * 24)) : 999;
+        const daysUntilSurgery = surgeryDateForDiff ? Math.ceil((surgeryDateForDiff - todayForDiff) / (1000 * 60 * 60 * 24)) : 999;
 
         const j7Status = await getCompletionStatus(patientId, 'J7');
         const j2Status = await getCompletionStatus(patientId, 'J2');

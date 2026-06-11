@@ -149,7 +149,12 @@ export default function QuestionnaireFlow({
             <div style={{ marginBottom: 'var(--spacing-8)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 'var(--spacing-3)' }}>
                     <div>
-                        <span className="q-badge">{t('Question')} {currentIndex + 1} {t('sur')} {allItems.length}</span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                            <span className="q-badge" style={{ background: 'var(--color-primary-100)', color: 'var(--color-primary-700)' }}>
+                                {t('Échéance :')} {screen.replace('_', ' ')}
+                            </span>
+                            <span className="q-badge">{t('Question')} {currentIndex + 1} {t('sur')} {allItems.length}</span>
+                        </div>
                         <h4 style={{ margin: 0, fontSize: '14px', color: 'var(--color-gray-500)', fontWeight: 600 }}>
                             {currentItem ? t(currentItem.sectionTitle) : ''}
                         </h4>

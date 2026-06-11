@@ -712,10 +712,14 @@ export default function PatientPortal({ patient: initialPatient }) {
 
                         <div>
                             <p style={{ fontSize: '11px', fontWeight: '600', color: '#9ca3af', marginBottom: '2px' }}>
-                                {nextMilestoneLabel ? t('Prochaines questions dans :') : t('Parcours terminé !')}
+                                {!isUpToDate 
+                                    ? t('Questionnaire en attente :') 
+                                    : (nextMilestoneLabel ? t('Prochaines questions dans :') : t('Parcours terminé !'))}
                             </p>
-                            <div style={{ fontSize: timeLeft.includes('j') ? '24px' : '28px', fontWeight: '800', letterSpacing: '0.05em', color: '#4b5563' }}>
-                                {nextMilestoneLabel && timeLeft !== '00:00:00' ? timeLeft : '00:00:00'}
+                            <div style={{ fontSize: (!isUpToDate || timeLeft.includes('j')) ? '24px' : '28px', fontWeight: '800', letterSpacing: '0.05em', color: (!isUpToDate ? '#F59E0B' : '#4b5563') }}>
+                                {!isUpToDate 
+                                    ? nextMilestoneLabel 
+                                    : (nextMilestoneLabel && timeLeft !== '00:00:00' ? timeLeft : '00:00:00')}
                             </div>
                         </div>
                     </div>
@@ -768,7 +772,7 @@ export default function PatientPortal({ patient: initialPatient }) {
                     onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
                     onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
                     >
-                        {t('DÉMARRER MON QUESTIONNAIRE')}
+                        {t('DÉMARRER MON QUESTIONNAIRE')} {!isUpToDate && nextMilestoneLabel ? `(${nextMilestoneLabel})` : ''}
                     </button>
 
                     <button style={{
