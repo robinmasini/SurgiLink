@@ -28,7 +28,7 @@ import ProtocolStatus from '../components/ProtocolStatus';
 import PatientTraceability from '../components/PatientTraceability';
 import { getScreenItems } from '../config/pathway.config';
 
-import { HelpCircle, Send, RefreshCw, Download } from 'lucide-react';
+import { HelpCircle, Send, RefreshCw, Download, Info, Circle } from 'lucide-react';
 import { generateSynthesisPDF } from '../services/pdfService';
 import PatientSynthesisReport from '../components/PatientSynthesisReport';
 import { useTranslation } from 'react-i18next';
@@ -170,6 +170,7 @@ export default function PatientPortal({ patient: initialPatient }) {
     const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
     const [isPathwayOpen, setIsPathwayOpen] = useState(false);
+    const [showStatusInfoModal, setShowStatusInfoModal] = useState(false);
     const reportRef = useRef(null);
     
     // Helper to check if a milestone is fully complete based on responses
@@ -707,6 +708,14 @@ export default function PatientPortal({ patient: initialPatient }) {
                                 <span style={{ fontSize: '13px', fontWeight: '600', color: '#4b5563' }}>
                                     {isUpToDate ? t('Vous êtes à jour !') : t('Vous n’êtes pas à jour !')}
                                 </span>
+                                {!isUpToDate && (
+                                    <div 
+                                        onClick={(e) => { e.stopPropagation(); setShowStatusInfoModal(true); }}
+                                        style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', marginLeft: '4px', background: 'rgba(0,0,0,0.05)', borderRadius: '50%', padding: '4px', transition: 'background 0.2s' }}
+                                    >
+                                        <Info size={16} color="#4b5563" />
+                                    </div>
+                                )}
                             </div>
                         </div>
 
@@ -918,16 +927,17 @@ export default function PatientPortal({ patient: initialPatient }) {
                             const diffDays = surgeryDate ? Math.ceil((surgeryDate - today) / (1000 * 60 * 60 * 24)) : 999;
 
                             return [
-                                { to: `bienvenue`, emoji: '👋', label: 'Bienvenue', desc: 'Activation de votre suivi', offset: 99 },
-                                { to: `j7`, emoji: '📋', label: 'Questionnaire J-7', desc: 'Préparation administrative', offset: 7 },
-                                { to: `j2`, emoji: '📄', label: 'Questionnaire J-2', desc: 'Documents & consignes', offset: 2 },
-                                { to: `j1-preop`, emoji: '🚿', label: 'Confirmation J-1', desc: 'Vérification finale', offset: 1 },
-                                { to: `j1`, emoji: '🌡️', label: 'Suivi J+1', desc: 'Bilan post-opératoire', offset: -1 },
-                                { to: `j4`, emoji: '⭐', label: 'Satisfaction J+4', desc: 'Votre avis nous intéresse', offset: -4 },
-                                { to: `e-satis`, emoji: '📊', label: 'Enquête Nationale', desc: 'e-Satis (National)', offset: -4 },
+                                { id: 'Bienvenue', to: `bienvenue`, emoji: '👋', label: 'Bienvenue', desc: 'Activation de votre suivi', offset: 99 },
+                                { id: 'J7', to: `j7`, emoji: '📋', label: 'Questionnaire J-7', desc: 'Préparation administrative', offset: 7 },
+                                { id: 'J2', to: `j2`, emoji: '📄', label: 'Questionnaire J-2', desc: 'Documents & consignes', offset: 2 },
+                                { id: 'J1_PreOp', to: `j1-preop`, emoji: '🚿', label: 'Confirmation J-1', desc: 'Vérification finale', offset: 1 },
+                                { id: 'J1', to: `j1`, emoji: '🌡️', label: 'Suivi J+1', desc: 'Bilan post-opératoire', offset: -1 },
+                                { id: 'J4_Satisfaction', to: `j4`, emoji: '⭐', label: 'Satisfaction J+4', desc: 'Votre avis nous intéresse', offset: -4 },
+                                { id: 'ESATIS', to: `e-satis`, emoji: '📊', label: 'Enquête Nationale', desc: 'e-Satis (National)', offset: -4 },
                             ].map((step, idx, arr) => {
                                 const isLocked = diffDays > step.offset;
                                 const isLast = idx === arr.length - 1;
+                                const isCompleted = !isLocked && isMilestoneComplete(step.id);
                                 
                                 const stepContent = (
                                     <div key={step.to} style={{ 
@@ -951,7 +961,13 @@ export default function PatientPortal({ patient: initialPatient }) {
                                             <div style={{ fontWeight: '700', fontSize: '14px', color: '#1f2937' }}>{step.label}</div>
                                             <div style={{ fontSize: '11px', color: '#6b7280', marginTop: '2px' }}>{step.desc}</div>
                                         </div>
-                                        {isLocked ? <Lock size={14} style={{ color: '#9ca3af' }} /> : <ChevronRight size={16} style={{ color: '#9ca3af' }} />}
+                                        {isLocked ? (
+                                            <Lock size={16} style={{ color: '#9ca3af' }} />
+                                        ) : isCompleted ? (
+                                            <CheckCircle2 size={22} color="#10B981" />
+                                        ) : (
+                                            <Circle size={22} color="#d1d5db" />
+                                        )}
                                     </div>
                                 );
 
@@ -1022,6 +1038,46 @@ export default function PatientPortal({ patient: initialPatient }) {
                     Télécharger mon ordonnance <Download size={16} />
                 </div>
             </div>
+
+            {/* Info Modal */}
+            {showStatusInfoModal && (
+                <div style={{
+                    position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px',
+                    animation: 'fadeIn 0.2s ease-out'
+                }} onClick={() => setShowStatusInfoModal(false)}>
+                    <div style={{
+                        background: 'white', borderRadius: '24px', padding: '32px', maxWidth: '400px', width: '100%',
+                        boxShadow: '0 20px 40px rgba(0,0,0,0.1)'
+                    }} onClick={e => e.stopPropagation()}>
+                        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
+                            <div style={{ background: '#e0f2fe', padding: '16px', borderRadius: '50%' }}>
+                                <Info size={32} color="#0ea5e9" />
+                            </div>
+                        </div>
+                        <h3 style={{ fontSize: '20px', fontWeight: '700', textAlign: 'center', marginBottom: '16px', color: '#1f2937' }}>
+                            {t('À propos de votre statut')}
+                        </h3>
+                        <p style={{ fontSize: '15px', color: '#4b5563', lineHeight: 1.6, textAlign: 'center', marginBottom: '24px' }}>
+                            {t('Si vous avez répondu à tous vos questionnaires mais que votre statut indique toujours "Vous n\'êtes pas à jour", ne vous inquiétez pas ! Cela signifie simplement que certaines de vos réponses ont été signalées à notre équipe soignante pour suivi (par exemple, si vous avez signalé une douleur ou un symptôme particulier).')}
+                            <br /><br />
+                            {t('L\'équipe médicale en a été informée et vous contactera si nécessaire.')}
+                        </p>
+                        <button 
+                            onClick={() => setShowStatusInfoModal(false)}
+                            style={{
+                                width: '100%', padding: '16px', borderRadius: '16px', background: '#0ea5e9',
+                                color: 'white', border: 'none', fontWeight: '700', fontSize: '16px', cursor: 'pointer',
+                                transition: 'background 0.2s'
+                            }}
+                            onMouseOver={(e) => e.currentTarget.style.background = '#0284c7'}
+                            onMouseOut={(e) => e.currentTarget.style.background = '#0ea5e9'}
+                        >
+                            {t("J'ai compris")}
+                        </button>
+                    </div>
+                </div>
+            )}
 
             {/* Hidden Report for PDF Generation */}
             <div style={{ position: 'absolute', left: '-9999px', top: '-9999px' }}>
