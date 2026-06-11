@@ -173,6 +173,27 @@ export default function PatientPortal({ patient: initialPatient }) {
     const [showStatusInfoModal, setShowStatusInfoModal] = useState(false);
     const reportRef = useRef(null);
     
+    // Add listener to refresh data when coming back to the page (BFCache / Focus)
+    useEffect(() => {
+        const handleFocusOrShow = () => {
+            if (patient) {
+                loadPatientResponses(patient.id);
+            } else if (!initialPatient) {
+                loadPatientData();
+            }
+        };
+
+        window.addEventListener('focus', handleFocusOrShow);
+        window.addEventListener('pageshow', (e) => {
+            if (e.persisted) handleFocusOrShow();
+        });
+
+        return () => {
+            window.removeEventListener('focus', handleFocusOrShow);
+            window.removeEventListener('pageshow', handleFocusOrShow);
+        };
+    }, [patient, initialPatient, token]);
+
     // Helper to check if a milestone is fully complete based on responses
     const isMilestoneComplete = (milestoneId) => {
         if (milestoneId === 'Bienvenue') return true; // Now optional
