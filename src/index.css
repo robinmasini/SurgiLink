@@ -471,6 +471,21 @@ a:hover {
   transition: all var(--transition-fast);
 }
 
+input[type="date"].input,
+input[type="time"].input,
+input[type="datetime-local"].input {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  position: relative;
+}
+
+input[type="date"].input::-webkit-date-and-time-value,
+input[type="time"].input::-webkit-date-and-time-value,
+input[type="datetime-local"].input::-webkit-date-and-time-value {
+  text-align: left;
+}
+
 .input:focus {
   outline: none;
   border-color: var(--color-primary-400);

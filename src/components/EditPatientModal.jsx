@@ -522,6 +522,16 @@ export default function EditPatientModal({ isOpen, onClose, patient, onPatientUp
                                     margin-bottom: 4px;
                                     text-transform: uppercase;
                                 }
+                                .grid-2 {
+                                    display: grid;
+                                    grid-template-columns: 1fr 1fr;
+                                    gap: 12px;
+                                }
+                                @media (max-width: 480px) {
+                                    .grid-2 {
+                                        grid-template-columns: 1fr;
+                                    }
+                                }
                             `}</style>
                         </div>
                     </div>
