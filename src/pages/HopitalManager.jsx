@@ -463,31 +463,6 @@ Les clés doivent être exactement :
                             </div>
                         </div>
 
-                        <div style={{ display: 'flex', gap: '12px' }}>
-                            <button
-                                className="btn btn-primary"
-                                onClick={triggerGlobalSync}
-                                disabled={globalSyncing}
-                                style={{
-                                    background: '#0F70B7',
-                                    color: 'white',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '8px',
-                                    border: 'none',
-                                    boxShadow: '0 4px 12px rgba(15, 112, 183, 0.15)'
-                                }}
-                                onMouseEnter={(e) => e.currentTarget.style.background = '#0d619f'}
-                                onMouseLeave={(e) => e.currentTarget.style.background = '#0F70B7'}
-                            >
-                                {globalSyncing ? (
-                                    <Loader2 size={18} className="spinner" style={{ animation: 'spin 1s linear infinite' }} />
-                                ) : (
-                                    <RefreshCw size={18} />
-                                )}
-                                Synchroniser Tout
-                            </button>
-                        </div>
                     </div>
 
                     {/* Split View: Scanner + Patients Sync Table */}
