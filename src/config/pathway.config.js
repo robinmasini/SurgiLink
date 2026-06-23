@@ -15,9 +15,17 @@ export const pathwayConfig = {
                 title: "Commencer mon parcours",
                 items: [
                     {
+                        id: "blood_work",
+                        type: "yes_no",
+                        label: "Avez-vous réalisé le bilan sanguin (et/ou les examens) prescrit ?",
+                        why: "Analyses vitales pour votre sécurité au bloc opératoire (coagulation, absence d'infection, etc.).",
+                        required: true,
+                        risk_flag_rule: { type: "soft", condition: "no" }
+                    },
+                    {
                         id: "welcome_ok",
                         type: "yes_no",
-                        label: "Confirmez-vous que vous accédez correctement à votre portail de suivi et en comprenez le fonctionnement ?",
+                        label: "Confirmez-vous que vous accédez correctement à votre espace SurgiLink et en comprenez le fonctionnement ?",
                         required: false
                     }
                 ]
@@ -43,14 +51,6 @@ export const pathwayConfig = {
                         why: "C'est une étape obligatoire au minimum 48h avant toute intervention pour évaluer votre état de santé.",
                         required: true,
                         risk_flag_rule: { type: "hard", condition: "no" }
-                    },
-                    {
-                        id: "blood_work",
-                        type: "yes_no",
-                        label: "Avez-vous réalisé le bilan sanguin (et/ou les examens) prescrit ?",
-                        why: "Analyses vitales pour votre sécurité au bloc opératoire (coagulation, absence d'infection, etc.).",
-                        required: true,
-                        risk_flag_rule: { type: "soft", condition: "no" }
                     }
                 ]
             }

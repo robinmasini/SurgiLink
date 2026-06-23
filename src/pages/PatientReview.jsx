@@ -1087,7 +1087,7 @@ export default function PatientReview() {
                                         {[
                                             { id: 'welcome_ok', label: 'Activation Portale', screen: 'Bienvenue' },
                                             { id: 'anesthesia_consultation', label: 'Anesthésie', screen: 'J7' },
-                                            { id: 'blood_work', label: 'Bilan sanguin', screen: 'J7' },
+                                            { id: 'blood_work', label: 'Bilan sanguin', screen: 'Bienvenue' },
                                             { id: 'fasting_understood', label: 'Jeûne J-1', screen: 'J1_PreOp' },
                                             { id: 'shower_understood', label: 'Douche J-1', screen: 'J1_PreOp' },
                                             { id: 'admission_confirmed', label: 'Confirmation J-1', screen: 'J1_PreOp' }

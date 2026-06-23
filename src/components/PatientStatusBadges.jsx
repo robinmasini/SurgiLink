@@ -75,7 +75,7 @@ export default function PatientStatusBadges({ responses = [], daysUntil = '', pa
             badges.push({ label: `Questionnaire J-${rules.j7_incomplete_days} non rempli`, color: 'orange' });
         }
 
-        if (responseMap['J7:blood_work'] === false) {
+        if (responseMap['Bienvenue:blood_work'] === false) {
             badges.push({ label: 'Bilan sanguin manquant', color: 'danger' });
         }
 
