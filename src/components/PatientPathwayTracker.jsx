@@ -29,6 +29,15 @@ export default function PatientPathwayTracker() {
         arrival_time: '07:30'
     };
 
+    const screenConfigs = {
+        'Bienvenue': { label: 'Questionnaire J-18', serviceName: 'Bienvenue', template: 'welcome_accueil' },
+        'J7': { label: 'Questionnaire J-7', serviceName: 'J-7', template: 'j7_reminder' },
+        'J1_PreOp': { label: 'Confirmation J-1', serviceName: 'J-1', template: 'j1_reminder_long' },
+        'J1': { label: 'Suivi J+1', serviceName: 'J+1', template: 'j1_postop' },
+        'J4_Satisfaction': { label: 'Satisfaction J+4', serviceName: 'J+4', template: 'j4_satisfaction' },
+        'ESATIS': { label: 'Enquête e-Satis', serviceName: 'E-SATIS', template: 'j4_esatis' }
+    };
+
     useEffect(() => {
         loadData();
     }, [patientId]);
@@ -42,7 +51,7 @@ export default function PatientPathwayTracker() {
 
         // Load incomplete items for each screen
         const incomplete = {};
-        for (const screen of ['J7', 'J2', 'J1']) {
+        for (const screen of Object.keys(screenConfigs)) {
             const items = await getIncompleteItemsWithReminders(parseInt(patientId), screen);
             if (items.length > 0) {
                 incomplete[screen] = items;
@@ -182,40 +191,43 @@ export default function PatientPathwayTracker() {
                 gap: 'var(--spacing-4)',
                 marginBottom: 'var(--spacing-6)'
             }}>
-                {['J7', 'J2', 'J1'].map(screen => (
-                    <div
-                        key={screen}
-                        style={{
-                            padding: 'var(--spacing-4)',
-                            border: '1px solid var(--color-gray-300)',
-                            borderRadius: 'var(--border-radius-lg)',
-                            background: 'white',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            gap: 'var(--spacing-3)'
-                        }}
-                    >
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)' }}>
-                                {getStatusIcon(status[screen])}
-                                <span style={{ fontWeight: 'var(--font-weight-semibold)' }}>{screen}</span>
+                {Object.keys(screenConfigs).map(screen => {
+                    const cfg = screenConfigs[screen];
+                    return (
+                        <div
+                            key={screen}
+                            style={{
+                                padding: 'var(--spacing-4)',
+                                border: '1px solid var(--color-gray-300)',
+                                borderRadius: 'var(--border-radius-lg)',
+                                background: 'white',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: 'var(--spacing-3)'
+                            }}
+                        >
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)' }}>
+                                    {getStatusIcon(status[screen])}
+                                    <span style={{ fontWeight: 'var(--font-weight-semibold)' }}>{cfg.label}</span>
+                                </div>
+                                <button
+                                    onClick={() => handleSendReminder(cfg.serviceName, null, cfg.template)}
+                                    disabled={sending === `${cfg.serviceName}_null`}
+                                    className="btn btn-secondary btn-sm"
+                                    style={{ padding: '4px 8px', fontSize: 'var(--font-size-xs)' }}
+                                    title={`Envoyer le SMS général ${cfg.label}`}
+                                >
+                                    {sending === `${cfg.serviceName}_null` ? <Loader size={12} className="animate-spin" /> : <Send size={12} />}
+                                    <span style={{ marginLeft: '4px' }}>SMS {cfg.serviceName}</span>
+                                </button>
                             </div>
-                            <button
-                                onClick={() => handleSendReminder(screen, null, `${screen.toLowerCase()}_reminder`)}
-                                disabled={sending === `${screen}_null`}
-                                className="btn btn-secondary btn-sm"
-                                style={{ padding: '4px 8px', fontSize: 'var(--font-size-xs)' }}
-                                title={`Envoyer le SMS général ${screen}`}
-                            >
-                                {sending === `${screen}_null` ? <Loader size={12} className="animate-spin" /> : <Send size={12} />}
-                                <span style={{ marginLeft: '4px' }}>SMS {screen}</span>
-                            </button>
+                            <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-600)' }}>
+                                {getStatusText(status[screen])}
+                            </div>
                         </div>
-                        <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-600)' }}>
-                            {getStatusText(status[screen])}
-                        </div>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
 
             {/* Incomplete Items Alert */}
@@ -241,16 +253,18 @@ export default function PatientPathwayTracker() {
                             Actions de relance
                         </h3>
 
-                        {Object.entries(incompleteItems).map(([screen, items]) => (
-                            <div key={screen} style={{ marginBottom: 'var(--spacing-6)' }}>
-                                <h4 style={{
-                                    fontSize: 'var(--font-size-base)',
-                                    fontWeight: 'var(--font-weight-medium)',
-                                    marginBottom: 'var(--spacing-3)',
-                                    color: 'var(--color-gray-700)'
-                                }}>
-                                    {screen} - {items.length} élément(s) manquant(s)
-                                </h4>
+                        {Object.entries(incompleteItems).map(([screen, items]) => {
+                            const cfg = screenConfigs[screen] || { label: screen, serviceName: screen };
+                            return (
+                                <div key={screen} style={{ marginBottom: 'var(--spacing-6)' }}>
+                                    <h4 style={{
+                                        fontSize: 'var(--font-size-base)',
+                                        fontWeight: 'var(--font-weight-medium)',
+                                        marginBottom: 'var(--spacing-3)',
+                                        color: 'var(--color-gray-700)'
+                                    }}>
+                                        {cfg.label} - {items.length} élément(s) manquant(s)
+                                    </h4>
 
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-3)' }}>
                                     {items.map(item => {
@@ -283,7 +297,7 @@ export default function PatientPathwayTracker() {
 
                                                 <button
                                                     className="btn btn-sm"
-                                                    onClick={() => handleSendReminder(screen, item.id, item.reminderPolicy.sms_template_key)}
+                                                    onClick={() => handleSendReminder(cfg.serviceName, item.id, item.reminderPolicy.sms_template_key)}
                                                     disabled={isSending}
                                                     style={{
                                                         display: 'flex',
@@ -310,7 +324,7 @@ export default function PatientPathwayTracker() {
                                     })}
                                 </div>
                             </div>
-                        ))}
+                        )})}
                     </div>
                 </>
             )}

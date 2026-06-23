@@ -9,8 +9,8 @@ export default function AddQuestionModal({ isOpen, onClose, onSave }) {
     if (!isOpen) return null;
 
     const milestones = [
+        { id: 'Bienvenue', label: 'J-18 Accueil' },
         { id: 'J7', label: 'J-7 Administratif' },
-        { id: 'J2', label: 'J-2 Logistique' },
         { id: 'J1_PreOp', label: 'J-1 Confirmation' },
         { id: 'J1', label: 'J+1 Post-opératoire' },
         { id: 'J4_Satisfaction', label: 'J+4 Satisfaction' },

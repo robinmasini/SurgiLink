@@ -53,7 +53,7 @@ export async function saveResponse(patientId, screen, itemId, response, complete
  */
 export async function calculateGlobalProgress(patientId) {
     try {
-        const screens = ['Bienvenue', 'J7', 'J2', 'J1_PreOp', 'J1', 'J4_Satisfaction', 'ESATIS'];
+        const screens = ['Bienvenue', 'J7', 'J1_PreOp', 'J1', 'J4_Satisfaction', 'ESATIS'];
 
         // 1. Get all responses for this patient
         const { data: responses, error: respError } = await supabase
@@ -176,9 +176,8 @@ export async function calculateGlobalProgress(patientId) {
 
         // Determine status based on milestones completion
         const milestones = [
-            { id: 'Bienvenue', offset: 99 },
+            { id: 'Bienvenue', offset: 18 },
             { id: 'J7', offset: 7 },
-            { id: 'J2', offset: 2 },
             { id: 'J1_PreOp', offset: 1 },
             { id: 'J1', offset: -1 },
             { id: 'J4_Satisfaction', offset: -4 },
@@ -333,7 +332,7 @@ export async function getCompletionStatus(patientId, screen) {
  * @returns {Promise<Object>} - { J7: {...}, J2: {...}, J1: {...} }
  */
 export async function getPatientPathwayStatus(patientId) {
-    const screens = ['Bienvenue', 'J7', 'J2', 'J1_PreOp', 'J1', 'J4_Satisfaction', 'ESATIS'];
+    const screens = ['Bienvenue', 'J7', 'J1_PreOp', 'J1', 'J4_Satisfaction', 'ESATIS'];
     const status = {};
 
     for (const screen of screens) {

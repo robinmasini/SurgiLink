@@ -15,9 +15,9 @@ import { supabase } from '../lib/supabase';
  * Renders feedback pastilles based on pathway responses
  */
 export default function PatientStatusBadges({ responses = [], daysUntil = '', patientStatus = '' }) {
-    const [rules, setRules] = useState({
+        const [rules, setRules] = useState({
         j7_incomplete_days: 7,
-        j2_incomplete_days: 2,
+        j1_incomplete_days: 1,
         no_portal_access_hours: 24
     });
 
@@ -31,9 +31,11 @@ export default function PatientStatusBadges({ responses = [], daysUntil = '', pa
                     .maybeSingle();
 
                 if (data?.value) {
+                    const parsed = typeof data.value === 'string' ? JSON.parse(data.value) : data.value;
                     setRules(prevRules => ({
                         ...prevRules,
-                        ...(typeof data.value === 'string' ? JSON.parse(data.value) : data.value)
+                        ...parsed,
+                        j1_incomplete_days: parsed.j1_incomplete_days || parsed.j2_incomplete_days || 1
                     }));
                 }
             } catch (e) {
@@ -55,7 +57,7 @@ export default function PatientStatusBadges({ responses = [], daysUntil = '', pa
     });
 
     const isJ7Complete = responses.some(r => r.screen === 'J7');
-    const isJ2Complete = responses.some(r => r.screen === 'J2');
+    const isJ1PreOpComplete = responses.some(r => r.screen === 'J1_PreOp');
     const hasAnyResponse = responses.length > 0;
 
     // PRE-OP LOGIC (J-7 to J-0)
@@ -81,48 +83,37 @@ export default function PatientStatusBadges({ responses = [], daysUntil = '', pa
             badges.push({ label: 'Anesthésie non confirmée', color: 'orange' });
         }
 
-        // J-2 checks
-        if (!isJ2Complete && days >= -rules.j2_incomplete_days) {
-            badges.push({ label: `Questionnaire J-${rules.j2_incomplete_days} non rempli`, color: 'danger' });
+        // J-1 checks
+        if (!isJ1PreOpComplete && days >= -rules.j1_incomplete_days) {
+            badges.push({ label: `Questionnaire J-${rules.j1_incomplete_days} non rempli`, color: 'danger' });
         }
 
         const isUpToDate = (
             (Math.abs(days) > rules.j7_incomplete_days) ||
             (Math.abs(days) <= rules.j7_incomplete_days && isJ7Complete)
         ) && (
-                (Math.abs(days) > 2) ||
-                (Math.abs(days) <= 2 && isJ2Complete)
+                (Math.abs(days) > rules.j1_incomplete_days) ||
+                (Math.abs(days) <= rules.j1_incomplete_days && isJ1PreOpComplete)
             );
 
         if (isUpToDate && hasAnyResponse) {
             badges.push({ label: 'À jour ✓', color: 'success' });
         }
 
-        if (isJ7Complete && isJ2Complete && patientStatus === 'ready') {
+        if (isJ7Complete && isJ1PreOpComplete && patientStatus === 'ready') {
             badges.push({ label: 'Prêt pour l\'intervention ✓', color: 'success' });
         }
     }
 
     // POST-OP LOGIC (J+1 onwards)
     if (isPostOp) {
-        const j1Pain = responseMap['J1:pain_level'];
-        const j1Worry = responseMap['J1:worry_check'];
-        const j1Site = responseMap['J1:site_check'];
-        const j1General = responseMap['J1:general_state'];
+        const j1Nausea = responseMap['J1:nausea_check'];
 
-        if (j1Pain > 3) {
-            badges.push({ label: 'Douleur signalée', color: 'danger' });
+        if (j1Nausea === false) {
+            badges.push({ label: 'Nausées signalées', color: 'orange' });
         }
 
-        if (j1Site === true) {
-            badges.push({ label: 'Gonflement important', color: 'orange' });
-        }
-
-        if (j1Worry === true || j1General === 'Inquiétant') {
-            badges.push({ label: 'À contacter', color: 'orange' });
-        }
-
-        if (hasAnyResponse && !j1Pain && !j1Worry && !j1Site && patientStatus === 'ready') {
+        if (hasAnyResponse && j1Nausea === true && patientStatus === 'ready') {
             badges.push({ label: 'Pas de complications ✓', color: 'success' });
         }
     }

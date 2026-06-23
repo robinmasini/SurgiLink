@@ -5,13 +5,14 @@ import { getResponses, saveResponse, markScreenCompleted } from '../services/pat
 import QuestionRenderer from './pathway/QuestionRenderer';
 import AlertBanner from './pathway/AlertBanner';
 
-// All 7 SMS steps in order with their specific alert color coding
+// All SMS steps in order with their specific alert color coding
 const ALL_TABS = [
+    { key: 'Bienvenue', label: 'J-18', sublabel: 'Accueil', color: null },
     { key: 'J7', label: 'J-7', sublabel: 'Préparation', color: null },
-    { key: 'J2', label: 'J-2', sublabel: 'Consignes', color: 'red' },
     { key: 'J1_PreOp', label: 'J-1', sublabel: 'Veille', color: 'red' },
     { key: 'J1', label: 'J+1', sublabel: 'Suivi', color: 'red' },
     { key: 'J4_Satisfaction', label: 'J+4', sublabel: 'Avis', color: 'orange' },
+    { key: 'ESATIS', label: 'e-Satis', sublabel: 'Enquête', color: 'orange' }
 ];
 
 export default function PatientPreviewModal({ isOpen, onClose, patient, onResponseSaved, onStatusChange, initialScreen }) {
@@ -21,12 +22,13 @@ export default function PatientPreviewModal({ isOpen, onClose, patient, onRespon
         if (isOpen && initialScreen) {
             // Map common labels to the key if needed
             const mapping = {
+                'Bienvenue': 'Bienvenue',
+                'J-18': 'Bienvenue',
                 'J-7': 'J7',
-                'J-2': 'J2',
                 'J-1': 'J1_PreOp',
                 'J+1': 'J1',
                 'J+4': 'J4_Satisfaction',
-                'E-SATIS': 'J4_Satisfaction'
+                'E-SATIS': 'ESATIS'
             };
             const target = mapping[initialScreen] || initialScreen;
             if (ALL_TABS.some(t => t.key === target)) {
@@ -342,7 +344,7 @@ export default function PatientPreviewModal({ isOpen, onClose, patient, onRespon
                             </div>
 
                             {/* Time Alert for pre-op steps */}
-                            {['J7', 'J2', 'J1_PreOp'].includes(activeTab) && (
+                            {['Bienvenue', 'J7', 'J1_PreOp'].includes(activeTab) && (
                                 <AlertBanner
                                     type="info"
                                     title={`Arrivée prévue à ${patient?.surgery_time || '07:30'}`}

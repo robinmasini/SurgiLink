@@ -4,8 +4,9 @@
 
 export const pathwayConfig = {
     // Bienvenue: Configuration du portail
+    // Bienvenue: Configuration du portail (J-18)
     Bienvenue: {
-        title: "Bienvenue sur SurgiLink",
+        title: "Questionnaire J-18",
         subtitle: "Activation de votre suivi",
         sections: [
             {
@@ -44,14 +45,6 @@ export const pathwayConfig = {
                         risk_flag_rule: { type: "hard", condition: "no" }
                     },
                     {
-                        id: "recent_symptoms",
-                        type: "yes_no",
-                        label: "Confirmez-vous l'absence de symptômes anormaux (fièvre, toux, rhume, infection...) ?",
-                        why: "Être malade peut augmenter les risques liés à l'anesthésie.",
-                        required: true,
-                        risk_flag_rule: { type: "hard", condition: "no" }
-                    },
-                    {
                         id: "blood_work",
                         type: "yes_no",
                         label: "Avez-vous réalisé le bilan sanguin (et/ou les examens) prescrit ?",
@@ -60,45 +53,14 @@ export const pathwayConfig = {
                         risk_flag_rule: { type: "soft", condition: "no" }
                     }
                 ]
-            },
-            {
-                id: "security_prep",
-                icon: "👤",
-                title: "PARTIE 2 : Retour à domicile et Sécurité post-opératoire",
-                items: [
-                    {
-                        id: "companion_confirmed",
-                        type: "yes_no",
-                        label: "Avez-vous prévu un accompagnant adulte pour votre trajet de retour ?",
-                        why: "Il est strictement interdit de conduire ou de rentrer seul, même en taxi/VTC.",
-                        required: true,
-                        risk_flag_rule: { type: "hard", condition: "no" }
-                    },
-                    {
-                        id: "night_companion",
-                        type: "yes_no",
-                        label: "Une personne adulte et valide passera-t-elle la première nuit avec vous ?",
-                        why: "C'est une mesure de sécurité indispensable pour appeler les secours en cas de problème.",
-                        required: true,
-                        risk_flag_rule: { type: "hard", condition: "no" }
-                    },
-                    {
-                        id: "distance_urgency",
-                        type: "yes_no",
-                        label: "Votre domicile se trouve-t-il à moins d'une heure (1h) d'une structure d'urgence ?",
-                        why: "Vous devez pouvoir rejoindre rapidement un service médical compétent en cas de complication.",
-                        required: true,
-                        risk_flag_rule: { type: "soft", condition: "no" }
-                    }
-                ]
             }
         ]
     },
 
-    // J-2: Consignes et Vérification
-    J2: {
-        title: "Questionnaire J-2 – Vérification rapide",
-        subtitle: "Avant votre intervention",
+    // J-1: Confirmation et Consignes (J1_PreOp)
+    J1_PreOp: {
+        title: "Confirmation de votre admission J-1",
+        subtitle: "Vérification finale",
         sections: [
             {
                 id: "fasting",
@@ -130,31 +92,9 @@ export const pathwayConfig = {
                 ]
             },
             {
-                id: "recent_health",
-                icon: "🌡️",
-                title: "3. État de santé récent",
-                items: [
-                    {
-                        id: "recent_health_check",
-                        type: "yes_no",
-                        label: "Depuis votre consultation, confirmez-vous que votre état de santé est stable (absence de fièvre, toux ou infection récente) ?",
-                        required: true,
-                        risk_flag_rule: { type: "hard", condition: "no" }
-                    }
-                ]
-            }
-        ]
-    },
-
-    // J-1: Confirmation
-    J1_PreOp: {
-        title: "Confirmation de votre admission",
-        subtitle: "J-1 - Message Confirmation",
-        sections: [
-            {
                 id: "confirmation",
                 icon: "✅",
-                title: "Confirmation",
+                title: "3. Confirmation",
                 items: [
                     {
                         id: "admission_confirmed",
@@ -179,43 +119,9 @@ export const pathwayConfig = {
                 title: "État de santé",
                 items: [
                     {
-                        id: "pain_level",
-                        type: "slider_0_10",
-                        label: "Quelle est votre douleur actuellement ? (0=aucune, 10=intense)",
-                        required: true
-                    },
-                    {
-                        id: "general_state",
-                        type: "scale",
-                        label: "Comment est votre état général ?",
-                        options: ["Très satisfaisant", "Satisfaisant", "Moyennement satisfaisant", "Inquiétant"],
-                        required: true
-                    },
-                    {
                         id: "nausea_check",
                         type: "yes_no",
                         label: "Confirmez-vous l'absence de nausées ou vomissements importants depuis votre retour ?",
-                        required: true,
-                        risk_flag_rule: { type: "soft", condition: "no" }
-                    },
-                    {
-                        id: "site_check",
-                        type: "yes_no",
-                        label: "Le site opératoire vous semble-t-il normal (absence de saignement, gonflement ou écoulement anormal) ?",
-                        required: true,
-                        risk_flag_rule: { type: "hard", condition: "no" }
-                    },
-                    {
-                        id: "worry_check",
-                        type: "yes_no",
-                        label: "Confirmez-vous l'absence de tout symptôme qui vous inquiète ?",
-                        required: true,
-                        risk_flag_rule: { type: "hard", condition: "no" }
-                    },
-                    {
-                        id: "treatment_followup",
-                        type: "yes_no",
-                        label: "Avez-vous pu prendre les traitements et suivre les consignes de sortie ?",
                         required: true,
                         risk_flag_rule: { type: "soft", condition: "no" }
                     }

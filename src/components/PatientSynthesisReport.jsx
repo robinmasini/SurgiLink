@@ -13,7 +13,7 @@ export default function PatientSynthesisReport({
 }) {
     if (!patient) return null;
 
-    const screens = ['J7', 'J2', 'J1_PreOp', 'J1', 'J4_Satisfaction'];
+    const screens = ['Bienvenue', 'J7', 'J1_PreOp', 'J1', 'J4_Satisfaction', 'ESATIS'];
 
     const getStatusLabel = (status) => {
         const labels = {
@@ -192,7 +192,7 @@ export default function PatientSynthesisReport({
                 {/* Clinical Responses - Part 1 (Pre-op & Early Post-op) */}
                 <div>
                     <h2 style={h2Style}>Pré-opératoire & J+1</h2>
-                    {['J7', 'J2', 'J1_PreOp', 'J1'].map(screenKey => {
+                    {['Bienvenue', 'J7', 'J1_PreOp', 'J1'].map(screenKey => {
                         const config = pathwayConfig[screenKey];
                         const responses = clinicalResponses?.[screenKey] || {};
                         if (Object.keys(responses).length === 0) return null;
@@ -245,7 +245,7 @@ export default function PatientSynthesisReport({
                 <ReportHeader pageNumber={2} totalPages={2} />
 
                 {/* Clinical Responses - Part 2 (Satisfaction) */}
-                {['J4_Satisfaction'].map(screenKey => {
+                {['J4_Satisfaction', 'ESATIS'].map(screenKey => {
                     const config = pathwayConfig[screenKey];
                     const responses = clinicalResponses?.[screenKey] || {};
                     if (Object.keys(responses).length === 0) return null;

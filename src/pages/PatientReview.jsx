@@ -92,7 +92,6 @@ export default function PatientReview() {
     const [clinicalResponses, setClinicalResponses] = useState({
         Bienvenue: {},
         J7: {},
-        J2: {},
         J1_PreOp: {},
         J1: {},
         J4_Satisfaction: {},
@@ -133,27 +132,25 @@ export default function PatientReview() {
             setPatient(patientData);
 
             // Calculate risk status
-            const [riskJ7, riskJ2, riskJ1Pre, riskJ1, riskJ4, riskESatis] = await Promise.all([
+            const [riskJ7, riskJ1Pre, riskJ1, riskJ4, riskESatis] = await Promise.all([
                 calculateRiskFlags(id, 'J7'),
-                calculateRiskFlags(id, 'J2'),
                 calculateRiskFlags(id, 'J1_PreOp'),
                 calculateRiskFlags(id, 'J1'),
                 calculateRiskFlags(id, 'J4_Satisfaction'),
                 calculateRiskFlags(id, 'ESATIS')
             ]);
 
-            const hasHardRisk = riskJ7.hard?.length > 0 || riskJ2.hard?.length > 0 || riskJ1Pre.hard?.length > 0 || riskJ1.hard?.length > 0 || riskJ4.hard?.length > 0 || riskESatis?.hard?.length > 0;
-            const hasSoftRisk = riskJ7.soft?.length > 0 || riskJ2.soft?.length > 0 || riskJ1Pre.soft?.length > 0 || riskJ1.soft?.length > 0 || riskJ4.soft?.length > 0 || riskESatis?.soft?.length > 0;
+            const hasHardRisk = riskJ7.hard?.length > 0 || riskJ1Pre.hard?.length > 0 || riskJ1.hard?.length > 0 || riskJ4.hard?.length > 0 || riskESatis?.hard?.length > 0;
+            const hasSoftRisk = riskJ7.soft?.length > 0 || riskJ1Pre.soft?.length > 0 || riskJ1.soft?.length > 0 || riskJ4.soft?.length > 0 || riskESatis?.soft?.length > 0;
 
             if (hasHardRisk) setRiskStatus('URGENT');
             else if (hasSoftRisk) setRiskStatus('VIGILANCE');
             else setRiskStatus('NORMAL');
 
             // Load clinical responses for all steps
-            const [respBienvenue, respJ7, respJ2, respJ1Pre, respJ1, respJ4, respESatis] = await Promise.all([
+            const [respBienvenue, respJ7, respJ1Pre, respJ1, respJ4, respESatis] = await Promise.all([
                 getResponses(id, 'Bienvenue'),
                 getResponses(id, 'J7'),
-                getResponses(id, 'J2'),
                 getResponses(id, 'J1_PreOp'),
                 getResponses(id, 'J1'),
                 getResponses(id, 'J4_Satisfaction'),
@@ -163,7 +160,6 @@ export default function PatientReview() {
             setClinicalResponses({
                 Bienvenue: respBienvenue || {},
                 J7: respJ7 || {},
-                J2: respJ2 || {},
                 J1_PreOp: respJ1Pre || {},
                 J1: respJ1 || {},
                 J4_Satisfaction: respJ4 || {},
@@ -696,27 +692,6 @@ export default function PatientReview() {
                                         </div>
                                     </div>
 
-                                    {/* Critical Signal Badges */}
-                                    {(clinicalResponses.J1?.pain_level > 3 || clinicalResponses.J1?.site_check === true || clinicalResponses.J1?.worry_check === true || clinicalResponses.J1?.general_state === 'Inquiétant') && (
-                                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: 'var(--spacing-3)' }}>
-                                            {clinicalResponses.J1?.pain_level > 3 && (
-                                                <span className="badge badge-danger" style={{ fontSize: '10px', padding: '4px 12px', fontWeight: '700', boxShadow: 'var(--shadow-sm)' }}>
-                                                    DOULEUR SIGNALÉE
-                                                </span>
-                                            )}
-                                            {clinicalResponses.J1?.site_check === true && (
-                                                <span className="badge badge-orange" style={{ fontSize: '10px', padding: '4px 12px', fontWeight: '700', boxShadow: 'var(--shadow-sm)' }}>
-                                                    GONFLEMENT IMPORTANT
-                                                </span>
-                                            )}
-                                            {(clinicalResponses.J1?.worry_check === true || clinicalResponses.J1?.general_state === 'Inquiétant') && (
-                                                <span className="badge badge-orange" style={{ fontSize: '10px', padding: '4px 12px', fontWeight: '700', boxShadow: 'var(--shadow-sm)' }}>
-                                                    À CONTACTER
-                                                </span>
-                                            )}
-                                        </div>
-                                    )}
-
                                     <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-4)', color: 'var(--color-gray-500)', fontSize: 'var(--font-size-md)', marginTop: 'var(--spacing-3)' }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-1)' }}>
                                             <Calendar size={16} />
@@ -1113,13 +1088,8 @@ export default function PatientReview() {
                                             { id: 'welcome_ok', label: 'Activation Portale', screen: 'Bienvenue' },
                                             { id: 'anesthesia_consultation', label: 'Anesthésie', screen: 'J7' },
                                             { id: 'blood_work', label: 'Bilan sanguin', screen: 'J7' },
-                                            { id: 'recent_symptoms', label: 'Symptômes récents', screen: 'J7' },
-                                            { id: 'companion_confirmed', label: 'Accompagnant', screen: 'J7' },
-                                            { id: 'night_companion', label: 'Accompagnant Nuit', screen: 'J7' },
-                                            { id: 'distance_urgency', label: 'Distance Urgence', screen: 'J7' },
-                                            { id: 'fasting_understood', label: 'Jeûne J-2', screen: 'J2' },
-                                            { id: 'shower_understood', label: 'Douche J-2', screen: 'J2' },
-                                            { id: 'recent_health_check', label: 'Santé J-2', screen: 'J2' },
+                                            { id: 'fasting_understood', label: 'Jeûne J-1', screen: 'J1_PreOp' },
+                                            { id: 'shower_understood', label: 'Douche J-1', screen: 'J1_PreOp' },
                                             { id: 'admission_confirmed', label: 'Confirmation J-1', screen: 'J1_PreOp' }
                                         ].map(item => (
                                             <div key={item.id} className="card" style={{ padding: 'var(--spacing-4)', background: 'rgba(255,255,255,0.4)', border: '1px solid var(--color-gray-100)' }}>
@@ -1383,12 +1353,7 @@ export default function PatientReview() {
                                 </div>
                                 <div className="grid-3" style={{ gap: 'var(--spacing-4)' }}>
                                     {[
-                                        { id: 'pain_level', label: 'Douleur (0-10)' },
-                                        { id: 'general_state', label: 'État général' },
-                                        { id: 'nausea_check', label: 'Nausées/Vomiss.' },
-                                        { id: 'site_check', label: 'Saignement/Gonfl.' },
-                                        { id: 'worry_check', label: 'Symptôme inquiétant' },
-                                        { id: 'treatment_followup', label: 'Traitement/Consignes' }
+                                        { id: 'nausea_check', label: 'Nausées/Vomiss.' }
                                     ].map(item => (
                                         <div key={item.id} className="card" style={{ padding: 'var(--spacing-4)', background: 'rgba(255,255,255,0.4)', border: '1px solid var(--color-gray-100)' }}>
                                             <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', marginBottom: '4px' }}>{item.label}</div>

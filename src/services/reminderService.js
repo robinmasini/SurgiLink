@@ -133,7 +133,6 @@ export async function processPendingReminders(supabaseClient = null) {
             const getScreenPath = (screen) => {
                 const mapping = {
                     'J-7': 'j7',
-                    'J-2': 'j2',
                     'J-1': 'j1-preop',
                     'J+1': 'j1',
                     'J+4': 'j4',
@@ -237,7 +236,6 @@ export async function sendManualReminder(patientId, screen, itemId, templateKey,
         const getScreenPath = (screen) => {
             const mapping = {
                 'J-7': 'j7',
-                'J-2': 'j2',
                 'J-1': 'j1-preop',
                 'J+1': 'j1',
                 'J+4': 'j4',
@@ -350,9 +348,8 @@ export async function scheduleTimeBasedReminders(patientId, interventionDate, ti
 
     // --- DYNAMIC OFFSET LOGIC ---
     let offsets = {
-        welcome: -10,
+        welcome: -18,
         j7: -7,
-        j2: -2,
         j1: -1,
         j0: 0,
         j1_postop: 1,
@@ -388,7 +385,6 @@ export async function scheduleTimeBasedReminders(patientId, interventionDate, ti
     };
 
     const tpJ7 = getTP('j7', 8, 30);
-    const tpJ2 = getTP('j2', 8, 30);
     const tpJ1 = getTP('j1', 8, 30); // J-1 aligned to 8:30
     const tpJ1Post = getTP('j1_postop', 8, 30);
     const tpJ4Sat = getTP('j4_satisfaction', 8, 30); // J+4 aligned to 8:30
@@ -397,7 +393,6 @@ export async function scheduleTimeBasedReminders(patientId, interventionDate, ti
     const tpJJ = getTP('j0', 8, 30); // Day of surgery aligned to 8:30
 
     const j7Date = setParisTime(new Date(interventionDate).getTime() + (offsets.j7 * 86400000), tpJ7.h, tpJ7.m);
-    const j2Date = setParisTime(new Date(interventionDate).getTime() + (offsets.j2 * 86400000), tpJ2.h, tpJ2.m);
     const j1Date = setParisTime(new Date(interventionDate).getTime() + (offsets.j1 * 86400000), tpJ1.h, tpJ1.m);
     const j1PostOpDate = setParisTime(new Date(interventionDate).getTime() + (offsets.j1_postop * 86400000), tpJ1Post.h, tpJ1Post.m);
     const j4SatisfactionDate = setParisTime(new Date(interventionDate).getTime() + (offsets.j4_satisfaction * 86400000), tpJ4Sat.h, tpJ4Sat.m);
@@ -409,7 +404,6 @@ export async function scheduleTimeBasedReminders(patientId, interventionDate, ti
     const remindersToQueue = [
         { screen: 'Bienvenue', date: welcomeDate, template: 'welcome_accueil' },
         { screen: 'J-7', date: j7Date, template: 'j7_reminder' },
-        { screen: 'J-2', date: j2Date, template: 'j2_reminder' },
         { screen: 'J-1', date: j1Date, template: 'j1_reminder_long' },
         { screen: 'J-J', date: jjDate, template: 'jj_reminder' },
         { screen: 'J+1', date: j1PostOpDate, template: 'j1_postop' },

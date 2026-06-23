@@ -26,10 +26,9 @@ export default function QuestionsPreviewModal({ isOpen, onClose }) {
     if (!isOpen) return null;
 
     const tabs = [
-        { key: 'Bienvenue', label: 'Bienvenue', icon: '👋', subtitle: 'Activation' },
+        { key: 'Bienvenue', label: 'Accueil (J-18)', icon: '👋', subtitle: 'Activation' },
         { key: 'J7', label: 'Pré-admission (J-7)', icon: '📋', subtitle: 'Sécurité & Anesthésie' },
-        { key: 'J2', label: 'Consignes (J-2)', icon: '🚿', subtitle: 'Jeûne & Douche' },
-        { key: 'J1_PreOp', label: 'Admission (J-1)', icon: '✅', subtitle: 'Confirmation venue' },
+        { key: 'J1_PreOp', label: 'Admission (J-1)', icon: '✅', subtitle: 'Consignes & Confirmation' },
         { key: 'J1', label: 'Suivi J+1', icon: '🌡️', subtitle: 'Récupération & Douleur' },
         { key: 'J4_Satisfaction', label: 'Satisfaction (J+4)', icon: '⭐', subtitle: 'Enquête clinique' },
         { key: 'ESATIS', label: 'e-Satis', icon: '📊', subtitle: 'Enquête nationale' },

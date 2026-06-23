@@ -215,9 +215,8 @@ export default function PatientPortal({ patient: initialPatient }) {
             
             // Define all milestones with their offsets (days relative to surgery)
             const milestones = [
-                { id: 'Bienvenue', label: 'Bienvenue', offset: 99 },
+                { id: 'Bienvenue', label: 'J-18', offset: 18 },
                 { id: 'J7', label: 'J-7', offset: 7 },
-                { id: 'J2', label: 'J-2', offset: 2 },
                 { id: 'J1_PreOp', label: 'J-1', offset: 1 },
                 { id: 'J1', label: 'J+1', offset: -1 },
                 { id: 'J4_Satisfaction', label: 'J+4', offset: -4 },
@@ -562,9 +561,8 @@ export default function PatientPortal({ patient: initialPatient }) {
         const diffDays = surgeryDate ? Math.ceil((surgeryDate - today) / (1000 * 60 * 60 * 24)) : 999;
 
         const milestones = [
-            { id: 'Bienvenue', offset: 99 },
+            { id: 'Bienvenue', offset: 18 },
             { id: 'J7', offset: 7 },
-            { id: 'J2', offset: 2 },
             { id: 'J1_PreOp', offset: 1 },
             { id: 'J1', offset: -1 },
             { id: 'J4_Satisfaction', offset: -4 },
@@ -779,17 +777,17 @@ export default function PatientPortal({ patient: initialPatient }) {
                         let nextStep = 'bienvenue';
                         
                         // Smart Routing: Find the first incomplete milestone that is due
-                        if (diffDays <= 7 && !isMilestoneComplete('J7')) nextStep = 'j7';
-                        else if (diffDays <= 2 && !isMilestoneComplete('J2')) nextStep = 'j2';
+                        if (diffDays <= 18 && !isMilestoneComplete('Bienvenue')) nextStep = 'bienvenue';
+                        else if (diffDays <= 7 && !isMilestoneComplete('J7')) nextStep = 'j7';
                         else if (diffDays <= 1 && !isMilestoneComplete('J1_PreOp')) nextStep = 'j1-preop';
                         else if (diffDays <= -1 && !isMilestoneComplete('J1')) nextStep = 'j1';
                         else if (diffDays <= -4 && !isMilestoneComplete('J4_Satisfaction')) nextStep = 'j4';
                         else if (diffDays <= -4 && !isMilestoneComplete('ESATIS')) nextStep = 'e-satis';
                         else {
                             // If everything is done or nothing is due, go to next upcoming or j7 by default
-                            if (diffDays > 7) nextStep = 'bienvenue';
-                            else if (diffDays > 2) nextStep = 'j7';
-                            else if (diffDays > 1) nextStep = 'j2';
+                            if (diffDays > 18) nextStep = 'bienvenue';
+                            else if (diffDays > 7) nextStep = 'bienvenue';
+                            else if (diffDays > 1) nextStep = 'j7';
                             else nextStep = 'j7'; // Fallback
                         }
                         
@@ -944,9 +942,8 @@ export default function PatientPortal({ patient: initialPatient }) {
                             const diffDays = surgeryDate ? Math.ceil((surgeryDate - today) / (1000 * 60 * 60 * 24)) : 999;
 
                             return [
-                                { id: 'Bienvenue', to: `bienvenue`, emoji: '👋', label: 'Bienvenue', desc: 'Activation de votre suivi', offset: 99 },
+                                { id: 'Bienvenue', to: `bienvenue`, emoji: '👋', label: 'Questionnaire J-18', desc: 'Activation de votre suivi', offset: 18 },
                                 { id: 'J7', to: `j7`, emoji: '📋', label: 'Questionnaire J-7', desc: 'Préparation administrative', offset: 7 },
-                                { id: 'J2', to: `j2`, emoji: '📄', label: 'Questionnaire J-2', desc: 'Documents & consignes', offset: 2 },
                                 { id: 'J1_PreOp', to: `j1-preop`, emoji: '🚿', label: 'Confirmation J-1', desc: 'Vérification finale', offset: 1 },
                                 { id: 'J1', to: `j1`, emoji: '🌡️', label: 'Suivi J+1', desc: 'Bilan post-opératoire', offset: -1 },
                                 { id: 'J4_Satisfaction', to: `j4`, emoji: '⭐', label: 'Satisfaction J+4', desc: 'Votre avis nous intéresse', offset: -4 },
