@@ -140,9 +140,7 @@ export const pathwayConfig = {
                 icon: "🤝",
                 title: "1. L’accueil à la clinique",
                 items: [
-                    { id: "accueil_qualite", type: "rating", label: "Qualité de l’accueil et courtoisie de l’équipe", required: false },
-                    { id: "accueil_attente", type: "rating", label: "Délai d’attente lors de votre admission", required: false },
-                    { id: "accueil_infos", type: "rating", label: "Informations reçues à votre arrivée", required: false }
+                    { id: "accueil_qualite", type: "rating", label: "Qualité de l’accueil et courtoisie de l’équipe", required: false }
                 ]
             },
             {
@@ -151,9 +149,7 @@ export const pathwayConfig = {
                 title: "2. Votre prise en charge médicale",
                 items: [
                     { id: "soins_qualite", type: "rating", label: "La qualité des soins reçus", required: false },
-                    { id: "medecins_ecoute", type: "rating", label: "L’écoute et la disponibilité des médecins", required: false },
-                    { id: "soignant_ecoute", type: "rating", label: "L’écoute et l’accompagnement des soignants", required: false },
-                    { id: "douleur_prise_en_charge", type: "rating", label: "La prise en charge de votre douleur", required: false }
+                    { id: "medecins_ecoute", type: "rating", label: "L’écoute et la disponibilité des médecins", required: false }
                 ]
             },
             {
@@ -166,18 +162,9 @@ export const pathwayConfig = {
                 ]
             },
             {
-                id: "organisation",
-                icon: "📋",
-                title: "4. Organisation de votre sortie",
-                items: [
-                    { id: "sortie_explications", type: "rating", label: "Les explications concernant la suite du traitement", required: false },
-                    { id: "sortie_clarte_docs", type: "rating", label: "La clarté des documents remis", required: false }
-                ]
-            },
-            {
                 id: "global",
                 icon: "⭐",
-                title: "5. Votre avis global",
+                title: "4. Votre avis global",
                 items: [
                     {
                         id: "recommandation",
@@ -191,7 +178,7 @@ export const pathwayConfig = {
             {
                 id: "comments",
                 icon: "💬",
-                title: "6. Commentaire (facultatif)",
+                title: "5. Commentaire (facultatif)",
                 items: [
                     { id: "verbatim", type: "text", label: "Commentaire ou suggestion pour nous améliorer", multiline: true, required: false }
                 ]
