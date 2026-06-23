@@ -18,7 +18,6 @@ export default function EditSMSModal({ isOpen, onClose, patient, reminder, onSen
                     const getScreenPath = (screen) => {
                         const mapping = {
                             'J-7': 'j7',
-                            'J-2': 'j2',
                             'J-1': 'j1-preop',
                             'J-J': '',
                             'J+1': 'j1',

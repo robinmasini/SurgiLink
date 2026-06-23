@@ -430,8 +430,8 @@ export default function PatientDetailPanel({ patient, responses = [], onClose })
                                     <button
                                         onClick={() => {
                                             const mapping = {
+                                                'Bienvenue': '',
                                                 'J-7': 'j7',
-                                                'J-2': 'j2',
                                                 'J-1': 'j1-preop',
                                                 'J-J': '',
                                                 'J+1': 'j1',

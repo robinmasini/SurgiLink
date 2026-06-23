@@ -458,7 +458,7 @@ export default function PatientReview() {
     };
 
     const handleRegenerateSchedule = async () => {
-        if (!confirm('Cela va supprimer tous les rappels en attente et les remplacer par le nouveau planning complet (Bienvenue J-10 à J+4). Continuer ?')) return;
+        if (!confirm('Cela va supprimer tous les rappels en attente et les remplacer par le nouveau planning complet (Bienvenue J-18 à ESATIS). Continuer ?')) return;
 
         try {
             // 1. Delete pending
@@ -1078,7 +1078,7 @@ export default function PatientReview() {
                             </div>
 
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-8)' }}>
-                                {/* J-7 & J-2 Section */}
+                                {/* J-18, J-7 & J-1 Section */}
                                 <div>
                                     <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-gray-400)', textTransform: 'uppercase', marginBottom: 'var(--spacing-4)', letterSpacing: '0.05em' }}>
                                         Parcours de soins & Satisfaction
@@ -1532,13 +1532,13 @@ export default function PatientReview() {
                                                 <button
                                                     onClick={() => {
                                                         const mapping = {
+                                                            'Bienvenue': '',
                                                             'J-7': 'j7',
-                                                            'J-2': 'j2',
                                                             'J-1': 'j1-preop',
                                                             'J-J': '',
                                                             'J+1': 'j1',
                                                             'J+4': 'j4',
-                                                            'E-SATIS': 'j4'
+                                                            'E-SATIS': 'e-satis'
                                                         };
                                                         const path = mapping[rem.screen] || '';
                                                         const url = `${window.location.origin}/patient-portal/${tokenData.token}${path ? '/' + path : ''}`;
@@ -1627,8 +1627,8 @@ export default function PatientReview() {
                                                             <button
                                                                 onClick={() => {
                                                                     const mapping = {
+                                                                        'Bienvenue': '',
                                                                         'J-7': 'j7',
-                                                                        'J-2': 'j2',
                                                                         'J-1': 'j1-preop',
                                                                         'J+1': 'j1',
                                                                         'J+4': 'j4',

@@ -356,7 +356,7 @@ Les clés doivent être exactement :
                 const tokenRes = await generatePatientToken(newPatient.id);
                 const token = tokenRes.success ? tokenRes.token : null;
 
-                // 2. Schedule automated reminders (J-7, J-2, J-1)
+                // 2. Schedule automated reminders (J-18, J-7, J-1)
                 if (newPatient.date) {
                     const surgeryDate = new Date(newPatient.date);
                     await scheduleTimeBasedReminders(newPatient.id, surgeryDate);

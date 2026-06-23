@@ -146,7 +146,6 @@ export async function calculateGlobalProgress(patientId) {
         const daysUntilSurgery = surgeryDateForDiff ? Math.ceil((surgeryDateForDiff - todayForDiff) / (1000 * 60 * 60 * 24)) : 999;
 
         const j7Status = await getCompletionStatus(patientId, 'J7');
-        const j2Status = await getCompletionStatus(patientId, 'J2');
         const hasAcessedPortal = hoursSinceCreation > 0 && (responses || []).length > 0;
 
         // --- DYNAMIC STATUS LOGIC ---

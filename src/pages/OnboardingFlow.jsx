@@ -337,7 +337,7 @@ export default function OnboardingFlow() {
                                     </p>
 
                                     <p style={{ fontSize: '0.85rem', lineHeight: '1.45', opacity: 0.9, margin: 0 }}>
-                                        💬 Vous recevrez des SMS à chaque étape clé <strong>(J-7, J-2, etc.)</strong>, afin de vous accompagner sereinement.
+                                        💬 Vous recevrez des SMS à chaque étape clé <strong>(J-18, J-7, J-1, etc.)</strong>, afin de vous accompagner sereinement.
                                     </p>
 
                                     <p style={{ fontSize: '0.85rem', lineHeight: '1.45', opacity: 0.9, margin: 0 }}>
@@ -360,7 +360,7 @@ export default function OnboardingFlow() {
                                         zIndex: 0
                                     }} />
                                     <div className="timeline-items" style={{ display: 'flex', justifyContent: 'space-between', position: 'relative', zIndex: 1, padding: '0 5px' }}>
-                                        {['J-7', 'J-2', 'J-1', 'J-J', 'J+1', 'J+2', 'J+7'].map((day) => (
+                                        {['J-18', 'J-7', 'J-1', 'J-J', 'J+1', 'J+4', 'ESATIS'].map((day) => (
                                             <div key={day} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
                                                 <div style={{ 
                                                     width: isMobile ? '10px' : '16px', 

@@ -165,7 +165,7 @@ export default function SMSAlarmsModal({ isOpen, onClose }) {
                                     Déclenchement Automatique Quotidien
                                 </h3>
                                 <p style={{ fontSize: '13px', color: 'var(--color-gray-600)', lineHeight: '1.5', margin: '0 0 12px 0' }}>
-                                    Les rappels de dossier (Bienvenue, J-7, J-2, J-1, Jour J) programmés à <strong>8h30</strong> sont traités automatiquement via deux tâches planifiées indépendantes sur nos serveurs :
+                                    Les rappels de dossier (Bienvenue, J-7, J-1, Jour J) programmés à <strong>8h30</strong> sont traités automatiquement via deux tâches planifiées indépendantes sur nos serveurs :
                                 </p>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', fontWeight: '600', color: 'var(--color-gray-700)' }}>

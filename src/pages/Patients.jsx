@@ -32,7 +32,7 @@ export default function Patients() {
     const [selectedPatientId, setSelectedPatientId] = useState(null);
     const [nextReminders, setNextReminders] = useState({});
 
-    const tabs = ['J-10', 'J-7', 'J-2', 'J-1', 'Jour J', 'J+1', 'J+4', 'Tous', 'Archivés'];
+    const tabs = ['J-18', 'J-7', 'J-1', 'Jour J', 'J+1', 'J+4', 'ESATIS', 'Tous', 'Archivés'];
 
     useEffect(() => {
         loadPatients();
@@ -52,7 +52,10 @@ export default function Patients() {
         } else {
             filtered = filtered.filter(p => {
                 const daysUntil = calculateDaysUntilSurgery(p.date);
-                const tabDate = activeTab === 'Jour J' ? 'J-0' : activeTab;
+                let tabDate = activeTab === 'Jour J' ? 'J-0' : activeTab;
+                if (activeTab === 'ESATIS') {
+                    tabDate = 'J+4';
+                }
                 return daysUntil === tabDate;
             });
         }
@@ -331,8 +334,8 @@ export default function Patients() {
                                             <td className="hide-tablet" style={{ padding: 'var(--spacing-3) var(--spacing-4)' }}>
                                                 <span
                                                     className={
-                                                        patient.daysUntil === 'J-1' || patient.daysUntil === 'J-2' ? 'deadline-red' :
-                                                            patient.daysUntil === 'J-7' || patient.daysUntil === 'J-10' ? 'deadline-green' :
+                                                        patient.daysUntil === 'J-1' ? 'deadline-red' :
+                                                            patient.daysUntil === 'J-7' || patient.daysUntil === 'J-18' ? 'deadline-green' :
                                                                 patient.daysUntil.includes('J+') ? 'deadline-orange' : 'deadline-green'
                                                     }
                                                     style={{ fontSize: '11px', fontWeight: '700' }}
