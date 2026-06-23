@@ -121,7 +121,7 @@ export const pathwayConfig = {
                     {
                         id: "nausea_check",
                         type: "yes_no",
-                        label: "Confirmez-vous l'absence de nausées ou vomissements importants depuis votre retour ?",
+                        label: "Comment vous sentez-vous depuis votre opération ? Tout se passe-t-il bien ?",
                         required: true,
                         risk_flag_rule: { type: "soft", condition: "no" }
                     }
