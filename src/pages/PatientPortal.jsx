@@ -1065,8 +1065,8 @@ export default function PatientPortal({ patient: initialPatient }) {
                         boxShadow: '0 20px 40px rgba(0,0,0,0.1)'
                     }} onClick={e => e.stopPropagation()}>
                         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
-                            <div style={{ background: '#e0f2fe', padding: '16px', borderRadius: '50%' }}>
-                                <Info size={32} color="#0ea5e9" />
+                            <div style={{ background: 'var(--color-primary-50)', padding: '16px', borderRadius: '50%' }}>
+                                <Info size={32} color="var(--color-primary-500)" />
                             </div>
                         </div>
                         <h3 style={{ fontSize: '20px', fontWeight: '700', textAlign: 'center', marginBottom: '16px', color: '#1f2937' }}>
@@ -1080,12 +1080,12 @@ export default function PatientPortal({ patient: initialPatient }) {
                         <button 
                             onClick={() => setShowStatusInfoModal(false)}
                             style={{
-                                width: '100%', padding: '16px', borderRadius: '16px', background: '#0ea5e9',
+                                width: '100%', padding: '16px', borderRadius: '16px', background: 'var(--color-primary-500)',
                                 color: 'white', border: 'none', fontWeight: '700', fontSize: '16px', cursor: 'pointer',
                                 transition: 'background 0.2s'
                             }}
-                            onMouseOver={(e) => e.currentTarget.style.background = '#0284c7'}
-                            onMouseOut={(e) => e.currentTarget.style.background = '#0ea5e9'}
+                            onMouseOver={(e) => e.currentTarget.style.background = 'var(--color-primary-600)'}
+                            onMouseOut={(e) => e.currentTarget.style.background = 'var(--color-primary-500)'}
                         >
                             {t("J'ai compris")}
                         </button>
