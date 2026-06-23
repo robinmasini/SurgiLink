@@ -33,7 +33,7 @@ VALUES
     "progress_critical_threshold": 80
 }'),
 ('reminder_offsets', '{
-    "welcome": -10,
+    "welcome": -18,
     "j7": -7,
     "j2": -2,
     "j1": -1,

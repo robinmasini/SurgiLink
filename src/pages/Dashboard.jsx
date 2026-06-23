@@ -76,6 +76,31 @@ export default function Dashboard() {
     }, []);
 
     useEffect(() => {
+        const fixSettings = async () => {
+            try {
+                const { data, error } = await supabase
+                    .from('app_settings')
+                    .select('*')
+                    .eq('key', 'reminder_offsets')
+                    .maybeSingle();
+
+                if (data && data.value) {
+                    const value = typeof data.value === 'string' ? JSON.parse(data.value) : data.value;
+                    if (value.welcome !== -18) {
+                        console.log("[SettingsAutoFix] welcome offset is currently", value.welcome, ". Updating to -18...");
+                        const updatedValue = { ...value, welcome: -18 };
+                        await supabase
+                            .from('app_settings')
+                            .update({ value: updatedValue })
+                            .eq('key', 'reminder_offsets');
+                        console.log("[SettingsAutoFix] Updated welcome offset successfully.");
+                    }
+                }
+            } catch (e) {
+                console.warn("[SettingsAutoFix] failed:", e);
+            }
+        };
+        fixSettings();
         loadDashboard(); // Renamed from loadPatients
     }, []);
 

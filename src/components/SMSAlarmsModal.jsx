@@ -14,6 +14,47 @@ import { supabase } from '../lib/supabase';
 export default function SMSAlarmsModal({ isOpen, onClose }) {
     const [isProcessingCron, setIsProcessingCron] = React.useState(false);
 
+    React.useEffect(() => {
+        if (!isOpen) return;
+
+        const checkAndFixOffsets = async () => {
+            try {
+                const { data, error } = await supabase
+                    .from('app_settings')
+                    .select('*')
+                    .eq('key', 'reminder_offsets')
+                    .maybeSingle();
+
+                if (error) {
+                    console.error("[SettingsAutoFix] Error fetching app settings:", error);
+                    return;
+                }
+
+                if (data && data.value) {
+                    const value = typeof data.value === 'string' ? JSON.parse(data.value) : data.value;
+                    if (value.welcome !== -18) {
+                        console.log("[SettingsAutoFix] Welcome offset is currently", value.welcome, ". Updating to -18...");
+                        const updatedValue = { ...value, welcome: -18 };
+                        const { error: updateError } = await supabase
+                            .from('app_settings')
+                            .update({ value: updatedValue })
+                            .eq('key', 'reminder_offsets');
+
+                        if (updateError) {
+                            console.error("[SettingsAutoFix] Error updating settings:", updateError);
+                        } else {
+                            console.log("[SettingsAutoFix] Successfully updated welcome offset to -18 in the database.");
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error("[SettingsAutoFix] Unexpected error:", err);
+            }
+        };
+
+        checkAndFixOffsets();
+    }, [isOpen]);
+
     const handleForceCron = async () => {
         if (!window.confirm("Voulez-vous forcer l'analyse et l'envoi de tous les SMS en attente pour aujourd'hui ?")) {
             return;
