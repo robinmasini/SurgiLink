@@ -99,7 +99,7 @@ export const pathwayConfig = {
                     {
                         id: "admission_confirmed",
                         type: "yes_no",
-                        label: "Confirmez-vous que vous avez noté l’heure de votre admission et organisé votre venue ?",
+                        label: "Avez-vous bien pris connaissance de votre heure d’intervention ?",
                         required: true,
                         risk_flag_rule: { type: "hard", condition: "no" }
                     }
