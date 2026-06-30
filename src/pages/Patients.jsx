@@ -220,16 +220,8 @@ export default function Patients() {
                                         outline: 'none',
                                         transition: 'border-color 0.2s'
                                     }}
-                                />
                             </div>
                             <div style={{ display: 'flex', flexDirection: 'row', gap: '8px', alignItems: 'center' }}>
-                                <button
-                                    className="btn btn-primary"
-                                    onClick={() => setIsModalOpen(true)}
-                                    style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)', height: '42px', justifyContent: 'center' }}
-                                >
-                                    <Plus size={18} /> <span className="hide-mobile">{t('Ajouter un patient')}</span>
-                                </button>
                                 <button
                                     onClick={() => window.open('https://www.doctolib.fr', '_blank')}
                                     style={{
@@ -258,7 +250,14 @@ export default function Patients() {
                                     }}
                                 >
                                     <img src={doctolibLogo} alt="Doctolib" style={{ height: '18px', objectFit: 'contain' }} />
-                                    <span className="hide-mobile">{t('Raccourci Doctolib')}</span>
+                                    <span className="hide-mobile">{t('Planning')}</span>
+                                </button>
+                                <button
+                                    className="btn btn-primary"
+                                    onClick={() => setIsModalOpen(true)}
+                                    style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)', height: '42px', justifyContent: 'center' }}
+                                >
+                                    <Plus size={18} /> <span className="hide-mobile">{t('Ajouter un patient')}</span>
                                 </button>
                             </div>
                         </div>
@@ -325,7 +324,7 @@ export default function Patients() {
                                 }}
                             >
                                 <img src={doctolibLogo} alt="Doctolib" style={{ height: '18px', objectFit: 'contain' }} />
-                                <span>{t('Raccourci Doctolib')}</span>
+                                <span>{t('Planning')}</span>
                             </button>
                         </div>
                     )}

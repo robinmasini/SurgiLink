@@ -149,7 +149,7 @@ export default function Users() {
                     }} />
                 </div>
                 <div>
-                    <h4 style={{ fontSize: '15px', fontWeight: '700', color: 'var(--color-gray-900)', marginBottom: '2px' }}>
+                    <h4 style={{ fontSize: '18px', fontWeight: '800', color: 'var(--color-gray-900)', marginBottom: '2px' }}>
                         {profile.full_name}
                     </h4>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)' }}>

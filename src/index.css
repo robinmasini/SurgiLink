@@ -984,8 +984,8 @@ textarea.input {
 }
 
 .sidebar-profile-name {
-  font-size: 11px;
-  font-weight: var(--font-weight-bold);
+  font-size: 13px;
+  font-weight: 800;
   color: var(--color-gray-900);
   margin-bottom: 2px;
   text-transform: uppercase;
@@ -1970,7 +1970,7 @@ textarea.input {
 }
 
 .welcome-banner-signature {
-  height: 80px;
+  height: 120px;
   width: auto;
   object-fit: contain;
   margin-bottom: var(--spacing-3);
@@ -2067,8 +2067,8 @@ textarea.input {
   }
 
   .welcome-banner-signature {
-    max-width: 150px !important;
-    height: 100px;
+    max-width: 200px !important;
+    height: 120px;
     margin-bottom: var(--spacing-6);
   }
 

@@ -310,7 +310,7 @@ export default function Dashboard() {
                         <>
                             <button className="btn btn-secondary hide-mobile" onClick={() => setIsAlarmsModalOpen(true)} style={{ borderRadius: '12px', padding: '10px 20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                                 <LogoIcon width="16px" />
-                                <span>{t('Alarme vigilance')}</span>
+                                <span>{t('Alarme')}</span>
                             </button>
                             <button 
                                 className="btn btn-secondary hide-mobile" 
@@ -331,13 +331,6 @@ export default function Dashboard() {
                                 <span>{t('Scanner Patient HM')}</span>
                             </button>
                              <div className="hide-mobile" style={{ display: 'flex', flexDirection: 'row', gap: '8px', alignItems: 'center' }}>
-                                 <button
-                                    className="btn btn-primary"
-                                    onClick={() => setIsAddModalOpen(true)}
-                                    style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)', height: '42px', justifyContent: 'center' }}
-                                >
-                                    <Plus size={18} /> {t('Ajouter un patient')}
-                                </button>
                                 <button
                                     onClick={() => window.open('https://www.doctolib.fr', '_blank')}
                                     style={{
@@ -366,7 +359,14 @@ export default function Dashboard() {
                                     }}
                                 >
                                     <img src={doctolibLogo} alt="Doctolib" style={{ height: '18px', objectFit: 'contain' }} />
-                                    <span>{t('Raccourci Doctolib')}</span>
+                                    <span>{t('Planning')}</span>
+                                </button>
+                                <button
+                                    className="btn btn-primary"
+                                    onClick={() => setIsAddModalOpen(true)}
+                                    style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)', height: '42px', justifyContent: 'center' }}
+                                >
+                                    <Plus size={18} /> {t('Ajouter un patient')}
                                 </button>
                             </div>
                         </>
@@ -400,7 +400,7 @@ export default function Dashboard() {
                                     }}
                                 >
                                     <LogoIcon width="16px" />
-                                    <span>{t('Alarme vigilance')}</span>
+                                    <span>{t('Alarme')}</span>
                                 </button>
                                 <button 
                                     className="btn btn-secondary" 
@@ -473,7 +473,7 @@ export default function Dashboard() {
                                 }}
                             >
                                 <img src={doctolibLogo} alt="Doctolib" style={{ height: '18px', objectFit: 'contain' }} />
-                                <span>{t('Raccourci Doctolib')}</span>
+                                <span>{t('Planning')}</span>
                             </button>
 
                             {/* Mobile Questions Preview Button */}
