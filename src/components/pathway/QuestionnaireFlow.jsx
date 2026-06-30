@@ -62,6 +62,17 @@ export default function QuestionnaireFlow({
     const [currentIndex, setCurrentIndex] = useState(0);
     const [direction, setDirection] = useState('in'); // 'in' or 'out'
     const [initialRefreshed, setInitialRefreshed] = useState(false);
+    const [inputBlocked, setInputBlocked] = useState(false);
+
+    // Unblock inputs after a short cooldown whenever the current question index changes
+    useEffect(() => {
+        if (currentIndex >= 0) {
+            const timer = setTimeout(() => {
+                setInputBlocked(false);
+            }, 450);
+            return () => clearTimeout(timer);
+        }
+    }, [currentIndex]);
 
     // Initial load: find first unanswered question once responses are available
     useEffect(() => {
@@ -95,7 +106,8 @@ export default function QuestionnaireFlow({
     // just one-by-one with attention. I'll add a "Next" button for clarity, but auto-submit on last.
 
     const handleNext = () => {
-        if (direction === 'out' || saving) return; // Prevent multiple clicks during transition
+        if (direction === 'out' || saving || inputBlocked) return; // Prevent multiple clicks during transition
+        setInputBlocked(true);
         
         if (isLast) {
             onComplete();
@@ -109,7 +121,8 @@ export default function QuestionnaireFlow({
     };
 
     const handleBack = () => {
-        if (direction === 'out' || isFirst) return;
+        if (direction === 'out' || isFirst || inputBlocked) return;
+        setInputBlocked(true);
         
         setDirection('out');
         setTimeout(() => {
@@ -120,6 +133,9 @@ export default function QuestionnaireFlow({
 
     // When answer changes, we might want a slight delay before auto-advancing if it's a simple choice
     const onQuestionAnswer = async (itemId, value) => {
+        if (inputBlocked || saving) return;
+        setInputBlocked(true);
+
         if (currentItem.isCustom) {
             // Save to custom_questions table
             await answerCustomQuestion(currentItem.originalId, value);
@@ -140,6 +156,9 @@ export default function QuestionnaireFlow({
                     onComplete();
                 }
             }, 600);
+        } else {
+            // For text/slider inputs, unblock input immediately so they can update their text/slider value
+            setInputBlocked(false);
         }
     };
 
@@ -169,7 +188,10 @@ export default function QuestionnaireFlow({
             </div>
 
             {/* Question Container */}
-            <div className={`question-flow-container ${direction === 'in' ? 'slide-in' : 'slide-out'}`}>
+            <div 
+                className={`question-flow-container ${direction === 'in' ? 'slide-in' : 'slide-out'}`}
+                style={{ pointerEvents: inputBlocked ? 'none' : 'auto' }}
+            >
                 {currentItem && (
                     <QuestionRenderer
                         key={currentItem.id}
@@ -187,7 +209,8 @@ export default function QuestionnaireFlow({
                 gap: 'var(--spacing-4)',
                 marginTop: 'var(--spacing-8)',
                 paddingTop: 'var(--spacing-6)',
-                borderTop: '1px solid var(--color-gray-100)'
+                borderTop: '1px solid var(--color-gray-100)',
+                pointerEvents: inputBlocked ? 'none' : 'auto'
             }}>
                 {!isFirst && (
                     <button
@@ -203,7 +226,7 @@ export default function QuestionnaireFlow({
                 <button
                     className={`btn btn-primary ${isLast ? 'btn-success' : ''}`}
                     onClick={handleNext}
-                    disabled={saving || !currentItem || (responses[currentItem.id] === undefined && currentItem.required !== false)}
+                    disabled={saving || inputBlocked || !currentItem || (responses[currentItem.id] === undefined && currentItem.required !== false)}
                     style={{
                         flex: 2,
                         borderRadius: 'var(--radius-xl)',
