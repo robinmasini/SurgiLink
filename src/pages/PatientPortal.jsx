@@ -204,6 +204,26 @@ export default function PatientPortal({ patient: initialPatient }) {
             return val !== undefined && val !== null && val !== '';
         });
     };
+
+    // Helper to find the latest completed milestone to edit
+    const getLatestCompletedMilestoneRoute = () => {
+        const milestones = [
+            { id: 'Bienvenue', route: 'bienvenue' },
+            { id: 'J7', route: 'j7' },
+            { id: 'J1_PreOp', route: 'j1-preop' },
+            { id: 'J1', route: 'j1' },
+            { id: 'J4_Satisfaction', route: 'j4' },
+            { id: 'ESATIS', route: 'e-satis' }
+        ];
+        
+        for (let i = milestones.length - 1; i >= 0; i--) {
+            const m = milestones[i];
+            if (isMilestoneComplete(m.id)) {
+                return m.route;
+            }
+        }
+        return 'bienvenue';
+    };
     
     useEffect(() => {
         if (!patient?.date) return;
@@ -812,7 +832,7 @@ export default function PatientPortal({ patient: initialPatient }) {
                         transition: 'all 0.2s',
                         boxShadow: '0 4px 6px rgba(0,0,0,0.05)'
                     }}
-                    onClick={() => navigate(`/patient-portal/${token}/j7`)}
+                    onClick={() => navigate(`/patient-portal/${token}/${getLatestCompletedMilestoneRoute()}`)}
                     onMouseOver={(e) => {
                         e.currentTarget.style.background = '#d1d5db';
                         e.currentTarget.style.transform = 'translateY(-2px)';
