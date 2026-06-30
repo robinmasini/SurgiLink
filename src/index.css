@@ -2486,11 +2486,11 @@ textarea.input {
 }
 
 .slide-in {
-  animation: slideIn 0.4s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+  animation: slideIn 0.28s cubic-bezier(0.25, 1, 0.5, 1) forwards;
 }
 
 .slide-out {
-  animation: slideOut 0.4s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+  animation: slideOut 0.28s cubic-bezier(0.25, 1, 0.5, 1) forwards;
 }
 
 @keyframes slideIn {

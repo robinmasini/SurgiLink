@@ -69,7 +69,7 @@ export default function QuestionnaireFlow({
         if (currentIndex >= 0) {
             const timer = setTimeout(() => {
                 setInputBlocked(false);
-            }, 450);
+            }, 300);
             return () => clearTimeout(timer);
         }
     }, [currentIndex]);
@@ -116,7 +116,7 @@ export default function QuestionnaireFlow({
             setTimeout(() => {
                 setCurrentIndex(prev => Math.min(prev + 1, allItems.length - 1));
                 setDirection('in');
-            }, 300);
+            }, 280);
         }
     };
 
@@ -128,7 +128,7 @@ export default function QuestionnaireFlow({
         setTimeout(() => {
             setCurrentIndex(prev => Math.max(prev - 1, 0));
             setDirection('in');
-        }, 300);
+        }, 280);
     };
 
     // When answer changes, we might want a slight delay before auto-advancing if it's a simple choice
@@ -155,7 +155,7 @@ export default function QuestionnaireFlow({
                     // It's the last one, auto-submit
                     onComplete();
                 }
-            }, 600);
+            }, 350);
         } else {
             // For text/slider inputs, unblock input immediately so they can update their text/slider value
             setInputBlocked(false);
