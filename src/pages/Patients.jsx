@@ -220,6 +220,7 @@ export default function Patients() {
                                         outline: 'none',
                                         transition: 'border-color 0.2s'
                                     }}
+                                />
                             </div>
                             <div style={{ display: 'flex', flexDirection: 'row', gap: '8px', alignItems: 'center' }}>
                                 <button
