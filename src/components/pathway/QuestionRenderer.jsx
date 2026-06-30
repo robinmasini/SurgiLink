@@ -30,6 +30,13 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
         });
     };
 
+    useEffect(() => {
+        const type = (item.type || '').trim().toLowerCase();
+        if ((type === 'rating' || type === 'slider_0_10') && (value === undefined || value === null || value === '')) {
+            onChange(item.id, 10);
+        }
+    }, [item.id, item.type, value, onChange]);
+
     const renderInput = () => {
         const type = (item.type || '').trim().toLowerCase();
         switch (type) {
@@ -148,7 +155,7 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
 
             case 'slider_0_10': {
                 const hasValue = value !== undefined && value !== null && value !== '';
-                const sliderVal = hasValue ? value : 5;
+                const sliderVal = hasValue ? value : 10;
                 return (
                     <div>
                         <input
@@ -249,7 +256,7 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
             }
             case 'rating': {
                 const hasValue = value !== undefined && value !== null && value !== '';
-                const ratingVal = hasValue ? value : 5;
+                const ratingVal = hasValue ? value : 10;
                 return (
                     <div style={{ marginTop: 'var(--spacing-2)' }}>
                         <div style={{
