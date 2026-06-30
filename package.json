@@ -6,6 +6,12 @@
   "engines": {
     "node": "20.x"
   },
+  "overrides": {
+    "path-scurry": {
+      "lru-cache": "10.2.0"
+    },
+    "serialize-javascript": "6.0.2"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
