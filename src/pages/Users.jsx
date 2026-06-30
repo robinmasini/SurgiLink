@@ -11,15 +11,18 @@ import {
     MoreHorizontal,
     Plus,
     Stethoscope,
-    Activity
+    Activity,
+    LogOut
 } from 'lucide-react';
 import practitionerAvatar from '../assets/practitioner-avatar.png';
 import nurseAvatar from '../assets/nurse-avatar.png';
 import christopheSignature from '../assets/christophe-signature.png';
+import { useNavigate } from 'react-router-dom';
 import welcomeCardV4 from '../assets/welcome-card-v4.jpg';
 import welcomeCardInfirmier from '../assets/welcomecard-infirmier.png';
 
 export default function Users() {
+    const navigate = useNavigate();
     const [profiles, setProfiles] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
@@ -228,46 +231,74 @@ export default function Users() {
                 <div className="users-container fade-in" style={{ maxWidth: '1000px' }}>
                     {/* Welcome Banner - Mobile Only */}
                     {isMobile && (
-                        <div className="welcome-banner" style={{ marginBottom: 'var(--spacing-6)' }}>
-                            <div className="welcome-banner-content">
-                                <div></div>
-                                <div>
-                                    <div className="welcome-banner-welcome">Bonjour,</div>
-                                    {profile?.role === 'practitioner' ? (
-                                        <a
-                                            href="https://www.desouches-chirurgien-esthetique.com/"
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="welcome-banner-signature-link"
-                                        >
-                                            <img src={christopheSignature} alt="Christophe DESOUCHES" className="welcome-banner-signature" />
-                                        </a>
-                                    ) : (
-                                        <div className="welcome-banner-greeting" style={{ fontSize: '24px', fontWeight: '800', margin: '10px 0' }}>
-                                            {profile?.full_name || 'Infirmier Cabinet'}
+                        <>
+                            <div className="welcome-banner" style={{ marginBottom: 'var(--spacing-4)' }}>
+                                <div className="welcome-banner-content">
+                                    <div></div>
+                                    <div>
+                                        <div className="welcome-banner-welcome">Bonjour,</div>
+                                        {profile?.role === 'practitioner' ? (
+                                            <a
+                                                href="https://www.desouches-chirurgien-esthetique.com/"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="welcome-banner-signature-link"
+                                            >
+                                                <img src={christopheSignature} alt="Christophe DESOUCHES" className="welcome-banner-signature" />
+                                            </a>
+                                        ) : (
+                                            <div className="welcome-banner-greeting" style={{ fontSize: '24px', fontWeight: '800', margin: '10px 0' }}>
+                                                {profile?.full_name || 'Infirmier Cabinet'}
+                                            </div>
+                                        )}
+                                        <div className="welcome-banner-greeting">Ravi de vous revoir !</div>
+                                        <div className="welcome-banner-instruction">Votre espace {profile?.role === 'practitioner' ? 'praticien' : 'infirmier'} est à jour</div>
+                                    </div>
+                                    <div>
+                                        <div className="welcome-banner-date-label">Date d'aujourd'hui</div>
+                                        <div className="welcome-banner-date-value">
+                                            {new Date().toLocaleDateString('fr-FR', {
+                                                weekday: 'long',
+                                                day: 'numeric',
+                                                month: 'long',
+                                                year: 'numeric'
+                                            }).replace(/^\w/, (c) => c.toUpperCase())}
                                         </div>
-                                    )}
-                                    <div className="welcome-banner-greeting">Ravi de vous revoir !</div>
-                                    <div className="welcome-banner-instruction">Votre espace {profile?.role === 'practitioner' ? 'praticien' : 'infirmier'} est à jour</div>
-                                </div>
-                                <div>
-                                    <div className="welcome-banner-date-label">Date d'aujourd'hui</div>
-                                    <div className="welcome-banner-date-value">
-                                        {new Date().toLocaleDateString('fr-FR', {
-                                            weekday: 'long',
-                                            day: 'numeric',
-                                            month: 'long',
-                                            year: 'numeric'
-                                        }).replace(/^\w/, (c) => c.toUpperCase())}
                                     </div>
                                 </div>
+                                <img
+                                    src={profile?.role === 'nurse' ? welcomeCardInfirmier : welcomeCardV4}
+                                    alt="Espace Opératoire"
+                                    className="welcome-banner-image"
+                                />
                             </div>
-                            <img
-                                src={profile?.role === 'nurse' ? welcomeCardInfirmier : welcomeCardV4}
-                                alt="Espace Opératoire"
-                                className="welcome-banner-image"
-                            />
-                        </div>
+                            <button
+                                onClick={async () => {
+                                    await supabase.auth.signOut();
+                                    navigate('/login');
+                                }}
+                                style={{
+                                    width: '100%',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: 'var(--spacing-2)',
+                                    marginBottom: 'var(--spacing-6)',
+                                    borderRadius: '12px',
+                                    height: '42px',
+                                    fontWeight: '700',
+                                    background: 'white',
+                                    color: 'var(--color-danger-600)',
+                                    border: '1px solid var(--color-danger-200)',
+                                    cursor: 'pointer',
+                                    boxShadow: 'var(--shadow-sm)',
+                                    transition: 'all 0.2s'
+                                }}
+                            >
+                                <LogOut size={18} />
+                                <span>Se déconnecter</span>
+                            </button>
+                        </>
                     )}
 
                     {/* Search & Stats Section */}

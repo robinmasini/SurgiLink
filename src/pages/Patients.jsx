@@ -34,9 +34,15 @@ export default function Patients() {
     const [nextReminders, setNextReminders] = useState({});
 
     const tabs = ['J-18', 'J-7', 'J-1', 'Jour J', 'J+1', 'J+4', 'ESATIS', 'Tous', 'Archivés'];
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
 
     useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= 1024);
+        };
+        window.addEventListener('resize', handleResize);
         loadPatients();
+        return () => window.removeEventListener('resize', handleResize);
     }, []);
 
     useEffect(() => {
@@ -196,36 +202,107 @@ export default function Patients() {
                         ))}
                     </div>
 
-                    <div style={{ display: 'flex', gap: 'var(--spacing-3)', flex: 1, minWidth: '300px', justifyContent: 'flex-end' }}>
-                        <div style={{ position: 'relative', flex: 1, maxWidth: '400px' }}>
-                            <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-gray-400)' }} />
-                            <input
-                                type="text"
-                                placeholder={t('Rechercher un patient...')}
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                style={{
-                                    width: '100%',
-                                    padding: '10px 12px 10px 40px',
-                                    borderRadius: 'var(--radius-lg)',
-                                    border: '1px solid var(--color-gray-200)',
-                                    fontSize: 'var(--font-size-sm)',
-                                    outline: 'none',
-                                    transition: 'border-color 0.2s'
-                                }}
-                            />
+                    {!isMobile ? (
+                        <div style={{ display: 'flex', gap: 'var(--spacing-3)', flex: 1, minWidth: '300px', justifyContent: 'flex-end' }}>
+                            <div style={{ position: 'relative', flex: 1, maxWidth: '400px' }}>
+                                <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-gray-400)' }} />
+                                <input
+                                    type="text"
+                                    placeholder={t('Rechercher un patient...')}
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    style={{
+                                        width: '100%',
+                                        padding: '10px 12px 10px 40px',
+                                        borderRadius: 'var(--radius-lg)',
+                                        border: '1px solid var(--color-gray-200)',
+                                        fontSize: 'var(--font-size-sm)',
+                                        outline: 'none',
+                                        transition: 'border-color 0.2s'
+                                    }}
+                                />
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                <button
+                                    className="btn btn-primary"
+                                    onClick={() => setIsModalOpen(true)}
+                                    style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)', height: '42px', justifyContent: 'center' }}
+                                >
+                                    <Plus size={18} /> <span className="hide-mobile">{t('Ajouter un patient')}</span>
+                                </button>
+                                <button
+                                    onClick={() => window.open('https://www.doctolib.fr', '_blank')}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        gap: 'var(--spacing-2)',
+                                        borderRadius: '12px',
+                                        height: '42px',
+                                        fontWeight: '700',
+                                        background: '#0098e4',
+                                        color: 'white',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        padding: '0 20px',
+                                        boxShadow: 'var(--shadow-sm)',
+                                        transition: 'all 0.2s'
+                                    }}
+                                    onMouseOver={(e) => {
+                                        e.currentTarget.style.background = '#0082c3';
+                                        e.currentTarget.style.transform = 'translateY(-1px)';
+                                    }}
+                                    onMouseOut={(e) => {
+                                        e.currentTarget.style.background = '#0098e4';
+                                        e.currentTarget.style.transform = 'translateY(0)';
+                                    }}
+                                >
+                                    <img src={doctolibLogo} alt="Doctolib" style={{ height: '18px', objectFit: 'contain' }} />
+                                    <span className="hide-mobile">{t('Raccourci Doctolib')}</span>
+                                </button>
+                            </div>
                         </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    ) : (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%' }}>
+                            <div style={{ position: 'relative', width: '100%' }}>
+                                <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-gray-400)' }} />
+                                <input
+                                    type="text"
+                                    placeholder={t('Rechercher un patient...')}
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    style={{
+                                        width: '100%',
+                                        padding: '10px 12px 10px 40px',
+                                        borderRadius: 'var(--radius-lg)',
+                                        border: '1px solid var(--color-gray-200)',
+                                        fontSize: 'var(--font-size-sm)',
+                                        outline: 'none',
+                                        transition: 'border-color 0.2s'
+                                    }}
+                                />
+                            </div>
                             <button
                                 className="btn btn-primary"
                                 onClick={() => setIsModalOpen(true)}
-                                style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)', height: '42px', justifyContent: 'center' }}
+                                style={{
+                                    width: '100%',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: 'var(--spacing-2)',
+                                    borderRadius: '12px',
+                                    height: '42px',
+                                    fontWeight: '700',
+                                    boxShadow: 'var(--shadow-sm)'
+                                }}
                             >
-                                <Plus size={18} /> <span className="hide-mobile">{t('Ajouter un patient')}</span>
+                                <Plus size={18} /> {t('Ajouter un patient')}
                             </button>
                             <button
                                 onClick={() => window.open('https://www.doctolib.fr', '_blank')}
                                 style={{
+                                    width: '100%',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
@@ -237,24 +314,21 @@ export default function Patients() {
                                     color: 'white',
                                     border: 'none',
                                     cursor: 'pointer',
-                                    padding: '0 20px',
                                     boxShadow: 'var(--shadow-sm)',
                                     transition: 'all 0.2s'
                                 }}
                                 onMouseOver={(e) => {
                                     e.currentTarget.style.background = '#0082c3';
-                                    e.currentTarget.style.transform = 'translateY(-1px)';
                                 }}
                                 onMouseOut={(e) => {
                                     e.currentTarget.style.background = '#0098e4';
-                                    e.currentTarget.style.transform = 'translateY(0)';
                                 }}
                             >
                                 <img src={doctolibLogo} alt="Doctolib" style={{ height: '18px', objectFit: 'contain' }} />
-                                <span className="hide-mobile">{t('Raccourci Doctolib')}</span>
+                                <span>{t('Raccourci Doctolib')}</span>
                             </button>
                         </div>
-                    </div>
+                    )}
                 </div>
 
                 <div className="dashboard-content-split" style={{
