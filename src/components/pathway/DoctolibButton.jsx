@@ -1,5 +1,5 @@
 import { ExternalLink } from 'lucide-react';
-import doctolibLogo from '../../assets/doctolib-logo.jpg';
+import doctolibLogo from '../../assets/doctolib.png';
 
 export default function DoctolibButton() {
     return (

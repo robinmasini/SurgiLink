@@ -14,7 +14,7 @@ import welcomeCardInfirmier from '../assets/welcomecard-infirmier.png';
 import christopheSignature from '../assets/christophe-signature.png';
 import nurseAvatar from '../assets/nurse-avatar.png';
 import wppPhone from '../assets/wpp-phone.png';
-import doctolibLogo from '../assets/doctolib.jpg';
+import doctolibLogo from '../assets/doctolib.png';
 import {
     Users,
     AlertTriangle,

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import wppPhone from '../assets/wpp-phone.png';
 import { useNavigate } from 'react-router-dom';
-import doctolibLogo from '../assets/doctolib.jpg';
+import doctolibLogo from '../assets/doctolib.png';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import AddPatientModal from '../components/AddPatientModal';
