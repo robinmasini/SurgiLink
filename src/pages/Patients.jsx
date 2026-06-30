@@ -283,23 +283,6 @@ export default function Patients() {
                                 />
                             </div>
                             <button
-                                className="btn btn-primary"
-                                onClick={() => setIsModalOpen(true)}
-                                style={{
-                                    width: '100%',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    gap: 'var(--spacing-2)',
-                                    borderRadius: '12px',
-                                    height: '42px',
-                                    fontWeight: '700',
-                                    boxShadow: 'var(--shadow-sm)'
-                                }}
-                            >
-                                <Plus size={18} /> {t('Ajouter un patient')}
-                            </button>
-                            <button
                                 onClick={() => window.open('https://www.doctolib.fr', '_blank')}
                                 style={{
                                     width: '100%',
@@ -315,7 +298,8 @@ export default function Patients() {
                                     border: 'none',
                                     cursor: 'pointer',
                                     boxShadow: 'var(--shadow-sm)',
-                                    transition: 'all 0.2s'
+                                    transition: 'all 0.2s',
+                                    marginBottom: 'var(--spacing-2)'
                                 }}
                                 onMouseOver={(e) => {
                                     e.currentTarget.style.background = '#0082c3';
@@ -326,6 +310,24 @@ export default function Patients() {
                             >
                                 <img src={doctolibLogo} alt="Doctolib" style={{ height: '18px', objectFit: 'contain' }} />
                                 <span>{t('Planning')}</span>
+                            </button>
+                            <button
+                                className="btn btn-primary"
+                                onClick={() => setIsModalOpen(true)}
+                                style={{
+                                    width: '100%',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: 'var(--spacing-2)',
+                                    borderRadius: '12px',
+                                    height: '42px',
+                                    fontWeight: '700',
+                                    boxShadow: 'var(--shadow-sm)',
+                                    marginBottom: 'var(--spacing-2)'
+                                }}
+                            >
+                                <Plus size={18} /> {t('Ajouter un patient')}
                             </button>
                         </div>
                     )}

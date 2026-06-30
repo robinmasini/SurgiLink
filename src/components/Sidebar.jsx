@@ -173,7 +173,7 @@ export default function Sidebar() {
                                     <div className="badge badge-primary" style={{ fontSize: '9px', padding: '2px 8px', marginBottom: '4px', width: 'fit-content', background: 'var(--color-info-500)', color: 'white', fontWeight: '800' }}>
                                         {t('INFIRMIER')}
                                     </div>
-                                     <div className="sidebar-profile-title" style={{ fontSize: '13px', fontWeight: '800', background: 'transparent', padding: 0, color: 'var(--color-gray-900)', borderRadius: 0, display: 'block', marginBottom: 'var(--spacing-1)' }}>Dr. Christophe DESOUCHES</div>
+                                     <div className="sidebar-profile-title" style={{ fontSize: '16px', fontWeight: '800', background: 'transparent', padding: 0, color: 'var(--color-gray-900)', borderRadius: 0, display: 'block', marginBottom: 'var(--spacing-1)' }}>Dr. Christophe DESOUCHES</div>
                                     <div className="sidebar-profile-specialty">
                                         <span className="sidebar-profile-specialty-label">{t('Corps de métier')}</span>
                                         <span className="sidebar-profile-specialty-text">

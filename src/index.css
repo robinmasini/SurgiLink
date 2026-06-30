@@ -984,7 +984,7 @@ textarea.input {
 }
 
 .sidebar-profile-name {
-  font-size: 13px;
+  font-size: 16px;
   font-weight: 800;
   color: var(--color-gray-900);
   margin-bottom: 2px;
@@ -2545,6 +2545,25 @@ textarea.input {
   font-weight: 700;
   margin-bottom: var(--spacing-4);
   border: 1px solid var(--color-primary-100);
+}
+
+.questionnaire-nav-controls {
+  display: flex;
+  gap: var(--spacing-4);
+  margin-top: var(--spacing-8);
+  padding-top: var(--spacing-6);
+  border-top: 1px solid var(--color-gray-100);
+}
+
+@media (max-width: 640px) {
+  .questionnaire-nav-controls.stack-mobile {
+    flex-direction: column-reverse;
+    gap: var(--spacing-3);
+  }
+  .questionnaire-nav-controls.stack-mobile button {
+    width: 100% !important;
+    flex: none !important;
+  }
 }
 
 /* Background Animation */

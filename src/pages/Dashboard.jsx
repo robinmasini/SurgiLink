@@ -425,26 +425,6 @@ export default function Dashboard() {
                                 </button>
                             </div>
 
-                            {/* Mobile Ajouter un patient Button */}
-                            <button
-                                className="btn btn-primary"
-                                onClick={() => setIsAddModalOpen(true)}
-                                style={{
-                                    width: '100%',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    gap: 'var(--spacing-2)',
-                                    marginBottom: 'var(--spacing-2)',
-                                    borderRadius: '12px',
-                                    height: '42px',
-                                    fontWeight: '700',
-                                    boxShadow: 'var(--shadow-sm)'
-                                }}
-                            >
-                                <Plus size={18} /> {t('Ajouter un patient')}
-                            </button>
-
                             {/* Mobile Raccourci Doctolib Button */}
                             <button
                                 onClick={() => window.open('https://www.doctolib.fr', '_blank')}
@@ -474,6 +454,26 @@ export default function Dashboard() {
                             >
                                 <img src={doctolibLogo} alt="Doctolib" style={{ height: '18px', objectFit: 'contain' }} />
                                 <span>{t('Planning')}</span>
+                            </button>
+
+                            {/* Mobile Ajouter un patient Button */}
+                            <button
+                                className="btn btn-primary"
+                                onClick={() => setIsAddModalOpen(true)}
+                                style={{
+                                    width: '100%',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: 'var(--spacing-2)',
+                                    marginBottom: 'var(--spacing-2)',
+                                    borderRadius: '12px',
+                                    height: '42px',
+                                    fontWeight: '700',
+                                    boxShadow: 'var(--shadow-sm)'
+                                }}
+                            >
+                                <Plus size={18} /> {t('Ajouter un patient')}
                             </button>
 
                             {/* Mobile Questions Preview Button */}

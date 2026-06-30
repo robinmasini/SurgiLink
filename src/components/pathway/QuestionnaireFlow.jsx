@@ -204,14 +204,12 @@ export default function QuestionnaireFlow({
             </div>
 
             {/* Navigation Controls */}
-            <div style={{
-                display: 'flex',
-                gap: 'var(--spacing-4)',
-                marginTop: 'var(--spacing-8)',
-                paddingTop: 'var(--spacing-6)',
-                borderTop: '1px solid var(--color-gray-100)',
-                pointerEvents: inputBlocked ? 'none' : 'auto'
-            }}>
+            <div 
+                className={`questionnaire-nav-controls ${isLast ? 'stack-mobile' : ''}`}
+                style={{
+                    pointerEvents: inputBlocked ? 'none' : 'auto'
+                }}
+            >
                 {!isFirst && (
                     <button
                         className="btn btn-secondary"

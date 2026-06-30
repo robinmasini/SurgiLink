@@ -198,11 +198,28 @@ export default function PatientPortal({ patient: initialPatient }) {
     const isMilestoneComplete = (milestoneId) => {
         const items = getScreenItems(milestoneId);
         const required = items.filter(i => i.required !== false && i.type !== 'text' && i.type !== 'verbatim');
-        if (required.length === 0) return true;
+        if (required.length === 0) {
+            // For screens with no required fields (like ESATIS), it is complete only if at least one question has been answered
+            return items.some(i => {
+                const val = responses[i.id];
+                return val !== undefined && val !== null && val !== '';
+            });
+        }
         return required.every(i => {
             const val = responses[i.id];
             return val !== undefined && val !== null && val !== '';
         });
+    };
+
+    // Helper to find the active milestone index in the sequence
+    const getActiveMilestoneIndex = () => {
+        const milestonesSequence = ['Bienvenue', 'J7', 'J1_PreOp', 'J1', 'J4_Satisfaction', 'ESATIS'];
+        for (let i = 0; i < milestonesSequence.length; i++) {
+            if (!isMilestoneComplete(milestonesSequence[i])) {
+                return i;
+            }
+        }
+        return milestonesSequence.length - 1;
     };
 
     // Helper to find the latest completed milestone to edit
@@ -216,11 +233,9 @@ export default function PatientPortal({ patient: initialPatient }) {
             { id: 'ESATIS', route: 'e-satis' }
         ];
         
-        for (let i = milestones.length - 1; i >= 0; i--) {
-            const m = milestones[i];
-            if (isMilestoneComplete(m.id)) {
-                return m.route;
-            }
+        const activeIndex = getActiveMilestoneIndex();
+        if (activeIndex > 0) {
+            return milestones[activeIndex - 1].route;
         }
         return 'bienvenue';
     };
@@ -818,32 +833,34 @@ export default function PatientPortal({ patient: initialPatient }) {
                         {t('DÉMARRER MON QUESTIONNAIRE')} {!isUpToDate && nextMilestoneLabel ? `(${nextMilestoneLabel})` : ''}
                     </button>
 
-                    <button style={{
-                        width: '100%',
-                        padding: '18px',
-                        borderRadius: '20px',
-                        background: '#e5e7eb',
-                        border: 'none',
-                        color: '#4b5563',
-                        fontSize: '15px',
-                        fontWeight: '700',
-                        letterSpacing: '0.05em',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s',
-                        boxShadow: '0 4px 6px rgba(0,0,0,0.05)'
-                    }}
-                    onClick={() => navigate(`/patient-portal/${token}/${getLatestCompletedMilestoneRoute()}`)}
-                    onMouseOver={(e) => {
-                        e.currentTarget.style.background = '#d1d5db';
-                        e.currentTarget.style.transform = 'translateY(-2px)';
-                    }}
-                    onMouseOut={(e) => {
-                        e.currentTarget.style.background = '#e5e7eb';
-                        e.currentTarget.style.transform = 'translateY(0)';
-                    }}
-                    >
-                        {t('MODIFIER MES RÉPONSES PRÉCÉDENTES')}
-                    </button>
+                    {getActiveMilestoneIndex() > 0 && (
+                        <button style={{
+                            width: '100%',
+                            padding: '18px',
+                            borderRadius: '20px',
+                            background: '#e5e7eb',
+                            border: 'none',
+                            color: '#4b5563',
+                            fontSize: '15px',
+                            fontWeight: '700',
+                            letterSpacing: '0.05em',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s',
+                            boxShadow: '0 4px 6px rgba(0,0,0,0.05)'
+                        }}
+                        onClick={() => navigate(`/patient-portal/${token}/${getLatestCompletedMilestoneRoute()}`)}
+                        onMouseOver={(e) => {
+                            e.currentTarget.style.background = '#d1d5db';
+                            e.currentTarget.style.transform = 'translateY(-2px)';
+                        }}
+                        onMouseOut={(e) => {
+                            e.currentTarget.style.background = '#e5e7eb';
+                            e.currentTarget.style.transform = 'translateY(0)';
+                        }}
+                        >
+                            {t('MODIFIER MES RÉPONSES PRÉCÉDENTES')}
+                        </button>
+                    )}
                 </div>
 
                 {/* Intervention Reminder Card */}
@@ -960,6 +977,8 @@ export default function PatientPortal({ patient: initialPatient }) {
                             if (surgeryDate) surgeryDate.setHours(0, 0, 0, 0);
                             const diffDays = surgeryDate ? Math.ceil((surgeryDate - today) / (1000 * 60 * 60 * 24)) : 999;
 
+                            const activeIndex = getActiveMilestoneIndex();
+
                             return [
                                 { id: 'Bienvenue', to: `bienvenue`, emoji: '👋', label: 'Questionnaire J-18', desc: 'Activation de votre suivi', offset: 18 },
                                 { id: 'J7', to: `j7`, emoji: '📋', label: 'Questionnaire J-7', desc: 'Préparation administrative', offset: 7 },
@@ -968,9 +987,10 @@ export default function PatientPortal({ patient: initialPatient }) {
                                 { id: 'J4_Satisfaction', to: `j4`, emoji: '⭐', label: 'Satisfaction J+4', desc: 'Votre avis nous intéresse', offset: -4 },
                                 { id: 'ESATIS', to: `e-satis`, emoji: '📊', label: 'Enquête Nationale', desc: 'e-Satis (National)', offset: -4 },
                             ].map((step, idx, arr) => {
-                                const isLocked = diffDays > step.offset;
+                                const isFuture = diffDays > step.offset;
                                 const isLast = idx === arr.length - 1;
-                                const isCompleted = !isLocked && isMilestoneComplete(step.id);
+                                const isCompleted = !isFuture && isMilestoneComplete(step.id);
+                                const isEditable = (idx === activeIndex && !isFuture) || (activeIndex > 0 && idx === activeIndex - 1);
                                 
                                 const stepContent = (
                                     <div key={step.to} style={{ 
@@ -979,9 +999,10 @@ export default function PatientPortal({ patient: initialPatient }) {
                                         alignItems: 'center', 
                                         gap: '14px', 
                                         borderBottom: isLast ? 'none' : '1px solid #e5e7eb', 
-                                        opacity: isLocked ? 0.5 : 1,
+                                        opacity: isFuture ? 0.5 : 1,
                                         transition: 'background 0.2s',
-                                        background: isLocked ? 'transparent' : '#ffffff'
+                                        background: isFuture ? 'transparent' : '#ffffff',
+                                        cursor: isEditable ? 'pointer' : 'default'
                                     }}>
                                         <div style={{ 
                                             fontSize: '20px', width: '36px', height: '36px', 
@@ -994,7 +1015,7 @@ export default function PatientPortal({ patient: initialPatient }) {
                                             <div style={{ fontWeight: '700', fontSize: '14px', color: '#1f2937' }}>{step.label}</div>
                                             <div style={{ fontSize: '11px', color: '#6b7280', marginTop: '2px' }}>{step.desc}</div>
                                         </div>
-                                        {isLocked ? (
+                                        {isFuture ? (
                                             <Lock size={16} style={{ color: '#9ca3af' }} />
                                         ) : isCompleted ? (
                                             <CheckCircle2 size={22} color="#10B981" />
@@ -1004,7 +1025,7 @@ export default function PatientPortal({ patient: initialPatient }) {
                                     </div>
                                 );
 
-                                if (isLocked) return stepContent;
+                                if (!isEditable) return stepContent;
                                 return (
                                     <Link key={step.to} to={`/patient-portal/${token}/${step.to}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                                         {stepContent}
