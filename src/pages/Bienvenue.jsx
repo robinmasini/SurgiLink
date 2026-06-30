@@ -5,6 +5,7 @@ import { AlertCircle } from 'lucide-react';
 import { pathwayConfig } from '../config/pathway.config';
 import { saveResponse, getResponses, markScreenCompleted } from '../services/pathwayService';
 import QuestionnaireFlow from '../components/pathway/QuestionnaireFlow';
+import AlertBanner from '../components/pathway/AlertBanner';
 import CompactAppointmentCard from '../components/CompactAppointmentCard';
 import { usePatientId } from '../hooks/usePatientId';
 import { supabase } from '../lib/supabase';
@@ -26,6 +27,7 @@ export default function Bienvenue({ patient: propPatient, token: propToken }) {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [patient, setPatient] = useState(propPatient || null);
+    const [saveError, setSaveError] = useState(null);
 
     const config = pathwayConfig.Bienvenue;
 
@@ -51,15 +53,25 @@ export default function Bienvenue({ patient: propPatient, token: propToken }) {
 
     const handleChange = async (itemId, value) => {
         setResponses(prev => ({ ...prev, [itemId]: value }));
+        setSaveError(null);
         if (resolvedPatientId) {
-            await saveResponse(resolvedPatientId, 'Bienvenue', itemId, value, false);
+            const res = await saveResponse(resolvedPatientId, 'Bienvenue', itemId, value, false);
+            if (!res.success) {
+                setSaveError(t("Erreur de sauvegarde : votre réponse n'a pas pu être enregistrée. La base de données rejette l'opération (vérifiez les contraintes de table)."));
+            }
         }
     };
 
     const handleSubmit = async () => {
         setSaving(true);
+        setSaveError(null);
         if (resolvedPatientId) {
-            await markScreenCompleted(resolvedPatientId, 'Bienvenue');
+            const res = await markScreenCompleted(resolvedPatientId, 'Bienvenue');
+            if (!res.success) {
+                setSaveError(t("Erreur de validation : impossible de valider le questionnaire dans la base de données."));
+                setSaving(false);
+                return;
+            }
         }
         setSaving(false);
 
@@ -98,6 +110,15 @@ export default function Bienvenue({ patient: propPatient, token: propToken }) {
             </div>
 
             <div className="patient-content fade-in">
+                {saveError && (
+                    <div style={{ marginBottom: 'var(--spacing-4)' }}>
+                        <AlertBanner
+                            type="danger"
+                            title={t("Erreur de synchronisation")}
+                            message={saveError}
+                        />
+                    </div>
+                )}
                 {patient && (
                     <CompactAppointmentCard
                         variant="pill"
