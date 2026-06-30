@@ -330,8 +330,8 @@ export default function Dashboard() {
                                 <img src={hmIcon} alt="HM Icon" style={{ width: '18px', height: '18px', objectFit: 'contain' }} />
                                 <span>{t('Scanner Patient HM')}</span>
                             </button>
-                            <div className="hide-mobile" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                <button
+                             <div className="hide-mobile" style={{ display: 'flex', flexDirection: 'row', gap: '8px', alignItems: 'center' }}>
+                                 <button
                                     className="btn btn-primary"
                                     onClick={() => setIsAddModalOpen(true)}
                                     style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)', height: '42px', justifyContent: 'center' }}
