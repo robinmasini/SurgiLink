@@ -17,7 +17,6 @@ async function check() {
     console.log("Aggregated:", aggregated);
     
     const isMilestoneComplete = (milestoneId) => {
-        if (milestoneId === 'Bienvenue') return true;
         const items = getScreenItems(milestoneId);
         const required = items.filter(i => i.required !== false && i.type !== 'text' && i.type !== 'verbatim');
         if (required.length === 0) return true;

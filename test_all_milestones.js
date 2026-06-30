@@ -15,7 +15,6 @@ async function check() {
     });
     
     const isMilestoneComplete = (milestoneId) => {
-        if (milestoneId === 'Bienvenue') return true;
         const items = getScreenItems(milestoneId);
         const required = items.filter(i => i.required !== false && i.type !== 'text' && i.type !== 'verbatim');
         if (required.length === 0) return true;
@@ -25,7 +24,7 @@ async function check() {
         });
     };
     
-    ['J7', 'J2', 'J1_PreOp', 'J1', 'J4_Satisfaction', 'ESATIS'].forEach(m => {
+    ['Bienvenue', 'J7', 'J2', 'J1_PreOp', 'J1', 'J4_Satisfaction', 'ESATIS'].forEach(m => {
         console.log(`Is ${m} complete?`, isMilestoneComplete(m));
     });
 }

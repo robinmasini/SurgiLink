@@ -16,7 +16,6 @@ async function debug() {
     });
 
     const isMilestoneComplete = (milestoneId) => {
-        if (milestoneId === 'Bienvenue') return true; // Now optional
         const items = getScreenItems(milestoneId);
         const required = items.filter(i => i.required !== false && i.type !== 'text' && i.type !== 'verbatim');
         if (required.length === 0) return true;
