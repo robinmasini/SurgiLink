@@ -14,6 +14,7 @@ import welcomeCardInfirmier from '../assets/welcomecard-infirmier.png';
 import christopheSignature from '../assets/christophe-signature.png';
 import nurseAvatar from '../assets/nurse-avatar.png';
 import wppPhone from '../assets/wpp-phone.png';
+import doctolibLogo from '../assets/Doctolib-2.png';
 import {
     Users,
     AlertTriangle,
@@ -329,13 +330,45 @@ export default function Dashboard() {
                                 <img src={hmIcon} alt="HM Icon" style={{ width: '18px', height: '18px', objectFit: 'contain' }} />
                                 <span>{t('Scanner Patient HM')}</span>
                             </button>
-                            <button
-                                className="btn btn-primary hide-mobile"
-                                onClick={() => setIsAddModalOpen(true)}
-                                style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)' }}
-                            >
-                                <Plus size={18} /> {t('Ajouter un patient')}
-                            </button>
+                            <div className="hide-mobile" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                <button
+                                    className="btn btn-primary"
+                                    onClick={() => setIsAddModalOpen(true)}
+                                    style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)', height: '42px', justifyContent: 'center' }}
+                                >
+                                    <Plus size={18} /> {t('Ajouter un patient')}
+                                </button>
+                                <button
+                                    onClick={() => window.open('https://www.doctolib.fr', '_blank')}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        gap: 'var(--spacing-2)',
+                                        borderRadius: '12px',
+                                        height: '42px',
+                                        fontWeight: '700',
+                                        background: '#005387',
+                                        color: 'white',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        padding: '0 20px',
+                                        boxShadow: 'var(--shadow-sm)',
+                                        transition: 'all 0.2s'
+                                    }}
+                                    onMouseOver={(e) => {
+                                        e.currentTarget.style.background = '#00436d';
+                                        e.currentTarget.style.transform = 'translateY(-1px)';
+                                    }}
+                                    onMouseOut={(e) => {
+                                        e.currentTarget.style.background = '#005387';
+                                        e.currentTarget.style.transform = 'translateY(0)';
+                                    }}
+                                >
+                                    <img src={doctolibLogo} alt="Doctolib" style={{ height: '18px', objectFit: 'contain' }} />
+                                    <span>{t('Raccourci Doctolib')}</span>
+                                </button>
+                            </div>
                         </>
                     }
                 />
@@ -410,6 +443,37 @@ export default function Dashboard() {
                                 }}
                             >
                                 <Plus size={18} /> {t('Ajouter un patient')}
+                            </button>
+
+                            {/* Mobile Raccourci Doctolib Button */}
+                            <button
+                                onClick={() => window.open('https://www.doctolib.fr', '_blank')}
+                                style={{
+                                    width: '100%',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: 'var(--spacing-2)',
+                                    marginBottom: 'var(--spacing-2)',
+                                    borderRadius: '12px',
+                                    height: '42px',
+                                    fontWeight: '700',
+                                    background: '#005387',
+                                    color: 'white',
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    boxShadow: 'var(--shadow-sm)',
+                                    transition: 'all 0.2s'
+                                }}
+                                onMouseOver={(e) => {
+                                    e.currentTarget.style.background = '#00436d';
+                                }}
+                                onMouseOut={(e) => {
+                                    e.currentTarget.style.background = '#005387';
+                                }}
+                            >
+                                <img src={doctolibLogo} alt="Doctolib" style={{ height: '18px', objectFit: 'contain' }} />
+                                <span>{t('Raccourci Doctolib')}</span>
                             </button>
 
                             {/* Mobile Questions Preview Button */}

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import wppPhone from '../assets/wpp-phone.png';
 import { useNavigate } from 'react-router-dom';
+import doctolibLogo from '../assets/Doctolib-2.png';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import AddPatientModal from '../components/AddPatientModal';
@@ -214,13 +215,45 @@ export default function Patients() {
                                 }}
                             />
                         </div>
-                        <button
-                            className="btn btn-primary"
-                            onClick={() => setIsModalOpen(true)}
-                            style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)' }}
-                        >
-                            <Plus size={18} /> <span className="hide-mobile">{t('Ajouter un patient')}</span>
-                        </button>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                            <button
+                                className="btn btn-primary"
+                                onClick={() => setIsModalOpen(true)}
+                                style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)', height: '42px', justifyContent: 'center' }}
+                            >
+                                <Plus size={18} /> <span className="hide-mobile">{t('Ajouter un patient')}</span>
+                            </button>
+                            <button
+                                onClick={() => window.open('https://www.doctolib.fr', '_blank')}
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: 'var(--spacing-2)',
+                                    borderRadius: '12px',
+                                    height: '42px',
+                                    fontWeight: '700',
+                                    background: '#005387',
+                                    color: 'white',
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    padding: '0 20px',
+                                    boxShadow: 'var(--shadow-sm)',
+                                    transition: 'all 0.2s'
+                                }}
+                                onMouseOver={(e) => {
+                                    e.currentTarget.style.background = '#00436d';
+                                    e.currentTarget.style.transform = 'translateY(-1px)';
+                                }}
+                                onMouseOut={(e) => {
+                                    e.currentTarget.style.background = '#005387';
+                                    e.currentTarget.style.transform = 'translateY(0)';
+                                }}
+                            >
+                                <img src={doctolibLogo} alt="Doctolib" style={{ height: '18px', objectFit: 'contain' }} />
+                                <span className="hide-mobile">{t('Raccourci Doctolib')}</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
