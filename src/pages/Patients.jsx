@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import wppPhone from '../assets/wpp-phone.png';
 import { useNavigate } from 'react-router-dom';
-import doctolibLogo from '../assets/Doctolib-2.png';
+import doctolibLogo from '../assets/doctolib.jpg';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import AddPatientModal from '../components/AddPatientModal';
@@ -233,7 +233,7 @@ export default function Patients() {
                                     borderRadius: '12px',
                                     height: '42px',
                                     fontWeight: '700',
-                                    background: '#005387',
+                                    background: '#0098e4',
                                     color: 'white',
                                     border: 'none',
                                     cursor: 'pointer',
@@ -242,11 +242,11 @@ export default function Patients() {
                                     transition: 'all 0.2s'
                                 }}
                                 onMouseOver={(e) => {
-                                    e.currentTarget.style.background = '#00436d';
+                                    e.currentTarget.style.background = '#0082c3';
                                     e.currentTarget.style.transform = 'translateY(-1px)';
                                 }}
                                 onMouseOut={(e) => {
-                                    e.currentTarget.style.background = '#005387';
+                                    e.currentTarget.style.background = '#0098e4';
                                     e.currentTarget.style.transform = 'translateY(0)';
                                 }}
                             >

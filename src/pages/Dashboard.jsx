@@ -14,7 +14,7 @@ import welcomeCardInfirmier from '../assets/welcomecard-infirmier.png';
 import christopheSignature from '../assets/christophe-signature.png';
 import nurseAvatar from '../assets/nurse-avatar.png';
 import wppPhone from '../assets/wpp-phone.png';
-import doctolibLogo from '../assets/Doctolib-2.png';
+import doctolibLogo from '../assets/doctolib.jpg';
 import {
     Users,
     AlertTriangle,
@@ -348,7 +348,7 @@ export default function Dashboard() {
                                         borderRadius: '12px',
                                         height: '42px',
                                         fontWeight: '700',
-                                        background: '#005387',
+                                        background: '#0098e4',
                                         color: 'white',
                                         border: 'none',
                                         cursor: 'pointer',
@@ -357,11 +357,11 @@ export default function Dashboard() {
                                         transition: 'all 0.2s'
                                     }}
                                     onMouseOver={(e) => {
-                                        e.currentTarget.style.background = '#00436d';
+                                        e.currentTarget.style.background = '#0082c3';
                                         e.currentTarget.style.transform = 'translateY(-1px)';
                                     }}
                                     onMouseOut={(e) => {
-                                        e.currentTarget.style.background = '#005387';
+                                        e.currentTarget.style.background = '#0098e4';
                                         e.currentTarget.style.transform = 'translateY(0)';
                                     }}
                                 >
@@ -458,7 +458,7 @@ export default function Dashboard() {
                                     borderRadius: '12px',
                                     height: '42px',
                                     fontWeight: '700',
-                                    background: '#005387',
+                                    background: '#0098e4',
                                     color: 'white',
                                     border: 'none',
                                     cursor: 'pointer',
@@ -466,10 +466,10 @@ export default function Dashboard() {
                                     transition: 'all 0.2s'
                                 }}
                                 onMouseOver={(e) => {
-                                    e.currentTarget.style.background = '#00436d';
+                                    e.currentTarget.style.background = '#0082c3';
                                 }}
                                 onMouseOut={(e) => {
-                                    e.currentTarget.style.background = '#005387';
+                                    e.currentTarget.style.background = '#0098e4';
                                 }}
                             >
                                 <img src={doctolibLogo} alt="Doctolib" style={{ height: '18px', objectFit: 'contain' }} />
