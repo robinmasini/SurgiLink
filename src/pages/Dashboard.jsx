@@ -6,6 +6,7 @@ import MobileNavbar from '../components/MobileNavbar';
 import Header from '../components/Header';
 import AddPatientModal from '../components/AddPatientModal';
 import HMScannerModal from '../components/HMScannerModal';
+import NewIntakeModal from '../components/NewIntakeModal';
 import hmIcon from '../assets/hm-icon.png';
 import LogoIcon from '../components/LogoIcon';
 import practitionerAvatar from '../assets/practitioner-avatar.png';
@@ -26,6 +27,7 @@ import {
     X,
     User,
     Clipboard,
+    ClipboardList,
     Mail,
     Phone,
     LogOut,
@@ -34,6 +36,7 @@ import {
     Plus,
     Sparkles
 } from 'lucide-react';
+
 import { supabase } from '../lib/supabase';
 import { calculateDaysUntilSurgery } from '../utils/dateUtils';
 import StatusBolt from '../components/StatusBolt';
@@ -48,6 +51,7 @@ export default function Dashboard() {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false); // Renamed from isModalOpen
     const [isAlarmsModalOpen, setIsAlarmsModalOpen] = useState(false); // Added
     const [isHMScannerOpen, setIsHMScannerOpen] = useState(false);
+    const [isIntakeModalOpen, setIsIntakeModalOpen] = useState(false);
     const [isQuestionsPreviewOpen, setIsQuestionsPreviewOpen] = useState(false);
     const [allPatients, setAllPatients] = useState([]);
     const [patients, setPatients] = useState([]);
@@ -312,6 +316,24 @@ export default function Dashboard() {
                                 <LogoIcon width="16px" />
                                 <span>{t('Alarme')}</span>
                             </button>
+                            <button
+                                className="btn btn-secondary hide-mobile"
+                                onClick={() => setIsIntakeModalOpen(true)}
+                                style={{
+                                    borderRadius: '12px',
+                                    padding: '10px 20px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '8px',
+                                    background: 'rgba(124, 58, 237, 0.08)',
+                                    color: '#7C3AED',
+                                    border: '1px solid rgba(124, 58, 237, 0.2)',
+                                    fontWeight: '700'
+                                }}
+                            >
+                                <ClipboardList size={16} />
+                                <span>Nouvelle fiche patient</span>
+                            </button>
                             <button 
                                 className="btn btn-secondary hide-mobile" 
                                 onClick={() => setIsHMScannerOpen(true)} 
@@ -424,6 +446,31 @@ export default function Dashboard() {
                                     <span>{t('Scanner HM')}</span>
                                 </button>
                             </div>
+
+                            {/* Mobile Nouvelle fiche patient */}
+                            <button
+                                className="btn btn-secondary"
+                                onClick={() => setIsIntakeModalOpen(true)}
+                                style={{
+                                    width: '100%',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: 'var(--spacing-2)',
+                                    marginBottom: 'var(--spacing-2)',
+                                    borderRadius: '12px',
+                                    height: '42px',
+                                    fontWeight: '700',
+                                    background: 'rgba(124, 58, 237, 0.08)',
+                                    color: '#7C3AED',
+                                    border: '1px solid rgba(124, 58, 237, 0.2)',
+                                    boxShadow: 'var(--shadow-sm)',
+                                    fontSize: '13px',
+                                }}
+                            >
+                                <ClipboardList size={16} />
+                                Nouvelle fiche patient
+                            </button>
 
                             {/* Mobile Raccourci Doctolib Button */}
                             <button
@@ -805,6 +852,12 @@ export default function Dashboard() {
                     isOpen={isQuestionsPreviewOpen}
                     onClose={() => setIsQuestionsPreviewOpen(false)}
                 />
+                <NewIntakeModal
+                    isOpen={isIntakeModalOpen}
+                    onClose={() => setIsIntakeModalOpen(false)}
+                    onSuccess={() => { setIsIntakeModalOpen(false); loadDashboard(); }}
+                />
+
             </main>
         </div>
     );

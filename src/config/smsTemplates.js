@@ -2,12 +2,20 @@
 // Variables: {first_name}, {procedure_date}, {arrival_time}, {clinic_name}, {clinic_phone}, {checklist_link}, {consignes_link}, {item_name}
 
 export const smsTemplates = {
+    // Fiche de renseignements — Nouveau patient
+    intake_form: {
+        name: "Fiche de renseignements",
+        message: "Bienvenue au cabinet du Dr Desouches ! Pour préparer votre consultation, merci de remplir votre fiche medicale en quelques minutes : {intake_link}",
+        variables: ['intake_link']
+    },
+
     // Message d'accueil – Préparation de votre intervention
     welcome_accueil: {
         name: "Message d'accueil",
         message: "Suivez votre operation du {procedure_date} ici: {checklist_link}",
         variables: ['procedure_date', 'checklist_link']
     },
+
 
     // J-7 General Reminder
     j7_reminder: {
