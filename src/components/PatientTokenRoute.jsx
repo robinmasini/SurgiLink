@@ -39,7 +39,15 @@ export default function PatientTokenRoute({ children }) {
 
                 console.log('[TokenRoute] Data:', patientData);
                 setPatient(patientData);
-                
+
+                // ── Intake gate: patient hasn't filled their medical form yet ──
+                // Redirect them directly to the intake form instead of the portal.
+                if (patientData.status === 'intake') {
+                    // We reuse the same token — /fiche/:token handles intake flow
+                    window.location.replace(`/fiche/${token}`);
+                    return;
+                }
+
                 // 3. Onboarding check
                 const storageKey = `onboarding_completed_${patientData.id}`;
                 const localOnboarded = localStorage.getItem(storageKey) === 'true';
@@ -95,6 +103,7 @@ export default function PatientTokenRoute({ children }) {
     if (needsOnboarding) {
         return <Navigate to={`/patient-portal/${token}/onboarding`} replace />;
     }
+
 
     // Pass patient and token to children
     return (
