@@ -405,7 +405,6 @@ export async function scheduleTimeBasedReminders(patientId, interventionDate, ti
         { screen: 'Bienvenue', date: welcomeDate, template: 'welcome_accueil' },
         { screen: 'J-7', date: j7Date, template: 'j7_reminder' },
         { screen: 'J-1', date: j1Date, template: 'j1_reminder_long' },
-        { screen: 'J-J', date: jjDate, template: 'jj_reminder' },
         { screen: 'J+1', date: j1PostOpDate, template: 'j1_postop' },
         { screen: 'J+4', date: j4SatisfactionDate, template: 'j4_satisfaction' },
         { screen: 'E-SATIS', date: j4EsatisDate, template: 'j4_esatis' }
