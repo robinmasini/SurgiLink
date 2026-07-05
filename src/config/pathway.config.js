@@ -100,7 +100,7 @@ export const pathwayConfig = {
                         id: "admission_confirmed",
                         type: "yes_no",
                         label: "Avez-vous bien reçu l’heure de votre intervention ?\nSi ce n’est pas encore le cas, pas d’inquiétude : votre clinique vous la communiquera au plus tard dans l’après-midi. Si vous n’avez toujours pas reçu d’information après 16 h, contactez-nous directement au cabinet.",
-                        required: true
+                        required: false
                     }
                 ]
             }
