@@ -453,7 +453,8 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
                 fontSize: 'var(--font-size-xl)',
                 fontWeight: 'var(--font-weight-bold)',
                 color: 'var(--color-gray-900)',
-                lineHeight: '1.4'
+                lineHeight: '1.4',
+                whiteSpace: 'pre-wrap'
             }}>{t(item.label)}</div>
 
             {/* Input */}

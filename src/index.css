@@ -1184,6 +1184,7 @@ textarea.input {
   font-weight: var(--font-weight-semibold);
   color: var(--color-gray-800);
   margin-bottom: var(--spacing-4);
+  white-space: pre-wrap;
 }
 
 /* Success Page */

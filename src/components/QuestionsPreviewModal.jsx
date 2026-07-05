@@ -404,7 +404,7 @@ export default function QuestionsPreviewModal({ isOpen, onClose }) {
                                                 </div>
 
                                                 {/* Question Text */}
-                                                <div style={{ fontSize: 'var(--font-size-sm)', fontWeight: '700', color: 'var(--color-gray-900)', lineHeight: '1.4' }}>
+                                                <div style={{ fontSize: 'var(--font-size-sm)', fontWeight: '700', color: 'var(--color-gray-900)', lineHeight: '1.4', whiteSpace: 'pre-wrap' }}>
                                                     {t(item.label)}
                                                 </div>
 
