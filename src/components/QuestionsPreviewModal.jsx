@@ -12,7 +12,7 @@ import { pathwayConfig } from '../config/pathway.config';
 
 export default function QuestionsPreviewModal({ isOpen, onClose }) {
     const { t } = useTranslation();
-    const [activeTab, setActiveTab] = useState('J7'); // D7 by default since it has the most important prep questions
+    const [activeTab, setActiveTab] = useState('Intake'); // Fiche de renseignements first
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
     useEffect(() => {
@@ -26,6 +26,7 @@ export default function QuestionsPreviewModal({ isOpen, onClose }) {
     if (!isOpen) return null;
 
     const tabs = [
+        { key: 'Intake', label: 'Fiche patient', icon: '📝', subtitle: 'Avant tout' },
         { key: 'Bienvenue', label: 'Accueil (J-18)', icon: '👋', subtitle: 'Activation' },
         { key: 'J7', label: 'Pré-admission (J-7)', icon: '📋', subtitle: 'Sécurité & Anesthésie' },
         { key: 'J1_PreOp', label: 'Admission (J-1)', icon: '✅', subtitle: 'Consignes & Confirmation' },
@@ -322,7 +323,96 @@ export default function QuestionsPreviewModal({ isOpen, onClose }) {
 
                 {/* Scrollable Questions Content */}
                 <div style={{ padding: isMobile ? 'var(--spacing-4)' : 'var(--spacing-6) var(--spacing-8)', overflowY: 'auto', flex: 1, background: '#F8FAFC' }}>
-                    {currentScreenConfig ? (
+                    {activeTab === 'Intake' ? (
+                        /* ── Fiche de renseignements — contenu statique ── */
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? 'var(--spacing-4)' : 'var(--spacing-5)' }}>
+                            {/* Banner */}
+                            <div style={{
+                                background: 'white',
+                                padding: 'var(--spacing-4)',
+                                borderRadius: 'var(--radius-xl)',
+                                border: '1px solid rgba(124,58,237,0.15)',
+                                background: 'linear-gradient(135deg, rgba(124,58,237,0.04), white)'
+                            }}>
+                                <h3 style={{ fontSize: '15px', fontWeight: '800', color: '#111827', margin: '0 0 4px' }}>
+                                    📝 Fiche de renseignements médicaux
+                                </h3>
+                                <p style={{ fontSize: '12px', color: 'var(--color-gray-500)', margin: 0, lineHeight: 1.5 }}>
+                                    Envoyée par SMS avant toute intervention planifiée. Le patient remplit lui-même sa fiche depuis son téléphone, en autonomie. Elle devient sa fiche patient SurgiLink.
+                                </p>
+                                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '12px' }}>
+                                    {['📱 Formulaire mobile', '🔒 Données sécurisées', '⏱️ ~5 minutes', '📂 8 sections'].map(tag => (
+                                        <span key={tag} style={{ fontSize: '11px', fontWeight: '700', padding: '3px 10px', background: 'rgba(124,58,237,0.07)', color: '#7C3AED', borderRadius: '20px', border: '1px solid rgba(124,58,237,0.15)' }}>{tag}</span>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {[
+                                {
+                                    num: '1', title: 'Informations personnelles', icon: '👤',
+                                    fields: ['Nom, prénom, nom de jeune fille', 'Date de naissance', 'Adresse complète (rue, CP, ville)', 'Téléphone & email', 'Personne à prévenir en cas d\'urgence (nom + tél)']
+                                },
+                                {
+                                    num: '2', title: 'Médecins référents', icon: '🩺',
+                                    fields: ['Médecin traitant (nom + ville)', 'Spécialiste suivi le cas échéant (nom + ville)']
+                                },
+                                {
+                                    num: '3', title: 'Situation générale', icon: '💼',
+                                    fields: ['Profession', 'Comment avez-vous connu le cabinet ? (Médecin, Ami(e), Internet, Réseaux sociaux, Autre)']
+                                },
+                                {
+                                    num: '4', title: 'Données médicales', icon: '📊',
+                                    fields: ['Taille (cm) & Poids (kg)', 'Allergies (Oui/Non + précision)', 'Tabagisme (Oui/Non + quantité)', 'Traitement en cours (Oui/Non + nom(s))']
+                                },
+                                {
+                                    num: '5', title: 'Motif de consultation', icon: '💉',
+                                    fields: ['Actes Visage : Botox, Acide Hyaluronique, Peeling, Paupières, Lifting, Rhinoplastie', 'Actes Poitrine : Prothèses mammaires, Ptose mammaire', 'Actes Intimes : Nymphoplastie, Pénoplastie, Éjaculation Précoce', 'Autre motif (texte libre)']
+                                },
+                                {
+                                    num: '6', title: 'Ressenti esthétique', icon: '🪞',
+                                    fields: ['Gêne esthétique : Très importante / Moyenne / Légère', 'Depuis : Peu de temps / Longtemps / Toujours', 'Consultation esthétique antérieure ? (Oui/Non)', 'Interventions esthétiques antérieures ? (Oui/Non + satisfaction)']
+                                },
+                                {
+                                    num: '7', title: 'Antécédents personnels', icon: '🏥',
+                                    fields: ['Cardiaque / Vasculaire', 'Endocrinologique', 'Digestif', 'Hématologique', 'Infectieux', 'Cancer', 'Neurologique', 'Psychique', 'Pulmonaire', 'Rénal', '(Chaque antécédent cochable avec précision textuelle)']
+                                },
+                                {
+                                    num: '8', title: 'Antécédents chirurgicaux & familiaux', icon: '🔬',
+                                    fields: ['Déjà opéré(e) ? (Oui/Non + type & année)', 'Complications chirurgicales ? (Oui/Non + détail)', 'Hématomes faciles ? (Oui/Non)', 'Cicatrices chéloïdes ? (Oui/Non)', 'Maladies auto-immunes familiales ? (Oui/Non + précision)', 'Autres antécédents familiaux (texte libre)', 'Signature électronique (ville + date)']
+                                },
+                            ].map(section => (
+                                <div key={section.num} className="card" style={{
+                                    background: 'white', borderRadius: 'var(--radius-xl)',
+                                    border: '1px solid var(--color-gray-100)',
+                                    boxShadow: 'var(--shadow-sm)', overflow: 'hidden'
+                                }}>
+                                    <div style={{
+                                        padding: '12px 16px',
+                                        background: 'linear-gradient(135deg, rgba(124,58,237,0.05), rgba(109,40,217,0.02))',
+                                        borderBottom: '1px solid rgba(124,58,237,0.08)',
+                                        display: 'flex', alignItems: 'center', gap: '10px'
+                                    }}>
+                                        <div style={{
+                                            width: '28px', height: '28px', borderRadius: '50%',
+                                            background: 'linear-gradient(135deg, #7C3AED, #6D28D9)',
+                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                            color: 'white', fontSize: '12px', fontWeight: '800', flexShrink: 0
+                                        }}>{section.num}</div>
+                                        <span style={{ fontSize: '15px', marginRight: '2px' }}>{section.icon}</span>
+                                        <h4 style={{ margin: 0, fontSize: '13px', fontWeight: '800', color: '#111827' }}>{section.title}</h4>
+                                    </div>
+                                    <div style={{ padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                        {section.fields.map((f, i) => (
+                                            <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '12px', color: '#4B5563', lineHeight: 1.4 }}>
+                                                <span style={{ color: '#7C3AED', flexShrink: 0, marginTop: '1px' }}>•</span>
+                                                <span>{f}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    ) : currentScreenConfig ? (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? 'var(--spacing-4)' : 'var(--spacing-6)' }}>
                             
                             {/* Milestone Title Banner */}

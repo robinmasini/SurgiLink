@@ -899,23 +899,42 @@ export default function IntakeForm() {
         }
     };
 
-    const progress = (formStep / TOTAL_STEPS) * 100;
+const progress = (formStep / TOTAL_STEPS) * 100;
 
     return (
         <div style={pageStyle}>
             <div style={containerStyle}>
-                {/* Header */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px', paddingTop: '4px' }}>
-                    <img src={logoSurgilinkGreen} alt="SurgiLink" style={{ height: '36px', objectFit: 'contain' }} />
-                    <div style={{ flex: 1 }}>
-                        <p style={{ margin: 0, fontSize: '11px', fontWeight: '700', color: '#7C3AED', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                            Étape {formStep}/{TOTAL_STEPS}
-                        </p>
-                        <p style={{ margin: 0, fontSize: '13px', fontWeight: '600', color: '#374151' }}>
-                            {STEP_LABELS[formStep - 1]}
-                        </p>
-                    </div>
+            {/* ── Logos header (always visible) ── */}
+            <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '8px',
+                paddingTop: '8px',
+                marginBottom: '16px'
+            }}>
+                <img src={logoSurgilinkGreen} alt="SurgiLink" style={{ height: isMobile ? '54px' : '68px', objectFit: 'contain' }} />
+                <img src={logoMedicalAlliance} alt="Medical Alliance" style={{ height: isMobile ? '38px' : '48px', objectFit: 'contain' }} />
+            </div>
+
+            {/* Step indicator */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
+                <div style={{
+                    width: '32px', height: '32px', borderRadius: '50%',
+                    background: 'linear-gradient(135deg, #7C3AED, #6D28D9)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    color: 'white', fontSize: '13px', fontWeight: '800', flexShrink: 0
+                }}>{formStep}</div>
+                <div style={{ flex: 1 }}>
+                    <p style={{ margin: 0, fontSize: '10px', fontWeight: '700', color: '#7C3AED', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                        Étape {formStep} sur {TOTAL_STEPS}
+                    </p>
+                    <p style={{ margin: 0, fontSize: '13px', fontWeight: '700', color: '#374151' }}>
+                        {STEP_LABELS[formStep - 1]}
+                    </p>
                 </div>
+            </div>
+
 
                 {/* Progress bar */}
                 <div style={{ height: '5px', background: '#E5E7EB', borderRadius: '10px', marginBottom: '20px', overflow: 'hidden' }}>

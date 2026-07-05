@@ -5,13 +5,16 @@ import doctolibLogo from '../assets/doctolib.png';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import AddPatientModal from '../components/AddPatientModal';
+import NewIntakeModal from '../components/NewIntakeModal';
 import {
     Users,
     Search,
     Plus,
     Clock,
     Phone,
-    CheckCircle2
+    CheckCircle2,
+    ClipboardList,
+    CalendarOff
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { calculateDaysUntilSurgery } from '../utils/dateUtils';
@@ -26,6 +29,7 @@ export default function Patients() {
     const [searchTerm, setSearchTerm] = useState('');
     const [activeTab, setActiveTab] = useState('Tous');
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isIntakeModalOpen, setIsIntakeModalOpen] = useState(false);
     const [allPatients, setAllPatients] = useState([]);
     const [patients, setPatients] = useState([]);
     const [responses, setResponses] = useState({});
@@ -33,7 +37,7 @@ export default function Patients() {
     const [selectedPatientId, setSelectedPatientId] = useState(null);
     const [nextReminders, setNextReminders] = useState({});
 
-    const tabs = ['J-18', 'J-7', 'J-1', 'Jour J', 'J+1', 'J+4', 'ESATIS', 'Tous', 'Archivés'];
+    const tabs = ['J-18', 'J-7', 'J-1', 'Jour J', 'J+1', 'J+4', 'ESATIS', 'Tous', 'Fiches', 'Archivés'];
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
 
     useEffect(() => {
@@ -54,10 +58,13 @@ export default function Patients() {
 
         if (activeTab === 'Archivés') {
             filtered = filtered.filter(p => p.status === 'archived');
+        } else if (activeTab === 'Fiches') {
+            // Patients avec fiche de renseignements en attente (pas encore d'intervention)
+            filtered = filtered.filter(p => p.status === 'intake' || (!p.date && p.status !== 'archived'));
         } else if (activeTab === 'Tous') {
-            filtered = filtered.filter(p => p.status !== 'archived');
+            filtered = filtered.filter(p => p.status !== 'archived' && p.status !== 'intake');
         } else {
-            filtered = filtered.filter(p => {
+            filtered = filtered.filter(p => p.status !== 'intake').filter(p => {
                 const daysUntil = calculateDaysUntilSurgery(p.date);
                 let tabDate = activeTab === 'Jour J' ? 'J-0' : activeTab;
                 if (activeTab === 'ESATIS') {
@@ -406,31 +413,52 @@ export default function Patients() {
                                                      >
                                                          {patient.name.split(' ').map(n => n[0]).join('')}
                                                      </div>
-                                                    <div>
-                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                                            <div style={{ fontWeight: '600', color: 'var(--color-gray-900)' }}>{patient.name}</div>
-                                                            {patient.onboarding_completed_at && (
-                                                                <div style={{ 
-                                                                    display: 'inline-flex', 
-                                                                    alignItems: 'center', 
-                                                                    gap: '2px', 
-                                                                    color: 'var(--color-success-600)',
-                                                                    fontWeight: '700',
-                                                                    fontSize: '9px',
-                                                                    background: 'var(--color-success-50)',
-                                                                    padding: '2px 6px',
-                                                                    borderRadius: '4px',
-                                                                    border: '1px solid var(--color-success-100)',
-                                                                    lineHeight: '1',
-                                                                    whiteSpace: 'nowrap'
-                                                                }}>
-                                                                    <CheckCircle2 size={10} />
-                                                                    {t('Tuto OK')}
-                                                                </div>
-                                                            )}
-                                                        </div>
-                                                        <div style={{ fontSize: '11px', color: 'var(--color-gray-500)' }}>{patient.operation}</div>
-                                                    </div>
+                                                     <div>
+                                                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                                                             <div style={{ fontWeight: '600', color: 'var(--color-gray-900)' }}>{patient.name}</div>
+                                                             {patient.status === 'intake' && (
+                                                                 <div style={{
+                                                                     display: 'inline-flex',
+                                                                     alignItems: 'center',
+                                                                     gap: '3px',
+                                                                     color: '#7C3AED',
+                                                                     fontWeight: '700',
+                                                                     fontSize: '9px',
+                                                                     background: 'rgba(124,58,237,0.08)',
+                                                                     padding: '2px 7px',
+                                                                     borderRadius: '5px',
+                                                                     border: '1px solid rgba(124,58,237,0.2)',
+                                                                     lineHeight: '1',
+                                                                     whiteSpace: 'nowrap'
+                                                                 }}>
+                                                                     <ClipboardList size={9} />
+                                                                     Fiche en cours
+                                                                 </div>
+                                                             )}
+                                                             {patient.onboarding_completed_at && patient.status !== 'intake' && (
+                                                                 <div style={{
+                                                                     display: 'inline-flex',
+                                                                     alignItems: 'center',
+                                                                     gap: '2px',
+                                                                     color: 'var(--color-success-600)',
+                                                                     fontWeight: '700',
+                                                                     fontSize: '9px',
+                                                                     background: 'var(--color-success-50)',
+                                                                     padding: '2px 6px',
+                                                                     borderRadius: '4px',
+                                                                     border: '1px solid var(--color-success-100)',
+                                                                     lineHeight: '1',
+                                                                     whiteSpace: 'nowrap'
+                                                                 }}>
+                                                                     <CheckCircle2 size={10} />
+                                                                     {t('Tuto OK')}
+                                                                 </div>
+                                                             )}
+                                                         </div>
+                                                         <div style={{ fontSize: '11px', color: patient.status === 'intake' ? '#9CA3AF' : 'var(--color-gray-500)' }}>
+                                                             {patient.status === 'intake' ? '—' : patient.operation}
+                                                         </div>
+                                                     </div>
                                                 </div>
                                             </td>
                                             <td style={{ padding: 'var(--spacing-3) var(--spacing-4)' }}>
@@ -480,9 +508,13 @@ export default function Patients() {
                                             </td>
                                             {!selectedPatientId && (
                                                 <>
-                                                    <td className="hide-tablet" style={{ padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-600)' }}>
-                                                        {patient.formattedDate}
-                                                    </td>
+                                                     <td className="hide-tablet" style={{ padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: patient.status === 'intake' ? '#9CA3AF' : 'var(--color-gray-600)' }}>
+                                                         {patient.status === 'intake' ? (
+                                                             <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: '#9CA3AF', fontStyle: 'italic' }}>
+                                                                 <CalendarOff size={11} /> Aucune intervention planifiée
+                                                             </span>
+                                                         ) : patient.formattedDate}
+                                                     </td>
                                                     <td style={{ padding: 'var(--spacing-3) var(--spacing-4)' }}>
                                                         {selectedPatientId === patient.id ? (
                                                             <div style={{ width: '24px', height: '24px' }}></div>
@@ -512,6 +544,11 @@ export default function Patients() {
                     isOpen={isModalOpen}
                     onClose={() => setIsModalOpen(false)}
                     onPatientAdded={handlePatientAdded}
+                />
+                <NewIntakeModal
+                    isOpen={isIntakeModalOpen}
+                    onClose={() => setIsIntakeModalOpen(false)}
+                    onSuccess={() => { setIsIntakeModalOpen(false); loadPatients(); }}
                 />
             </main>
         </div>
