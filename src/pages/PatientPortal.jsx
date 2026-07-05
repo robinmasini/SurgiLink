@@ -467,6 +467,15 @@ export default function PatientPortal({ patient: initialPatient }) {
                 .single();
 
             if (patientError) throw patientError;
+
+            // Check onboarding completion before showing portal
+            const storageKey = `onboarding_completed_${patientData.id}`;
+            const localOnboarded = localStorage.getItem(storageKey) === 'true';
+            if (!patientData.onboarding_completed_at && !localOnboarded) {
+                navigate(`/patient-portal/${token}/onboarding`);
+                return;
+            }
+
             setPatient(patientData);
             loadMedicalHistory(patientData.id);
             loadDocuments(patientData.id);

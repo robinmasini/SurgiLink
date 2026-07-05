@@ -2,8 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowRight, ArrowLeft, CheckCircle, Loader, AlertCircle } from 'lucide-react';
 import { getIntakeByToken, submitIntakeForm } from '../services/intakeService';
-import logoSurgilinkGreen from '../assets/logo_surgilink_premium_green.png';
-import logoMedicalAlliance from '../assets/logo-medical-alliance.png';
+import logoSlMa from '../assets/logo-sl-ma.png';
 import medecinImg from '../assets/medecin.png';
 
 /* ─────────────────────────────────────────────────────────────────
@@ -79,7 +78,7 @@ function StyledInput({ ...props }) {
                 transition: 'border-color 0.2s',
                 fontFamily: 'inherit',
             }}
-            onFocus={e => e.target.style.borderColor = '#7C3AED'}
+            onFocus={e => e.target.style.borderColor = 'var(--color-primary-500)'}
             onBlur={e => e.target.style.borderColor = '#E5E7EB'}
             {...props}
         />
@@ -100,9 +99,9 @@ function YesNoGroup({ label, value, onChange, yesLabel = 'Oui', noLabel = 'Non',
                             padding: '8px 20px',
                             borderRadius: '30px',
                             border: '1.5px solid',
-                            borderColor: value === val ? '#7C3AED' : '#E5E7EB',
-                            background: value === val ? 'rgba(124,58,237,0.08)' : 'white',
-                            color: value === val ? '#6D28D9' : '#6B7280',
+                            borderColor: value === val ? 'var(--color-primary-500)' : '#E5E7EB',
+                            background: value === val ? 'rgba(var(--color-primary-rgb), 0.08)' : 'white',
+                            color: value === val ? 'var(--color-primary-600)' : '#6B7280',
                             fontWeight: '700',
                             fontSize: '13px',
                             cursor: 'pointer',
@@ -221,7 +220,7 @@ export default function IntakeForm() {
     // ── Styles ──
     const pageStyle = {
         minHeight: '100dvh',
-        background: 'linear-gradient(160deg, #F3F0FF 0%, #EDE9FE 40%, #F9FAFB 100%)',
+        background: 'linear-gradient(160deg, var(--color-primary-50) 0%, var(--color-primary-100) 50%, #EFF4F1 100%)',
         fontFamily: 'var(--font-family, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif)',
         display: 'flex',
         flexDirection: 'column',
@@ -242,7 +241,7 @@ export default function IntakeForm() {
     if (phase === 'loading') {
         return (
             <div style={{ ...pageStyle, alignItems: 'center', justifyContent: 'center', gap: '16px' }}>
-                <Loader size={36} style={{ animation: 'spin 1s linear infinite', color: '#7C3AED' }} />
+                <Loader size={36} style={{ animation: 'spin 1s linear infinite', color: 'var(--color-primary-500)' }} />
                 <p style={{ color: '#6B7280', fontWeight: '500' }}>Chargement…</p>
             </div>
         );
@@ -295,7 +294,7 @@ export default function IntakeForm() {
     if (phase === 'submitting') {
         return (
             <div style={{ ...pageStyle, alignItems: 'center', justifyContent: 'center', gap: '16px' }}>
-                <Loader size={36} style={{ animation: 'spin 1s linear infinite', color: '#7C3AED' }} />
+                <Loader size={36} style={{ animation: 'spin 1s linear infinite', color: 'var(--color-primary-500)' }} />
                 <p style={{ color: '#6B7280', fontWeight: '500' }}>Envoi de votre fiche…</p>
             </div>
         );
@@ -304,144 +303,140 @@ export default function IntakeForm() {
     // ── Tutorial ──
     if (phase === 'tutorial') {
         return (
-            <div style={pageStyle}>
-                <div style={containerStyle}>
-                    {/* Logos */}
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', marginBottom: '24px', paddingTop: '8px' }}>
-                        <img src={logoSurgilinkGreen} alt="SurgiLink" style={{ height: isMobile ? '70px' : '90px', objectFit: 'contain' }} />
-                        <img src={logoMedicalAlliance} alt="Medical Alliance" style={{ height: isMobile ? '52px' : '65px', objectFit: 'contain' }} />
+            <div style={{ minHeight: '100dvh', background: '#FFFFFF', fontFamily: 'var(--font-family)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <div style={{ width: '100%', maxWidth: '500px', padding: isMobile ? '20px 20px 120px' : '28px 24px 120px', boxSizing: 'border-box', flex: 1, display: 'flex', flexDirection: 'column' }}>
+
+                    {/* Ligne 1 : Logo à gauche + sélecteur langue à droite */}
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '18px' }}>
+                        <img src={logoSlMa} alt="SurgiLink / Medical Alliance" style={{ height: isMobile ? '60px' : '74px', objectFit: 'contain' }} />
+                        {/* Sélecteur langue pill */}
+                        <div style={{ position: 'relative', flexShrink: 0 }}>
+                            <select
+                                defaultValue="fr"
+                                style={{
+                                    padding: '9px 32px 9px 14px',
+                                    border: '1.5px solid #E5E7EB',
+                                    borderRadius: '999px',
+                                    background: '#F9FAFB',
+                                    WebkitAppearance: 'none',
+                                    appearance: 'none',
+                                    outline: 'none',
+                                    cursor: 'pointer',
+                                    fontSize: '17px',
+                                    fontFamily: 'var(--font-family)',
+                                    fontWeight: '600',
+                                    color: '#374151',
+                                    minWidth: '72px',
+                                    boxShadow: '0 1px 4px rgba(0,0,0,0.07)',
+                                }}
+                            >
+                                <option value="fr">🇫🇷</option>
+                                <option value="en">🇬🇧</option>
+                                <option value="nl">🇳🇱</option>
+                            </select>
+                            <svg style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: '#9CA3AF' }} width="11" height="11" viewBox="0 0 12 12" fill="none">
+                                <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                        </div>
                     </div>
 
-                    {tutorialStep === 1 && (
-                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', animation: 'fadeInUp 0.5s ease' }}>
-                            <div style={{
-                                background: 'white',
-                                borderRadius: '20px',
-                                padding: '24px',
-                                boxShadow: '0 8px 30px rgba(0,0,0,0.08)',
-                                border: '1px solid rgba(124,58,237,0.1)',
-                                flex: 1,
-                                display: 'flex',
-                                flexDirection: 'column',
-                                gap: '16px'
-                            }}>
-                                <div style={{
-                                    width: '52px', height: '52px', borderRadius: '14px',
-                                    background: 'linear-gradient(135deg, #7C3AED, #6D28D9)',
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                    fontSize: '24px',
-                                    boxShadow: '0 6px 16px rgba(109,40,217,0.3)'
-                                }}>📋</div>
-                                <h1 style={{ margin: 0, fontSize: isMobile ? '20px' : '24px', fontWeight: '800', color: '#111827', lineHeight: 1.2 }}>
-                                    Bienvenue au cabinet du <span style={{ color: '#7C3AED' }}>Dr Desouches</span>
-                                </h1>
-                                <p style={{ margin: 0, fontSize: '15px', color: '#6B7280', lineHeight: 1.7 }}>
-                                    Avant votre consultation, nous vous demandons de remplir votre <strong>fiche de renseignements médicaux</strong>.
-                                </p>
-                                <p style={{ margin: 0, fontSize: '15px', color: '#6B7280', lineHeight: 1.7 }}>
-                                    Cela nous permet de mieux vous connaître et de préparer au mieux votre prise en charge.
-                                </p>
-                                <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                                    {[
-                                        { icon: '⏱️', text: 'Environ 5 minutes à compléter' },
-                                        { icon: '🔒', text: 'Données sécurisées et confidentielles' },
-                                        { icon: '📱', text: 'Remplissez depuis votre téléphone' },
-                                    ].map((item, i) => (
-                                        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '13px', color: '#374151' }}>
-                                            <span style={{ fontSize: '18px' }}>{item.icon}</span>
-                                            <span>{item.text}</span>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                            <button
-                                onClick={() => setTutorialStep(2)}
-                                style={{
-                                    marginTop: '16px',
-                                    height: '52px',
-                                    background: 'linear-gradient(135deg, #7C3AED, #6D28D9)',
-                                    border: 'none', borderRadius: '16px', color: 'white',
-                                    fontWeight: '800', fontSize: '16px', cursor: 'pointer',
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
-                                    boxShadow: '0 8px 24px rgba(109,40,217,0.4)',
-                                    transition: 'transform 0.15s',
-                                    letterSpacing: '0.02em'
-                                }}
-                            >
-                                Suivant <ArrowRight size={20} />
-                            </button>
-                        </div>
-                    )}
+                    {/* Ligne 2 : Titre "Fiche de renseignements" sous le logo */}
+                    <h1 style={{ margin: '0 0 20px', fontSize: isMobile ? '24px' : '28px', fontWeight: '700', color: '#111827', letterSpacing: '-0.02em', fontFamily: 'var(--font-family)', lineHeight: 1.15 }}>
+                        Fiche de renseignements
+                    </h1>
 
-                    {tutorialStep === 2 && (
-                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', animation: 'fadeInUp 0.5s ease' }}>
-                            <div style={{
-                                background: 'white',
-                                borderRadius: '20px',
-                                padding: '24px',
-                                boxShadow: '0 8px 30px rgba(0,0,0,0.08)',
-                                border: '1px solid rgba(124,58,237,0.1)',
-                                flex: 1,
-                                display: 'flex',
-                                flexDirection: 'column',
-                                gap: '16px'
-                            }}>
-                                <div style={{ fontSize: '40px', textAlign: 'center' }}>📝</div>
-                                <h2 style={{ margin: 0, fontSize: isMobile ? '18px' : '20px', fontWeight: '800', color: '#111827', textAlign: 'center' }}>
-                                    Ce que vous allez remplir
-                                </h2>
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                                    {[
-                                        { num: '1', label: 'Informations personnelles' },
-                                        { num: '2', label: 'Médecins référents' },
-                                        { num: '3', label: 'Situation générale' },
-                                        { num: '4', label: 'Données médicales' },
-                                        { num: '5', label: 'Motif de consultation' },
-                                        { num: '6', label: 'Ressenti esthétique' },
-                                        { num: '7', label: 'Antécédents médicaux personnels' },
-                                        { num: '8', label: 'Antécédents chirurgicaux & familiaux' },
-                                    ].map(item => (
-                                        <div key={item.num} style={{
-                                            display: 'flex', alignItems: 'center', gap: '12px',
-                                            padding: '10px 12px', background: '#F9FAFB',
-                                            borderRadius: '10px', fontSize: '13px', color: '#374151'
-                                        }}>
-                                            <div style={{
-                                                width: '24px', height: '24px', borderRadius: '50%',
-                                                background: 'linear-gradient(135deg, #7C3AED, #6D28D9)',
-                                                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                color: 'white', fontSize: '11px', fontWeight: '800', flexShrink: 0
-                                            }}>
-                                                {item.num}
-                                            </div>
-                                            <span style={{ fontWeight: '600' }}>{item.label}</span>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                            <button
-                                onClick={() => setPhase('form')}
-                                style={{
-                                    marginTop: '16px',
-                                    height: '52px',
-                                    background: 'linear-gradient(135deg, #7C3AED, #6D28D9)',
-                                    border: 'none', borderRadius: '16px', color: 'white',
-                                    fontWeight: '800', fontSize: '16px', cursor: 'pointer',
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
-                                    boxShadow: '0 8px 24px rgba(109,40,217,0.4)',
-                                    letterSpacing: '0.02em'
-                                }}
-                            >
-                                Commencer la fiche <ArrowRight size={20} />
-                            </button>
+                    {/* Carte hero — fond vert, texte sur 3 lignes, infirmière à droite */}
+                    <div style={{
+                        position: 'relative',
+                        borderRadius: '22px',
+                        overflow: 'hidden',
+                        background: 'linear-gradient(135deg, var(--color-primary-100) 0%, var(--color-primary-50) 100%)',
+                        marginBottom: '14px',
+                        minHeight: isMobile ? '230px' : '270px',
+                        display: 'flex',
+                        alignItems: 'stretch'
+                    }}>
+                        {/* Zone texte élargie pour 3 lignes */}
+                        <div style={{ padding: '26px 10px 26px 24px', width: '63%', flexShrink: 0, zIndex: 2, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '12px' }}>
+                            {/* Texte principal — 3 lignes : Répondez à la / Fiche de renseignements / pour préparer votre consultation */}
+                            <p style={{ margin: 0, fontSize: isMobile ? '16px' : '18px', color: '#111827', lineHeight: 1.5, fontFamily: 'var(--font-family)', fontWeight: '600' }}>
+                                Répondez à la{' '}
+                                <span style={{ color: 'var(--color-primary-700)', fontWeight: '800' }}>Fiche de renseignements</span>
+                                {' '}pour préparer votre consultation
+                            </p>
+                            {/* Texte secondaire */}
+                            <p style={{ margin: 0, fontSize: '12px', color: 'var(--color-primary-700)', lineHeight: 1.6, fontFamily: 'var(--font-family)', fontWeight: '400', opacity: 0.85 }}>
+                                <strong style={{ fontWeight: '600' }}>Avant votre consultation</strong>, merci de compléter cette fiche afin de mieux préparer votre prise en charge.
+                            </p>
                         </div>
-                    )}
+                        {/* Infirmière à droite */}
+                        <img
+                            src={medecinImg}
+                            alt="Praticien"
+                            style={{
+                                position: 'absolute',
+                                right: 0,
+                                bottom: 0,
+                                height: isMobile ? '230px' : '270px',
+                                width: 'auto',
+                                objectFit: 'contain',
+                                objectPosition: 'bottom right',
+                                zIndex: 1
+                            }}
+                        />
+                    </div>
+
+                    {/* 3 items info */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        {[
+                            { icon: '⏱', text: 'Environ 5 minutes à compléter' },
+                            { icon: '🔒', text: 'Données sécurisées et confidentielles' },
+                            { icon: '📱', text: 'Remplissez depuis votre téléphone' },
+                        ].map((item, i) => (
+                            <div key={i} style={{
+                                display: 'flex', alignItems: 'center', gap: '12px',
+                                padding: '11px 14px',
+                                background: '#F9FAFB',
+                                borderRadius: '12px',
+                                border: '1px solid #F3F4F6',
+                                fontSize: '13px', color: '#374151', fontWeight: '500',
+                                fontFamily: 'var(--font-family)'
+                            }}>
+                                <span style={{ fontSize: '18px', flexShrink: 0 }}>{item.icon}</span>
+                                <span>{item.text}</span>
+                            </div>
+                        ))}
+                    </div>
                 </div>
+
+                {/* Bouton CONTINUER fixé en bas */}
+                <div style={{
+                    position: 'fixed', bottom: 0, left: 0, right: 0,
+                    padding: '16px 20px 28px',
+                    background: 'linear-gradient(to top, #FFFFFF 75%, transparent)',
+                    display: 'flex', justifyContent: 'center', zIndex: 50
+                }}>
+                    <button
+                        onClick={() => setPhase('form')}
+                        style={{
+                            width: '100%', maxWidth: '460px',
+                            height: '56px',
+                            background: 'linear-gradient(135deg, #4DC87E, #3AB56A)',
+                            border: 'none', borderRadius: '30px', color: 'white',
+                            fontWeight: '800', fontSize: '15px', cursor: 'pointer',
+                            letterSpacing: '0.08em',
+                            fontFamily: 'var(--font-family)',
+                            boxShadow: '0 8px 28px rgba(58, 181, 106, 0.4)',
+                            transition: 'transform 0.15s, box-shadow 0.15s'
+                        }}
+                        onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 32px rgba(58, 181, 106, 0.5)'; }}
+                        onMouseOut={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(58, 181, 106, 0.4)'; }}
+                    >
+                        CONTINUER
+                    </button>
+                </div>
+
                 <style>{`
-                    @keyframes fadeInUp {
-                        from { opacity: 0; transform: translateY(18px); }
-                        to { opacity: 1; transform: translateY(0); }
-                    }
                     @keyframes spin {
                         from { transform: rotate(0deg); }
                         to { transform: rotate(360deg); }
@@ -450,6 +445,9 @@ export default function IntakeForm() {
             </div>
         );
     }
+
+
+
 
     // ── Form ──
     const STEP_LABELS = [
@@ -492,9 +490,9 @@ export default function IntakeForm() {
                 padding: '8px 14px',
                 borderRadius: '30px',
                 border: '1.5px solid',
-                borderColor: active ? '#7C3AED' : '#E5E7EB',
-                background: active ? 'rgba(124,58,237,0.08)' : 'white',
-                color: active ? '#6D28D9' : '#6B7280',
+                borderColor: active ? 'var(--color-primary-500)' : '#E5E7EB',
+                background: active ? 'rgba(var(--color-primary-rgb), 0.08)' : 'white',
+                color: active ? 'var(--color-primary-600)' : '#6B7280',
                 fontWeight: '600',
                 fontSize: '13px',
                 cursor: 'pointer',
@@ -679,7 +677,7 @@ export default function IntakeForm() {
                         </p>
                         {groups.map(group => (
                             <div key={group}>
-                                <p style={{ margin: '0 0 8px', fontSize: '12px', fontWeight: '800', color: '#7C3AED', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                                <p style={{ margin: '0 0 8px', fontSize: '12px', fontWeight: '800', color: 'var(--color-primary-500)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                                     {group}
                                 </p>
                                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
@@ -776,9 +774,9 @@ export default function IntakeForm() {
                             return (
                                 <div key={ant.key} style={{
                                     padding: '12px 14px',
-                                    background: entry.checked ? 'rgba(124,58,237,0.05)' : '#F9FAFB',
+                                    background: entry.checked ? 'rgba(var(--color-primary-rgb), 0.05)' : '#F9FAFB',
                                     border: '1.5px solid',
-                                    borderColor: entry.checked ? '#C4B5FD' : '#F3F4F6',
+                                    borderColor: entry.checked ? 'var(--color-primary-300)' : '#F3F4F6',
                                     borderRadius: '12px',
                                     transition: 'all 0.15s'
                                 }}>
@@ -787,7 +785,7 @@ export default function IntakeForm() {
                                             type="checkbox"
                                             checked={entry.checked}
                                             onChange={() => toggleAntecedent(ant.key)}
-                                            style={{ width: '18px', height: '18px', accentColor: '#7C3AED', cursor: 'pointer', flexShrink: 0 }}
+                                            style={{ width: '18px', height: '18px', accentColor: 'var(--color-primary-500)', cursor: 'pointer', flexShrink: 0 }}
                                         />
                                         {ant.label}
                                     </label>
@@ -813,7 +811,7 @@ export default function IntakeForm() {
                 return (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
                         <div style={{ background: '#F9FAFB', borderRadius: '14px', padding: '14px', border: '1px solid #F3F4F6' }}>
-                            <p style={{ margin: '0 0 12px', fontSize: '12px', fontWeight: '800', color: '#7C3AED', textTransform: 'uppercase' }}>
+                            <p style={{ margin: '0 0 12px', fontSize: '12px', fontWeight: '800', color: 'var(--color-primary-500)', textTransform: 'uppercase' }}>
                                 Antécédents chirurgicaux
                             </p>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
@@ -849,7 +847,7 @@ export default function IntakeForm() {
                         </div>
 
                         <div style={{ background: '#F9FAFB', borderRadius: '14px', padding: '14px', border: '1px solid #F3F4F6' }}>
-                            <p style={{ margin: '0 0 12px', fontSize: '12px', fontWeight: '800', color: '#7C3AED', textTransform: 'uppercase' }}>
+                            <p style={{ margin: '0 0 12px', fontSize: '12px', fontWeight: '800', color: 'var(--color-primary-500)', textTransform: 'uppercase' }}>
                                 Antécédents familiaux
                             </p>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
@@ -904,29 +902,21 @@ const progress = (formStep / TOTAL_STEPS) * 100;
     return (
         <div style={pageStyle}>
             <div style={containerStyle}>
-            {/* ── Logos header (always visible) ── */}
-            <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: '8px',
-                paddingTop: '8px',
-                marginBottom: '16px'
-            }}>
-                <img src={logoSurgilinkGreen} alt="SurgiLink" style={{ height: isMobile ? '54px' : '68px', objectFit: 'contain' }} />
-                <img src={logoMedicalAlliance} alt="Medical Alliance" style={{ height: isMobile ? '38px' : '48px', objectFit: 'contain' }} />
+            {/* ── Logo à gauche ── */}
+            <div style={{ display: 'flex', justifyContent: 'flex-start', paddingTop: '8px', marginBottom: '14px' }}>
+                <img src={logoSlMa} alt="SurgiLink / Medical Alliance" style={{ height: isMobile ? '65px' : '82px', objectFit: 'contain' }} />
             </div>
 
-            {/* Step indicator */}
+            {/* ── Step indicator à gauche, sous le logo ── */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
                 <div style={{
                     width: '32px', height: '32px', borderRadius: '50%',
-                    background: 'linear-gradient(135deg, #7C3AED, #6D28D9)',
+                    background: 'linear-gradient(135deg, var(--color-primary-500), var(--color-primary-600))',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     color: 'white', fontSize: '13px', fontWeight: '800', flexShrink: 0
                 }}>{formStep}</div>
-                <div style={{ flex: 1 }}>
-                    <p style={{ margin: 0, fontSize: '10px', fontWeight: '700', color: '#7C3AED', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                <div>
+                    <p style={{ margin: 0, fontSize: '10px', fontWeight: '700', color: 'var(--color-primary-500)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                         Étape {formStep} sur {TOTAL_STEPS}
                     </p>
                     <p style={{ margin: 0, fontSize: '13px', fontWeight: '700', color: '#374151' }}>
@@ -941,7 +931,7 @@ const progress = (formStep / TOTAL_STEPS) * 100;
                     <div style={{
                         height: '100%',
                         width: `${progress}%`,
-                        background: 'linear-gradient(90deg, #7C3AED, #A78BFA)',
+                        background: 'linear-gradient(90deg, var(--color-primary-500), var(--color-primary-300))',
                         borderRadius: '10px',
                         transition: 'width 0.4s ease'
                     }} />
@@ -994,7 +984,7 @@ const progress = (formStep / TOTAL_STEPS) * 100;
                             style={{
                                 flex: 1,
                                 height: '50px',
-                                background: 'linear-gradient(135deg, #7C3AED, #6D28D9)',
+                                background: 'linear-gradient(135deg, var(--color-primary-500), var(--color-primary-600))',
                                 border: 'none',
                                 borderRadius: '14px',
                                 color: 'white',
@@ -1005,7 +995,7 @@ const progress = (formStep / TOTAL_STEPS) * 100;
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 gap: '8px',
-                                boxShadow: '0 6px 18px rgba(109,40,217,0.35)',
+                                boxShadow: '0 6px 18px rgba(var(--color-primary-rgb), 0.35)',
                                 transition: 'all 0.15s',
                                 letterSpacing: '0.02em'
                             }}

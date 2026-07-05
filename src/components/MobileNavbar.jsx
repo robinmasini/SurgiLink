@@ -18,8 +18,8 @@ export default function MobileNavbar() {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    // Also hide on login and patient portal pages
-    if (!isMobile || location.pathname === '/login' || location.pathname.startsWith('/patient-portal')) {
+    // Also hide on login, patient portal, and intake form pages
+    if (!isMobile || location.pathname === '/login' || location.pathname.startsWith('/patient-portal') || location.pathname.startsWith('/fiche/')) {
         return null;
     }
 
