@@ -358,11 +358,11 @@ export default function IntakeForm() {
                     }}>
                         {/* Zone texte élargie pour 3 lignes */}
                         <div style={{ padding: '26px 10px 26px 24px', width: '63%', flexShrink: 0, zIndex: 2, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '12px' }}>
-                            {/* Texte principal — 3 lignes : Répondez à la / Fiche de renseignements / pour préparer votre consultation */}
-                            <p style={{ margin: 0, fontSize: isMobile ? '16px' : '18px', color: '#111827', lineHeight: 1.5, fontFamily: 'var(--font-family)', fontWeight: '600' }}>
-                                Répondez à la{' '}
-                                <span style={{ color: 'var(--color-primary-700)', fontWeight: '800' }}>Fiche de renseignements</span>
-                                {' '}pour préparer votre consultation
+                            {/* Texte principal — 3 lignes forcées */}
+                            <p style={{ margin: 0, fontSize: isMobile ? '16px' : '18px', color: '#111827', lineHeight: 1.55, fontFamily: 'var(--font-family)', fontWeight: '600' }}>
+                                Répondez à la<br />
+                                <span style={{ color: 'var(--color-primary-700)', fontWeight: '800' }}>Fiche de renseignements</span><br />
+                                pour préparer votre consultation
                             </p>
                             {/* Texte secondaire */}
                             <p style={{ margin: 0, fontSize: '12px', color: 'var(--color-primary-700)', lineHeight: 1.6, fontFamily: 'var(--font-family)', fontWeight: '400', opacity: 0.85 }}>
