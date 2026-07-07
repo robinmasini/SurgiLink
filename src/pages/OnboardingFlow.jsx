@@ -83,7 +83,6 @@ export default function OnboardingFlow() {
             }
 
             // Also mark Bienvenue step as complete to satisfy "up to date" logic
-            await saveResponse(patient.id, 'Bienvenue', 'welcome_ok', true, true);
             await markScreenCompleted(patient.id, 'Bienvenue');
 
             console.log('-> Onboarding complete, navigating to portal');
@@ -175,9 +174,8 @@ export default function OnboardingFlow() {
                                     src={logoSlMa} 
                                     alt="SurgiLink / Medical Alliance" 
                                     style={{ 
-                                        width: '100%',
-                                        maxWidth: '220px',
-                                        height: 'auto', 
+                                        height: isMobile ? '45px' : '55px', 
+                                        width: 'auto',
                                         objectFit: 'contain', 
                                         transition: 'all 0.3s ease' 
                                     }} 

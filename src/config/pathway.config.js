@@ -21,12 +21,6 @@ export const pathwayConfig = {
                         why: "Analyses vitales pour votre sécurité au bloc opératoire (coagulation, absence d'infection, etc.).",
                         required: true,
                         risk_flag_rule: { type: "soft", condition: "no" }
-                    },
-                    {
-                        id: "welcome_ok",
-                        type: "yes_no",
-                        label: "Confirmez-vous que vous accédez correctement à votre espace SurgiLink et en comprenez le fonctionnement ?",
-                        required: false
                     }
                 ]
             }
