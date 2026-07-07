@@ -189,6 +189,7 @@ export default function PatientSynthesisReport({
                         {/* Column 1: Coordonnées & Administratif */}
                         <div>
                             <div style={{ marginBottom: '6px', fontWeight: '700', color: '#6D8C7C', fontSize: '10px' }}>Coordonnées & Contact</div>
+                            {intakeData.maiden_name && <div style={{ color: '#555' }}><strong>Nom de jeune fille :</strong> {intakeData.maiden_name}</div>}
                             <div style={{ color: '#555' }}><strong>Adresse :</strong> {intakeData.address ? `${intakeData.address}, ${intakeData.postal_code || ''} ${intakeData.city || ''}` : '-'}</div>
                             <div style={{ color: '#555' }}><strong>Email :</strong> {intakeData.email || '-'}</div>
                             <div style={{ color: '#555' }}><strong>Contact urgence :</strong> {intakeData.emergency_contact_name || '-'} {intakeData.emergency_contact_phone ? `(${intakeData.emergency_contact_phone})` : ''}</div>
@@ -201,8 +202,9 @@ export default function PatientSynthesisReport({
                             
                             <div style={{ marginBottom: '6px', marginTop: '8px', fontWeight: '700', color: '#6D8C7C', fontSize: '10px' }}>Motif & Ressenti</div>
                             <div style={{ color: '#555' }}><strong>Motif :</strong> {intakeData.consultation_reasons?.join(', ') || '-'} {intakeData.consultation_other ? `(${intakeData.consultation_other})` : ''}</div>
-                            <div style={{ color: '#555' }}><strong>Gêne esthétique :</strong> {intakeData.discomfort_level ? `${intakeData.discomfort_level}/10` : '-'} {intakeData.discomfort_duration ? `(depuis ${intakeData.discomfort_duration})` : ''}</div>
+                            <div style={{ color: '#555' }}><strong>Gêne esthétique :</strong> {intakeData.discomfort_level === 'tres_importante' ? 'Très importante' : intakeData.discomfort_level === 'moyenne' ? 'Moyenne' : intakeData.discomfort_level === 'legere' ? 'Légère' : '-'} {intakeData.discomfort_duration === 'peu' ? '(depuis peu de temps)' : intakeData.discomfort_duration === 'longtemps' ? '(depuis longtemps)' : intakeData.discomfort_duration === 'toujours' ? '(depuis toujours)' : ''}</div>
                             <div style={{ color: '#555' }}><strong>Déjà consulté :</strong> {intakeData.previous_consultation === true ? 'Oui' : intakeData.previous_consultation === false ? 'Non' : '-'}</div>
+                            <div style={{ color: '#555' }}><strong>Déjà opéré(e) esthétique :</strong> {intakeData.has_aesthetic_interventions === true ? `Oui` : intakeData.has_aesthetic_interventions === false ? 'Non' : '-'} {intakeData.aesthetic_satisfied === true ? '(Satisfait(e))' : intakeData.aesthetic_satisfied === false ? '(Insatisfait(e))' : ''}</div>
                         </div>
 
                         {/* Column 2: Médical & Antécédents */}
@@ -220,15 +222,26 @@ export default function PatientSynthesisReport({
                             <div style={{ color: '#555' }}><strong>Cicatrices chéloïdes :</strong> {intakeData.keloid_scars === true ? 'Oui' : intakeData.keloid_scars === false ? 'Non' : '-'}</div>
                             <div style={{ color: '#555' }}><strong>Maladies auto-immunes :</strong> {intakeData.autoimmune_family === true ? `Oui (${intakeData.autoimmune_detail})` : intakeData.autoimmune_family === false ? 'Non' : '-'}</div>
                             
-                            {(intakeData.antecedents && Object.keys(intakeData.antecedents).filter(k => intakeData.antecedents[k]).length > 0) && (
+                            {(intakeData.antecedents && Object.keys(intakeData.antecedents).filter(k => intakeData.antecedents[k]?.checked).length > 0) && (
                                 <div style={{ color: '#555', marginTop: '4px' }}>
-                                    <strong>Pathologies :</strong> {Object.keys(intakeData.antecedents).filter(k => intakeData.antecedents[k]).join(', ')}
+                                    <strong>Pathologies :</strong> {Object.keys(intakeData.antecedents)
+                                        .filter(k => intakeData.antecedents[k]?.checked)
+                                        .map(k => {
+                                            const detail = intakeData.antecedents[k].detail;
+                                            return `${k}${detail ? ` (${detail})` : ''}`;
+                                        })
+                                        .join(', ')}
                                 </div>
                             )}
                             {intakeData.antecedents_details && <div style={{ color: '#555' }}><strong>Précisions :</strong> {intakeData.antecedents_details}</div>}
                             {intakeData.family_history_other && <div style={{ color: '#555' }}><strong>Famille :</strong> {intakeData.family_history_other}</div>}
                         </div>
                     </div>
+                    {(intakeData.signed_city || intakeData.signed_date) && (
+                        <div style={{ marginTop: '12px', fontSize: '9px', color: '#888', fontStyle: 'italic' }}>
+                            Fiche remplie et validée {intakeData.signed_city ? `à ${intakeData.signed_city}` : ''} {intakeData.signed_date ? `le ${intakeData.signed_date}` : ''}
+                        </div>
+                    )}
                 </div>
             )}
         </div>

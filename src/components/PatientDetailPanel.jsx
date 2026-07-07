@@ -357,7 +357,7 @@ export default function PatientDetailPanel({ patient, responses = [], onClose })
                             letterSpacing: '0.5px',
                             marginBottom: 'var(--spacing-3)'
                         }}>
-                            Dossier Hopital Manager (DPI)
+                            Données Administratives
                         </div>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', fontSize: '12px' }}>
                             {patient.ipp && (
