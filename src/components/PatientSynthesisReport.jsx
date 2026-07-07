@@ -183,17 +183,50 @@ export default function PatientSynthesisReport({
 
             {intakeData && (
                 <div style={{ borderTop: '1px solid #E9ECEF', paddingTop: '10px', marginTop: '4px' }}>
-                    <div style={{ fontSize: '9px', color: '#888', textTransform: 'uppercase', fontWeight: '700', marginBottom: '6px' }}>Données Cliniques (Fiche de renseignements)</div>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '10px' }}>
+                    <div style={{ fontSize: '11px', color: '#1A1A1A', textTransform: 'uppercase', fontWeight: '800', marginBottom: '8px' }}>Fiche de Renseignements Complète</div>
+                    
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', fontSize: '10px' }}>
+                        {/* Column 1: Coordonnées & Administratif */}
                         <div>
-                            <div style={{ color: '#666' }}><strong>Taille/Poids :</strong> {intakeData.height_cm ? `${intakeData.height_cm} cm` : '-'} / {intakeData.weight_kg ? `${intakeData.weight_kg} kg` : '-'}</div>
-                            <div style={{ color: '#666', marginTop: '4px' }}><strong>Fumeur :</strong> {intakeData.is_smoker === true ? `Oui (${intakeData.cigarettes_per_day || '?'} /jour)` : intakeData.is_smoker === false ? 'Non' : '-'}</div>
-                            <div style={{ color: '#666', marginTop: '4px' }}><strong>Allergies :</strong> {intakeData.has_allergies === true ? `Oui (${intakeData.allergies_detail})` : intakeData.has_allergies === false ? 'Non' : '-'}</div>
+                            <div style={{ marginBottom: '6px', fontWeight: '700', color: '#6D8C7C', fontSize: '10px' }}>Coordonnées & Contact</div>
+                            <div style={{ color: '#555' }}><strong>Adresse :</strong> {intakeData.address ? `${intakeData.address}, ${intakeData.postal_code || ''} ${intakeData.city || ''}` : '-'}</div>
+                            <div style={{ color: '#555' }}><strong>Email :</strong> {intakeData.email || '-'}</div>
+                            <div style={{ color: '#555' }}><strong>Contact urgence :</strong> {intakeData.emergency_contact_name || '-'} {intakeData.emergency_contact_phone ? `(${intakeData.emergency_contact_phone})` : ''}</div>
+                            <div style={{ color: '#555', marginTop: '4px' }}><strong>Profession :</strong> {intakeData.profession || '-'}</div>
+                            <div style={{ color: '#555' }}><strong>Connu par :</strong> {intakeData.referral_source?.join(', ') || '-'} {intakeData.referral_other ? `(${intakeData.referral_other})` : ''}</div>
+
+                            <div style={{ marginBottom: '6px', marginTop: '8px', fontWeight: '700', color: '#6D8C7C', fontSize: '10px' }}>Médecins</div>
+                            <div style={{ color: '#555' }}><strong>Médecin traitant :</strong> {intakeData.general_practitioner || '-'} {intakeData.gp_city ? `(${intakeData.gp_city})` : ''}</div>
+                            <div style={{ color: '#555' }}><strong>Spécialiste :</strong> {intakeData.specialist || '-'} {intakeData.specialist_city ? `(${intakeData.specialist_city})` : ''}</div>
+                            
+                            <div style={{ marginBottom: '6px', marginTop: '8px', fontWeight: '700', color: '#6D8C7C', fontSize: '10px' }}>Motif & Ressenti</div>
+                            <div style={{ color: '#555' }}><strong>Motif :</strong> {intakeData.consultation_reasons?.join(', ') || '-'} {intakeData.consultation_other ? `(${intakeData.consultation_other})` : ''}</div>
+                            <div style={{ color: '#555' }}><strong>Gêne esthétique :</strong> {intakeData.discomfort_level ? `${intakeData.discomfort_level}/10` : '-'} {intakeData.discomfort_duration ? `(depuis ${intakeData.discomfort_duration})` : ''}</div>
+                            <div style={{ color: '#555' }}><strong>Déjà consulté :</strong> {intakeData.previous_consultation === true ? 'Oui' : intakeData.previous_consultation === false ? 'Non' : '-'}</div>
                         </div>
+
+                        {/* Column 2: Médical & Antécédents */}
                         <div>
-                            <div style={{ color: '#666' }}><strong>Traitement :</strong> {intakeData.has_treatment === true ? `Oui (${intakeData.treatment_detail})` : intakeData.has_treatment === false ? 'Non' : '-'}</div>
-                            <div style={{ color: '#666', marginTop: '4px' }}><strong>Antécédents Chir. :</strong> {intakeData.previous_surgery === true ? `Oui (${intakeData.previous_surgery_detail})` : intakeData.previous_surgery === false ? 'Non' : '-'}</div>
-                            {intakeData.antecedents_details && <div style={{ color: '#666', marginTop: '4px' }}><strong>Autres Antécédents :</strong> {intakeData.antecedents_details}</div>}
+                            <div style={{ marginBottom: '6px', fontWeight: '700', color: '#6D8C7C', fontSize: '10px' }}>Données Médicales</div>
+                            <div style={{ color: '#555' }}><strong>Mensurations :</strong> {intakeData.height_cm ? `${intakeData.height_cm} cm` : '-'} / {intakeData.weight_kg ? `${intakeData.weight_kg} kg` : '-'}</div>
+                            <div style={{ color: '#555' }}><strong>Fumeur :</strong> {intakeData.is_smoker === true ? `Oui (${intakeData.cigarettes_per_day || '?'} /j)` : intakeData.is_smoker === false ? 'Non' : '-'}</div>
+                            <div style={{ color: '#555' }}><strong>Allergies :</strong> {intakeData.has_allergies === true ? `Oui (${intakeData.allergies_detail})` : intakeData.has_allergies === false ? 'Non' : '-'}</div>
+                            <div style={{ color: '#555' }}><strong>Traitement :</strong> {intakeData.has_treatment === true ? `Oui (${intakeData.treatment_detail})` : intakeData.has_treatment === false ? 'Non' : '-'}</div>
+
+                            <div style={{ marginBottom: '6px', marginTop: '8px', fontWeight: '700', color: '#6D8C7C', fontSize: '10px' }}>Antécédents</div>
+                            <div style={{ color: '#555' }}><strong>Chirurgicaux :</strong> {intakeData.previous_surgery === true ? `Oui (${intakeData.previous_surgery_detail})` : intakeData.previous_surgery === false ? 'Non' : '-'}</div>
+                            <div style={{ color: '#555' }}><strong>Complications chir. :</strong> {intakeData.surgical_complications === true ? `Oui (${intakeData.complications_detail})` : intakeData.surgical_complications === false ? 'Non' : '-'}</div>
+                            <div style={{ color: '#555' }}><strong>Hématomes faciles :</strong> {intakeData.easy_hematomas === true ? 'Oui' : intakeData.easy_hematomas === false ? 'Non' : '-'}</div>
+                            <div style={{ color: '#555' }}><strong>Cicatrices chéloïdes :</strong> {intakeData.keloid_scars === true ? 'Oui' : intakeData.keloid_scars === false ? 'Non' : '-'}</div>
+                            <div style={{ color: '#555' }}><strong>Maladies auto-immunes :</strong> {intakeData.autoimmune_family === true ? `Oui (${intakeData.autoimmune_detail})` : intakeData.autoimmune_family === false ? 'Non' : '-'}</div>
+                            
+                            {(intakeData.antecedents && Object.keys(intakeData.antecedents).filter(k => intakeData.antecedents[k]).length > 0) && (
+                                <div style={{ color: '#555', marginTop: '4px' }}>
+                                    <strong>Pathologies :</strong> {Object.keys(intakeData.antecedents).filter(k => intakeData.antecedents[k]).join(', ')}
+                                </div>
+                            )}
+                            {intakeData.antecedents_details && <div style={{ color: '#555' }}><strong>Précisions :</strong> {intakeData.antecedents_details}</div>}
+                            {intakeData.family_history_other && <div style={{ color: '#555' }}><strong>Famille :</strong> {intakeData.family_history_other}</div>}
                         </div>
                     </div>
                 </div>
