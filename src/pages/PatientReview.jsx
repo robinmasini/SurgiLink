@@ -863,13 +863,51 @@ export default function PatientReview() {
                                                 {patient.email || 'Non renseigné'}
                                             </div>
                                         </div>
+
+                                        {/* Item 5: Adresse */}
+                                        <div>
+                                            <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', textTransform: 'uppercase', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '600' }}>
+                                                <MapPin size={12} style={{ color: 'var(--color-gray-400)' }} />
+                                                Adresse
+                                            </div>
+                                            <div style={{ fontWeight: '700', color: 'var(--color-gray-900)', fontSize: '14px', lineHeight: '1.4' }}>
+                                                {patient.address || 'Non renseigné'}
+                                            </div>
+                                        </div>
+
+                                        {/* Item 6: Taille & Poids */}
+                                        <div>
+                                            <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', textTransform: 'uppercase', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '600' }}>
+                                                <Activity size={12} style={{ color: 'var(--color-gray-400)' }} />
+                                                Taille & Poids
+                                            </div>
+                                            <div style={{ fontWeight: '700', color: 'var(--color-gray-900)', fontSize: '14px' }}>
+                                                {(patient.height || patient.weight) ? `${patient.height || '—'} / ${patient.weight || '—'}` : 'Non renseigné'}
+                                            </div>
+                                        </div>
+
+                                        {/* Item 7: Médecin Traitant */}
+                                        <div>
+                                            <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', textTransform: 'uppercase', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '600' }}>
+                                                <User size={12} style={{ color: 'var(--color-gray-400)' }} />
+                                                Médecin Traitant
+                                            </div>
+                                            <div style={{ fontWeight: '700', color: 'var(--color-gray-900)', fontSize: '14px' }}>
+                                                {patient.referring_doctor || 'Non renseigné'}
+                                            </div>
+                                            {patient.referring_doctor_phone && (
+                                                <div style={{ fontSize: '12px', color: 'var(--color-gray-500)', marginTop: '2px' }}>
+                                                    Tél: {patient.referring_doctor_phone}
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         {/* 2. Hopital Manager DPI Card */}
-                        {(patient.ipp || patient.stay_number || patient.weight || patient.height || patient.room_number || patient.referring_doctor || patient.address || patient.admission_datetime || patient.discharge_datetime) ? (
+                        {(patient.ipp || patient.stay_number || patient.room_number || patient.admission_datetime || patient.discharge_datetime) ? (
                             <div className="card glass-effect patient-card" style={{ marginTop: 'var(--spacing-6)' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)', marginBottom: 'var(--spacing-6)', borderBottom: '1px solid rgba(0,0,0,0.05)', paddingBottom: 'var(--spacing-4)' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '36px', height: '36px' }}>
@@ -903,36 +941,6 @@ export default function PatientReview() {
                                             <div>
                                                 <div style={{ fontSize: '11px', color: 'var(--color-gray-400)', textTransform: 'uppercase' }}>Chambre / Lit</div>
                                                 <div style={{ fontWeight: '700', color: 'var(--color-gray-900)', fontSize: '14px' }}>{patient.room_number}</div>
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    {/* Column 2: Paramètres Physiques & Contacts */}
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-4)' }}>
-                                        <h4 style={{ margin: 0, fontSize: '12px', fontWeight: '800', color: 'var(--color-primary-600)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                                            Paramètres & Contacts
-                                        </h4>
-                                        {(patient.weight || patient.height) && (
-                                            <div>
-                                                <div style={{ fontSize: '11px', color: 'var(--color-gray-400)', textTransform: 'uppercase' }}>Taille & Poids</div>
-                                                <div style={{ fontWeight: '700', color: 'var(--color-gray-900)', fontSize: '14px' }}>
-                                                    {patient.height || '—'} / {patient.weight || '—'}
-                                                </div>
-                                            </div>
-                                        )}
-                                        {patient.address && (
-                                            <div>
-                                                <div style={{ fontSize: '11px', color: 'var(--color-gray-400)', textTransform: 'uppercase' }}>Adresse Principale</div>
-                                                <div style={{ fontWeight: '700', color: 'var(--color-gray-900)', fontSize: '13px', lineHeight: '1.4' }}>{patient.address}</div>
-                                            </div>
-                                        )}
-                                        {patient.referring_doctor && (
-                                            <div>
-                                                <div style={{ fontSize: '11px', color: 'var(--color-gray-400)', textTransform: 'uppercase' }}>Médecin Traitant</div>
-                                                <div style={{ fontWeight: '700', color: 'var(--color-gray-900)', fontSize: '14px' }}>{patient.referring_doctor}</div>
-                                                {patient.referring_doctor_phone && (
-                                                    <div style={{ fontSize: '12px', color: 'var(--color-gray-500)', marginTop: '2px' }}>Tél: {patient.referring_doctor_phone}</div>
-                                                )}
                                             </div>
                                         )}
                                     </div>
