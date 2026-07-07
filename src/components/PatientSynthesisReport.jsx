@@ -9,7 +9,8 @@ export default function PatientSynthesisReport({
     smsData = [],
     medicalHistory = [],
     documents = [],
-    customQuestions = []
+    customQuestions = [],
+    intakeData = null
 }) {
     if (!patient) return null;
 
@@ -155,29 +156,48 @@ export default function PatientSynthesisReport({
         </div>
     );
 
-    // Patient identity block
     const PatientBlock = () => (
         <div style={{
-            display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px',
+            display: 'flex', flexDirection: 'column', gap: '14px',
             marginBottom: '14px', padding: '14px',
             background: '#F8F9FA', borderRadius: '10px', border: '1px solid #E9ECEF'
         }}>
-            <div>
-                <div style={{ fontSize: '9px', color: '#888', textTransform: 'uppercase', fontWeight: '700', marginBottom: '3px' }}>Identité du Patient</div>
-                <div style={{ fontSize: '15px', fontWeight: '800', color: '#1A1A1A' }}>{patient.name}</div>
-                <div style={{ color: '#444' }}>Né(e) le : {patient.birth_date ? formatDateFR(patient.birth_date) : 'Non renseigné'}</div>
-                <div style={{ color: '#444' }}>Tél : {patient.phone || 'Non renseigné'}</div>
-            </div>
-            <div>
-                <div style={{ fontSize: '9px', color: '#888', textTransform: 'uppercase', fontWeight: '700', marginBottom: '3px' }}>Intervention</div>
-                <div style={{ fontSize: '13px', fontWeight: '700', color: '#6D8C7C' }}>{patient.operation}</div>
-                <div style={{ color: '#444' }}>Date : {patient.date ? formatDateFR(patient.date) : 'Non définie'}</div>
-                <div style={{ fontWeight: '600', marginTop: '4px' }}>
-                    Statut : <span style={{ color: patient.status === 'critique' ? '#D32F2F' : patient.status === 'ready' ? '#2E7D32' : '#E65100' }}>
-                        {getStatusLabel(patient.status)} ({patient.progress}%)
-                    </span>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+                <div>
+                    <div style={{ fontSize: '9px', color: '#888', textTransform: 'uppercase', fontWeight: '700', marginBottom: '3px' }}>Identité du Patient</div>
+                    <div style={{ fontSize: '15px', fontWeight: '800', color: '#1A1A1A' }}>{patient.name}</div>
+                    <div style={{ color: '#444' }}>Né(e) le : {patient.birth_date ? formatDateFR(patient.birth_date) : 'Non renseigné'}</div>
+                    <div style={{ color: '#444' }}>Tél : {patient.phone || 'Non renseigné'}</div>
+                </div>
+                <div>
+                    <div style={{ fontSize: '9px', color: '#888', textTransform: 'uppercase', fontWeight: '700', marginBottom: '3px' }}>Intervention</div>
+                    <div style={{ fontSize: '13px', fontWeight: '700', color: '#6D8C7C' }}>{patient.operation}</div>
+                    <div style={{ color: '#444' }}>Date : {patient.date ? formatDateFR(patient.date) : 'Non définie'}</div>
+                    <div style={{ fontWeight: '600', marginTop: '4px' }}>
+                        Statut : <span style={{ color: patient.status === 'critique' ? '#D32F2F' : patient.status === 'ready' ? '#2E7D32' : '#E65100' }}>
+                            {getStatusLabel(patient.status)} ({patient.progress}%)
+                        </span>
+                    </div>
                 </div>
             </div>
+
+            {intakeData && (
+                <div style={{ borderTop: '1px solid #E9ECEF', paddingTop: '10px', marginTop: '4px' }}>
+                    <div style={{ fontSize: '9px', color: '#888', textTransform: 'uppercase', fontWeight: '700', marginBottom: '6px' }}>Données Cliniques (Fiche de renseignements)</div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '10px' }}>
+                        <div>
+                            <div style={{ color: '#666' }}><strong>Taille/Poids :</strong> {intakeData.height_cm ? `${intakeData.height_cm} cm` : '-'} / {intakeData.weight_kg ? `${intakeData.weight_kg} kg` : '-'}</div>
+                            <div style={{ color: '#666', marginTop: '4px' }}><strong>Fumeur :</strong> {intakeData.is_smoker === true ? `Oui (${intakeData.cigarettes_per_day || '?'} /jour)` : intakeData.is_smoker === false ? 'Non' : '-'}</div>
+                            <div style={{ color: '#666', marginTop: '4px' }}><strong>Allergies :</strong> {intakeData.has_allergies === true ? `Oui (${intakeData.allergies_detail})` : intakeData.has_allergies === false ? 'Non' : '-'}</div>
+                        </div>
+                        <div>
+                            <div style={{ color: '#666' }}><strong>Traitement :</strong> {intakeData.has_treatment === true ? `Oui (${intakeData.treatment_detail})` : intakeData.has_treatment === false ? 'Non' : '-'}</div>
+                            <div style={{ color: '#666', marginTop: '4px' }}><strong>Antécédents Chir. :</strong> {intakeData.previous_surgery === true ? `Oui (${intakeData.previous_surgery_detail})` : intakeData.previous_surgery === false ? 'Non' : '-'}</div>
+                            {intakeData.antecedents_details && <div style={{ color: '#666', marginTop: '4px' }}><strong>Autres Antécédents :</strong> {intakeData.antecedents_details}</div>}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 

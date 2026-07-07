@@ -115,6 +115,7 @@ export default function PatientReview() {
     const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
     const [isSecureLinkDrawerOpen, setIsSecureLinkDrawerOpen] = useState(false);
     const [isHistoryDrawerOpen, setIsHistoryDrawerOpen] = useState(false);
+    const [intakeData, setIntakeData] = useState(null);
     const reportRef = useRef(null);
     const fileInputRef = useRef(null);
 
@@ -130,6 +131,13 @@ export default function PatientReview() {
 
             if (patientError) throw patientError;
             setPatient(patientData);
+
+            const { data: intakeResp } = await supabase
+                .from('intake_form_responses')
+                .select('*')
+                .eq('patient_id', id)
+                .maybeSingle();
+            setIntakeData(intakeResp || null);
 
             // Calculate risk status
             const [riskJ7, riskJ1Pre, riskJ1, riskJ4, riskESatis] = await Promise.all([
@@ -1935,6 +1943,7 @@ export default function PatientReview() {
                         medicalHistory={medicalHistory.filter(h => h.type === 'history')}
                         documents={documents}
                         customQuestions={customQuestions}
+                        intakeData={intakeData}
                     />
                 </div>
             </div>

@@ -171,6 +171,7 @@ export default function PatientPortal({ patient: initialPatient }) {
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
     const [isPathwayOpen, setIsPathwayOpen] = useState(false);
     const [showStatusInfoModal, setShowStatusInfoModal] = useState(false);
+    const [intakeData, setIntakeData] = useState(null);
     const reportRef = useRef(null);
     
     // Add listener to refresh data when coming back to the page (BFCache / Focus)
@@ -488,6 +489,13 @@ export default function PatientPortal({ patient: initialPatient }) {
 
             if (trackError) console.error('Consultation tracking error:', trackError);
             else console.log('Consultation tracked successfully');
+
+            const { data: intakeResp } = await supabase
+                .from('intake_form_responses')
+                .select('*')
+                .eq('patient_id', patientData.id)
+                .maybeSingle();
+            setIntakeData(intakeResp || null);
 
         } catch (err) {
             console.error('Error loading patient data:', err);
@@ -1150,9 +1158,10 @@ export default function PatientPortal({ patient: initialPatient }) {
                         clinicalResponses={clinicalResponses}
                         responsesMeta={responsesMeta}
                         smsData={smsData}
-                        medicalHistory={medicalHistory}
+                        medicalHistory={medicalHistory.filter(h => h.type === 'history')}
                         documents={documents}
                         customQuestions={customQuestions}
+                        intakeData={intakeData}
                     />
                 </div>
             </div>
