@@ -34,7 +34,7 @@ export default function AddPatientModal({ isOpen, onClose, onSuccess }) {
         surgeonName: 'Christophe DESOUCHES',
         surgeryTime: 'Non-communiquée',
         stayType: 'Ambulatoire',
-        clinicName: 'Clinique de Vitrolles',
+        clinicName: '',
         
         // DPI fields
         ipp: '',
@@ -316,8 +316,8 @@ Les clés doivent être exactement :
 
     // Save Patient Handler
     const handleSave = async () => {
-        if (!formData.firstName || !formData.lastName || !formData.operation) {
-            alert('Veuillez remplir le prénom, le nom et l\'intervention.');
+        if (!formData.firstName || !formData.lastName || !formData.operation || !formData.clinicName) {
+            alert('Veuillez remplir le prénom, le nom, l\'intervention et choisir une clinique.');
             return;
         }
 
@@ -788,12 +788,17 @@ Les clés doivent être exactement :
 
                                     <div className="grid-2">
                                         <div>
-                                            <label className="form-label-add">Nom de la Clinique</label>
-                                            <input
+                                            <label className="form-label-add">Nom de la Clinique *</label>
+                                            <select
                                                 className="input"
                                                 value={formData.clinicName}
                                                 onChange={(e) => setFormData({ ...formData, clinicName: e.target.value })}
-                                            />
+                                                required
+                                            >
+                                                <option value="" disabled>Sélectionnez une clinique</option>
+                                                <option value="Clinique de Vitrolles">Clinique de Vitrolles</option>
+                                                <option value="Clinique Phenicia Marseille">Clinique Phenicia Marseille</option>
+                                            </select>
                                         </div>
                                         <div>
                                             <label className="form-label-add">Date/Heure RDV</label>

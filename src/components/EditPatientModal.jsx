@@ -355,13 +355,16 @@ export default function EditPatientModal({ isOpen, onClose, patient, onPatientUp
                                     <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Nom de la Clinique</label>
                                     <div style={{ position: 'relative' }}>
                                         <MapPin size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-gray-400)' }} />
-                                        <input
+                                        <select
                                             className="input"
-                                            placeholder="Ex: Clinique de Vitrolles"
                                             style={{ paddingLeft: '40px' }}
                                             value={formData.clinicName}
                                             onChange={(e) => setFormData({ ...formData, clinicName: e.target.value })}
-                                        />
+                                        >
+                                            <option value="" disabled>Sélectionnez une clinique</option>
+                                            <option value="Clinique de Vitrolles">Clinique de Vitrolles</option>
+                                            <option value="Clinique Phenicia Marseille">Clinique Phenicia Marseille</option>
+                                        </select>
                                     </div>
                                 </div>
 

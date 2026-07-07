@@ -38,8 +38,10 @@ import wppPhone from '../assets/wpp-phone-v2.png';
 import wppDesktop from '../assets/wpp-desktop-v2.png';
 
 import logoSlMa from '../assets/logo-sl-ma.png';
-import suiviCard from '../assets/suivi-card.png';
+import CustomQuestionsModal from '../components/CustomQuestionsModal';
 import clinicImg from '../assets/clinic.jpg';
+import clinic2Img from '../assets/clinic-2.png';
+import suiviCard from '../assets/suivi-card.png';
 
 function ConsignesSection({ patientId }) {
     const { t } = useTranslation();
@@ -889,200 +891,108 @@ export default function PatientPortal({ patient: initialPatient }) {
                     border: '1px solid #e5e7eb',
                     boxShadow: '0 4px 12px rgba(0,0,0,0.02)'
                 }}>
-                    <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#1f2937', marginBottom: '20px' }}>
-                        {t('Rappel de votre intervention')}
-                    </h3>
+                    {(() => {
+                        const isPhenicia = patient.clinic_name === 'Clinique Phenicia Marseille';
+                        const displayClinicName = patient.clinic_name || t('Clinique de Vitrolles');
+                        const displayClinicImg = isPhenicia ? clinic2Img : clinicImg;
+                        const displayClinicAddress = isPhenicia ? "29 Rue Louis Astruc, 13005 Marseille" : "La Tuilière II, Rue Bel air, 13127 Vitrolles";
+                        const displayClinicPhone = isPhenicia ? "0491921292" : "0491159019";
 
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                            <div style={{ width: '40px', height: '24px', borderRadius: '4px', overflow: 'hidden' }}>
-                                <img src={clinicImg} alt="Clinic" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                            </div>
-                            <span style={{ fontSize: '14px', fontWeight: '700', color: '#374151' }}>{patient.clinic_name || t('Clinique de Vitrolles')}</span>
-                        </div>
-                        <a 
-                            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(patient.clinic_address || "La Tuilière II, Rue Bel air, 13127 Vitrolles")}`}
-                            target="_blank" rel="noopener noreferrer"
-                            style={{
-                                padding: '8px 16px',
-                                borderRadius: '14px',
-                                background: '#ffffff',
-                                color: '#4b5563',
-                                border: '1px solid #d1d5db',
-                                fontSize: '12px',
-                                fontWeight: '700',
-                                textDecoration: 'none',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '4px',
-                                boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
-                            }}
-                        >
-                            {t("M'y rendre")} <ChevronRight size={12} />
-                        </a>
-                    </div>
+                        return (
+                            <>
+                                <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#1f2937', marginBottom: '20px' }}>
+                                    {t('Rappel de votre intervention')}
+                                </h3>
 
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                            <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#ffffff', border: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <Calendar size={16} color="#6b7280" />
-                            </div>
-                            <span style={{ fontSize: '15px', color: '#374151', fontWeight: '500' }}>
-                                {patient.date ? new Date(patient.date).toLocaleDateString(i18n.language, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) : t('Date à confirmer')}
-                            </span>
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: '#374151' }}>
-                            <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#ffffff', border: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <Clock size={16} color="#6b7280" />
-                            </div>
-                                <span style={{ fontSize: '14px', fontWeight: '600' }}>
-                                    {patient.surgery_time ? patient.surgery_time : t('Non-communiquée')}
-                                </span>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Parcours de Soins (Care Pathway) - Premium Glass Design */}
-                <div style={{
-                    marginBottom: '24px',
-                    overflow: 'hidden',
-                    borderRadius: '24px',
-                    background: '#f9fafb',
-                    border: '1px solid #e5e7eb',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.02)',
-                    transition: 'all 0.3s ease'
-                }}>
-                    <div 
-                        onClick={() => setIsPathwayOpen(!isPathwayOpen)}
-                        style={{ 
-                            padding: '16px 20px', 
-                            borderBottom: isPathwayOpen ? '1px solid #e5e7eb' : 'none', 
-                            display: 'flex', 
-                            justifyContent: 'space-between', 
-                            alignItems: 'center',
-                            cursor: 'pointer',
-                            userSelect: 'none'
-                        }}
-                    >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                            <h3 style={{ fontSize: '14px', fontWeight: '700', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>
-                                Votre Parcours de Soins
-                            </h3>
-                            <ChevronDown 
-                                size={18} 
-                                style={{ 
-                                    color: '#6b7280', 
-                                    transform: isPathwayOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                                    transition: 'transform 0.3s ease'
-                                }} 
-                            />
-                        </div>
-                        <div style={{ background: 'var(--color-primary-50)', color: 'var(--color-primary-600)', padding: '4px 12px', borderRadius: '20px', fontSize: '12px', fontWeight: '700' }}>
-                            {calculateDaysUntilSurgery(patient.date)}
-                        </div>
-                    </div>
-
-                    <div style={{ 
-                        display: isPathwayOpen ? 'flex' : 'none', 
-                        flexDirection: 'column',
-                        animation: 'fadeIn 0.3s ease'
-                    }}>
-                        {(() => {
-                            const today = new Date();
-                            today.setHours(0, 0, 0, 0);
-                            const surgeryDate = patient.date ? new Date(patient.date) : null;
-                            if (surgeryDate) surgeryDate.setHours(0, 0, 0, 0);
-                            const diffDays = surgeryDate ? Math.ceil((surgeryDate - today) / (1000 * 60 * 60 * 24)) : 999;
-
-                            const activeIndex = getActiveMilestoneIndex();
-
-                            return [
-                                { id: 'Bienvenue', to: `bienvenue`, emoji: '👋', label: 'Questionnaire J-18', desc: 'Activation de votre suivi', offset: 18 },
-                                { id: 'J7', to: `j7`, emoji: '📋', label: 'Questionnaire J-7', desc: 'Préparation administrative', offset: 7 },
-                                { id: 'J1_PreOp', to: `j1-preop`, emoji: '🚿', label: 'Confirmation J-1', desc: 'Vérification finale', offset: 1 },
-                                { id: 'J1', to: `j1`, emoji: '🌡️', label: 'Suivi J+1', desc: 'Bilan post-opératoire', offset: -1 },
-                                { id: 'J4_Satisfaction', to: `j4`, emoji: '⭐', label: 'Satisfaction J+4', desc: 'Votre avis nous intéresse', offset: -4 },
-                                { id: 'ESATIS', to: `e-satis`, emoji: '📊', label: 'Enquête Nationale', desc: 'e-Satis (National)', offset: -4 },
-                            ].map((step, idx, arr) => {
-                                const isFuture = diffDays > step.offset;
-                                const isLast = idx === arr.length - 1;
-                                const isCompleted = !isFuture && isMilestoneComplete(step.id);
-                                const isEditable = (idx === activeIndex && !isFuture) || (activeIndex > 0 && idx === activeIndex - 1);
-                                
-                                const stepContent = (
-                                    <div key={step.to} style={{ 
-                                        padding: '16px 20px', 
-                                        display: 'flex', 
-                                        alignItems: 'center', 
-                                        gap: '14px', 
-                                        borderBottom: isLast ? 'none' : '1px solid #e5e7eb', 
-                                        opacity: isFuture ? 0.5 : 1,
-                                        transition: 'background 0.2s',
-                                        background: isFuture ? 'transparent' : '#ffffff',
-                                        cursor: isEditable ? 'pointer' : 'default'
-                                    }}>
-                                        <div style={{ 
-                                            fontSize: '20px', width: '36px', height: '36px', 
-                                            display: 'flex', alignItems: 'center', justifyContent: 'center', 
-                                            borderRadius: '10px', background: '#f3f4f6', flexShrink: 0 
-                                        }}>
-                                            {step.emoji}
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                        <div style={{ width: '40px', height: '24px', borderRadius: '4px', overflow: 'hidden' }}>
+                                            <img src={displayClinicImg} alt="Clinic" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                         </div>
-                                        <div style={{ flex: 1 }}>
-                                            <div style={{ fontWeight: '700', fontSize: '14px', color: '#1f2937' }}>{step.label}</div>
-                                            <div style={{ fontSize: '11px', color: '#6b7280', marginTop: '2px' }}>{step.desc}</div>
-                                        </div>
-                                        {isFuture ? (
-                                            <Lock size={16} style={{ color: '#9ca3af' }} />
-                                        ) : isCompleted ? (
-                                            <CheckCircle2 size={22} color="#10B981" />
-                                        ) : (
-                                            <Circle size={22} color="#d1d5db" />
-                                        )}
+                                        <span style={{ fontSize: '14px', fontWeight: '700', color: '#374151' }}>{displayClinicName}</span>
                                     </div>
-                                );
+                                    <a 
+                                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(patient.clinic_address || displayClinicAddress)}`}
+                                        target="_blank" rel="noopener noreferrer"
+                                        style={{
+                                            padding: '8px 16px',
+                                            borderRadius: '14px',
+                                            background: '#ffffff',
+                                            color: '#4b5563',
+                                            border: '1px solid #d1d5db',
+                                            fontSize: '12px',
+                                            fontWeight: '700',
+                                            textDecoration: 'none',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '4px',
+                                            boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
+                                        }}
+                                    >
+                                        {t("M'y rendre")} <ChevronRight size={12} />
+                                    </a>
+                                </div>
 
-                                if (!isEditable) return stepContent;
-                                return (
-                                    <Link key={step.to} to={`/patient-portal/${token}/${step.to}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                                        {stepContent}
-                                    </Link>
-                                );
-                            });
-                        })()}
-                    </div>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                        <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#ffffff', border: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                            <Calendar size={16} color="#6b7280" />
+                                        </div>
+                                        <span style={{ fontSize: '15px', color: '#374151', fontWeight: '500' }}>
+                                            {patient.date ? new Date(patient.date).toLocaleDateString(i18n.language, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) : t('Date à confirmer')}
+                                        </span>
+                                    </div>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: '#374151' }}>
+                                        <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#ffffff', border: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                            <Clock size={16} color="#6b7280" />
+                                        </div>
+                                        <span style={{ fontSize: '14px', fontWeight: '600' }}>
+                                            {patient.surgery_time ? patient.surgery_time : t('Non-communiquée')}
+                                        </span>
+                                    </div>
+                                </div>
+                            </>
+                        );
+                    })()}
                 </div>
-
                 {/* Footer Call & Ordonnance Buttons */}
                 <div style={{ display: 'flex', gap: '12px', marginBottom: '12px' }}>
-                    <a href={`tel:${patient.clinic_phone || '0491159019'}`} style={{
-                        flex: 1,
-                        padding: '16px',
-                        textAlign: 'center',
-                        fontSize: '14px',
-                        fontWeight: '600',
-                        color: '#4b5563',
-                        textDecoration: 'none',
-                        background: '#f3f4f6',
-                        borderRadius: '16px',
-                        border: '1px solid #e5e7eb'
-                    }}>
-                        Appeler clinique <Phone size={14} style={{ verticalAlign: 'middle', marginLeft: '4px' }} />
-                    </a>
-                    <a href={`tel:${patient.practitioner_phone || '0491159019'}`} style={{
-                        flex: 1,
-                        padding: '16px',
-                        textAlign: 'center',
-                        fontSize: '14px',
-                        fontWeight: '600',
-                        color: '#4b5563',
-                        textDecoration: 'none',
-                        background: '#f3f4f6',
-                        borderRadius: '16px',
-                        border: '1px solid #e5e7eb'
-                    }}>
-                        Appeler cabinet <Phone size={14} style={{ verticalAlign: 'middle', marginLeft: '4px' }} />
-                    </a>
+                    {(() => {
+                        const isPhenicia = patient.clinic_name === 'Clinique Phenicia Marseille';
+                        const displayClinicPhone = isPhenicia ? "0491921292" : "0491159019";
+                        return (
+                            <>
+                                <a href={`tel:${patient.clinic_phone || displayClinicPhone}`} style={{
+                                    flex: 1,
+                                    padding: '16px',
+                                    textAlign: 'center',
+                                    fontSize: '14px',
+                                    fontWeight: '600',
+                                    color: '#4b5563',
+                                    textDecoration: 'none',
+                                    background: '#f3f4f6',
+                                    borderRadius: '16px',
+                                    border: '1px solid #e5e7eb'
+                                }}>
+                                    Appeler clinique <Phone size={14} style={{ verticalAlign: 'middle', marginLeft: '4px' }} />
+                                </a>
+                                <a href={`tel:${patient.practitioner_phone || '0491159019'}`} style={{
+                                    flex: 1,
+                                    padding: '16px',
+                                    textAlign: 'center',
+                                    fontSize: '14px',
+                                    fontWeight: '600',
+                                    color: '#4b5563',
+                                    textDecoration: 'none',
+                                    background: '#f3f4f6',
+                                    borderRadius: '16px',
+                                    border: '1px solid #e5e7eb'
+                                }}>
+                                    Appeler cabinet <Phone size={14} style={{ verticalAlign: 'middle', marginLeft: '4px' }} />
+                                </a>
+                            </>
+                        );
+                    })()}
                 </div>
 
                 <div 
