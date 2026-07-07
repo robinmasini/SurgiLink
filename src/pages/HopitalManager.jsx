@@ -53,7 +53,7 @@ export default function HopitalManager() {
         birthDate: '',
         operation: '',
         surgeonName: 'Christophe DESOUCHES',
-        stayType: 'Ambulatoire',
+        stayType: 'Hospitalisation',
         date: '',
         surgeryTime: 'Non-communiquée',
         phone: '+33 ',
@@ -301,7 +301,7 @@ Les clés doivent être exactement :
             birthDate: data.birth_date || '',
             operation: data.operation || '',
             surgeonName: data.surgeon_name ? (data.surgeon_name.includes('DESOUCHES') ? 'Christophe DESOUCHES' : data.surgeon_name) : 'Christophe DESOUCHES',
-            stayType: data.stay_type || 'Ambulatoire',
+            stayType: 'Hospitalisation',
             date: data.date || (data.admission_datetime ? data.admission_datetime.split('T')[0] : ''),
             surgeryTime: data.admission_datetime ? new Date(data.admission_datetime).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : 'Non-communiquée',
             phone: data.phone || '+33 ',
@@ -326,6 +326,11 @@ Les clés doivent être exactement :
     const handleSavePatient = async () => {
         if (!formData.firstName || !formData.lastName || !formData.operation) {
             alert('Le nom, le prénom et l\'intervention sont obligatoires.');
+            return;
+        }
+
+        if (formData.date && !formData.stayType) {
+            alert('Veuillez renseigner le type de séjour si la date d\'intervention est définie.');
             return;
         }
 
