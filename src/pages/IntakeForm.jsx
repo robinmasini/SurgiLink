@@ -315,8 +315,8 @@ export default function IntakeForm() {
                 <div style={{ width: '100%', maxWidth: '500px', padding: isMobile ? '20px 20px 120px' : '28px 24px 120px', boxSizing: 'border-box', flex: 1, display: 'flex', flexDirection: 'column' }}>
 
                     {/* Ligne 1 : Logo à gauche + sélecteur langue à droite */}
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '18px' }}>
-                        <img src={logoSlMa} alt="SurgiLink / Medical Alliance" style={{ height: isMobile ? '60px' : '74px', objectFit: 'contain' }} />
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '18px', gap: '16px' }}>
+                        <img src={logoSlMa} alt="SurgiLink / Medical Alliance" style={{ width: '100%', maxWidth: '300px', height: 'auto', objectFit: 'contain' }} />
                         {/* Sélecteur langue pill */}
                         <div style={{ position: 'relative', flexShrink: 0 }}>
                             <select

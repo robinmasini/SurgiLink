@@ -175,9 +175,11 @@ export default function OnboardingFlow() {
                                     src={logoSlMa} 
                                     alt="SurgiLink / Medical Alliance" 
                                     style={{ 
-                                        height: isMobile ? '140px' : '200px', 
+                                        width: '100%',
+                                        maxWidth: '220px',
+                                        height: 'auto', 
                                         objectFit: 'contain', 
-                                        transition: 'height 0.3s ease' 
+                                        transition: 'all 0.3s ease' 
                                     }} 
                                 />
                             </div>
