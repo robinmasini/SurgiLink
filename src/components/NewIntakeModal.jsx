@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { X, Send, Loader, ClipboardList, CheckCircle, Phone } from 'lucide-react';
 import { createIntakePatient } from '../services/intakeService';
 import { supabase } from '../lib/supabase';
+import PhoneInput from './PhoneInput';
 
 export default function NewIntakeModal({ isOpen, onClose, onSuccess }) {
     const [phone, setPhone] = useState('');
@@ -129,33 +130,13 @@ export default function NewIntakeModal({ isOpen, onClose, onSuccess }) {
                                     Numéro de téléphone <span style={{ color: '#EF4444' }}>*</span>
                                 </label>
                                 <div style={{ position: 'relative' }}>
-                                    <Phone
-                                        size={16}
-                                        style={{
-                                            position: 'absolute', left: '14px', top: '50%',
-                                            transform: 'translateY(-50%)',
-                                            color: phone ? 'var(--color-primary-500)' : 'var(--color-gray-400)',
-                                            transition: 'color 0.2s'
-                                        }}
-                                    />
-                                    <input
-                                        className="input"
-                                        type="tel"
-                                        placeholder="06 12 34 56 78 ou +33 6 12 34 56 78"
+                                    <PhoneInput
                                         value={phone}
-                                        onChange={e => setPhone(formatPhoneDisplay(e.target.value))}
+                                        onChange={val => setPhone(val)}
                                         onKeyDown={handleKeyDown}
                                         autoFocus
-                                        style={{
-                                            paddingLeft: '40px',
-                                            fontSize: '15px',
-                                            letterSpacing: '0.03em',
-                                            height: '48px',
-                                            borderColor: error ? '#EF4444' : undefined,
-                                            borderRadius: '12px',
-                                            width: '100%',
-                                            boxSizing: 'border-box'
-                                        }}
+                                        error={!!error}
+                                        placeholder="6 12 34 56 78"
                                     />
                                 </div>
                                 <p style={{ margin: '6px 0 0', fontSize: '11px', color: 'var(--color-gray-400)' }}>

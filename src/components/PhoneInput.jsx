@@ -18,7 +18,7 @@ const countries = [
     { name: 'Tunisie', code: '+216', flag: '🇹🇳' },
 ];
 
-export default function PhoneInput({ value, onChange, placeholder = '6 00 00 00 00' }) {
+export default function PhoneInput({ value, onChange, placeholder = '6 00 00 00 00', error, onKeyDown, autoFocus }) {
     const [isOpen, setIsOpen] = useState(false);
     const [selectedCountry, setSelectedCountry] = useState(countries[0]);
     const dropdownRef = useRef(null);
@@ -112,7 +112,7 @@ export default function PhoneInput({ value, onChange, placeholder = '6 00 00 00 
                 overflow: 'hidden',
                 transition: 'all var(--transition-fast)',
                 boxShadow: isOpen ? '0 0 0 3px var(--color-primary-50)' : 'none',
-                borderColor: isOpen ? 'var(--color-primary-400)' : 'var(--color-gray-200)'
+                borderColor: error ? '#EF4444' : (isOpen ? 'var(--color-primary-400)' : 'var(--color-gray-200)')
             }}>
                 {/* Country Selector */}
                 <div
@@ -146,6 +146,8 @@ export default function PhoneInput({ value, onChange, placeholder = '6 00 00 00 
                         placeholder={placeholder}
                         value={displayValue}
                         onChange={handleInputChange}
+                        onKeyDown={onKeyDown}
+                        autoFocus={autoFocus}
                         style={{
                             border: 'none',
                             boxShadow: 'none',
