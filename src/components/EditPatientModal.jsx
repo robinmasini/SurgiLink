@@ -95,6 +95,11 @@ export default function EditPatientModal({ isOpen, onClose, patient, onPatientUp
             return;
         }
 
+        if (!formData.clinicName) {
+            alert('Veuillez renseigner la clinique.');
+            return;
+        }
+
         if (formData.date && !formData.stayType) {
             alert('Veuillez renseigner le type de séjour (Ambulatoire ou Hospitalisation).');
             return;
