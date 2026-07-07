@@ -328,11 +328,10 @@ export default function QuestionsPreviewModal({ isOpen, onClose }) {
                         <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? 'var(--spacing-4)' : 'var(--spacing-5)' }}>
                             {/* Banner */}
                             <div style={{
-                                background: 'white',
                                 padding: 'var(--spacing-4)',
                                 borderRadius: 'var(--radius-xl)',
-                                border: '1px solid rgba(124,58,237,0.15)',
-                                background: 'linear-gradient(135deg, rgba(124,58,237,0.04), white)'
+                                border: '1px solid rgba(16, 185, 129, 0.15)',
+                                background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.04), white)'
                             }}>
                                 <h3 style={{ fontSize: '15px', fontWeight: '800', color: '#111827', margin: '0 0 4px' }}>
                                     📝 Fiche de renseignements médicaux
@@ -342,7 +341,7 @@ export default function QuestionsPreviewModal({ isOpen, onClose }) {
                                 </p>
                                 <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '12px' }}>
                                     {['📱 Formulaire mobile', '🔒 Données sécurisées', '⏱️ ~5 minutes', '📂 8 sections'].map(tag => (
-                                        <span key={tag} style={{ fontSize: '11px', fontWeight: '700', padding: '3px 10px', background: 'rgba(124,58,237,0.07)', color: '#7C3AED', borderRadius: '20px', border: '1px solid rgba(124,58,237,0.15)' }}>{tag}</span>
+                                        <span key={tag} style={{ fontSize: '11px', fontWeight: '700', padding: '3px 10px', background: 'rgba(16, 185, 129, 0.07)', color: 'var(--color-success-500)', borderRadius: '20px', border: '1px solid rgba(16, 185, 129, 0.15)' }}>{tag}</span>
                                     ))}
                                 </div>
                             </div>
@@ -388,13 +387,13 @@ export default function QuestionsPreviewModal({ isOpen, onClose }) {
                                 }}>
                                     <div style={{
                                         padding: '12px 16px',
-                                        background: 'linear-gradient(135deg, rgba(124,58,237,0.05), rgba(109,40,217,0.02))',
-                                        borderBottom: '1px solid rgba(124,58,237,0.08)',
+                                        background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(16, 185, 129, 0.02))',
+                                        borderBottom: '1px solid rgba(16, 185, 129, 0.08)',
                                         display: 'flex', alignItems: 'center', gap: '10px'
                                     }}>
                                         <div style={{
                                             width: '28px', height: '28px', borderRadius: '50%',
-                                            background: 'linear-gradient(135deg, #7C3AED, #6D28D9)',
+                                            background: 'linear-gradient(135deg, var(--color-success-500), var(--color-success-600))',
                                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                                             color: 'white', fontSize: '12px', fontWeight: '800', flexShrink: 0
                                         }}>{section.num}</div>
@@ -404,7 +403,7 @@ export default function QuestionsPreviewModal({ isOpen, onClose }) {
                                     <div style={{ padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
                                         {section.fields.map((f, i) => (
                                             <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '12px', color: '#4B5563', lineHeight: 1.4 }}>
-                                                <span style={{ color: '#7C3AED', flexShrink: 0, marginTop: '1px' }}>•</span>
+                                                <span style={{ color: 'var(--color-success-500)', flexShrink: 0, marginTop: '1px' }}>•</span>
                                                 <span>{f}</span>
                                             </div>
                                         ))}

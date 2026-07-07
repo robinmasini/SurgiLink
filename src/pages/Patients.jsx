@@ -14,7 +14,8 @@ import {
     Phone,
     CheckCircle2,
     ClipboardList,
-    CalendarOff
+    CalendarOff,
+    CalendarClock
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { calculateDaysUntilSurgery } from '../utils/dateUtils';
@@ -417,24 +418,31 @@ export default function Patients() {
                                                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
                                                              <div style={{ fontWeight: '600', color: 'var(--color-gray-900)' }}>{patient.name}</div>
                                                              {patient.status === 'intake' && (
-                                                                 <div style={{
-                                                                     display: 'inline-flex',
-                                                                     alignItems: 'center',
-                                                                     gap: '3px',
-                                                                     color: '#7C3AED',
-                                                                     fontWeight: '700',
-                                                                     fontSize: '9px',
-                                                                     background: 'rgba(124,58,237,0.08)',
-                                                                     padding: '2px 7px',
-                                                                     borderRadius: '5px',
-                                                                     border: '1px solid rgba(124,58,237,0.2)',
-                                                                     lineHeight: '1',
-                                                                     whiteSpace: 'nowrap'
-                                                                 }}>
-                                                                     <ClipboardList size={9} />
-                                                                     Fiche en cours
-                                                                 </div>
-                                                             )}
+                                                                  <>
+                                                                      {/* Pill verte : fiche en cours */}
+                                                                      <div style={{
+                                                                          display: 'inline-flex', alignItems: 'center', gap: '3px',
+                                                                          color: 'var(--color-primary-600)', fontWeight: '700', fontSize: '9px',
+                                                                          background: 'var(--color-primary-50)', padding: '2px 7px',
+                                                                          borderRadius: '5px', border: '1px solid var(--color-primary-200)',
+                                                                          lineHeight: '1', whiteSpace: 'nowrap'
+                                                                      }}>
+                                                                          <ClipboardList size={9} />
+                                                                          Fiche en cours
+                                                                      </div>
+                                                                      {/* Pill orange : date à renseigner */}
+                                                                      <div style={{
+                                                                          display: 'inline-flex', alignItems: 'center', gap: '3px',
+                                                                          color: '#D97706', fontWeight: '700', fontSize: '9px',
+                                                                          background: '#FEF3C7', padding: '2px 7px',
+                                                                          borderRadius: '5px', border: '1px solid #FDE68A',
+                                                                          lineHeight: '1', whiteSpace: 'nowrap'
+                                                                      }}>
+                                                                          <CalendarClock size={9} />
+                                                                          Date à renseigner
+                                                                      </div>
+                                                                  </>
+                                                              )}
                                                              {patient.onboarding_completed_at && patient.status !== 'intake' && (
                                                                  <div style={{
                                                                      display: 'inline-flex',
@@ -508,10 +516,11 @@ export default function Patients() {
                                             </td>
                                             {!selectedPatientId && (
                                                 <>
-                                                     <td className="hide-tablet" style={{ padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: patient.status === 'intake' ? '#9CA3AF' : 'var(--color-gray-600)' }}>
+                                                     <td className="hide-tablet" style={{ padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: patient.status === 'intake' ? '#D97706' : 'var(--color-gray-600)' }}>
                                                          {patient.status === 'intake' ? (
-                                                             <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: '#9CA3AF', fontStyle: 'italic' }}>
-                                                                 <CalendarOff size={11} /> Aucune intervention planifiée
+                                                             <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', color: '#D97706', fontWeight: '700',
+                                                                 background: '#FEF3C7', padding: '3px 8px', borderRadius: '6px', border: '1px solid #FDE68A' }}>
+                                                                 <CalendarClock size={11} /> Date à renseigner
                                                              </span>
                                                          ) : patient.formattedDate}
                                                      </td>

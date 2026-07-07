@@ -265,6 +265,13 @@ export default function IntakeForm() {
         return (
             <div style={{ ...pageStyle, alignItems: 'center', justifyContent: 'center', padding: '32px' }}>
                 <div style={{ textAlign: 'center', maxWidth: '360px' }}>
+                    {/* Logo sl-ma.png au-dessus */}
+                    <img
+                        src={logoSlMa}
+                        alt="SurgiLink / Medical Alliance"
+                        style={{ height: '80px', objectFit: 'contain', marginBottom: '28px' }}
+                    />
+                    {/* Pastille verte */}
                     <div style={{
                         width: '80px', height: '80px', borderRadius: '50%',
                         background: 'linear-gradient(135deg, #10B981, #059669)',
@@ -278,7 +285,7 @@ export default function IntakeForm() {
                         Merci !
                     </h2>
                     <p style={{ color: '#6B7280', lineHeight: 1.7, fontSize: '15px' }}>
-                        Votre fiche de renseignements a bien été transmise au cabinet du <strong>Dr Desouches</strong>.
+                        Votre fiche de renseignements a bien été transmise au cabinet.
                         <br /><br />
                         Nous la prendrons en compte avant votre consultation.
                     </p>
@@ -289,6 +296,7 @@ export default function IntakeForm() {
             </div>
         );
     }
+
 
     // ── Submitting ──
     if (phase === 'submitting') {

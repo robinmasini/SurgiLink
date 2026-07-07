@@ -77,9 +77,9 @@ export default function NewIntakeModal({ isOpen, onClose, onSuccess }) {
                     <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)' }}>
                         <div style={{
                             width: '38px', height: '38px', borderRadius: '11px',
-                            background: 'linear-gradient(135deg, #7C3AED, #6D28D9)',
+                            background: 'linear-gradient(135deg, var(--color-success-500), var(--color-success-600))',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            boxShadow: '0 4px 14px rgba(109, 40, 217, 0.35)'
+                            boxShadow: '0 4px 14px rgba(16, 185, 129, 0.35)'
                         }}>
                             <ClipboardList size={18} color="white" />
                         </div>
@@ -105,13 +105,13 @@ export default function NewIntakeModal({ isOpen, onClose, onSuccess }) {
                         <>
                             {/* Explanation */}
                             <div style={{
-                                background: 'linear-gradient(135deg, rgba(124,58,237,0.06), rgba(109,40,217,0.03))',
-                                border: '1px solid rgba(124,58,237,0.15)',
+                                background: 'linear-gradient(135deg, rgba(var(--color-primary-rgb), 0.06), rgba(var(--color-primary-rgb), 0.03))',
+                                border: '1px solid rgba(var(--color-primary-rgb), 0.15)',
                                 borderRadius: '12px',
                                 padding: '12px 14px',
                                 marginBottom: 'var(--spacing-5)',
                                 fontSize: '13px',
-                                color: '#5B21B6',
+                                color: 'var(--color-primary-700)',
                                 lineHeight: 1.55
                             }}>
                                 📲 Entrez le <strong>numéro de téléphone</strong> du patient. Il recevra un SMS avec un lien pour remplir lui-même sa fiche de renseignements médicaux.
@@ -134,7 +134,7 @@ export default function NewIntakeModal({ isOpen, onClose, onSuccess }) {
                                         style={{
                                             position: 'absolute', left: '14px', top: '50%',
                                             transform: 'translateY(-50%)',
-                                            color: phone ? '#7C3AED' : 'var(--color-gray-400)',
+                                            color: phone ? 'var(--color-primary-500)' : 'var(--color-gray-400)',
                                             transition: 'color 0.2s'
                                         }}
                                     />
@@ -179,15 +179,14 @@ export default function NewIntakeModal({ isOpen, onClose, onSuccess }) {
                                 style={{
                                     width: '100%', height: '48px',
                                     background: isSending || !phone.trim()
-                                        ? 'rgba(124,58,237,0.4)'
-                                        : 'linear-gradient(135deg, #7C3AED, #6D28D9)',
+                                        ? 'rgba(16, 185, 129, 0.4)'
+                                        : 'linear-gradient(135deg, var(--color-success-500), var(--color-success-600))',
                                     border: 'none', borderRadius: '13px',
                                     color: 'white', fontWeight: '800', fontSize: '15px',
                                     cursor: isSending || !phone.trim() ? 'not-allowed' : 'pointer',
                                     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
-                                    boxShadow: phone.trim() ? '0 6px 20px rgba(109, 40, 217, 0.35)' : 'none',
-                                    transition: 'all 0.2s',
-                                    letterSpacing: '0.02em'
+                                    boxShadow: phone.trim() ? '0 6px 20px rgba(16, 185, 129, 0.35)' : 'none',
+                                    transform: phone.trim() && !isSending ? 'translateY(-2px)' : 'none'
                                 }}
                             >
                                 {isSending ? (

@@ -5,14 +5,20 @@ const INTERVENTIONS = [
     {
         category: "Visage",
         options: [
+            "Paupières",
+            "Lifting",
+            "Rhinoplastie",
+            "Botox",
+            "Acide Hyaluronique",
+            "Peeling",
             "Rhinoplastie (nez) / rhinoseptoplastie",
-            "Blépharoplastie (paupières sup/inf)",
+            "Blépharoplastie / Paupières (sup/inf)",
             "Lifting cervico-facial (visage + cou)",
             "Mini-lift / lifting temporal (sourcils/haut du visage)",
             "Lifting frontal / lifting des sourcils",
             "Otoplastie (oreilles décollées)",
             "Génioplastie (menton : avancée/recul)",
-            "Implants menton/joues (plus rare selon cabinets)",
+            "Implants menton/joues",
             "Bichectomie (boules de Bichat)",
             "Lifting des lèvres (lip lift)",
             "Chirurgie des pommettes (implants / remodelage)",
@@ -29,7 +35,10 @@ const INTERVENTIONS = [
     {
         category: "Poitrine",
         options: [
-            "Augmentation mammaire (implants ou lipofilling)",
+            "Prothèses mammaires",
+            "Ptose mammaire",
+            "Prothèses mammaires / Augmentation mammaire (implants ou lipofilling)",
+            "Ptose mammaire (affaissement de la poitrine)",
             "Réduction mammaire",
             "Lifting mammaire (mastopexie) avec ou sans implants",
             "Chirurgie de gynécomastie (poitrine chez l’homme)",
@@ -65,9 +74,12 @@ const INTERVENTIONS = [
     {
         category: "Intime",
         options: [
+            "Nymphoplastie",
+            "Pénoplastie",
             "Nymphoplastie / labioplastie (réduction des petites lèvres)",
             "Vaginoplastie (resserrement, selon indications)",
             "Pénoplastie (allongement/épaississement, selon techniques et indications)",
+            "Éjaculation Précoce",
             "Liposuccion du pubis (mont de Vénus)"
         ]
     },

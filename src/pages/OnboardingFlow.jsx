@@ -4,8 +4,7 @@ import { ArrowRight, MessageSquare, CheckCircle2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { validateToken } from '../services/tokenService';
 import { saveResponse, markScreenCompleted } from '../services/pathwayService';
-import logoSurgilinkGreen from '../assets/logo_surgilink_premium_green.png';
-import logoMedicalAlliance from '../assets/logo-medical-alliance.png';
+import logoSlMa from '../assets/logo-sl-ma.png';
 import medecinImg from '../assets/medecin.png';
 import smsImg from '../assets/sms.png';
 import cardMedicalImg from '../assets/card-medical.png';
@@ -173,19 +172,10 @@ export default function OnboardingFlow() {
                                 gap: isMobile ? '12px' : '18px'
                             }}>
                                 <img 
-                                    src={logoSurgilinkGreen} 
-                                    alt="SurgiLink" 
+                                    src={logoSlMa} 
+                                    alt="SurgiLink / Medical Alliance" 
                                     style={{ 
-                                        height: isMobile ? '105px' : '150px', 
-                                        objectFit: 'contain', 
-                                        transition: 'height 0.3s ease' 
-                                    }} 
-                                />
-                                <img 
-                                    src={logoMedicalAlliance} 
-                                    alt="Medical Alliance" 
-                                    style={{ 
-                                        height: isMobile ? '78px' : '105px', 
+                                        height: isMobile ? '140px' : '200px', 
                                         objectFit: 'contain', 
                                         transition: 'height 0.3s ease' 
                                     }} 
