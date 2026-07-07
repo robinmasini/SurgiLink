@@ -205,6 +205,80 @@ export default function IntakeForm() {
         load();
     }, [token]);
 
+    const validateCurrentStep = () => {
+        let error = '';
+        switch (formStep) {
+            case 1:
+                if (!form.first_name || !form.last_name || !form.birth_date || !form.phone) {
+                    error = 'Veuillez remplir les champs obligatoires (prénom, nom, date de naissance, téléphone).';
+                }
+                break;
+            case 2:
+                break;
+            case 3:
+                if (form.referral_source.length === 0 && !form.referral_other) {
+                    error = 'Veuillez indiquer comment vous avez connu le cabinet.';
+                }
+                break;
+            case 4:
+                if (!form.height_cm || !form.weight_kg) {
+                    error = 'Veuillez renseigner votre taille et votre poids.';
+                } else if (form.has_allergies === null || form.is_smoker === null || form.has_treatment === null) {
+                    error = 'Veuillez répondre par Oui ou Non à toutes les questions médicales.';
+                } else if (form.has_allergies && !form.allergies_detail) {
+                    error = 'Veuillez préciser vos allergies.';
+                } else if (form.has_treatment && !form.treatment_detail) {
+                    error = 'Veuillez préciser votre traitement médical.';
+                }
+                break;
+            case 5:
+                if (form.consultation_reasons.length === 0 && !form.consultation_other) {
+                    error = 'Veuillez sélectionner au moins un motif de consultation.';
+                }
+                break;
+            case 6:
+                if (!form.discomfort_level || !form.discomfort_duration) {
+                    error = 'Veuillez qualifier votre gêne esthétique.';
+                } else if (form.previous_consultation === null || form.has_aesthetic_interventions === null) {
+                    error = 'Veuillez répondre par Oui ou Non aux questions (consultations et interventions précédentes).';
+                } else if (form.has_aesthetic_interventions && form.aesthetic_satisfied === null) {
+                    error = 'Veuillez préciser si vous étiez satisfait(e) de vos interventions esthétiques précédentes.';
+                }
+                break;
+            case 7:
+                break;
+            case 8:
+                if (form.previous_surgery === null || form.easy_hematomas === null || form.keloid_scars === null || form.autoimmune_family === null) {
+                    error = 'Veuillez répondre à toutes les questions sur vos antécédents.';
+                } else if (form.previous_surgery && !form.previous_surgery_detail) {
+                    error = 'Veuillez préciser vos interventions chirurgicales précédentes.';
+                } else if (form.surgical_complications && !form.complications_detail) {
+                    error = 'Veuillez préciser les complications rencontrées.';
+                } else if (form.autoimmune_family && !form.autoimmune_detail) {
+                    error = 'Veuillez préciser les maladies auto-immunes.';
+                } else if (!form.signed_city || !form.signed_date) {
+                    error = 'Veuillez remplir la signature électronique (Lieu et Date).';
+                }
+                break;
+            default:
+                break;
+        }
+
+        if (error) {
+            setErrorMsg(error);
+            return false;
+        } else {
+            setErrorMsg('');
+            return true;
+        }
+    };
+
+    const handleNext = () => {
+        if (validateCurrentStep()) {
+            setFormStep(s => s + 1);
+        }
+    };
+
     const handleSubmit = async () => {
         setPhase('submitting');
         const result = await submitIntakeForm(token, form);
@@ -533,7 +607,7 @@ export default function IntakeForm() {
                                 <StyledInput value={form.last_name} onChange={e => setF('last_name', e.target.value)} placeholder="DUPONT" />
                             </Field>
                         </div>
-                        <Field label="Nom de jeune fille" hint="Si différent du nom actuel">
+                        <Field label="Nom de jeune fille / Homme" hint="Si différent du nom actuel">
                             <StyledInput value={form.maiden_name} onChange={e => setF('maiden_name', e.target.value)} placeholder="Optionnel" />
                         </Field>
                         <Field label="Date de naissance" required>
@@ -890,12 +964,6 @@ export default function IntakeForm() {
                                 En soumettant ce formulaire, je certifie que les informations renseignées sont exactes et sincères. Je comprends qu'elles seront utilisées dans le cadre de ma prise en charge médicale au cabinet du Dr Desouches.
                             </div>
                         </div>
-
-                        {errorMsg && (
-                            <div style={{ background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: '10px', padding: '12px', fontSize: '13px', color: '#DC2626' }}>
-                                ⚠️ {errorMsg}
-                            </div>
-                        )}
                     </div>
                 );
 
@@ -959,6 +1027,11 @@ const progress = (formStep / TOTAL_STEPS) * 100;
                         {formStep}. {STEP_LABELS[formStep - 1]}
                     </h2>
                     {renderStep()}
+                    {errorMsg && (
+                        <div style={{ marginTop: '16px', background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: '10px', padding: '12px', fontSize: '13px', color: '#DC2626' }}>
+                            ⚠️ {errorMsg}
+                        </div>
+                    )}
                 </div>
 
                 {/* Navigation buttons */}
@@ -987,7 +1060,7 @@ const progress = (formStep / TOTAL_STEPS) * 100;
                     )}
                     {formStep < TOTAL_STEPS ? (
                         <button
-                            onClick={() => setFormStep(s => s + 1)}
+                            onClick={handleNext}
                             style={{
                                 flex: 1,
                                 height: '50px',
@@ -1011,7 +1084,11 @@ const progress = (formStep / TOTAL_STEPS) * 100;
                         </button>
                     ) : (
                         <button
-                            onClick={handleSubmit}
+                            onClick={() => {
+                                if (validateCurrentStep()) {
+                                    handleSubmit();
+                                }
+                            }}
                             style={{
                                 flex: 1,
                                 height: '50px',

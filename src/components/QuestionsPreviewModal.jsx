@@ -349,7 +349,7 @@ export default function QuestionsPreviewModal({ isOpen, onClose }) {
                             {[
                                 {
                                     num: '1', title: 'Informations personnelles', icon: '👤',
-                                    fields: ['Nom, prénom, nom de jeune fille', 'Date de naissance', 'Adresse complète (rue, CP, ville)', 'Téléphone & email', 'Personne à prévenir en cas d\'urgence (nom + tél)']
+                                    fields: ['Nom, prénom, nom de jeune fille / Homme', 'Date de naissance', 'Adresse complète (rue, CP, ville)', 'Téléphone & email', 'Personne à prévenir en cas d\'urgence (nom + tél)']
                                 },
                                 {
                                     num: '2', title: 'Médecins référents', icon: '🩺',
