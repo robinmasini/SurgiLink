@@ -38,7 +38,6 @@ import wppPhone from '../assets/wpp-phone-v2.png';
 import wppDesktop from '../assets/wpp-desktop-v2.png';
 
 import logoSlMa from '../assets/logo-sl-ma.png';
-import CustomQuestionsModal from '../components/CustomQuestionsModal';
 import clinicImg from '../assets/clinic.jpg';
 import clinic2Img from '../assets/clinic-2.png';
 import suiviCard from '../assets/suivi-card.png';
