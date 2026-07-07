@@ -90,13 +90,8 @@ export default function EditPatientModal({ isOpen, onClose, patient, onPatientUp
     if (!isOpen || !patient) return null;
 
     const handleSave = async () => {
-        if (!formData.firstName || !formData.lastName || !formData.operation) {
-            alert('Veuillez remplir le prénom, le nom et l\'intervention.');
-            return;
-        }
-
-        if (!formData.clinicName) {
-            alert('Veuillez renseigner la clinique.');
+        if (!formData.firstName || !formData.lastName || !formData.operation || !formData.clinicName) {
+            alert('Veuillez remplir le prénom, le nom, l\'intervention et choisir une clinique.');
             return;
         }
 
