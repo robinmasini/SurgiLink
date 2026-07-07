@@ -186,11 +186,12 @@ export default function IntakeForm() {
             setPatient(result.patient);
             // Pre-fill name/phone from patient record if available
             if (result.patient) {
+                const isNouveauPatient = result.patient.name === 'Nouveau patient';
                 const nameParts = (result.patient.name || '').split(' ');
                 setForm(prev => ({
                     ...prev,
-                    first_name: result.patient.name && result.patient.name !== 'Nouveau patient' ? nameParts[0] || '' : '',
-                    last_name: nameParts.slice(1).join(' ') || '',
+                    first_name: isNouveauPatient ? '' : (nameParts[0] || ''),
+                    last_name: isNouveauPatient ? '' : (nameParts.slice(1).join(' ') || ''),
                     phone: result.patient.phone || '',
                     email: result.patient.email || '',
                 }));
