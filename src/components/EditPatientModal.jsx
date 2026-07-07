@@ -69,7 +69,7 @@ export default function EditPatientModal({ isOpen, onClose, patient, onPatientUp
                 appointmentDatetime: patient.appointment_datetime ? new Date(patient.appointment_datetime).toISOString().slice(0, 16) : '',
                 surgeonName: patient.surgeon_name || '',
                 surgeryTime: patient.surgery_time || '07:30',
-                stayType: patient.stay_type || 'Ambulatoire',
+                stayType: patient.stay_type || '',
                 reminderTime: patient.reminder_time || '08:30',
                 ipp: patient.ipp || '',
                 stayNumber: patient.stay_number || '',
@@ -92,6 +92,11 @@ export default function EditPatientModal({ isOpen, onClose, patient, onPatientUp
     const handleSave = async () => {
         if (!formData.firstName || !formData.lastName || !formData.operation) {
             alert('Veuillez remplir le prénom, le nom et l\'intervention.');
+            return;
+        }
+
+        if (formData.date && !formData.stayType) {
+            alert('Veuillez renseigner le type de séjour (Ambulatoire ou Hospitalisation).');
             return;
         }
 
@@ -261,6 +266,7 @@ export default function EditPatientModal({ isOpen, onClose, patient, onPatientUp
                                     value={formData.stayType}
                                     onChange={(e) => setFormData({ ...formData, stayType: e.target.value })}
                                 >
+                                    <option value="" disabled>Non renseigné</option>
                                     <option value="Ambulatoire">Ambulatoire</option>
                                     <option value="Hospitalisation">Hospitalisation</option>
                                 </select>

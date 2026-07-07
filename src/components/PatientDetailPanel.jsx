@@ -331,7 +331,7 @@ export default function PatientDetailPanel({ patient, responses = [], onClose })
                     </div>
                     <div style={STYLES.infoCard}>
                         <div style={{ fontSize: '10px', color: 'var(--color-gray-400)', textTransform: 'uppercase', fontWeight: '700' }}>Mode de séjour</div>
-                        <div style={{ fontSize: 'var(--font-size-sm)', fontWeight: '600' }}>{patient.stay_type || 'Ambulatoire'}</div>
+                        <div style={{ fontSize: 'var(--font-size-sm)', fontWeight: '600' }}>{patient.stay_type || 'Non renseigné'}</div>
                     </div>
                 </div>
 

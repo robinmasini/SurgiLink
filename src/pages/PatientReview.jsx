@@ -774,7 +774,7 @@ export default function PatientReview() {
                                             fontWeight: '700',
                                             borderRadius: '20px'
                                         }}>
-                                            {patient.stay_type || 'Ambulatoire'}
+                                            {patient.stay_type || 'Non renseigné'}
                                         </span>
                                         {(patient.operation || '').split(', ').filter(Boolean).map((op, i) => (
                                             <span key={i} className="badge" style={{

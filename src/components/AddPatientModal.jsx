@@ -33,7 +33,7 @@ export default function AddPatientModal({ isOpen, onClose, onSuccess }) {
         email: '',
         surgeonName: 'Christophe DESOUCHES',
         surgeryTime: 'Non-communiquée',
-        stayType: 'Ambulatoire',
+        stayType: '',
         clinicName: '',
         
         // DPI fields
@@ -291,7 +291,7 @@ Les clés doivent être exactement :
             birthDate: data.birth_date || '',
             operation: data.operation || '',
             surgeonName: data.surgeon_name ? (data.surgeon_name.includes('DESOUCHES') ? 'Christophe DESOUCHES' : data.surgeon_name) : 'Christophe DESOUCHES',
-            stayType: data.stay_type || 'Ambulatoire',
+            stayType: data.stay_type || '',
             date: data.date || (data.admission_datetime ? data.admission_datetime.split('T')[0] : ''),
             surgeryTime: data.admission_datetime ? new Date(data.admission_datetime).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : 'Non-communiquée',
             phone: data.phone || '+33 ',
@@ -318,6 +318,10 @@ Les clés doivent être exactement :
     const handleSave = async () => {
         if (!formData.firstName || !formData.lastName || !formData.operation || !formData.clinicName) {
             alert('Veuillez remplir le prénom, le nom, l\'intervention et choisir une clinique.');
+            return;
+        }
+        if (formData.date && !formData.stayType) {
+            alert('Veuillez renseigner le type de séjour si la date d\'intervention est définie.');
             return;
         }
 
@@ -752,6 +756,7 @@ Les clés doivent être exactement :
                                                 value={formData.stayType}
                                                 onChange={(e) => setFormData({ ...formData, stayType: e.target.value })}
                                             >
+                                                <option value="" disabled>Non renseigné</option>
                                                 <option value="Ambulatoire">Ambulatoire</option>
                                                 <option value="Hospitalisation">Hospitalisation</option>
                                             </select>
