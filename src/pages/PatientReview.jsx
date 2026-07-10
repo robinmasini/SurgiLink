@@ -906,6 +906,32 @@ export default function PatientReview() {
                             </div>
                         </div>
 
+                        {/* ID Card Display */}
+                        {intakeData?.id_card_recto && (
+                            <div className="card glass-effect patient-card" style={{ marginTop: 'var(--spacing-6)' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)', marginBottom: 'var(--spacing-6)', borderBottom: '1px solid rgba(0,0,0,0.05)', paddingBottom: 'var(--spacing-4)' }}>
+                                    <div>
+                                        <h3 style={{ margin: 0, fontSize: 'var(--font-size-lg)', fontWeight: '700' }}>Pièce d'identité</h3>
+                                        <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: 'var(--color-gray-500)' }}>Transmise via la fiche de renseignements</p>
+                                    </div>
+                                </div>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-6)' }}>
+                                    <div>
+                                        <div style={{ fontSize: '12px', fontWeight: '800', color: 'var(--color-gray-500)', textTransform: 'uppercase', marginBottom: '8px' }}>Recto</div>
+                                        <img src={intakeData.id_card_recto} alt="ID Recto" style={{ width: '100%', borderRadius: '8px', border: '1px solid #E5E7EB' }} />
+                                    </div>
+                                    <div>
+                                        <div style={{ fontSize: '12px', fontWeight: '800', color: 'var(--color-gray-500)', textTransform: 'uppercase', marginBottom: '8px' }}>Verso</div>
+                                        {intakeData.id_card_verso ? (
+                                            <img src={intakeData.id_card_verso} alt="ID Verso" style={{ width: '100%', borderRadius: '8px', border: '1px solid #E5E7EB' }} />
+                                        ) : (
+                                            <div style={{ padding: '20px', textAlign: 'center', background: '#F9FAFB', borderRadius: '8px', border: '1px dashed #E5E7EB', color: '#6B7280', fontSize: '12px' }}>Non fourni</div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
                         {/* 2. Administrative Data Card */}
                         {(patient.ipp || patient.stay_number || patient.room_number || patient.admission_datetime || patient.discharge_datetime) ? (
                             <div className="card glass-effect patient-card" style={{ marginTop: 'var(--spacing-6)' }}>

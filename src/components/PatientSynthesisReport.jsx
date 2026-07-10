@@ -247,12 +247,14 @@ export default function PatientSynthesisReport({
         </div>
     );
 
+    const totalPages = intakeData?.id_card_recto ? 3 : 2;
+
     return (
         <div id="patient-synthesis-report">
 
             {/* ═══════════════════ PAGE 1 ═══════════════════ */}
             <div className="pdf-page" style={pageStyle}>
-                <ReportHeader pageNumber={1} totalPages={2} />
+                <ReportHeader pageNumber={1} totalPages={totalPages} />
                 <PatientBlock />
 
                 {/* Clinical Responses - Part 1 (Pre-op & Early Post-op) */}
@@ -308,7 +310,7 @@ export default function PatientSynthesisReport({
 
             {/* ═══════════════════ PAGE 2 ═══════════════════ */}
             <div className="pdf-page" style={pageStyle}>
-                <ReportHeader pageNumber={2} totalPages={2} />
+                <ReportHeader pageNumber={2} totalPages={totalPages} />
 
                 {/* Clinical Responses - Part 2 (Satisfaction) */}
                 {['J4_Satisfaction', 'ESATIS'].map(screenKey => {
@@ -434,6 +436,27 @@ export default function PatientSynthesisReport({
 
                 <ReportFooter />
             </div>
+
+            {/* ═══════════════════ PAGE 3 (ID CARDS) ═══════════════════ */}
+            {intakeData?.id_card_recto && (
+                <div className="pdf-page" style={pageStyle}>
+                    <ReportHeader pageNumber={3} totalPages={totalPages} />
+                    <h2 style={h2Style}>Pièce d'identité</h2>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '20px', marginTop: '20px' }}>
+                        <div style={{ textAlign: 'center' }}>
+                            <div style={{ fontSize: '12px', fontWeight: 'bold', marginBottom: '8px', color: '#555' }}>Recto</div>
+                            <img src={intakeData.id_card_recto} alt="Recto" style={{ maxWidth: '80%', maxHeight: '400px', border: '1px solid #CCC', borderRadius: '8px' }} />
+                        </div>
+                        {intakeData.id_card_verso && (
+                            <div style={{ textAlign: 'center' }}>
+                                <div style={{ fontSize: '12px', fontWeight: 'bold', marginBottom: '8px', color: '#555' }}>Verso</div>
+                                <img src={intakeData.id_card_verso} alt="Verso" style={{ maxWidth: '80%', maxHeight: '400px', border: '1px solid #CCC', borderRadius: '8px' }} />
+                            </div>
+                        )}
+                    </div>
+                    <ReportFooter />
+                </div>
+            )}
         </div>
     );
 }

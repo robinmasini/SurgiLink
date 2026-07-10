@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowRight, ArrowLeft, CheckCircle, Loader, AlertCircle } from 'lucide-react';
+import { ArrowRight, ArrowLeft, CheckCircle, Loader, AlertCircle, Camera, Image as ImageIcon } from 'lucide-react';
 import { getIntakeByToken, submitIntakeForm } from '../services/intakeService';
 import logoSlMa from '../assets/logo-sl-ma.png';
 import medecinImg from '../assets/medecin.png';
@@ -164,10 +164,48 @@ export default function IntakeForm() {
         easy_hematomas: null, keloid_scars: null,
         autoimmune_family: null, autoimmune_detail: '',
         family_history_other: '',
+        id_card_recto: '', id_card_verso: '',
         signed_city: '', signed_date: new Date().toISOString().split('T')[0],
     });
 
     const setF = useCallback((key, val) => setForm(prev => ({ ...prev, [key]: val })), []);
+
+    const processImageToBase64 = (file) => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = (event) => {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 1200;
+                    const MAX_HEIGHT = 1200;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height *= MAX_WIDTH / width;
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width *= MAX_HEIGHT / height;
+                            height = MAX_HEIGHT;
+                        }
+                    }
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    resolve(canvas.toDataURL('image/jpeg', 0.7));
+                };
+                img.onerror = (err) => reject(err);
+            };
+            reader.onerror = (err) => reject(err);
+        });
+    };
 
     useEffect(() => {
         const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -212,6 +250,8 @@ export default function IntakeForm() {
             case 1:
                 if (!form.first_name || !form.last_name || !form.birth_date || !form.phone) {
                     error = 'Veuillez remplir les champs obligatoires (prénom, nom, date de naissance, téléphone).';
+                } else if (!form.id_card_recto || !form.id_card_verso) {
+                    error = 'Veuillez fournir votre pièce d\'identité recto et verso.';
                 }
                 break;
             case 2:
@@ -646,6 +686,88 @@ export default function IntakeForm() {
                                 </Field>
                             </div>
                         </div>
+
+                        {/* ID Card Upload */}
+                        <div style={{ background: '#F9FAFB', borderRadius: '14px', padding: '14px', border: '1px solid #F3F4F6' }}>
+                            <p style={{ margin: '0 0 12px', fontSize: '12px', fontWeight: '800', color: 'var(--color-primary-500)', textTransform: 'uppercase' }}>
+                                Pièce d'identité
+                            </p>
+                            <p style={{ margin: '0 0 12px', fontSize: '12px', color: '#6B7280' }}>
+                                Veuillez nous transmettre une copie de votre pièce d'identité (recto/verso) pour votre dossier.
+                            </p>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                                <div>
+                                    <label style={{
+                                        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                                        background: form.id_card_recto ? '#ECFDF5' : 'white',
+                                        border: `2px dashed ${form.id_card_recto ? '#10B981' : '#D1D5DB'}`,
+                                        borderRadius: '12px', padding: '16px 8px', cursor: 'pointer', transition: 'all 0.2s', textAlign: 'center'
+                                    }}>
+                                        {form.id_card_recto ? (
+                                            <>
+                                                <CheckCircle size={28} color="#10B981" style={{ marginBottom: '8px' }} />
+                                                <span style={{ fontSize: '13px', fontWeight: '700', color: '#065F46' }}>Recto chargé</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <div style={{ display: 'flex', gap: '8px', marginBottom: '8px', color: '#9CA3AF' }}>
+                                                    <Camera size={22} />
+                                                    <ImageIcon size={22} />
+                                                </div>
+                                                <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--color-primary-600)' }}>Ajouter Recto</span>
+                                                <span style={{ fontSize: '10px', color: '#9CA3AF', marginTop: '4px' }}>Photo ou Galerie</span>
+                                            </>
+                                        )}
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={async (e) => {
+                                                if (e.target.files && e.target.files[0]) {
+                                                    const b64 = await processImageToBase64(e.target.files[0]);
+                                                    setF('id_card_recto', b64);
+                                                }
+                                            }}
+                                            style={{ display: 'none' }}
+                                        />
+                                    </label>
+                                </div>
+                                <div>
+                                    <label style={{
+                                        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                                        background: form.id_card_verso ? '#ECFDF5' : 'white',
+                                        border: `2px dashed ${form.id_card_verso ? '#10B981' : '#D1D5DB'}`,
+                                        borderRadius: '12px', padding: '16px 8px', cursor: 'pointer', transition: 'all 0.2s', textAlign: 'center'
+                                    }}>
+                                        {form.id_card_verso ? (
+                                            <>
+                                                <CheckCircle size={28} color="#10B981" style={{ marginBottom: '8px' }} />
+                                                <span style={{ fontSize: '13px', fontWeight: '700', color: '#065F46' }}>Verso chargé</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <div style={{ display: 'flex', gap: '8px', marginBottom: '8px', color: '#9CA3AF' }}>
+                                                    <Camera size={22} />
+                                                    <ImageIcon size={22} />
+                                                </div>
+                                                <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--color-primary-600)' }}>Ajouter Verso</span>
+                                                <span style={{ fontSize: '10px', color: '#9CA3AF', marginTop: '4px' }}>Photo ou Galerie</span>
+                                            </>
+                                        )}
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={async (e) => {
+                                                if (e.target.files && e.target.files[0]) {
+                                                    const b64 = await processImageToBase64(e.target.files[0]);
+                                                    setF('id_card_verso', b64);
+                                                }
+                                            }}
+                                            style={{ display: 'none' }}
+                                        />
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 );
 
@@ -947,6 +1069,8 @@ export default function IntakeForm() {
                                 </Field>
                             </div>
                         </div>
+
+
 
                         {/* Signature */}
                         <div style={{ background: 'white', borderRadius: '14px', padding: '16px', border: '1.5px solid #E5E7EB' }}>

@@ -68,6 +68,8 @@ CREATE TABLE IF NOT EXISTS public.intake_form_responses (
     family_history_other        TEXT,
 
     -- Méta / Signature
+    id_card_recto               TEXT,
+    id_card_verso               TEXT,
     has_aesthetic_interventions BOOLEAN,
     aesthetic_satisfied         BOOLEAN,
     signed_city                 TEXT,

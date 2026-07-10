@@ -222,6 +222,8 @@ export async function submitIntakeForm(token, formData) {
             // Méta
             has_aesthetic_interventions: formData.has_aesthetic_interventions ?? null,
             aesthetic_satisfied: formData.aesthetic_satisfied ?? null,
+            id_card_recto: formData.id_card_recto || null,
+            id_card_verso: formData.id_card_verso || null,
             signed_city: formData.signed_city || null,
             signed_date: formData.signed_date || new Date().toISOString().split('T')[0],
         };
