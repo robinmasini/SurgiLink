@@ -727,7 +727,7 @@ export default function IntakeForm() {
                                                     setF('id_card_recto', b64);
                                                 }
                                             }}
-                                            style={{ display: 'none' }}
+                                            style={{ position: 'absolute', width: '1px', height: '1px', padding: 0, margin: '-1px', overflow: 'hidden', clip: 'rect(0,0,0,0)', border: 0 }}
                                         />
                                     </label>
                                 </div>
@@ -762,7 +762,7 @@ export default function IntakeForm() {
                                                     setF('id_card_verso', b64);
                                                 }
                                             }}
-                                            style={{ display: 'none' }}
+                                            style={{ position: 'absolute', width: '1px', height: '1px', padding: 0, margin: '-1px', overflow: 'hidden', clip: 'rect(0,0,0,0)', border: 0 }}
                                         />
                                     </label>
                                 </div>
