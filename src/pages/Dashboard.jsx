@@ -779,8 +779,11 @@ export default function Dashboard() {
                                             </td>
                                             <td style={{ padding: 'var(--spacing-3) var(--spacing-4)' }}>
                                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'flex-start' }}>
-                                                    {!patient.date && (
-                                                        <span style={{ padding: '2px 8px', borderRadius: '4px', background: 'var(--color-danger-50)', color: 'var(--color-danger-600)', border: '1px solid var(--color-danger-100)', fontWeight: '700', fontSize: '11px' }}>Date d'intervention inconnue</span>
+                                                    {!patient.date && patient.status !== 'intake' && (
+                                                        <span style={{ padding: '2px 8px', borderRadius: '4px', background: 'var(--color-success-50)', color: 'var(--color-success-600)', border: '1px solid var(--color-success-200)', fontWeight: '700', fontSize: '11px' }}>À jour ✓</span>
+                                                    )}
+                                                    {!patient.date && patient.status === 'intake' && (
+                                                        <span style={{ padding: '2px 8px', borderRadius: '4px', background: '#FEF3C7', color: '#D97706', border: '1px solid #FDE68A', fontWeight: '700', fontSize: '11px' }}>Date à renseigner</span>
                                                     )}
                                                     <PatientStatusBadges
                                                         responses={responses[patient.id] || []}
