@@ -525,6 +525,25 @@ export default function Patients() {
                                                                      À jour
                                                                  </div>
                                                              )}
+                                                             {!patient.date && patient.status !== 'intake' && patient.stay_type !== 'Consultation' && (
+                                                                 <div style={{
+                                                                     display: 'inline-flex',
+                                                                     alignItems: 'center',
+                                                                     gap: '3px',
+                                                                     color: 'var(--color-danger-600)',
+                                                                     fontWeight: '700',
+                                                                     fontSize: '9px',
+                                                                     background: 'var(--color-danger-50)',
+                                                                     padding: '2px 7px',
+                                                                     borderRadius: '5px',
+                                                                     border: '1px solid var(--color-danger-100)',
+                                                                     lineHeight: '1',
+                                                                     whiteSpace: 'nowrap'
+                                                                 }}>
+                                                                     <CalendarOff size={9} />
+                                                                     Date d'intervention inconnue
+                                                                 </div>
+                                                             )}
                                                          </div>
                                                          <div style={{ fontSize: '11px', color: patient.status === 'intake' ? '#9CA3AF' : 'var(--color-gray-500)' }}>
                                                              {patient.status === 'intake' ? '—' : patient.operation}
@@ -534,9 +553,14 @@ export default function Patients() {
                                             </td>
                                             <td style={{ padding: 'var(--spacing-3) var(--spacing-4)' }}>
                                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'flex-start' }}>
-                                                    {!patient.date && patient.status !== 'intake' && (
-                                                        <span style={{ padding: '2px 8px', borderRadius: '4px', background: 'var(--color-success-50)', color: 'var(--color-success-600)', border: '1px solid var(--color-success-200)', fontWeight: '700', fontSize: '11px' }}>À jour ✓</span>
-                                                    )}
+                                                    <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+                                                        {!patient.date && patient.status !== 'intake' && (
+                                                            <span style={{ padding: '2px 8px', borderRadius: '4px', background: 'var(--color-success-50)', color: 'var(--color-success-600)', border: '1px solid var(--color-success-200)', fontWeight: '700', fontSize: '11px' }}>À jour ✓</span>
+                                                        )}
+                                                        {!patient.date && patient.status !== 'intake' && patient.stay_type !== 'Consultation' && (
+                                                            <span style={{ padding: '2px 8px', borderRadius: '4px', background: 'var(--color-danger-50)', color: 'var(--color-danger-600)', border: '1px solid var(--color-danger-100)', fontWeight: '700', fontSize: '11px' }}>Date d'intervention inconnue</span>
+                                                        )}
+                                                    </div>
                                                     {!patient.date && patient.status === 'intake' && (
                                                         <span style={{ padding: '2px 8px', borderRadius: '4px', background: '#FEF3C7', color: '#D97706', border: '1px solid #FDE68A', fontWeight: '700', fontSize: '11px' }}>Date à renseigner</span>
                                                     )}
