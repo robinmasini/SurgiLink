@@ -359,7 +359,7 @@ export default function EditPatientModal({ isOpen, onClose, patient, onPatientUp
 
                             <div style={{ display: 'grid', gap: 'var(--spacing-3)' }}>
                                 <div>
-                                    <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Nom de la Clinique</label>
+                                    <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Clinique ou Établissement</label>
                                     <div style={{ position: 'relative' }}>
                                         <MapPin size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-gray-400)' }} />
                                         <select
@@ -368,9 +368,11 @@ export default function EditPatientModal({ isOpen, onClose, patient, onPatientUp
                                             value={formData.clinicName}
                                             onChange={(e) => setFormData({ ...formData, clinicName: e.target.value })}
                                         >
-                                            <option value="" disabled>Sélectionnez une clinique</option>
+                                            <option value="" disabled>Sélectionnez un établissement</option>
                                             <option value="Clinique de Vitrolles">Clinique de Vitrolles</option>
-                                            <option value="Clinique Phenicia Marseille">Clinique Phenicia Marseille</option>
+                                            <option value="Clinique Phenicia Marseille">Clinique Phénicia Marseille</option>
+                                            <option value="Medical Alliance Aix en Provence">Medical Alliance Aix en Provence</option>
+                                            <option value="Medical Alliance Marseille">Medical Alliance Marseille</option>
                                         </select>
                                     </div>
                                 </div>

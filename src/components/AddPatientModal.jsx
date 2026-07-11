@@ -794,16 +794,18 @@ Les clés doivent être exactement :
 
                                     <div className="grid-2">
                                         <div>
-                                            <label className="form-label-add">Nom de la Clinique *</label>
+                                            <label className="form-label-add">Clinique ou Établissement *</label>
                                             <select
                                                 className="input"
                                                 value={formData.clinicName}
                                                 onChange={(e) => setFormData({ ...formData, clinicName: e.target.value })}
                                                 required
                                             >
-                                                <option value="" disabled>Sélectionnez une clinique</option>
+                                                <option value="" disabled>Sélectionnez un établissement</option>
                                                 <option value="Clinique de Vitrolles">Clinique de Vitrolles</option>
-                                                <option value="Clinique Phenicia Marseille">Clinique Phenicia Marseille</option>
+                                                <option value="Clinique Phenicia Marseille">Clinique Phénicia Marseille</option>
+                                                <option value="Medical Alliance Aix en Provence">Medical Alliance Aix en Provence</option>
+                                                <option value="Medical Alliance Marseille">Medical Alliance Marseille</option>
                                             </select>
                                         </div>
                                         <div>
