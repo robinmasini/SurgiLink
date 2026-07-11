@@ -1104,7 +1104,7 @@ const progress = (formStep / TOTAL_STEPS) * 100;
             <div style={containerStyle}>
             {/* ── Logo à gauche ── */}
             <div style={{ display: 'flex', justifyContent: 'flex-start', paddingTop: '8px', marginBottom: '14px' }}>
-                <img src={logoSlMa} alt="SurgiLink / Medical Alliance" style={{ height: isMobile ? '65px' : '82px', objectFit: 'contain' }} />
+                <img src={logoSlMa} alt="SurgiLink / Medical Alliance" style={{ width: '100%', maxWidth: isMobile ? '200px' : '260px', height: 'auto', objectFit: 'contain' }} />
             </div>
 
             {/* ── Step indicator à gauche, sous le logo ── */}
