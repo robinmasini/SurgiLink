@@ -116,6 +116,7 @@ export default function PatientReview() {
     const [isSecureLinkDrawerOpen, setIsSecureLinkDrawerOpen] = useState(false);
     const [isHistoryDrawerOpen, setIsHistoryDrawerOpen] = useState(false);
     const [intakeData, setIntakeData] = useState(null);
+    const [selectedImage, setSelectedImage] = useState(null);
     const reportRef = useRef(null);
     const fileInputRef = useRef(null);
 
@@ -915,17 +916,27 @@ export default function PatientReview() {
                                         <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: 'var(--color-gray-500)' }}>Transmise via la fiche de renseignements</p>
                                     </div>
                                 </div>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-6)' }}>
+                                <div style={{ display: 'flex', gap: 'var(--spacing-6)' }}>
                                     <div>
                                         <div style={{ fontSize: '12px', fontWeight: '800', color: 'var(--color-gray-500)', textTransform: 'uppercase', marginBottom: '8px' }}>Recto</div>
-                                        <img src={intakeData.id_card_recto} alt="ID Recto" style={{ width: '100%', borderRadius: '8px', border: '1px solid #E5E7EB' }} />
+                                        <img 
+                                            src={intakeData.id_card_recto} 
+                                            alt="ID Recto" 
+                                            style={{ height: '80px', width: 'auto', borderRadius: '8px', border: '1px solid #E5E7EB', cursor: 'pointer', objectFit: 'cover' }} 
+                                            onClick={() => setSelectedImage(intakeData.id_card_recto)}
+                                        />
                                     </div>
                                     <div>
                                         <div style={{ fontSize: '12px', fontWeight: '800', color: 'var(--color-gray-500)', textTransform: 'uppercase', marginBottom: '8px' }}>Verso</div>
                                         {intakeData.id_card_verso ? (
-                                            <img src={intakeData.id_card_verso} alt="ID Verso" style={{ width: '100%', borderRadius: '8px', border: '1px solid #E5E7EB' }} />
+                                            <img 
+                                                src={intakeData.id_card_verso} 
+                                                alt="ID Verso" 
+                                                style={{ height: '80px', width: 'auto', borderRadius: '8px', border: '1px solid #E5E7EB', cursor: 'pointer', objectFit: 'cover' }} 
+                                                onClick={() => setSelectedImage(intakeData.id_card_verso)}
+                                            />
                                         ) : (
-                                            <div style={{ padding: '20px', textAlign: 'center', background: '#F9FAFB', borderRadius: '8px', border: '1px dashed #E5E7EB', color: '#6B7280', fontSize: '12px' }}>Non fourni</div>
+                                            <div style={{ padding: '20px', height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#F9FAFB', borderRadius: '8px', border: '1px dashed #E5E7EB', color: '#6B7280', fontSize: '12px' }}>Non fourni</div>
                                         )}
                                     </div>
                                 </div>
@@ -1962,6 +1973,16 @@ export default function PatientReview() {
                 isOpen={isQuestionsModalOpen}
                 onClose={() => setIsQuestionsModalOpen(false)}
             />
+            {/* Image Viewer Modal */}
+            {selectedImage && (
+                <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.85)', zIndex: 99999, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'zoom-out' }} onClick={() => setSelectedImage(null)}>
+                    <img src={selectedImage} alt="Fullscreen ID" style={{ maxHeight: '90%', maxWidth: '90%', borderRadius: '12px', objectFit: 'contain', cursor: 'default' }} onClick={(e) => e.stopPropagation()} />
+                    <button onClick={() => setSelectedImage(null)} style={{ position: 'absolute', top: '20px', right: '20px', background: 'transparent', border: 'none', color: 'white', cursor: 'pointer' }}>
+                        <X size={32} />
+                    </button>
+                </div>
+            )}
+
             {/* Hidden Report for PDF Generation */}
             <div style={{ position: 'absolute', left: '-9999px', top: '-9999px' }}>
                 <div ref={reportRef}>
