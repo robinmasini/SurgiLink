@@ -354,7 +354,7 @@ export default function Dashboard() {
                             </button>
                              <div className="hide-mobile" style={{ display: 'flex', flexDirection: 'row', gap: '8px', alignItems: 'center' }}>
                                 <button
-                                    onClick={() => window.open('https://www.doctolib.fr', '_blank')}
+                                    onClick={() => window.open('https://pro.doctolib.fr/signin', '_blank')}
                                     style={{
                                         display: 'flex',
                                         alignItems: 'center',
@@ -474,7 +474,7 @@ export default function Dashboard() {
 
                             {/* Mobile Raccourci Doctolib Button */}
                             <button
-                                onClick={() => window.open('https://www.doctolib.fr', '_blank')}
+                                onClick={() => window.open('https://pro.doctolib.fr/signin', '_blank')}
                                 style={{
                                     width: '100%',
                                     display: 'flex',

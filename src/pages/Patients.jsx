@@ -253,7 +253,7 @@ export default function Patients() {
                             </div>
                             <div style={{ display: 'flex', flexDirection: 'row', gap: '8px', alignItems: 'center' }}>
                                 <button
-                                    onClick={() => window.open('https://www.doctolib.fr', '_blank')}
+                                    onClick={() => window.open('https://pro.doctolib.fr/signin', '_blank')}
                                     style={{
                                         display: 'flex',
                                         alignItems: 'center',
@@ -335,7 +335,7 @@ export default function Patients() {
                                 Nouvelle fiche patient
                             </button>
                             <button
-                                onClick={() => window.open('https://www.doctolib.fr', '_blank')}
+                                onClick={() => window.open('https://pro.doctolib.fr/signin', '_blank')}
                                 style={{
                                     width: '100%',
                                     display: 'flex',
