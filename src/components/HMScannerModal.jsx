@@ -772,6 +772,7 @@ Les clés doivent être exactement :
                                                 value={formData.stayType}
                                                 onChange={e => setFormData({ ...formData, stayType: e.target.value })}
                                             >
+                                                <option value="Consultation">Consultation</option>
                                                 <option value="Ambulatoire">Ambulatoire</option>
                                                 <option value="Hospitalisation">Hospitalisation</option>
                                             </select>

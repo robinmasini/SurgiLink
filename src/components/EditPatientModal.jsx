@@ -267,6 +267,7 @@ export default function EditPatientModal({ isOpen, onClose, patient, onPatientUp
                                     onChange={(e) => setFormData({ ...formData, stayType: e.target.value })}
                                 >
                                     <option value="" disabled>Non renseigné</option>
+                                    <option value="Consultation">Consultation</option>
                                     <option value="Ambulatoire">Ambulatoire</option>
                                     <option value="Hospitalisation">Hospitalisation</option>
                                 </select>
