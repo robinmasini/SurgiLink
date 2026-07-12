@@ -33,7 +33,7 @@ export default function AddPatientModal({ isOpen, onClose, onSuccess }) {
         email: '',
         surgeonName: 'Christophe DESOUCHES',
         surgeryTime: 'Non-communiquée',
-        stayType: '',
+        stayType: 'Consultation',
         clinicName: '',
         
         // DPI fields

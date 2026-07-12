@@ -364,7 +364,7 @@ export default function Patients() {
                                 <span>{t('Planning')}</span>
                             </button>
                             <button
-                                className="btn btn-primary"
+                                className="btn btn-secondary"
                                 onClick={() => setIsModalOpen(true)}
                                 style={{
                                     width: '100%',
@@ -375,11 +375,14 @@ export default function Patients() {
                                     borderRadius: '12px',
                                     height: '42px',
                                     fontWeight: '700',
+                                    background: 'white',
+                                    color: 'var(--color-primary-600)',
+                                    border: '1px solid var(--color-primary-100)',
                                     boxShadow: 'var(--shadow-sm)',
                                     marginBottom: 'var(--spacing-2)'
                                 }}
                             >
-                                <Plus size={18} /> {t('Ajouter un patient')}
+                                <Plus size={18} /> {t('Créer patient manuellement')}
                             </button>
                         </div>
                     )}
@@ -402,7 +405,7 @@ export default function Patients() {
                                 <thead>
                                     <tr style={{ borderBottom: '1px solid var(--color-gray-100)', background: 'var(--color-gray-50)' }}>
                                         <th style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-500)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t('Patient')}</th>
-                                        <th style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-500)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t('Retours patient')}</th>
+                                        <th className="hide-mobile" style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-500)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t('Retours patient')}</th>
                                         <th className="hide-tablet" style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-500)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t('Étape')}</th>
                                         <th className="hide-mobile" style={{ textAlign: 'left', padding: 'var(--spacing-3) var(--spacing-4)', fontSize: '11px', color: 'var(--color-gray-500)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t('Planification SMS')}</th>
                                         {!selectedPatientId && (
@@ -547,11 +550,31 @@ export default function Patients() {
                                                          </div>
                                                          <div style={{ fontSize: '11px', color: patient.status === 'intake' ? '#9CA3AF' : 'var(--color-gray-500)' }}>
                                                              {patient.status === 'intake' ? '—' : patient.operation}
+                                                             {isMobile && (
+                                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'flex-start', marginTop: '8px' }}>
+                                                                    <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+                                                                        {!patient.date && patient.status !== 'intake' && (
+                                                                            <span style={{ padding: '2px 8px', borderRadius: '4px', background: 'var(--color-success-50)', color: 'var(--color-success-600)', border: '1px solid var(--color-success-200)', fontWeight: '700', fontSize: '11px' }}>À jour ✓</span>
+                                                                        )}
+                                                                        {!patient.date && patient.status !== 'intake' && patient.stay_type !== 'Consultation' && (
+                                                                            <span style={{ padding: '2px 8px', borderRadius: '4px', background: 'var(--color-danger-50)', color: 'var(--color-danger-600)', border: '1px solid var(--color-danger-100)', fontWeight: '700', fontSize: '11px' }}>Date d'intervention inconnue</span>
+                                                                        )}
+                                                                    </div>
+                                                                    {!patient.date && patient.status === 'intake' && (
+                                                                        <span style={{ padding: '2px 8px', borderRadius: '4px', background: '#FEF3C7', color: '#D97706', border: '1px solid #FDE68A', fontWeight: '700', fontSize: '11px' }}>Date à renseigner</span>
+                                                                    )}
+                                                                    <PatientStatusBadges
+                                                                        responses={responses[patient.id] || []}
+                                                                        daysUntil={patient.daysUntil}
+                                                                        patientStatus={patient.status}
+                                                                    />
+                                                                </div>
+                                                            )}
                                                          </div>
-                                                     </div>
+                                                    </div>
                                                 </div>
                                             </td>
-                                            <td style={{ padding: 'var(--spacing-3) var(--spacing-4)' }}>
+                                            <td className="hide-mobile" style={{ padding: 'var(--spacing-3) var(--spacing-4)' }}>
                                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'flex-start' }}>
                                                     <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
                                                         {!patient.date && patient.status !== 'intake' && (
