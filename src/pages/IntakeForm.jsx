@@ -248,7 +248,7 @@ export default function IntakeForm() {
         let error = '';
         switch (formStep) {
             case 1:
-                if (!form.first_name || !form.last_name || !form.birth_date || !form.phone) {
+                if (!form.first_name?.trim() || !form.last_name?.trim() || !form.birth_date || !form.phone?.trim()) {
                     error = 'Veuillez remplir les champs obligatoires (prénom, nom, date de naissance, téléphone).';
                 } else if (!form.id_card_recto || !form.id_card_verso) {
                     error = 'Veuillez fournir votre pièce d\'identité recto et verso.';
@@ -257,7 +257,7 @@ export default function IntakeForm() {
             case 2:
                 break;
             case 3:
-                if (form.referral_source.length === 0 && !form.referral_other) {
+                if (form.referral_source.length === 0 && !form.referral_other?.trim()) {
                     error = 'Veuillez indiquer comment vous avez connu le cabinet.';
                 }
                 break;
@@ -266,19 +266,19 @@ export default function IntakeForm() {
                     error = 'Veuillez renseigner votre taille et votre poids.';
                 } else if (form.has_allergies === null || form.is_smoker === null || form.has_treatment === null) {
                     error = 'Veuillez répondre par Oui ou Non à toutes les questions médicales.';
-                } else if (form.has_allergies && !form.allergies_detail) {
+                } else if (form.has_allergies && !form.allergies_detail?.trim()) {
                     error = 'Veuillez préciser vos allergies.';
-                } else if (form.has_treatment && !form.treatment_detail) {
+                } else if (form.has_treatment && !form.treatment_detail?.trim()) {
                     error = 'Veuillez préciser votre traitement médical.';
                 }
                 break;
             case 5:
-                if (form.consultation_reasons.length === 0 && !form.consultation_other) {
+                if (form.consultation_reasons.length === 0 && !form.consultation_other?.trim()) {
                     error = 'Veuillez sélectionner au moins un motif de consultation.';
                 }
                 break;
             case 6:
-                if (!form.discomfort_level || !form.discomfort_duration) {
+                if (!form.discomfort_level || !form.discomfort_duration?.trim()) {
                     error = 'Veuillez qualifier votre gêne esthétique.';
                 } else if (form.previous_consultation === null || form.has_aesthetic_interventions === null) {
                     error = 'Veuillez répondre par Oui ou Non aux questions (consultations et interventions précédentes).';
@@ -291,13 +291,13 @@ export default function IntakeForm() {
             case 8:
                 if (form.previous_surgery === null || form.easy_hematomas === null || form.keloid_scars === null || form.autoimmune_family === null) {
                     error = 'Veuillez répondre à toutes les questions sur vos antécédents.';
-                } else if (form.previous_surgery && !form.previous_surgery_detail) {
+                } else if (form.previous_surgery && !form.previous_surgery_detail?.trim()) {
                     error = 'Veuillez préciser vos interventions chirurgicales précédentes.';
-                } else if (form.surgical_complications && !form.complications_detail) {
+                } else if (form.surgical_complications && !form.complications_detail?.trim()) {
                     error = 'Veuillez préciser les complications rencontrées.';
-                } else if (form.autoimmune_family && !form.autoimmune_detail) {
+                } else if (form.autoimmune_family && !form.autoimmune_detail?.trim()) {
                     error = 'Veuillez préciser les maladies auto-immunes.';
-                } else if (!form.signed_city || !form.signed_date) {
+                } else if (!form.signed_city?.trim() || !form.signed_date) {
                     error = 'Veuillez remplir la signature électronique (Lieu et Date).';
                 }
                 break;
@@ -698,6 +698,7 @@ export default function IntakeForm() {
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                                 <div>
                                     <label style={{
+                                        position: 'relative',
                                         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
                                         background: form.id_card_recto ? '#ECFDF5' : 'white',
                                         border: `2px dashed ${form.id_card_recto ? '#10B981' : '#D1D5DB'}`,
@@ -727,12 +728,18 @@ export default function IntakeForm() {
                                                     setF('id_card_recto', b64);
                                                 }
                                             }}
-                                            style={{ position: 'absolute', width: '1px', height: '1px', padding: 0, margin: '-1px', overflow: 'hidden', clip: 'rect(0,0,0,0)', border: 0 }}
+                                            style={{ 
+                                                position: 'absolute', 
+                                                top: 0, left: 0, right: 0, bottom: 0, 
+                                                width: '100%', height: '100%', 
+                                                opacity: 0, cursor: 'pointer', zIndex: 10
+                                            }}
                                         />
                                     </label>
                                 </div>
                                 <div>
                                     <label style={{
+                                        position: 'relative',
                                         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
                                         background: form.id_card_verso ? '#ECFDF5' : 'white',
                                         border: `2px dashed ${form.id_card_verso ? '#10B981' : '#D1D5DB'}`,
@@ -762,7 +769,12 @@ export default function IntakeForm() {
                                                     setF('id_card_verso', b64);
                                                 }
                                             }}
-                                            style={{ position: 'absolute', width: '1px', height: '1px', padding: 0, margin: '-1px', overflow: 'hidden', clip: 'rect(0,0,0,0)', border: 0 }}
+                                            style={{ 
+                                                position: 'absolute', 
+                                                top: 0, left: 0, right: 0, bottom: 0, 
+                                                width: '100%', height: '100%', 
+                                                opacity: 0, cursor: 'pointer', zIndex: 10
+                                            }}
                                         />
                                     </label>
                                 </div>

@@ -25,7 +25,7 @@ import PatientTokenRoute from './components/PatientTokenRoute';
 import MobileNavbar from './components/MobileNavbar';
 import './index.css';
 
-// Force deploy trigger - 2026-02-02
+// Force deploy trigger - 2026-07-12-v2
 function App() {
   return (
     <Router>
