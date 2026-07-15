@@ -631,6 +631,25 @@ export default function PatientReview() {
         );
     }
 
+    const handleAddInterventionClick = () => {
+        if (!intakeData) return;
+        
+        if (patient && patient.date) {
+            const surgeryDate = new Date(patient.date);
+            const today = new Date();
+            const diffTime = surgeryDate.getTime() - today.getTime();
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            // If patient is between J-18 and J+6, they are in active treatment
+            if (diffDays <= 18 && diffDays >= -6) {
+                const confirm = window.confirm("Un traitement est déjà en cours pour ce patient.\n\nÊtes-vous sûr de vouloir ajouter une intervention plutôt que de modifier l'existante ?");
+                if (!confirm) return;
+            }
+        }
+
+        setIsAddModalOpen(true);
+    };
+
     return (
         <div style={{ display: 'flex' }}>
             <Sidebar />
@@ -668,10 +687,19 @@ export default function PatientReview() {
                             Historique
                         </button>
                         <button 
-                            onClick={() => setIsAddModalOpen(true)}
+                            onClick={handleAddInterventionClick}
+                            disabled={!intakeData}
+                            title={!intakeData ? "La fiche de renseignement n'a pas encore été remplie" : "Ajouter une intervention"}
                             className="btn btn-primary btn-sm"
-                            style={{ display: 'flex', alignItems: 'center', gap: '8px', borderRadius: '12px', background: 'var(--color-primary-500)', color: 'white', border: 'none' }}
+                            style={{ 
+                                display: 'flex', alignItems: 'center', gap: '8px', borderRadius: '12px', 
+                                background: !intakeData ? 'var(--color-gray-400)' : 'var(--color-primary-500)', 
+                                color: 'white', border: 'none',
+                                opacity: !intakeData ? 0.6 : 1,
+                                cursor: !intakeData ? 'not-allowed' : 'pointer'
+                            }}
                         >
+                            {/* If locked, show a Lock icon? We'll just show Plus. */}
                             <Plus size={18} />
                             Ajouter une intervention
                         </button>
