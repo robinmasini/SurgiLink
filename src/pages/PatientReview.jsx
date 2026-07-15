@@ -619,7 +619,7 @@ export default function PatientReview() {
 
     if (!patient) {
         return (
-            <div style={{ display: 'flex' }}>
+            <div className="dashboard-layout" style={{ minHeight: '100vh', background: 'var(--color-gray-50)' }}>
                 <Sidebar />
                 <main className="main-content" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
                     <div style={{ textAlign: 'center', color: 'var(--color-gray-500)' }}>
@@ -651,7 +651,7 @@ export default function PatientReview() {
     };
 
     return (
-        <div style={{ display: 'flex' }}>
+        <div className="dashboard-layout" style={{ minHeight: '100vh', background: 'var(--color-gray-50)' }}>
             <Sidebar />
             <main className="main-content">
                 {/* Header Actions */}

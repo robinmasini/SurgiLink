@@ -196,9 +196,9 @@ export default function Users() {
     );
 
     return (
-        <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--color-gray-50)' }}>
+        <div className="dashboard-layout" data-mobile={isMobile} style={{ minHeight: '100vh', background: 'var(--color-gray-50)' }}>
             <Sidebar />
-            <main className="main-content">
+            <main className="main-content" data-mobile={isMobile}>
                 <Header
                     title="Gestion des Utilisateurs"
                     subtitle={`${profiles.length} comptes actifs au sein du cabinet`}

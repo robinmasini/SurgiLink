@@ -99,7 +99,7 @@ export default function Comments() {
     });
 
     return (
-        <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--color-gray-50)' }}>
+        <div className="dashboard-layout" style={{ minHeight: '100vh', background: 'var(--color-gray-50)' }}>
             <Sidebar />
             <main className="main-content">
                 <Header

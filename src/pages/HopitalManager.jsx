@@ -422,7 +422,7 @@ Les clés doivent être exactement :
     };
 
     return (
-        <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--color-background)' }}>
+        <div className="dashboard-layout" style={{ minHeight: '100vh', background: 'var(--color-background)' }}>
             <Sidebar />
             <main className="main-content">
                 <Header
