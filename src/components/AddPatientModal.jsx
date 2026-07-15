@@ -63,6 +63,12 @@ export default function AddPatientModal({ isOpen, onClose, onSuccess }) {
     const [isDragging, setIsDragging] = useState(false);
     const [hasScanned, setHasScanned] = useState(false);
 
+    // Patient Search states
+    const [searchQuery, setSearchQuery] = useState('');
+    const [searchResults, setSearchResults] = useState([]);
+    const [isSearching, setIsSearching] = useState(false);
+    const [showResults, setShowResults] = useState(false);
+
     useEffect(() => {
         const loadProfile = async () => {
             const { data: { session } } = await supabase.auth.getSession();
@@ -83,6 +89,41 @@ export default function AddPatientModal({ isOpen, onClose, onSuccess }) {
         };
         loadProfile();
     }, []);
+
+    useEffect(() => {
+        if (!searchQuery || searchQuery.length < 2) {
+            setSearchResults([]);
+            setShowResults(false);
+            return;
+        }
+
+        const delayDebounceFn = setTimeout(async () => {
+            setIsSearching(true);
+            const { data, error } = await supabase
+                .from('patients')
+                .select('id, name, phone, email, birth_date, address, weight, height, ipp')
+                .ilike('name', `%${searchQuery}%`)
+                .order('created_at', { ascending: false })
+                .limit(20);
+
+            if (!error && data) {
+                const uniquePatients = [];
+                const seen = new Set();
+                data.forEach(p => {
+                    const key = `${p.name}-${p.birth_date}`;
+                    if (!seen.has(key)) {
+                        seen.add(key);
+                        uniquePatients.push(p);
+                    }
+                });
+                setSearchResults(uniquePatients.slice(0, 5));
+                setShowResults(true);
+            }
+            setIsSearching(false);
+        }, 300);
+
+        return () => clearTimeout(delayDebounceFn);
+    }, [searchQuery]);
 
     useEffect(() => {
         if (!isOpen) {
@@ -312,6 +353,27 @@ Les clés doivent être exactement :
         });
         setHasScanned(true);
         setActiveTab('general');
+    };
+
+    const handleSelectPatient = (patient) => {
+        const parts = patient.name.split(' ');
+        const firstName = parts[0] || '';
+        const lastName = parts.slice(1).join(' ') || '';
+
+        setFormData(prev => ({
+            ...prev,
+            firstName,
+            lastName,
+            phone: patient.phone || '+33 ',
+            email: patient.email || '',
+            birthDate: patient.birth_date || '',
+            address: patient.address || '',
+            weight: patient.weight || '',
+            height: patient.height || '',
+            ipp: patient.ipp || ''
+        }));
+        setSearchQuery('');
+        setShowResults(false);
     };
 
     // Save Patient Handler
@@ -647,6 +709,62 @@ Les clés doivent être exactement :
                             {/* Tab Contents */}
                             {activeTab === 'general' && (
                                 <div style={{ display: 'grid', gap: 'var(--spacing-3)' }} className="fade-in">
+                                    
+                                    {/* Patient Search */}
+                                    <div style={{ position: 'relative', marginBottom: '8px' }}>
+                                        <label className="form-label-add">Rechercher un patient déjà existant</label>
+                                        <div style={{ position: 'relative' }}>
+                                            <input
+                                                className="input"
+                                                placeholder="Tapez un nom pour pré-remplir les champs..."
+                                                value={searchQuery}
+                                                onChange={(e) => setSearchQuery(e.target.value)}
+                                            />
+                                            {isSearching && (
+                                                <Loader2 size={16} style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', animation: 'spin 1s linear infinite', color: 'var(--color-primary-500)' }} />
+                                            )}
+                                        </div>
+                                        {showResults && searchResults.length > 0 && (
+                                            <div style={{
+                                                position: 'absolute', top: '100%', left: 0, right: 0,
+                                                background: 'white', border: '1px solid var(--color-gray-200)',
+                                                borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-lg)',
+                                                zIndex: 50, marginTop: '4px', overflow: 'hidden'
+                                            }}>
+                                                {searchResults.map((p, idx) => (
+                                                    <div 
+                                                        key={idx}
+                                                        onClick={() => handleSelectPatient(p)}
+                                                        style={{
+                                                            padding: '10px 12px', cursor: 'pointer',
+                                                            borderBottom: idx === searchResults.length - 1 ? 'none' : '1px solid var(--color-gray-100)',
+                                                            display: 'flex', flexDirection: 'column', gap: '2px'
+                                                        }}
+                                                        onMouseEnter={(e) => e.currentTarget.style.background = 'var(--color-gray-50)'}
+                                                        onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                                                    >
+                                                        <span style={{ fontWeight: '600', color: 'var(--color-gray-900)', fontSize: '13px' }}>{p.name}</span>
+                                                        <span style={{ fontSize: '11px', color: 'var(--color-gray-500)' }}>
+                                                            {p.birth_date ? new Date(p.birth_date).toLocaleDateString('fr-FR') : 'Date de naissance inconnue'} 
+                                                            {p.phone && ` • ${p.phone}`}
+                                                        </span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                        {showResults && searchQuery.length >= 2 && searchResults.length === 0 && !isSearching && (
+                                            <div style={{
+                                                position: 'absolute', top: '100%', left: 0, right: 0,
+                                                background: 'white', border: '1px solid var(--color-gray-200)',
+                                                borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-lg)',
+                                                zIndex: 50, marginTop: '4px', padding: '12px', textAlign: 'center',
+                                                fontSize: '12px', color: 'var(--color-gray-500)'
+                                            }}>
+                                                Aucun patient trouvé.
+                                            </div>
+                                        )}
+                                    </div>
+
                                     <div className="grid-2">
                                         <div>
                                             <label className="form-label-add">Prénom</label>

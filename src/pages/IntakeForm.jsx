@@ -693,7 +693,7 @@ export default function IntakeForm() {
                         {/* ID Card Upload */}
                         <div style={{ background: '#F9FAFB', borderRadius: '14px', padding: '14px', border: '1px solid #F3F4F6' }}>
                             <p style={{ margin: '0 0 12px', fontSize: '12px', fontWeight: '800', color: 'var(--color-primary-500)', textTransform: 'uppercase' }}>
-                                Pièce d'identité
+                                Pièce d'identité *
                             </p>
                             <p style={{ margin: '0 0 12px', fontSize: '12px', color: '#6B7280' }}>
                                 Veuillez nous transmettre une copie de votre pièce d'identité (recto/verso) pour votre dossier.
