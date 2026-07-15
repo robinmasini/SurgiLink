@@ -10,7 +10,8 @@ export default function PatientSynthesisReport({
     medicalHistory = [],
     documents = [],
     customQuestions = [],
-    intakeData = null
+    intakeData = null,
+    patientHistory = []
 }) {
     if (!patient) return null;
 
@@ -180,6 +181,25 @@ export default function PatientSynthesisReport({
                     </div>
                 </div>
             </div>
+
+            {patientHistory && patientHistory.length > 1 && (
+                <div style={{ borderTop: '1px solid #E9ECEF', paddingTop: '10px', marginTop: '4px' }}>
+                    <div style={{ fontSize: '11px', color: '#1A1A1A', textTransform: 'uppercase', fontWeight: '800', marginBottom: '8px' }}>Historique des Interventions</div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                        {patientHistory.map((item, idx) => (
+                            <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', padding: '6px', background: item.id === patient.id ? '#E8F5E9' : '#FFF', border: item.id === patient.id ? '1px solid #C8E6C9' : '1px solid #E9ECEF', borderRadius: '6px' }}>
+                                <div style={{ fontWeight: item.id === patient.id ? '700' : '500', color: '#333' }}>
+                                    {item.operation || 'Intervention non définie'} 
+                                    {item.id === patient.id && <span style={{ color: '#2E7D32', marginLeft: '6px', fontSize: '8px', fontWeight: '800' }}>(ACTUELLE)</span>}
+                                </div>
+                                <div style={{ color: '#666' }}>
+                                    {item.date ? formatDateFR(item.date) : 'Date non définie'} • Dr. {item.surgeon_name || '-'}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
 
             {intakeData && (
                 <div style={{ borderTop: '1px solid #E9ECEF', paddingTop: '10px', marginTop: '4px' }}>

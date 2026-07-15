@@ -91,11 +91,25 @@ export default function Patients() {
             const { data: allPatientsData, error: allPatientsError } = await supabase
                 .from('patients')
                 .select('*')
-                .order('date', { ascending: true });
+                .order('date', { ascending: false });
 
             if (allPatientsError) throw allPatientsError;
 
-            const formattedPatients = allPatientsData.map(patient => ({
+            // Deduplicate by name and birth_date (keeping the most recent/active intervention)
+            const uniquePatientsData = [];
+            const seen = new Set();
+            allPatientsData.forEach(p => {
+                const key = `${p.name}-${p.birth_date}`;
+                if (!seen.has(key)) {
+                    seen.add(key);
+                    uniquePatientsData.push(p);
+                }
+            });
+
+            // Sort ascending for display as it was before
+            uniquePatientsData.sort((a, b) => new Date(a.date || '9999-12-31') - new Date(b.date || '9999-12-31'));
+
+            const formattedPatients = uniquePatientsData.map(patient => ({
                 ...patient,
                 daysUntil: calculateDaysUntilSurgery(patient.date),
                 formattedDate: patient.date ? new Date(patient.date).toLocaleDateString('fr-FR', {

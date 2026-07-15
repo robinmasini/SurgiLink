@@ -13,7 +13,8 @@ import {
     Check, 
     Info, 
     MapPin,
-    AlertCircle
+    AlertCircle,
+    Lock
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import PhoneInput from './PhoneInput';
@@ -68,6 +69,7 @@ export default function AddPatientModal({ isOpen, onClose, onSuccess }) {
     const [searchResults, setSearchResults] = useState([]);
     const [isSearching, setIsSearching] = useState(false);
     const [showResults, setShowResults] = useState(false);
+    const [isExistingPatient, setIsExistingPatient] = useState(false);
 
     useEffect(() => {
         const loadProfile = async () => {
@@ -374,6 +376,8 @@ Les clés doivent être exactement :
         }));
         setSearchQuery('');
         setShowResults(false);
+        setIsExistingPatient(true);
+        setActiveTab('stay');
     };
 
     // Save Patient Handler
@@ -473,7 +477,7 @@ Les clés doivent être exactement :
                         <div className="card-icon card-icon-primary" style={{ width: '32px', height: '32px' }}>
                             <Plus size={18} />
                         </div>
-                        <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '700' }}>Nouveau Patient</h3>
+                        <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '700' }}>Nouvelle Intervention</h3>
                     </div>
                     <button onClick={onClose} className="btn-secondary" style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--color-gray-400)' }}>
                         <X size={24} />
@@ -481,6 +485,35 @@ Les clés doivent être exactement :
                 </div>
 
                 <div style={{ padding: '0 var(--spacing-5) var(--spacing-5) var(--spacing-5)', display: 'flex', flexDirection: 'column', flex: 1, overflowY: 'auto' }}>
+                    
+                    {/* Search Existing Patient CTA */}
+                    <button
+                        onClick={() => {
+                            setActiveTab('general');
+                            setTimeout(() => {
+                                const input = document.getElementById('search-patient-input');
+                                if (input) input.focus();
+                            }, 100);
+                        }}
+                        className="btn btn-secondary"
+                        style={{
+                            width: '100%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '8px',
+                            marginTop: 'var(--spacing-3)',
+                            background: '#F9FAFB',
+                            border: '1px solid #E5E7EB',
+                            color: '#374151',
+                            fontWeight: '600',
+                            padding: '10px'
+                        }}
+                    >
+                        <User size={16} />
+                        Rechercher un patient déjà existant
+                    </button>
+
                     {/* Scanner Toggle Button */}
                     <button
                         onClick={() => setIsScannerOpen(!isScannerOpen)}
@@ -690,19 +723,24 @@ Les clés doivent être exactement :
                                     Séjour & Médical
                                 </button>
                                 <button 
-                                    onClick={() => setActiveTab('dpi')} 
+                                    onClick={() => formData.stayType === 'Hospitalisation' && setActiveTab('dpi')} 
                                     style={{
                                         padding: '8px 12px',
                                         background: 'none',
                                         border: 'none',
                                         borderBottom: activeTab === 'dpi' ? '2px solid #0F70B7' : '2px solid transparent',
-                                        color: activeTab === 'dpi' ? '#0F70B7' : 'var(--color-gray-400)',
+                                        color: formData.stayType !== 'Hospitalisation' ? 'var(--color-gray-300)' : activeTab === 'dpi' ? '#0F70B7' : 'var(--color-gray-400)',
                                         fontWeight: '700',
                                         fontSize: '12px',
-                                        cursor: 'pointer'
+                                        cursor: formData.stayType !== 'Hospitalisation' ? 'not-allowed' : 'pointer',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '4px'
                                     }}
+                                    disabled={formData.stayType !== 'Hospitalisation'}
                                 >
                                     Dossier DPI (HM)
+                                    {formData.stayType !== 'Hospitalisation' && <Lock size={12} />}
                                 </button>
                             </div>
 
@@ -715,6 +753,7 @@ Les clés doivent être exactement :
                                         <label className="form-label-add">Rechercher un patient déjà existant</label>
                                         <div style={{ position: 'relative' }}>
                                             <input
+                                                id="search-patient-input"
                                                 className="input"
                                                 placeholder="Tapez un nom pour pré-remplir les champs..."
                                                 value={searchQuery}
@@ -773,9 +812,10 @@ Les clés doivent être exactement :
                                                 <input
                                                     className="input"
                                                     placeholder="Jean"
-                                                    style={{ paddingLeft: '40px' }}
+                                                    style={{ paddingLeft: '40px', opacity: isExistingPatient ? 0.6 : 1 }}
                                                     value={formData.firstName}
                                                     onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                                                    disabled={isExistingPatient}
                                                 />
                                             </div>
                                         </div>
@@ -786,9 +826,10 @@ Les clés doivent être exactement :
                                                 <input
                                                     className="input"
                                                     placeholder="Martin"
-                                                    style={{ paddingLeft: '40px' }}
+                                                    style={{ paddingLeft: '40px', opacity: isExistingPatient ? 0.6 : 1 }}
                                                     value={formData.lastName}
                                                     onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                                                    disabled={isExistingPatient}
                                                 />
                                             </div>
                                         </div>
@@ -801,9 +842,10 @@ Les clés doivent être exactement :
                                             <input
                                                 type="date"
                                                 className="input"
-                                                style={{ paddingLeft: '40px' }}
+                                                style={{ paddingLeft: '40px', opacity: isExistingPatient ? 0.6 : 1 }}
                                                 value={formData.birthDate}
                                                 onChange={(e) => setFormData({ ...formData, birthDate: e.target.value })}
+                                                disabled={isExistingPatient}
                                             />
                                         </div>
                                     </div>
@@ -814,6 +856,7 @@ Les clés doivent être exactement :
                                             <PhoneInput
                                                 value={formData.phone}
                                                 onChange={(val) => setFormData({ ...formData, phone: val })}
+                                                disabled={isExistingPatient}
                                             />
                                         </div>
                                         <div>
@@ -824,9 +867,10 @@ Les clés doivent être exactement :
                                                     type="email"
                                                     className="input"
                                                     placeholder="patient@email.com"
-                                                    style={{ paddingLeft: '40px' }}
+                                                    style={{ paddingLeft: '40px', opacity: isExistingPatient ? 0.6 : 1 }}
                                                     value={formData.email}
                                                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                                    disabled={isExistingPatient}
                                                 />
                                             </div>
                                         </div>
@@ -839,9 +883,10 @@ Les clés doivent être exactement :
                                             <input
                                                 className="input"
                                                 placeholder="Adresse complète"
-                                                style={{ paddingLeft: '40px' }}
+                                                style={{ paddingLeft: '40px', opacity: isExistingPatient ? 0.6 : 1 }}
                                                 value={formData.address}
                                                 onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                                                disabled={isExistingPatient}
                                             />
                                         </div>
                                     </div>

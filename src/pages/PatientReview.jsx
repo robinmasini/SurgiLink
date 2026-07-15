@@ -115,6 +115,7 @@ export default function PatientReview() {
     const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
     const [isSecureLinkDrawerOpen, setIsSecureLinkDrawerOpen] = useState(false);
     const [isHistoryDrawerOpen, setIsHistoryDrawerOpen] = useState(false);
+    const [patientHistory, setPatientHistory] = useState([]);
     const [intakeData, setIntakeData] = useState(null);
     const [selectedImage, setSelectedImage] = useState(null);
     const reportRef = useRef(null);
@@ -139,6 +140,17 @@ export default function PatientReview() {
                 .eq('patient_id', id)
                 .maybeSingle();
             setIntakeData(intakeResp || null);
+
+            if (patientData && patientData.name && patientData.birth_date) {
+                const { data: historyData } = await supabase
+                    .from('patients')
+                    .select('*')
+                    .eq('name', patientData.name)
+                    .eq('birth_date', patientData.birth_date)
+                    .order('date', { ascending: false });
+                
+                setPatientHistory(historyData || []);
+            }
 
             // Calculate risk status
             const [riskJ7, riskJ1Pre, riskJ1, riskJ4, riskESatis] = await Promise.all([
@@ -951,6 +963,57 @@ export default function PatientReview() {
                                             <div style={{ padding: '20px', height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#F9FAFB', borderRadius: '8px', border: '1px dashed #E5E7EB', color: '#6B7280', fontSize: '12px' }}>Non fourni</div>
                                         )}
                                     </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Patient History Display */}
+                        {patientHistory && patientHistory.length > 1 && (
+                            <div className="card glass-effect patient-card" style={{ marginTop: 'var(--spacing-6)' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)', marginBottom: 'var(--spacing-6)', borderBottom: '1px solid rgba(0,0,0,0.05)', paddingBottom: 'var(--spacing-4)' }}>
+                                    <div className="card-icon card-icon-primary" style={{ width: '32px', height: '32px', flexShrink: 0 }}>
+                                        <Clock size={16} />
+                                    </div>
+                                    <div>
+                                        <h3 style={{ margin: 0, fontSize: 'var(--font-size-lg)', fontWeight: '700' }}>Historique des interventions</h3>
+                                        <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: 'var(--color-gray-500)' }}>Opérations passées ou futures pour ce patient</p>
+                                    </div>
+                                </div>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                    {patientHistory.map((historyItem) => (
+                                        <div key={historyItem.id} style={{ 
+                                            display: 'flex', 
+                                            flexDirection: 'column', 
+                                            padding: '16px', 
+                                            background: historyItem.id === patient.id ? 'var(--color-primary-50)' : '#F9FAFB', 
+                                            borderRadius: '12px', 
+                                            border: historyItem.id === patient.id ? '1px solid var(--color-primary-200)' : '1px solid #E5E7EB',
+                                            position: 'relative'
+                                        }}>
+                                            {historyItem.id === patient.id && (
+                                                <div style={{ position: 'absolute', top: '12px', right: '16px', fontSize: '10px', fontWeight: '800', color: 'var(--color-primary-600)', background: 'white', padding: '4px 8px', borderRadius: '12px', border: '1px solid var(--color-primary-100)' }}>
+                                                    INTERVENTION ACTUELLE
+                                                </div>
+                                            )}
+                                            <div style={{ fontWeight: '700', fontSize: '16px', color: 'var(--color-gray-900)', marginBottom: '4px' }}>
+                                                {historyItem.operation || 'Intervention non définie'}
+                                            </div>
+                                            <div style={{ display: 'flex', gap: '16px', fontSize: '13px', color: 'var(--color-gray-600)', flexWrap: 'wrap' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                    <Calendar size={14} />
+                                                    {historyItem.date ? new Date(historyItem.date).toLocaleDateString('fr-FR') : 'Date non définie'}
+                                                </div>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                    <User size={14} />
+                                                    Dr. {historyItem.surgeon_name || 'Non défini'}
+                                                </div>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                    <MapPin size={14} />
+                                                    {historyItem.clinic_name || 'Clinique non définie'}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
                         )}
@@ -2007,6 +2070,7 @@ export default function PatientReview() {
                         documents={documents}
                         customQuestions={customQuestions}
                         intakeData={intakeData}
+                        patientHistory={patientHistory}
                     />
                 </div>
             </div>
