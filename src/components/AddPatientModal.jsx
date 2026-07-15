@@ -23,7 +23,7 @@ import { scheduleTimeBasedReminders } from '../services/reminderService';
 import { generatePatientToken } from '../services/tokenService';
 import hmIcon from '../assets/hm-icon.png';
 
-export default function AddPatientModal({ isOpen, onClose, onSuccess }) {
+export default function AddPatientModal({ isOpen, onClose, onSuccess, prefilledPatient = null }) {
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -136,8 +136,53 @@ export default function AddPatientModal({ isOpen, onClose, onSuccess }) {
             setIsScanning(false);
             setHasScanned(false);
             setActiveTab('general');
+            setIsExistingPatient(false);
+            setFormData({
+                firstName: '',
+                lastName: '',
+                operation: '',
+                date: '',
+                birthDate: '',
+                phone: '+33 ',
+                email: '',
+                surgeonName: 'Christophe DESOUCHES',
+                surgeryTime: 'Non-communiquée',
+                stayType: 'Consultation',
+                clinicName: '',
+                ipp: '',
+                stayNumber: '',
+                address: '',
+                weight: '',
+                height: '',
+                referringDoctor: '',
+                referringDoctorPhone: '',
+                entryMode: '8 - Domicile',
+                exitMode: '8 - Retour domicile',
+                admissionDatetime: '',
+                dischargeDatetime: '',
+                roomNumber: ''
+            });
+        } else if (prefilledPatient) {
+            const parts = (prefilledPatient.name || '').split(' ');
+            const firstName = parts[0] || '';
+            const lastName = parts.slice(1).join(' ') || '';
+
+            setFormData(prev => ({
+                ...prev,
+                firstName,
+                lastName,
+                phone: prefilledPatient.phone || '+33 ',
+                email: prefilledPatient.email || '',
+                birthDate: prefilledPatient.birth_date || '',
+                address: prefilledPatient.address || '',
+                weight: prefilledPatient.weight || '',
+                height: prefilledPatient.height || '',
+                ipp: prefilledPatient.ipp || ''
+            }));
+            setIsExistingPatient(true);
+            setActiveTab('stay');
         }
-    }, [isOpen]);
+    }, [isOpen, prefilledPatient]);
 
     if (!isOpen) return null;
 

@@ -197,7 +197,7 @@ export default function Patients() {
                                 }}
                             >
                                 <ClipboardList size={16} />
-                                <span>Nouvelle fiche patient</span>
+                                <span>Nouveau(elle) patient(e)</span>
                             </button>
                             <button
                                 className="btn btn-secondary hide-mobile"
@@ -301,7 +301,7 @@ export default function Patients() {
                                     onClick={() => setIsModalOpen(true)}
                                     style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)', height: '42px', justifyContent: 'center' }}
                                 >
-                                    <Plus size={18} /> <span className="hide-mobile">{t('Ajouter un patient')}</span>
+                                    <Plus size={18} /> <span className="hide-mobile">Ajouter une intervention</span>
                                 </button>
                             </div>
                         </div>
@@ -346,7 +346,7 @@ export default function Patients() {
                                 }}
                             >
                                 <ClipboardList size={16} />
-                                Nouvelle fiche patient
+                                Nouveau(elle) patient(e)
                             </button>
                             <button
                                 onClick={() => window.open('https://pro.doctolib.fr/signin', '_blank')}

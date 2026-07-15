@@ -332,7 +332,7 @@ export default function Dashboard() {
                                 }}
                             >
                                 <ClipboardList size={16} />
-                                <span>Nouvelle fiche patient</span>
+                                <span>Nouveau(elle) patient(e)</span>
                             </button>
                             <button 
                                 className="btn btn-secondary hide-mobile" 
@@ -350,7 +350,7 @@ export default function Dashboard() {
                                 }}
                             >
                                 <img src={hmIcon} alt="HM Icon" style={{ width: '18px', height: '18px', objectFit: 'contain' }} />
-                                <span>{t('Scanner Patient HM')}</span>
+                                <span>Scanner patient(e)</span>
                             </button>
                              <div className="hide-mobile" style={{ display: 'flex', flexDirection: 'row', gap: '8px', alignItems: 'center' }}>
                                 <button
@@ -388,7 +388,7 @@ export default function Dashboard() {
                                     onClick={() => setIsAddModalOpen(true)}
                                     style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)', height: '42px', justifyContent: 'center' }}
                                 >
-                                    <Plus size={18} /> {t('Ajouter un patient')}
+                                    <Plus size={18} /> Ajouter une intervention
                                 </button>
                             </div>
                         </>
@@ -447,7 +447,7 @@ export default function Dashboard() {
                                 </button>
                             </div>
 
-                            {/* Mobile Nouvelle fiche patient */}
+                            {/* Mobile Nouveau(elle) patient(e) */}
                             <button
                                 className="btn btn-secondary"
                                 onClick={() => setIsIntakeModalOpen(true)}
@@ -469,7 +469,7 @@ export default function Dashboard() {
                                 }}
                             >
                                 <ClipboardList size={16} />
-                                Nouvelle fiche patient
+                                Nouveau(elle) patient(e)
                             </button>
 
                             {/* Mobile Raccourci Doctolib Button */}
@@ -503,7 +503,7 @@ export default function Dashboard() {
                                 <span>{t('Planning')}</span>
                             </button>
 
-                            {/* Mobile Ajouter un patient Button */}
+                            {/* Mobile Ajouter une intervention Button */}
                             <button
                                 className="btn btn-secondary"
                                 onClick={() => setIsAddModalOpen(true)}

@@ -1,15 +1,18 @@
 import { useState, useEffect } from 'react';
-import { X, Send, Loader, ClipboardList, CheckCircle, Phone } from 'lucide-react';
+import { X, Send, Loader, ClipboardList, CheckCircle, Phone, User, ExternalLink } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { createIntakePatient } from '../services/intakeService';
 import { supabase } from '../lib/supabase';
 import PhoneInput from './PhoneInput';
 
 export default function NewIntakeModal({ isOpen, onClose, onSuccess }) {
+    const navigate = useNavigate();
     const [phone, setPhone] = useState('');
     const [isSending, setIsSending] = useState(false);
     const [isDone, setIsDone] = useState(false);
     const [error, setError] = useState('');
     const [userId, setUserId] = useState(null);
+    const [existingPatient, setExistingPatient] = useState(null);
 
     useEffect(() => {
         const getSession = async () => {
@@ -25,6 +28,7 @@ export default function NewIntakeModal({ isOpen, onClose, onSuccess }) {
             setIsSending(false);
             setIsDone(false);
             setError('');
+            setExistingPatient(null);
         }
     }, [isOpen]);
 
@@ -43,7 +47,22 @@ export default function NewIntakeModal({ isOpen, onClose, onSuccess }) {
         }
         setError('');
         setIsSending(true);
+        
         try {
+            // Check if patient already exists
+            const { data: existingPatients, error: searchError } = await supabase
+                .from('patients')
+                .select('id, name, birth_date, operation, date')
+                .eq('phone', phone)
+                .order('date', { ascending: false })
+                .limit(1);
+                
+            if (!searchError && existingPatients && existingPatients.length > 0) {
+                setExistingPatient(existingPatients[0]);
+                setIsSending(false);
+                return;
+            }
+
             const result = await createIntakePatient(phone, null, null, userId);
             if (result.success) {
                 setIsDone(true);
@@ -86,7 +105,7 @@ export default function NewIntakeModal({ isOpen, onClose, onSuccess }) {
                         </div>
                         <div>
                             <h3 style={{ margin: 0, fontSize: '15px', fontWeight: '800', color: 'var(--color-gray-900)' }}>
-                                Nouvelle fiche patient
+                                Nouveau(elle) patient(e)
                             </h3>
                             <p style={{ margin: 0, fontSize: '11px', color: 'var(--color-gray-400)', fontWeight: '500' }}>
                                 La fiche sera envoyée par SMS au patient
@@ -102,7 +121,54 @@ export default function NewIntakeModal({ isOpen, onClose, onSuccess }) {
                 </div>
 
                 <div style={{ padding: 'var(--spacing-5)' }}>
-                    {!isDone ? (
+                    {existingPatient ? (
+                        /* Existing Patient Alert State */
+                        <div style={{ textAlign: 'center', padding: '10px 0 4px' }}>
+                            <div style={{
+                                width: '68px', height: '68px', borderRadius: '50%',
+                                background: 'linear-gradient(135deg, #F59E0B, #D97706)',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                margin: '0 auto 18px',
+                                boxShadow: '0 8px 24px rgba(245, 158, 11, 0.38)'
+                            }}>
+                                <User size={34} color="white" />
+                            </div>
+                            <h4 style={{ margin: '0 0 8px', fontSize: '18px', fontWeight: '800', color: 'var(--color-gray-900)' }}>
+                                Patient déjà existant
+                            </h4>
+                            <p style={{ margin: '0 0 16px', fontSize: '14px', color: 'var(--color-gray-500)', lineHeight: 1.55 }}>
+                                Ce numéro de téléphone est déjà associé au patient <strong>{existingPatient.name}</strong> dans SurgiLink.
+                            </p>
+                            
+                            <div style={{
+                                background: '#F9FAFB', border: '1px solid #E5E7EB',
+                                borderRadius: '12px', padding: '14px', marginBottom: '22px',
+                                textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '8px'
+                            }}>
+                                <div style={{ fontSize: '12px', color: '#6B7280' }}>
+                                    <strong style={{ color: '#374151' }}>Date de Naissance :</strong> {existingPatient.birth_date ? new Date(existingPatient.birth_date).toLocaleDateString('fr-FR') : 'Non renseignée'}
+                                </div>
+                                <div style={{ fontSize: '12px', color: '#6B7280' }}>
+                                    <strong style={{ color: '#374151' }}>Dernière intervention :</strong> {existingPatient.operation || 'Non définie'} ({existingPatient.date ? new Date(existingPatient.date).toLocaleDateString('fr-FR') : 'Date non définie'})
+                                </div>
+                            </div>
+
+                            <button
+                                onClick={() => navigate(`/patient/${existingPatient.id}`)}
+                                className="btn btn-primary"
+                                style={{ width: '100%', height: '46px', borderRadius: '12px', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                            >
+                                Ouvrir sa fiche patient <ExternalLink size={16} />
+                            </button>
+                            <button
+                                onClick={() => setExistingPatient(null)}
+                                className="btn btn-secondary"
+                                style={{ width: '100%', height: '46px', borderRadius: '12px', fontWeight: '700', marginTop: '12px' }}
+                            >
+                                Essayer un autre numéro
+                            </button>
+                        </div>
+                    ) : !isDone ? (
                         <>
                             {/* Explanation */}
                             <div style={{

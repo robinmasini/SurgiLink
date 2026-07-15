@@ -8,6 +8,7 @@ import EditSMSModal from '../components/EditSMSModal';
 import CustomSMSModal from '../components/CustomSMSModal';
 import AddQuestionModal from '../components/AddQuestionModal';
 import QuestionsPreviewModal from '../components/QuestionsPreviewModal';
+import AddPatientModal from '../components/AddPatientModal';
 import ClinicAppointmentCard from '../components/ClinicAppointmentCard';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -89,6 +90,7 @@ export default function PatientReview() {
     const [isLoading, setIsLoading] = useState(true);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isQuestionsModalOpen, setIsQuestionsModalOpen] = useState(false);
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [clinicalResponses, setClinicalResponses] = useState({
         Bienvenue: {},
         J7: {},
@@ -664,6 +666,14 @@ export default function PatientReview() {
                         >
                             <History size={18} />
                             Historique
+                        </button>
+                        <button 
+                            onClick={() => setIsAddModalOpen(true)}
+                            className="btn btn-primary btn-sm"
+                            style={{ display: 'flex', alignItems: 'center', gap: '8px', borderRadius: '12px', background: 'var(--color-primary-500)', color: 'white', border: 'none' }}
+                        >
+                            <Plus size={18} />
+                            Ajouter une intervention
                         </button>
                     </div>
                 </div>
@@ -2011,11 +2021,26 @@ export default function PatientReview() {
                 }
             `}} />
 
+            {/* Modals */}
             <EditPatientModal
                 isOpen={isEditModalOpen}
                 onClose={() => setIsEditModalOpen(false)}
                 patient={patient}
                 onPatientUpdated={handlePatientUpdated}
+            />
+
+            <AddPatientModal
+                isOpen={isAddModalOpen}
+                onClose={() => setIsAddModalOpen(false)}
+                prefilledPatient={patient}
+                onSuccess={(newPatient) => {
+                    setIsAddModalOpen(false);
+                    // navigate to the new patient page or reload if same id
+                    if (newPatient && newPatient.id) {
+                        navigate(`/patient/${newPatient.id}`);
+                        window.location.reload();
+                    }
+                }}
             />
 
             {
