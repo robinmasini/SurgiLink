@@ -916,7 +916,7 @@ export default function PatientReview() {
                                         <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: 'var(--color-gray-500)' }}>Transmise via la fiche de renseignements</p>
                                     </div>
                                 </div>
-                                <div style={{ display: 'flex', gap: 'var(--spacing-6)' }}>
+                                <div style={{ display: 'flex', gap: 'var(--spacing-6)', flexWrap: 'wrap' }}>
                                     <div>
                                         <div style={{ fontSize: '12px', fontWeight: '800', color: 'var(--color-gray-500)', textTransform: 'uppercase', marginBottom: '8px' }}>Recto</div>
                                         <img 

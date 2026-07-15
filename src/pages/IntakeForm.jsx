@@ -695,7 +695,7 @@ export default function IntakeForm() {
                             <p style={{ margin: '0 0 12px', fontSize: '12px', color: '#6B7280' }}>
                                 Veuillez nous transmettre une copie de votre pièce d'identité (recto/verso) pour votre dossier.
                             </p>
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '10px' }}>
                                 <div>
                                     <label style={{
                                         position: 'relative',
