@@ -334,7 +334,7 @@ export default function Patients() {
                                     boxShadow: 'var(--shadow-sm)',
                                 }}
                             >
-                                <Plus size={18} /> {t('Créer patient manuellement')}
+                                <Plus size={18} /> {t('Ajouter une intervention')}
                             </button>
                         </div>
                     }

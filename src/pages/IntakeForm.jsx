@@ -170,6 +170,19 @@ export default function IntakeForm() {
 
     const setF = useCallback((key, val) => setForm(prev => ({ ...prev, [key]: val })), []);
 
+    const handlePhoneChange = (key, val) => {
+        let cleaned = val.replace(/[^\d+]/g, '');
+        let formatted = '';
+        if (cleaned.startsWith('+')) {
+            let prefix = cleaned.substring(0, 3);
+            let rest = cleaned.substring(3).match(/.{1,2}/g)?.join('.') || '';
+            formatted = rest ? `${prefix}.${rest}` : prefix;
+        } else {
+            formatted = cleaned.match(/.{1,2}/g)?.join('.') || '';
+        }
+        setF(key, formatted);
+    };
+
     const processImageToBase64 = (file) => {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -667,7 +680,7 @@ export default function IntakeForm() {
                         </div>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                             <Field label="Téléphone" required>
-                                <StyledInput type="tel" value={form.phone} onChange={e => setF('phone', e.target.value)} placeholder="+33 6 12 34 56 78" />
+                                <StyledInput type="tel" value={form.phone} onChange={e => handlePhoneChange('phone', e.target.value)} placeholder="+33 6 12 34 56 78" />
                             </Field>
                             <Field label="Email">
                                 <StyledInput type="email" value={form.email} onChange={e => setF('email', e.target.value)} placeholder="email@exemple.fr" />
@@ -685,7 +698,7 @@ export default function IntakeForm() {
                                     <StyledInput value={form.emergency_contact_name} onChange={e => setF('emergency_contact_name', e.target.value)} placeholder="Nom" />
                                 </Field>
                                 <Field label="Téléphone">
-                                    <StyledInput type="tel" value={form.emergency_contact_phone} onChange={e => setF('emergency_contact_phone', e.target.value)} placeholder="+33 6…" />
+                                    <StyledInput type="tel" value={form.emergency_contact_phone} onChange={e => handlePhoneChange('emergency_contact_phone', e.target.value)} placeholder="+33 6…" />
                                 </Field>
                             </div>
                         </div>

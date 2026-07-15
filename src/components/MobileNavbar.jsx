@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import LogoIcon from './LogoIcon';
+import SMSAlarmsModal from './SMSAlarmsModal';
 import {
     LayoutDashboard,
     Stethoscope,
@@ -11,6 +12,7 @@ import hmIcon from '../assets/hm-icon.png';
 export default function MobileNavbar() {
     const location = useLocation();
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
+    const [isAlarmsModalOpen, setIsAlarmsModalOpen] = useState(false);
 
     useEffect(() => {
         const handleResize = () => setIsMobile(window.innerWidth <= 1024);
@@ -56,7 +58,11 @@ export default function MobileNavbar() {
                     <Users size={24} />
                 </Link>
 
-                <div className="mobile-nav-logo-prominent">
+                <div 
+                    className="mobile-nav-logo-prominent"
+                    onClick={() => setIsAlarmsModalOpen(true)}
+                    style={{ cursor: 'pointer' }}
+                >
                     <div className="mobile-nav-logo-bg">
                         <LogoIcon width="22px" />
                     </div>
@@ -85,6 +91,7 @@ export default function MobileNavbar() {
                     <Stethoscope size={24} />
                 </Link>
             </div>
+            <SMSAlarmsModal isOpen={isAlarmsModalOpen} onClose={() => setIsAlarmsModalOpen(false)} />
         </nav>
     );
 }

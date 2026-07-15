@@ -534,7 +534,7 @@ export default function Dashboard() {
                                     boxShadow: 'var(--shadow-sm)'
                                 }}
                             >
-                                <Plus size={18} /> {t('Créer patient manuellement')}
+                                <Plus size={18} /> {t('Ajouter une intervention')}
                             </button>
 
                             {/* Mobile Questions Preview Button */}
