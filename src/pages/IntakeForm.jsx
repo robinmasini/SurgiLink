@@ -140,7 +140,7 @@ export default function IntakeForm() {
     const [form, setForm] = useState({
         // Section 1
         last_name: '', first_name: '', maiden_name: '', birth_date: '',
-        address: '', postal_code: '', city: '', phone: '', email: '',
+        address: '', postal_code: '', city: '', phone: '', email: '', mutuelle: '',
         emergency_contact_name: '', emergency_contact_phone: '',
         // Section 2
         general_practitioner: '', gp_city: '', specialist: '', specialist_city: '',
@@ -673,6 +673,9 @@ export default function IntakeForm() {
                                 <StyledInput type="email" value={form.email} onChange={e => setF('email', e.target.value)} placeholder="email@exemple.fr" />
                             </Field>
                         </div>
+                        <Field label="Mutuelle" hint="Optionnel">
+                            <StyledInput value={form.mutuelle} onChange={e => setF('mutuelle', e.target.value)} placeholder="Nom de votre mutuelle" />
+                        </Field>
                         <div style={{ background: '#F9FAFB', borderRadius: '12px', padding: '12px', border: '1px solid #F3F4F6' }}>
                             <p style={{ margin: '0 0 10px', fontSize: '12px', fontWeight: '700', color: '#374151', textTransform: 'uppercase' }}>
                                 Personne à prévenir en cas d'urgence

@@ -865,6 +865,18 @@ export default function PatientReview() {
                                             </div>
                                         </div>
 
+
+                                        {/* Item 4.5: Mutuelle */}
+                                        <div>
+                                            <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', textTransform: 'uppercase', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '600' }}>
+                                                <ShieldCheck size={12} style={{ color: 'var(--color-success-500)' }} />
+                                                Mutuelle
+                                            </div>
+                                            <div style={{ fontWeight: '700', color: 'var(--color-gray-900)', fontSize: '16px', wordBreak: 'break-all' }}>
+                                                {patient.mutuelle || 'Non renseignée'}
+                                            </div>
+                                        </div>
+
                                         {/* Item 5: Adresse */}
                                         <div>
                                             <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', textTransform: 'uppercase', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '600' }}>

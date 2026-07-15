@@ -192,6 +192,7 @@ export default function PatientSynthesisReport({
                             {intakeData.maiden_name && <div style={{ color: '#555' }}><strong>Nom de jeune fille / Homme :</strong> {intakeData.maiden_name}</div>}
                             <div style={{ color: '#555' }}><strong>Adresse :</strong> {intakeData.address ? `${intakeData.address}, ${intakeData.postal_code || ''} ${intakeData.city || ''}` : '-'}</div>
                             <div style={{ color: '#555' }}><strong>Email :</strong> {intakeData.email || '-'}</div>
+                            {intakeData.mutuelle && <div style={{ color: '#555' }}><strong>Mutuelle :</strong> {intakeData.mutuelle}</div>}
                             <div style={{ color: '#555' }}><strong>Contact urgence :</strong> {intakeData.emergency_contact_name || '-'} {intakeData.emergency_contact_phone ? `(${intakeData.emergency_contact_phone})` : ''}</div>
                             <div style={{ color: '#555', marginTop: '4px' }}><strong>Profession :</strong> {intakeData.profession || '-'}</div>
                             <div style={{ color: '#555' }}><strong>Connu par :</strong> {intakeData.referral_source?.join(', ') || '-'} {intakeData.referral_other ? `(${intakeData.referral_other})` : ''}</div>
