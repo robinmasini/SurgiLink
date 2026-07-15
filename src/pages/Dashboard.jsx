@@ -717,7 +717,7 @@ export default function Dashboard() {
                 }}>
                     {/* Patients List */}
                     <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
-                        <div style={{ padding: 'var(--spacing-4)', borderBottom: '1px solid var(--color-gray-100)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 'var(--spacing-4)' }}>
+                        <div style={{ padding: 'var(--spacing-4)', borderBottom: '1px solid var(--color-gray-100)', display: 'flex', justifyContent: 'flex-start', alignItems: 'center', flexWrap: 'wrap', gap: 'var(--spacing-4)' }}>
                             <div style={{ display: 'flex', alignItems: 'baseline', gap: 'var(--spacing-3)' }}>
                                 <h3 style={{ fontSize: 'var(--font-size-lg)', margin: 0 }}>{t('Liste des patients')}</h3>
                                 <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-500)' }}>

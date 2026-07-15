@@ -216,7 +216,127 @@ export default function Patients() {
                                 <Phone size={18} />
                                 {t('Appeler la Clinique')}
                             </button>
+                            <button
+                                onClick={() => window.open('https://pro.doctolib.fr/signin', '_blank')}
+                                className="hide-mobile"
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: 'var(--spacing-2)',
+                                    borderRadius: '12px',
+                                    height: '42px',
+                                    fontWeight: '700',
+                                    background: '#0098e4',
+                                    color: 'white',
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    padding: '0 20px',
+                                    boxShadow: 'var(--shadow-sm)',
+                                    transition: 'all 0.2s'
+                                }}
+                            >
+                                <img src={doctolibLogo} alt="Doctolib" style={{ height: '18px', objectFit: 'contain' }} />
+                                <span>{t('Planning')}</span>
+                            </button>
+                            <button
+                                className="btn btn-primary hide-mobile"
+                                onClick={() => setIsModalOpen(true)}
+                                style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)', height: '42px', justifyContent: 'center' }}
+                            >
+                                <Plus size={18} /> <span>Ajouter une intervention</span>
+                            </button>
                         </>
+                    }
+                    mobileActions={
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%' }}>
+                            <button
+                                className="btn btn-secondary"
+                                onClick={() => setIsIntakeModalOpen(true)}
+                                style={{
+                                    width: '100%',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: 'var(--spacing-2)',
+                                    borderRadius: '12px',
+                                    height: '42px',
+                                    fontWeight: '700',
+                                    background: 'var(--color-success-50)',
+                                    color: 'var(--color-success-600)',
+                                    border: '1px solid var(--color-success-200)',
+                                    boxShadow: 'var(--shadow-sm)',
+                                    fontSize: '13px'
+                                }}
+                            >
+                                <ClipboardList size={16} />
+                                Nouveau(elle) patient(e)
+                            </button>
+                            <button
+                                className="btn btn-secondary"
+                                style={{
+                                    width: '100%',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: 'var(--spacing-2)',
+                                    borderRadius: '12px',
+                                    height: '42px',
+                                    fontWeight: '700',
+                                    background: 'white',
+                                    color: 'var(--color-primary-600)',
+                                    border: '1px solid var(--color-primary-100)',
+                                    boxShadow: 'var(--shadow-sm)',
+                                    fontSize: '13px'
+                                }}
+                                onClick={() => window.location.href = 'tel:0491550000'}
+                            >
+                                <Phone size={18} />
+                                {t('Appeler la Clinique')}
+                            </button>
+                            <button
+                                onClick={() => window.open('https://pro.doctolib.fr/signin', '_blank')}
+                                style={{
+                                    width: '100%',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: 'var(--spacing-2)',
+                                    borderRadius: '12px',
+                                    height: '42px',
+                                    fontWeight: '700',
+                                    background: '#0098e4',
+                                    color: 'white',
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    boxShadow: 'var(--shadow-sm)',
+                                    transition: 'all 0.2s',
+                                }}
+                            >
+                                <img src={doctolibLogo} alt="Doctolib" style={{ height: '18px', objectFit: 'contain' }} />
+                                <span>{t('Planning')}</span>
+                            </button>
+                            <button
+                                className="btn btn-secondary"
+                                onClick={() => setIsModalOpen(true)}
+                                style={{
+                                    width: '100%',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: 'var(--spacing-2)',
+                                    borderRadius: '12px',
+                                    height: '42px',
+                                    fontWeight: '700',
+                                    background: 'white',
+                                    color: 'var(--color-primary-600)',
+                                    border: '1px solid var(--color-primary-100)',
+                                    boxShadow: 'var(--shadow-sm)',
+                                }}
+                            >
+                                <Plus size={18} /> {t('Créer patient manuellement')}
+                            </button>
+                        </div>
                     }
                 />
 
@@ -245,125 +365,7 @@ export default function Patients() {
                         ))}
                     </div>
 
-                    {!isMobile ? (
-                        <div style={{ display: 'flex', gap: 'var(--spacing-3)', flex: 1, minWidth: '300px', justifyContent: 'flex-end' }}>
-                            <div style={{ display: 'flex', flexDirection: 'row', gap: '8px', alignItems: 'center' }}>
-                                <button
-                                    onClick={() => window.open('https://pro.doctolib.fr/signin', '_blank')}
-                                    style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        gap: 'var(--spacing-2)',
-                                        borderRadius: '12px',
-                                        height: '42px',
-                                        fontWeight: '700',
-                                        background: '#0098e4',
-                                        color: 'white',
-                                        border: 'none',
-                                        cursor: 'pointer',
-                                        padding: '0 20px',
-                                        boxShadow: 'var(--shadow-sm)',
-                                        transition: 'all 0.2s'
-                                    }}
-                                    onMouseOver={(e) => {
-                                        e.currentTarget.style.background = '#0082c3';
-                                        e.currentTarget.style.transform = 'translateY(-1px)';
-                                    }}
-                                    onMouseOut={(e) => {
-                                        e.currentTarget.style.background = '#0098e4';
-                                        e.currentTarget.style.transform = 'translateY(0)';
-                                    }}
-                                >
-                                    <img src={doctolibLogo} alt="Doctolib" style={{ height: '18px', objectFit: 'contain' }} />
-                                    <span className="hide-mobile">{t('Planning')}</span>
-                                </button>
-                                <button
-                                    className="btn btn-primary"
-                                    onClick={() => setIsModalOpen(true)}
-                                    style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)', height: '42px', justifyContent: 'center' }}
-                                >
-                                    <Plus size={18} /> <span className="hide-mobile">Ajouter une intervention</span>
-                                </button>
-                            </div>
-                        </div>
-                    ) : (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%' }}>
-                            <button
-                                className="btn btn-secondary"
-                                onClick={() => setIsIntakeModalOpen(true)}
-                                style={{
-                                    width: '100%',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    gap: 'var(--spacing-2)',
-                                    borderRadius: '12px',
-                                    height: '42px',
-                                    fontWeight: '700',
-                                    background: 'var(--color-success-50)',
-                                    color: 'var(--color-success-600)',
-                                    border: '1px solid var(--color-success-200)',
-                                    boxShadow: 'var(--shadow-sm)',
-                                    marginBottom: 'var(--spacing-2)',
-                                    fontSize: '13px'
-                                }}
-                            >
-                                <ClipboardList size={16} />
-                                Nouveau(elle) patient(e)
-                            </button>
-                            <button
-                                onClick={() => window.open('https://pro.doctolib.fr/signin', '_blank')}
-                                style={{
-                                    width: '100%',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    gap: 'var(--spacing-2)',
-                                    borderRadius: '12px',
-                                    height: '42px',
-                                    fontWeight: '700',
-                                    background: '#0098e4',
-                                    color: 'white',
-                                    border: 'none',
-                                    cursor: 'pointer',
-                                    boxShadow: 'var(--shadow-sm)',
-                                    transition: 'all 0.2s',
-                                    marginBottom: 'var(--spacing-2)'
-                                }}
-                                onMouseOver={(e) => {
-                                    e.currentTarget.style.background = '#0082c3';
-                                }}
-                                onMouseOut={(e) => {
-                                    e.currentTarget.style.background = '#0098e4';
-                                }}
-                            >
-                                <img src={doctolibLogo} alt="Doctolib" style={{ height: '18px', objectFit: 'contain' }} />
-                                <span>{t('Planning')}</span>
-                            </button>
-                            <button
-                                className="btn btn-secondary"
-                                onClick={() => setIsModalOpen(true)}
-                                style={{
-                                    width: '100%',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    gap: 'var(--spacing-2)',
-                                    borderRadius: '12px',
-                                    height: '42px',
-                                    fontWeight: '700',
-                                    background: 'white',
-                                    color: 'var(--color-primary-600)',
-                                    border: '1px solid var(--color-primary-100)',
-                                    boxShadow: 'var(--shadow-sm)',
-                                    marginBottom: 'var(--spacing-2)'
-                                }}
-                            >
-                                <Plus size={18} /> {t('Créer patient manuellement')}
-                            </button>
-                        </div>
-                    )}
+
                 </div>
 
                 <div className="dashboard-content-split" style={{
@@ -374,7 +376,7 @@ export default function Patients() {
                     transition: 'all 0.3s'
                 }}>
                     <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
-                        <div style={{ padding: 'var(--spacing-4)', borderBottom: '1px solid var(--color-gray-100)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 'var(--spacing-4)' }}>
+                        <div style={{ padding: 'var(--spacing-4)', borderBottom: '1px solid var(--color-gray-100)', display: 'flex', justifyContent: 'flex-start', alignItems: 'center', flexWrap: 'wrap', gap: 'var(--spacing-4)' }}>
                             <h3 style={{ fontSize: 'var(--font-size-lg)', margin: 0 }}>{t('Patients')} ({patients.length})</h3>
                             <div style={{ position: 'relative', flex: 1, maxWidth: '400px', minWidth: '200px' }}>
                                 <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-gray-400)' }} />
