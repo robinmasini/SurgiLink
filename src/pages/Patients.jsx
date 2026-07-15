@@ -247,24 +247,6 @@ export default function Patients() {
 
                     {!isMobile ? (
                         <div style={{ display: 'flex', gap: 'var(--spacing-3)', flex: 1, minWidth: '300px', justifyContent: 'flex-end' }}>
-                            <div style={{ position: 'relative', flex: 1, maxWidth: '400px' }}>
-                                <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-gray-400)' }} />
-                                <input
-                                    type="text"
-                                    placeholder={t('Rechercher un patient...')}
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                    style={{
-                                        width: '100%',
-                                        padding: '10px 12px 10px 40px',
-                                        borderRadius: 'var(--radius-lg)',
-                                        border: '1px solid var(--color-gray-200)',
-                                        fontSize: 'var(--font-size-sm)',
-                                        outline: 'none',
-                                        transition: 'border-color 0.2s'
-                                    }}
-                                />
-                            </div>
                             <div style={{ display: 'flex', flexDirection: 'row', gap: '8px', alignItems: 'center' }}>
                                 <button
                                     onClick={() => window.open('https://pro.doctolib.fr/signin', '_blank')}
@@ -307,24 +289,6 @@ export default function Patients() {
                         </div>
                     ) : (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%' }}>
-                            <div style={{ position: 'relative', width: '100%' }}>
-                                <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-gray-400)' }} />
-                                <input
-                                    type="text"
-                                    placeholder={t('Rechercher un patient...')}
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                    style={{
-                                        width: '100%',
-                                        padding: '10px 12px 10px 40px',
-                                        borderRadius: 'var(--radius-lg)',
-                                        border: '1px solid var(--color-gray-200)',
-                                        fontSize: 'var(--font-size-sm)',
-                                        outline: 'none',
-                                        transition: 'border-color 0.2s'
-                                    }}
-                                />
-                            </div>
                             <button
                                 className="btn btn-secondary"
                                 onClick={() => setIsIntakeModalOpen(true)}
@@ -410,8 +374,26 @@ export default function Patients() {
                     transition: 'all 0.3s'
                 }}>
                     <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
-                        <div style={{ padding: 'var(--spacing-4)', borderBottom: '1px solid var(--color-gray-100)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <h3 style={{ fontSize: 'var(--font-size-lg)' }}>{t('Patients')} ({patients.length})</h3>
+                        <div style={{ padding: 'var(--spacing-4)', borderBottom: '1px solid var(--color-gray-100)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 'var(--spacing-4)' }}>
+                            <h3 style={{ fontSize: 'var(--font-size-lg)', margin: 0 }}>{t('Patients')} ({patients.length})</h3>
+                            <div style={{ position: 'relative', flex: 1, maxWidth: '400px', minWidth: '200px' }}>
+                                <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-gray-400)' }} />
+                                <input
+                                    type="text"
+                                    placeholder={t('Rechercher un patient...')}
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    style={{
+                                        width: '100%',
+                                        padding: '10px 12px 10px 40px',
+                                        borderRadius: 'var(--radius-lg)',
+                                        border: '1px solid var(--color-gray-200)',
+                                        fontSize: 'var(--font-size-sm)',
+                                        outline: 'none',
+                                        transition: 'border-color 0.2s'
+                                    }}
+                                />
+                            </div>
                         </div>
 
                         <div style={{ overflowX: 'auto' }}>

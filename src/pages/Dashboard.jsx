@@ -34,7 +34,8 @@ import {
     Settings,
     Zap,
     Plus,
-    Sparkles
+    Sparkles,
+    Search
 } from 'lucide-react';
 
 import { supabase } from '../lib/supabase';
@@ -69,6 +70,7 @@ export default function Dashboard() {
     });
     const [profile, setProfile] = useState(null);
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
+    const [searchTerm, setSearchTerm] = useState('');
 
     const tabs = ['J-18', 'J-7', 'J-1', 'Jour J', 'J+1', 'J+4', 'ESATIS', 'Tous', 'Archivés'];
 
@@ -111,10 +113,19 @@ export default function Dashboard() {
 
     useEffect(() => {
         filterPatients();
-    }, [allPatients, activeTab]);
+    }, [allPatients, activeTab, searchTerm]);
 
     const filterPatients = () => {
         let filtered = [...allPatients];
+
+        if (searchTerm) {
+            const lowerSearch = searchTerm.toLowerCase();
+            filtered = filtered.filter(p => 
+                (p.name && p.name.toLowerCase().includes(lowerSearch)) ||
+                (p.operation && p.operation.toLowerCase().includes(lowerSearch)) ||
+                (p.phone && p.phone.includes(searchTerm))
+            );
+        }
 
         if (activeTab === 'Archivés') {
             filtered = filtered.filter(p => p.status === 'archived');
@@ -551,7 +562,7 @@ export default function Dashboard() {
                                 }}
                             >
                                 <Clipboard size={16} />
-                                <span>{t('Aperçu des questions')}</span>
+                                <span>{t('Aperçu')}</span>
                             </button>
 
                             <button
@@ -706,10 +717,30 @@ export default function Dashboard() {
                 }}>
                     {/* Patients List */}
                     <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
-                        <div style={{ padding: 'var(--spacing-4)', borderBottom: '1px solid var(--color-gray-100)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <h3 style={{ fontSize: 'var(--font-size-lg)' }}>{t('Liste des patients')}</h3>
-                            <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-500)' }}>
-                                {patients.length} {t('patient(s)')}
+                        <div style={{ padding: 'var(--spacing-4)', borderBottom: '1px solid var(--color-gray-100)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 'var(--spacing-4)' }}>
+                            <div style={{ display: 'flex', alignItems: 'baseline', gap: 'var(--spacing-3)' }}>
+                                <h3 style={{ fontSize: 'var(--font-size-lg)', margin: 0 }}>{t('Liste des patients')}</h3>
+                                <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-500)' }}>
+                                    {patients.length} {t('patient(s)')}
+                                </div>
+                            </div>
+                            <div style={{ position: 'relative', flex: 1, maxWidth: '400px', minWidth: '200px' }}>
+                                <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-gray-400)' }} />
+                                <input
+                                    type="text"
+                                    placeholder={t('Rechercher un patient...')}
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    style={{
+                                        width: '100%',
+                                        padding: '10px 12px 10px 40px',
+                                        borderRadius: 'var(--radius-lg)',
+                                        border: '1px solid var(--color-gray-200)',
+                                        fontSize: 'var(--font-size-sm)',
+                                        outline: 'none',
+                                        transition: 'border-color 0.2s'
+                                    }}
+                                />
                             </div>
                         </div>
 

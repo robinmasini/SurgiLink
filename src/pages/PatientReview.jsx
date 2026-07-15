@@ -668,7 +668,7 @@ export default function PatientReview() {
                             style={{ display: 'flex', alignItems: 'center', gap: '8px', borderRadius: '12px' }}
                         >
                             <ClipboardList size={18} />
-                            {t('Aperçu des questions')}
+                            {t('Aperçu')}
                         </button>
                         <button 
                             onClick={() => setIsSecureLinkDrawerOpen(true)}

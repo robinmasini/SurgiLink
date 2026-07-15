@@ -54,14 +54,14 @@ export default function Header({ title, subtitle, actions, hideTitleMobile = fal
                         }}
                     >
                         <ClipboardList size={16} />
-                        <span>{t('Aperçu des questions')}</span>
+                        <span>{t('Aperçu')}</span>
                     </button>
                     <LanguageSelector />
                     {actions}
                 </div>
             </div>
 
-            {/* Additional mobile actions above Aperçu des questions */}
+            {/* Additional mobile actions above Aperçu */}
             {mobileActions && (
                 <div className="show-mobile" style={{ width: '100%', marginTop: 'var(--spacing-3)' }}>
                     {mobileActions}
@@ -102,7 +102,7 @@ export default function Header({ title, subtitle, actions, hideTitleMobile = fal
                     }}
                 >
                     <ClipboardList size={16} />
-                    <span>{t('Aperçu des questions')}</span>
+                    <span>{t('Aperçu')}</span>
                 </button>
             )}
 
