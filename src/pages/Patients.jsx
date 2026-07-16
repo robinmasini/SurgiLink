@@ -108,8 +108,8 @@ export default function Patients() {
                 }
             });
 
-            // Sort ascending for display as it was before
-            uniquePatientsData.sort((a, b) => new Date(a.date || '9999-12-31') - new Date(b.date || '9999-12-31'));
+            // Sort descending by created_at so newest patients are at the top
+            uniquePatientsData.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
 
             const formattedPatients = uniquePatientsData.map(patient => ({
                 ...patient,
@@ -397,6 +397,9 @@ export default function Patients() {
                                         transition: 'border-color 0.2s'
                                     }}
                                 />
+                            </div>
+                            <div style={{ marginLeft: 'auto', fontSize: '12px', color: 'var(--color-gray-500)', fontWeight: '600', padding: '6px 12px', background: 'var(--color-gray-50)', borderRadius: '6px', border: '1px solid var(--color-gray-200)' }}>
+                                Filtre : plus récent
                             </div>
                         </div>
 

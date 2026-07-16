@@ -264,6 +264,7 @@ export default function Dashboard() {
                 }
 
                 if (isMounted) {
+                    formattedPatients.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
                     setAllPatients(formattedPatients);
 
                     // Profile for mobile
@@ -743,6 +744,9 @@ export default function Dashboard() {
                                         transition: 'border-color 0.2s'
                                     }}
                                 />
+                            </div>
+                            <div style={{ marginLeft: 'auto', fontSize: '12px', color: 'var(--color-gray-500)', fontWeight: '600', padding: '6px 12px', background: 'var(--color-gray-50)', borderRadius: '6px', border: '1px solid var(--color-gray-200)' }}>
+                                {t('Filtre : plus récent')}
                             </div>
                         </div>
 
