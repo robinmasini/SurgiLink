@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import CachedAssets from './components/CachedAssets';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Patients from './pages/Patients';
@@ -29,6 +30,7 @@ import './index.css';
 function App() {
   return (
     <Router>
+      <CachedAssets />
       <MobileNavbar />
       <Routes>
         {/* Professional Routes */}
