@@ -83,11 +83,8 @@ export default function OnboardingFlow() {
                 console.warn('Could not update onboarding status (column may not exist yet):', updateError);
             }
 
-            // Also mark Bienvenue step as complete to satisfy "up to date" logic
-            await markScreenCompleted(patient.id, 'Bienvenue');
-
-            console.log('-> Onboarding complete, navigating to portal');
-            navigate(`/patient-portal/${token}`);
+            console.log('-> Onboarding complete, navigating to Bienvenue (J-18)');
+            navigate(`/patient-portal/${token}/bienvenue`);
         } catch (err) {
             console.error('Error completing onboarding:', err);
             navigate(`/patient-portal/${token}`);
@@ -404,7 +401,7 @@ export default function OnboardingFlow() {
                                     letterSpacing: '0.02em'
                                 }}
                             >
-                                CONTINUER <ArrowRight size={18} />
+                                {t('DÉMARRER MON QUESTIONNAIRE')} <ArrowRight size={18} />
                             </button>
                         </div>
                     </div>

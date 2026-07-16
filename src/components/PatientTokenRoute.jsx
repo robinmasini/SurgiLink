@@ -54,14 +54,8 @@ export default function PatientTokenRoute({ children }) {
                 const dbOnboarded = !!patientData.onboarding_completed_at;
                 const isAlreadyOnboarding = location.pathname.includes('/onboarding');
                 
-                // Only trigger onboarding if we are on the root portal or bienvenue step
-                const isWelcomePath = location.pathname === `/patient-portal/${token}` || 
-                                     location.pathname === `/patient-portal/${token}/` || 
-                                     location.pathname.includes('/bienvenue');
-
-                console.log('[TokenRoute] Status:', { dbOnboarded, localOnboarded, isAlreadyOnboarding, isWelcomePath });
-
-                if (!dbOnboarded && !localOnboarded && !isAlreadyOnboarding && isWelcomePath) {
+                // Trigger onboarding for any portal route if not completed
+                if (!dbOnboarded && !localOnboarded && !isAlreadyOnboarding) {
                     console.log('[TokenRoute] -> Setting needsOnboarding=true');
                     setNeedsOnboarding(true);
                 }
