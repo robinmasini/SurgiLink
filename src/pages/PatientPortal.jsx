@@ -913,7 +913,7 @@ export default function PatientPortal({ patient: initialPatient }) {
                                         <span style={{ fontSize: '14px', fontWeight: '700', color: '#374151' }}>{displayClinicName}</span>
                                     </div>
                                     <a 
-                                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(patient.clinic_address || displayClinicAddress)}`}
+                                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(displayClinicAddress)}`}
                                         target="_blank" rel="noopener noreferrer"
                                         style={{
                                             padding: '8px 16px',

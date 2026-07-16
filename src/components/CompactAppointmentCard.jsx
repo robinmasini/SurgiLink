@@ -6,7 +6,7 @@ export default function CompactAppointmentCard({
     clinicName,
     appointmentDate,
     appointmentTime,
-    address = "La Tuilière II, Rue Bel air, 13127 Vitrolles",
+    address,
     jValue = "J-5",
     variant = "pill", // "pill" (top bars) or "card" (clinic detail)
     hasPrescription = false,
@@ -16,6 +16,8 @@ export default function CompactAppointmentCard({
     style = {}
 }) {
     const { t } = useTranslation();
+    const isPhenicia = clinicName === 'Clinique Phenicia Marseille' || clinicName === 'Clinique Phénicia Marseille';
+    const displayAddress = address || (isPhenicia ? "29 Rue Louis Astruc, 13005 Marseille" : "La Tuilière II, Rue Bel air, 13127 Vitrolles");
 
     // Helper to format date in a short version
     const formatShortDate = (dateStr) => {
@@ -184,13 +186,13 @@ export default function CompactAppointmentCard({
                     <h3 style={{ fontSize: '18px', fontWeight: '800', color: '#1A1A1A', margin: 0 }}>{clinicName}</h3>
                 </div>
                 <div style={{ fontSize: '13px', color: '#666', marginLeft: '30px', fontWeight: '500' }}>
-                    {address}
+                    {displayAddress}
                 </div>
             </div>
 
             {/* Action CTA */}
             <a
-                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`}
+                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(displayAddress)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
