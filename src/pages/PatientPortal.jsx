@@ -649,8 +649,8 @@ export default function PatientPortal({ patient: initialPatient }) {
             <div style={{ maxWidth: '500px', margin: '0 auto' }}>
                 {/* Top Bar Logo - Left Aligned with Content */}
                 <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', marginBottom: '32px', marginTop: '10px', gap: '8px' }}>
-                    <img src={logoSurgilink} alt="SurgiLink" style={{ width: '100%', maxWidth: isMobile ? '120px' : '160px', height: 'auto', objectFit: 'contain', transition: 'all 0.3s ease' }} />
-                    <img src={logoMA} alt="Medical Alliance" style={{ width: '100%', maxWidth: isMobile ? '100px' : '140px', height: 'auto', objectFit: 'contain', transition: 'all 0.3s ease' }} />
+                    <img src={logoSurgilink} alt="SurgiLink" style={{ height: isMobile ? '35px' : '45px', width: 'auto', objectFit: 'contain', transition: 'all 0.3s ease' }} />
+                    <img src={logoMA} alt="Medical Alliance" style={{ height: isMobile ? '35px' : '45px', width: 'auto', objectFit: 'contain', transition: 'all 0.3s ease' }} />
                 </div>
 
                 {/* Greeting & Language */}

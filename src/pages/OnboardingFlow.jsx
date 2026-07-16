@@ -164,17 +164,17 @@ export default function OnboardingFlow() {
                             <div className="onboarding-logo-container" style={{ 
                                 width: '100%', 
                                 display: 'flex', 
-                                flexDirection: 'column',
+                                flexDirection: 'row',
                                 alignItems: 'center',
+                                justifyContent: 'center',
                                 gap: isMobile ? '12px' : '18px'
                             }}>
                                 <img 
                                     src={logoSurgilink} 
                                     alt="SurgiLink" 
                                     style={{ 
-                                        width: '100%', 
-                                        maxWidth: isMobile ? '160px' : '200px',
-                                        height: 'auto',
+                                        height: isMobile ? '35px' : '45px',
+                                        width: 'auto',
                                         objectFit: 'contain', 
                                         transition: 'all 0.3s ease' 
                                     }} 
@@ -183,12 +183,10 @@ export default function OnboardingFlow() {
                                     src={logoMA} 
                                     alt="Medical Alliance" 
                                     style={{ 
-                                        width: '100%', 
-                                        maxWidth: isMobile ? '140px' : '180px',
-                                        height: 'auto',
+                                        height: isMobile ? '35px' : '45px',
+                                        width: 'auto',
                                         objectFit: 'contain', 
-                                        transition: 'all 0.3s ease',
-                                        marginTop: '8px'
+                                        transition: 'all 0.3s ease'
                                     }} 
                                 />
                             </div>
