@@ -38,7 +38,7 @@ export default function Patients() {
     const [selectedPatientId, setSelectedPatientId] = useState(null);
     const [nextReminders, setNextReminders] = useState({});
 
-    const tabs = ['J-18', 'J-7', 'J-1', 'Jour J', 'J+1', 'J+4', 'ESATIS', 'Tous', 'Fiches', 'Archivés'];
+    const tabs = ['J-18', 'J-7', 'J-1', 'Jour J', 'J+1', 'J+4', 'ESATIS', 'Tous', 'Nouveaux patients', 'Fiches', 'Archivés'];
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
 
     useEffect(() => {
@@ -62,6 +62,8 @@ export default function Patients() {
         } else if (activeTab === 'Fiches') {
             // Patients avec fiche de renseignements en attente (pas encore d'intervention)
             filtered = filtered.filter(p => p.status === 'intake' || (!p.date && p.status !== 'archived'));
+        } else if (activeTab === 'Nouveaux patients') {
+            filtered = filtered.filter(p => p.status === 'intake');
         } else if (activeTab === 'Tous') {
             filtered = filtered.filter(p => p.status !== 'archived' && p.status !== 'intake');
         } else {
