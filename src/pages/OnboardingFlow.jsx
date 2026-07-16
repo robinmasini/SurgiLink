@@ -175,21 +175,21 @@ export default function OnboardingFlow() {
                                     src={logoSurgilink} 
                                     alt="SurgiLink" 
                                     style={{ 
-                                        height: isMobile ? '24px' : '35px',
-                                        maxHeight: isMobile ? '24px' : '35px',
+                                        height: isMobile ? '30px' : '38px',
+                                        maxHeight: isMobile ? '30px' : '38px',
                                         width: 'auto',
                                         maxWidth: '40vw',
                                         objectFit: 'contain', 
                                         transition: 'all 0.3s ease' 
                                     }} 
                                 />
-                                <div style={{ width: '1px', height: isMobile ? '24px' : '35px', background: '#D1D5DB' }} />
+                                <div style={{ width: '1px', height: isMobile ? '30px' : '38px', background: '#D1D5DB' }} />
                                 <img 
                                     src={logoMA} 
                                     alt="Medical Alliance" 
                                     style={{ 
-                                        height: isMobile ? '24px' : '35px',
-                                        maxHeight: isMobile ? '24px' : '35px',
+                                        height: isMobile ? '30px' : '38px',
+                                        maxHeight: isMobile ? '30px' : '38px',
                                         width: 'auto',
                                         maxWidth: '40vw',
                                         objectFit: 'contain', 
