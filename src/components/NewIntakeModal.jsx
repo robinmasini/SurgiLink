@@ -49,18 +49,37 @@ export default function NewIntakeModal({ isOpen, onClose, onSuccess }) {
         setIsSending(true);
         
         try {
-            // Check if patient already exists
-            const { data: existingPatients, error: searchError } = await supabase
+            const last9Digits = cleanPhone.slice(-9);
+            const wildcardPattern = '%' + last9Digits.split('').join('%') + '%';
+
+            // Fetch potential matches using the wildcard pattern to ignore spaces/dots in DB
+            const { data: potentialMatches, error: searchError } = await supabase
                 .from('patients')
-                .select('id, name, birth_date, operation, date')
-                .eq('phone', phone)
-                .order('date', { ascending: false })
-                .limit(1);
+                .select('id, name, birth_date, operation, date, phone, created_at')
+                .ilike('phone', wildcardPattern)
+                .order('created_at', { ascending: false });
                 
-            if (!searchError && existingPatients && existingPatients.length > 0) {
-                setExistingPatient(existingPatients[0]);
-                setIsSending(false);
-                return;
+            if (!searchError && potentialMatches && potentialMatches.length > 0) {
+                // Filter matches strictly by the last 9 digits after stripping non-numeric chars
+                const validMatches = potentialMatches.filter(p => {
+                    const pClean = (p.phone || '').replace(/[\s\.\-\(\)\+]/g, '');
+                    return pClean.endsWith(last9Digits);
+                });
+
+                if (validMatches.length > 0) {
+                    // Prefer a named patient over 'Nouveau patient', then newest first
+                    validMatches.sort((a, b) => {
+                        const aIsNew = a.name === 'Nouveau patient';
+                        const bIsNew = b.name === 'Nouveau patient';
+                        if (!aIsNew && bIsNew) return -1;
+                        if (aIsNew && !bIsNew) return 1;
+                        return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+                    });
+
+                    setExistingPatient(validMatches[0]);
+                    setIsSending(false);
+                    return;
+                }
             }
 
             const result = await createIntakePatient(phone, null, null, userId);
