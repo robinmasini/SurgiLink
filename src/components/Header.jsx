@@ -3,7 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { ClipboardList } from 'lucide-react';
 import LanguageSelector from './LanguageSelector';
 import QuestionsPreviewModal from './QuestionsPreviewModal';
-import logoSlMa from '../assets/logo-sl-ma.png';
+import logoSurgilink from '../assets/logo_surgilink_premium_green.png';
+import logoMA from '../assets/logo-medical-alliance.png';
 
 export default function Header({ title, subtitle, actions, hideTitleMobile = false, hideQuestionsPreviewMobile = false, mobileActions }) {
     const { t } = useTranslation();
@@ -19,8 +20,9 @@ export default function Header({ title, subtitle, actions, hideTitleMobile = fal
                 </div>
 
                 {/* Mobile Left: Combined Logo */}
-                <div className="show-mobile" style={{ display: 'none', alignItems: 'center' }}>
-                    <img src={logoSlMa} alt="SurgiLink / Medical Alliance" style={{ height: '52px', objectFit: 'contain' }} />
+                <div className="show-mobile" style={{ display: 'none', alignItems: 'center', gap: '8px' }}>
+                    <img src={logoSurgilink} alt="SurgiLink" style={{ height: '36px', objectFit: 'contain' }} />
+                    <img src={logoMA} alt="Medical Alliance" style={{ height: '36px', objectFit: 'contain' }} />
                 </div>
 
                 {/* Right: Actions */}

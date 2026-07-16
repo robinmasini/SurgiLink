@@ -2,7 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowRight, ArrowLeft, CheckCircle, Loader, AlertCircle, Camera, Image as ImageIcon } from 'lucide-react';
 import { getIntakeByToken, submitIntakeForm } from '../services/intakeService';
-import logoSlMa from '../assets/logo-sl-ma.png';
+import logoSurgilink from '../assets/logo_surgilink_premium_green.png';
+import logoMA from '../assets/logo-medical-alliance.png';
 import medecinImg from '../assets/medecin.png';
 
 /* ─────────────────────────────────────────────────────────────────
@@ -393,12 +394,19 @@ export default function IntakeForm() {
         return (
             <div style={{ ...pageStyle, alignItems: 'center', justifyContent: 'center', padding: '32px' }}>
                 <div style={{ textAlign: 'center', maxWidth: '360px' }}>
-                    {/* Logo sl-ma.png au-dessus */}
-                    <img
-                        src={logoSlMa}
-                        alt="SurgiLink / Medical Alliance"
-                        style={{ height: '80px', objectFit: 'contain', marginBottom: '28px' }}
-                    />
+                    {/* Logos au-dessus */}
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', marginBottom: '28px' }}>
+                        <img
+                            src={logoSurgilink}
+                            alt="SurgiLink"
+                            style={{ height: '50px', objectFit: 'contain' }}
+                        />
+                        <img
+                            src={logoMA}
+                            alt="Medical Alliance"
+                            style={{ height: '40px', objectFit: 'contain' }}
+                        />
+                    </div>
                     {/* Pastille verte */}
                     <div style={{
                         width: '80px', height: '80px', borderRadius: '50%',
@@ -443,7 +451,10 @@ export default function IntakeForm() {
                 <div style={{ width: '100%', maxWidth: '500px', padding: isMobile ? '20px 20px 120px' : '28px 24px 120px', boxSizing: 'border-box', flex: 1, display: 'flex', flexDirection: 'column' }}>
 
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '18px', gap: '16px' }}>
-                        <img src={logoSlMa} alt="SurgiLink / Medical Alliance" style={{ width: '100%', maxWidth: '220px', height: 'auto', objectFit: 'contain' }} />
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                            <img src={logoSurgilink} alt="SurgiLink" style={{ width: '100%', maxWidth: '160px', height: 'auto', objectFit: 'contain' }} />
+                            <img src={logoMA} alt="Medical Alliance" style={{ width: '100%', maxWidth: '140px', height: 'auto', objectFit: 'contain' }} />
+                        </div>
                         {/* Sélecteur langue pill */}
                         <div style={{ position: 'relative', flexShrink: 0 }}>
                             <select
@@ -1132,7 +1143,10 @@ const progress = (formStep / TOTAL_STEPS) * 100;
             <div style={containerStyle}>
             {/* ── Logo à gauche ── */}
             <div style={{ display: 'flex', justifyContent: 'flex-start', paddingTop: '8px', marginBottom: '14px' }}>
-                <img src={logoSlMa} alt="SurgiLink / Medical Alliance" style={{ width: '100%', maxWidth: isMobile ? '200px' : '260px', height: 'auto', objectFit: 'contain' }} />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center' }}>
+                    <img src={logoSurgilink} alt="SurgiLink" style={{ width: '100%', maxWidth: isMobile ? '160px' : '200px', height: 'auto', objectFit: 'contain' }} />
+                    <img src={logoMA} alt="Medical Alliance" style={{ width: '100%', maxWidth: isMobile ? '140px' : '180px', height: 'auto', objectFit: 'contain' }} />
+                </div>
             </div>
 
             {/* ── Step indicator à gauche, sous le logo ── */}

@@ -37,7 +37,8 @@ import { useTranslation } from 'react-i18next';
 import wppPhone from '../assets/wpp-phone-v2.png';
 import wppDesktop from '../assets/wpp-desktop-v2.png';
 
-import logoSlMa from '../assets/logo-sl-ma.png';
+import logoSurgilink from '../assets/logo_surgilink_premium_green.png';
+import logoMA from '../assets/logo-medical-alliance.png';
 import clinicImg from '../assets/clinic.jpg';
 import clinic2Img from '../assets/clinic-2.png';
 import suiviCard from '../assets/suivi-card.png';
@@ -647,8 +648,9 @@ export default function PatientPortal({ patient: initialPatient }) {
 
             <div style={{ maxWidth: '500px', margin: '0 auto' }}>
                 {/* Top Bar Logo - Left Aligned with Content */}
-                <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', marginBottom: '32px', marginTop: '10px' }}>
-                    <img src={logoSlMa} alt="Logo" style={{ width: '100%', maxWidth: isMobile ? '160px' : '220px', height: 'auto', objectFit: 'contain', transition: 'all 0.3s ease' }} />
+                <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', marginBottom: '32px', marginTop: '10px', gap: '8px' }}>
+                    <img src={logoSurgilink} alt="SurgiLink" style={{ width: '100%', maxWidth: isMobile ? '120px' : '160px', height: 'auto', objectFit: 'contain', transition: 'all 0.3s ease' }} />
+                    <img src={logoMA} alt="Medical Alliance" style={{ width: '100%', maxWidth: isMobile ? '100px' : '140px', height: 'auto', objectFit: 'contain', transition: 'all 0.3s ease' }} />
                 </div>
 
                 {/* Greeting & Language */}

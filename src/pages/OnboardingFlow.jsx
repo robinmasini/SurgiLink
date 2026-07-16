@@ -4,7 +4,8 @@ import { ArrowRight, MessageSquare, CheckCircle2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { validateToken } from '../services/tokenService';
 import { saveResponse, markScreenCompleted } from '../services/pathwayService';
-import logoSlMa from '../assets/logo-sl-ma.png';
+import logoSurgilink from '../assets/logo_surgilink_premium_green.png';
+import logoMA from '../assets/logo-medical-alliance.png';
 import medecinImg from '../assets/medecin.png';
 import smsImg from '../assets/sms.png';
 import cardMedicalImg from '../assets/card-medical.png';
@@ -171,14 +172,26 @@ export default function OnboardingFlow() {
                                 gap: isMobile ? '12px' : '18px'
                             }}>
                                 <img 
-                                    src={logoSlMa} 
-                                    alt="SurgiLink / Medical Alliance" 
+                                    src={logoSurgilink} 
+                                    alt="SurgiLink" 
                                     style={{ 
                                         width: '100%', 
-                                        maxWidth: isMobile ? '280px' : '340px',
+                                        maxWidth: isMobile ? '160px' : '200px',
                                         height: 'auto',
                                         objectFit: 'contain', 
                                         transition: 'all 0.3s ease' 
+                                    }} 
+                                />
+                                <img 
+                                    src={logoMA} 
+                                    alt="Medical Alliance" 
+                                    style={{ 
+                                        width: '100%', 
+                                        maxWidth: isMobile ? '140px' : '180px',
+                                        height: 'auto',
+                                        objectFit: 'contain', 
+                                        transition: 'all 0.3s ease',
+                                        marginTop: '8px'
                                     }} 
                                 />
                             </div>
