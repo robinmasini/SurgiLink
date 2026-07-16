@@ -473,8 +473,8 @@ export default function PatientPortal({ patient: initialPatient }) {
 
             // Check onboarding completion before showing portal
             const storageKey = `onboarding_completed_${patientData.id}`;
-            const localOnboarded = localStorage.getItem(storageKey) === 'true';
-            if (!patientData.onboarding_completed_at && !localOnboarded) {
+            if (!patientData.onboarding_completed_at) {
+                localStorage.removeItem(storageKey);
                 navigate(`/patient-portal/${token}/onboarding`);
                 return;
             }

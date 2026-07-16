@@ -46,15 +46,17 @@ export default function OnboardingFlow() {
 
                 if (patientError) throw patientError;
                 
-                // If onboarding is already completed (DB or Local), skip to portal
+                // If onboarding is already completed (DB), skip to portal
                 const storageKey = `onboarding_completed_${validation.patientId}`;
-                const localOnboarded = localStorage.getItem(storageKey) === 'true';
                 
-                if (patientData.onboarding_completed_at || localOnboarded) {
-                    console.log('-> Onboarding already done (DB or local), skipping');
+                if (patientData.onboarding_completed_at) {
+                    console.log('-> Onboarding already done (DB), skipping');
                     navigate(`/patient-portal/${token}`);
                     return;
                 }
+                
+                // If we get here, DB says it's not completed. We should clear local storage to fix any sync issues.
+                localStorage.removeItem(storageKey);
 
                 setPatient(patientData);
             } catch (err) {
@@ -173,18 +175,23 @@ export default function OnboardingFlow() {
                                     src={logoSurgilink} 
                                     alt="SurgiLink" 
                                     style={{ 
-                                        height: isMobile ? '35px' : '45px',
+                                        height: isMobile ? '24px' : '35px',
+                                        maxHeight: isMobile ? '24px' : '35px',
                                         width: 'auto',
+                                        maxWidth: '40vw',
                                         objectFit: 'contain', 
                                         transition: 'all 0.3s ease' 
                                     }} 
                                 />
+                                <div style={{ width: '1px', height: isMobile ? '24px' : '35px', background: '#D1D5DB' }} />
                                 <img 
                                     src={logoMA} 
                                     alt="Medical Alliance" 
                                     style={{ 
-                                        height: isMobile ? '35px' : '45px',
+                                        height: isMobile ? '24px' : '35px',
+                                        maxHeight: isMobile ? '24px' : '35px',
                                         width: 'auto',
+                                        maxWidth: '40vw',
                                         objectFit: 'contain', 
                                         transition: 'all 0.3s ease'
                                     }} 

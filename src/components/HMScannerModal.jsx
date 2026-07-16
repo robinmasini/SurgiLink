@@ -756,6 +756,20 @@ Les clés doivent être exactement :
                                             onChange={e => setFormData({ ...formData, operation: e.target.value })} 
                                         />
                                     </div>
+                                    <div style={{ marginTop: '10px' }}>
+                                        <label className="form-label-scan">Clinique</label>
+                                        <select 
+                                            className="input"
+                                            value={formData.clinicName}
+                                            onChange={e => setFormData({ ...formData, clinicName: e.target.value })}
+                                        >
+                                            <option value="" disabled>Sélectionnez un établissement</option>
+                                            <option value="Medical Alliance Aix en Provence">Medical Alliance Aix en Provence</option>
+                                            <option value="Medical Alliance Marseille">Medical Alliance Marseille</option>
+                                            <option value="Clinique de Vitrolles">Clinique de Vitrolles</option>
+                                            <option value="Clinique Phenicia Marseille">Clinique Phénicia Marseille</option>
+                                        </select>
+                                    </div>
                                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginTop: '10px' }}>
                                         <div>
                                             <label className="form-label-scan">Chirurgien</label>
