@@ -648,10 +648,10 @@ export default function PatientPortal({ patient: initialPatient }) {
 
             <div style={{ maxWidth: '500px', margin: '0 auto' }}>
                 {/* Top Bar Logo - Left Aligned with Content */}
-                <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', marginBottom: '32px', marginTop: '10px', gap: isMobile ? '12px' : '16px' }}>
-                    <img src={logoSurgilink} alt="SurgiLink" style={{ height: isMobile ? '30px' : '38px', width: isMobile ? '29px' : '37px', objectFit: 'contain', transition: 'all 0.3s ease' }} />
-                    <div style={{ width: '1px', height: isMobile ? '30px' : '38px', background: '#D1D5DB' }} />
-                    <img src={logoMA} alt="Medical Alliance" style={{ height: isMobile ? '30px' : '38px', width: isMobile ? '46px' : '58px', objectFit: 'contain', transition: 'all 0.3s ease' }} />
+                <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', marginBottom: '32px', marginTop: '10px', gap: isMobile ? '16px' : '24px' }}>
+                    <img src={logoSurgilink} alt="SurgiLink" style={{ height: isMobile ? '80px' : '100px', width: isMobile ? '78px' : '98px', objectFit: 'contain', transition: 'all 0.3s ease' }} />
+                    <div style={{ width: '1px', height: isMobile ? '80px' : '100px', background: '#D1D5DB' }} />
+                    <img src={logoMA} alt="Medical Alliance" style={{ height: isMobile ? '80px' : '100px', width: isMobile ? '122px' : '152px', objectFit: 'contain', transition: 'all 0.3s ease' }} />
                 </div>
 
                 {/* Greeting & Language */}

@@ -169,25 +169,25 @@ export default function OnboardingFlow() {
                                 flexDirection: 'row',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                gap: isMobile ? '12px' : '18px'
+                                gap: isMobile ? '16px' : '24px'
                             }}>
                                 <img 
                                     src={logoSurgilink} 
                                     alt="SurgiLink" 
                                     style={{ 
-                                        height: isMobile ? '30px' : '38px',
-                                        width: isMobile ? '29px' : '37px',
+                                        height: isMobile ? '80px' : '100px',
+                                        width: isMobile ? '78px' : '98px',
                                         objectFit: 'contain', 
                                         transition: 'all 0.3s ease' 
                                     }} 
                                 />
-                                <div style={{ width: '1px', height: isMobile ? '30px' : '38px', background: '#D1D5DB' }} />
+                                <div style={{ width: '1px', height: isMobile ? '80px' : '100px', background: '#D1D5DB' }} />
                                 <img 
                                     src={logoMA} 
                                     alt="Medical Alliance" 
                                     style={{ 
-                                        height: isMobile ? '30px' : '38px',
-                                        width: isMobile ? '46px' : '58px',
+                                        height: isMobile ? '80px' : '100px',
+                                        width: isMobile ? '122px' : '152px',
                                         objectFit: 'contain', 
                                         transition: 'all 0.3s ease'
                                     }} 
@@ -263,7 +263,7 @@ export default function OnboardingFlow() {
                                     letterSpacing: '0.02em'
                                 }}
                             >
-                                CONTINUER <ArrowRight size={18} />
+                                CONTINUER
                             </button>
                         </div>
                     </div>
