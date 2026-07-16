@@ -399,13 +399,13 @@ export default function IntakeForm() {
                         <img
                             src={logoSurgilink}
                             alt="SurgiLink"
-                            style={{ height: isMobile ? '30px' : '38px', maxHeight: isMobile ? '30px' : '38px', maxWidth: '40vw', width: 'auto', objectFit: 'contain' }}
+                            style={{ height: isMobile ? '30px' : '38px', width: isMobile ? '29px' : '37px', objectFit: 'contain' }}
                         />
                         <div style={{ width: '1px', height: isMobile ? '30px' : '38px', background: '#D1D5DB' }} />
                         <img
                             src={logoMA}
                             alt="Medical Alliance"
-                            style={{ height: isMobile ? '30px' : '38px', maxHeight: isMobile ? '30px' : '38px', maxWidth: '40vw', width: 'auto', objectFit: 'contain' }}
+                            style={{ height: isMobile ? '30px' : '38px', width: isMobile ? '46px' : '58px', objectFit: 'contain' }}
                         />
                     </div>
                     {/* Pastille verte */}
@@ -453,9 +453,9 @@ export default function IntakeForm() {
 
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '18px', gap: '16px' }}>
                             <div style={{ display: 'flex', flexDirection: 'row', gap: '12px', alignItems: 'center' }}>
-                                <img src={logoSurgilink} alt="SurgiLink" style={{ height: isMobile ? '30px' : '38px', maxHeight: isMobile ? '30px' : '38px', maxWidth: '40vw', width: 'auto', objectFit: 'contain' }} />
+                                <img src={logoSurgilink} alt="SurgiLink" style={{ height: isMobile ? '30px' : '38px', width: isMobile ? '29px' : '37px', objectFit: 'contain' }} />
                                 <div style={{ width: '1px', height: isMobile ? '30px' : '38px', background: '#D1D5DB' }} />
-                                <img src={logoMA} alt="Medical Alliance" style={{ height: isMobile ? '30px' : '38px', maxHeight: isMobile ? '30px' : '38px', maxWidth: '40vw', width: 'auto', objectFit: 'contain' }} />
+                                <img src={logoMA} alt="Medical Alliance" style={{ height: isMobile ? '30px' : '38px', width: isMobile ? '46px' : '58px', objectFit: 'contain' }} />
                             </div>
                         {/* Sélecteur langue pill */}
                         <div style={{ position: 'relative', flexShrink: 0 }}>
@@ -1146,9 +1146,9 @@ const progress = (formStep / TOTAL_STEPS) * 100;
             {/* ── Logo à gauche ── */}
             <div style={{ display: 'flex', justifyContent: 'flex-start', paddingTop: '8px', marginBottom: '14px' }}>
                 <div style={{ display: 'flex', flexDirection: 'row', gap: isMobile ? '12px' : '16px', alignItems: 'center' }}>
-                    <img src={logoSurgilink} alt="SurgiLink" style={{ height: isMobile ? '30px' : '38px', maxHeight: isMobile ? '30px' : '38px', maxWidth: '40vw', width: 'auto', objectFit: 'contain' }} />
+                    <img src={logoSurgilink} alt="SurgiLink" style={{ height: isMobile ? '30px' : '38px', width: isMobile ? '29px' : '37px', objectFit: 'contain' }} />
                     <div style={{ width: '1px', height: isMobile ? '30px' : '38px', background: '#D1D5DB' }} />
-                    <img src={logoMA} alt="Medical Alliance" style={{ height: isMobile ? '30px' : '38px', maxHeight: isMobile ? '30px' : '38px', maxWidth: '40vw', width: 'auto', objectFit: 'contain' }} />
+                    <img src={logoMA} alt="Medical Alliance" style={{ height: isMobile ? '30px' : '38px', width: isMobile ? '46px' : '58px', objectFit: 'contain' }} />
                 </div>
             </div>
 

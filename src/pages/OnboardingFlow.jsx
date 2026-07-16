@@ -176,9 +176,7 @@ export default function OnboardingFlow() {
                                     alt="SurgiLink" 
                                     style={{ 
                                         height: isMobile ? '30px' : '38px',
-                                        maxHeight: isMobile ? '30px' : '38px',
-                                        width: 'auto',
-                                        maxWidth: '40vw',
+                                        width: isMobile ? '29px' : '37px',
                                         objectFit: 'contain', 
                                         transition: 'all 0.3s ease' 
                                     }} 
@@ -189,9 +187,7 @@ export default function OnboardingFlow() {
                                     alt="Medical Alliance" 
                                     style={{ 
                                         height: isMobile ? '30px' : '38px',
-                                        maxHeight: isMobile ? '30px' : '38px',
-                                        width: 'auto',
-                                        maxWidth: '40vw',
+                                        width: isMobile ? '46px' : '58px',
                                         objectFit: 'contain', 
                                         transition: 'all 0.3s ease'
                                     }} 
