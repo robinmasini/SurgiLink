@@ -52,8 +52,8 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
                             className={`btn btn-lg ${value === true ? 'btn-success' : 'btn-secondary'}`}
                             onClick={() => handleChange(true)}
                             style={{
-                                height: '80px',
-                                fontSize: 'var(--font-size-xl)',
+                                height: '48px',
+                                fontSize: 'var(--font-size-base)',
                                 fontWeight: 'var(--font-weight-bold)',
                                 borderRadius: 'var(--radius-full)',
                                 border: value === true ? '2px solid var(--color-success-600)' : '2px solid var(--color-gray-200)',
@@ -67,8 +67,8 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
                             className={`btn btn-lg ${value === false ? 'btn-primary' : 'btn-secondary'}`}
                             onClick={() => handleChange(false)}
                             style={{
-                                height: '80px',
-                                fontSize: 'var(--font-size-xl)',
+                                height: '48px',
+                                fontSize: 'var(--font-size-base)',
                                 fontWeight: 'var(--font-weight-bold)',
                                 borderRadius: 'var(--radius-full)',
                                 border: value === false ? '2px solid var(--color-primary-600)' : '2px solid var(--color-gray-200)',
@@ -99,8 +99,8 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
                                     className={`btn btn-lg ${value === option.value ? (isOui ? 'btn-success' : 'btn-primary') : 'btn-secondary'}`}
                                     onClick={() => handleChange(option.value)}
                                     style={{
-                                        height: '70px',
-                                        fontSize: 'var(--font-size-lg)',
+                                        height: '48px',
+                                        fontSize: 'var(--font-size-base)',
                                         fontWeight: 'var(--font-weight-semibold)',
                                         borderRadius: 'var(--border-radius-xl)',
                                         border: value === option.value
@@ -235,7 +235,7 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
                                     className={`btn btn-lg ${value === option.value ? (isOui ? 'btn-success' : 'btn-primary') : 'btn-secondary'}`}
                                     onClick={() => handleChange(option.value)}
                                     style={{
-                                        height: '64px',
+                                        height: '48px',
                                         fontSize: 'var(--font-size-base)',
                                         fontWeight: 'var(--font-weight-semibold)',
                                         borderRadius: 'var(--border-radius-xl)',
@@ -420,10 +420,10 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
 
     return (
         <div className="question-card" style={{
-            padding: 'var(--spacing-6)',
+            padding: 'var(--spacing-4)',
             borderRadius: 'var(--border-radius-2xl)',
             border: '2px solid var(--color-gray-100)',
-            marginBottom: 'var(--spacing-6)',
+            marginBottom: 'var(--spacing-3)',
             boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
             background: 'rgba(255, 255, 255, 0.8)',
             backdropFilter: 'blur(10px)'

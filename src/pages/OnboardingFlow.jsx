@@ -85,8 +85,8 @@ export default function OnboardingFlow() {
                 console.warn('Could not update onboarding status (column may not exist yet):', updateError);
             }
 
-            console.log('-> Onboarding complete, navigating to Bienvenue (J-18)');
-            navigate(`/patient-portal/${token}/bienvenue`);
+            console.log('-> Onboarding complete, navigating to Portal');
+            navigate(`/patient-portal/${token}`);
         } catch (err) {
             console.error('Error completing onboarding:', err);
             navigate(`/patient-portal/${token}`);
@@ -175,8 +175,8 @@ export default function OnboardingFlow() {
                                     src={logoSurgilink} 
                                     alt="SurgiLink" 
                                     style={{ 
-                                        height: isMobile ? '30px' : '38px',
-                                        width: isMobile ? '29px' : '37px',
+                                        height: isMobile ? '80px' : '88px',
+                                        width: isMobile ? '78px' : '85px',
                                         objectFit: 'contain', 
                                         transition: 'all 0.3s ease' 
                                     }} 
@@ -186,8 +186,8 @@ export default function OnboardingFlow() {
                                     src={logoMA} 
                                     alt="Medical Alliance" 
                                     style={{ 
-                                        height: isMobile ? '30px' : '38px',
-                                        width: isMobile ? '46px' : '58px',
+                                        height: isMobile ? '80px' : '88px',
+                                        width: isMobile ? '122px' : '135px',
                                         objectFit: 'contain', 
                                         transition: 'all 0.3s ease'
                                     }} 
@@ -402,7 +402,7 @@ export default function OnboardingFlow() {
                                     letterSpacing: '0.02em'
                                 }}
                             >
-                                DÉMARRER MON QUESTIONNAIRE <ArrowRight size={18} />
+                                CONTINUER <ArrowRight size={18} />
                             </button>
                         </div>
                     </div>

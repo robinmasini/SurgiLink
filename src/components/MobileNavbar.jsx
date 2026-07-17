@@ -64,7 +64,7 @@ export default function MobileNavbar() {
                     style={{ cursor: 'pointer' }}
                 >
                     <div className="mobile-nav-logo-bg">
-                        <LogoIcon width="22px" />
+                        <LogoIcon width="45px" />
                     </div>
                 </div>
 
