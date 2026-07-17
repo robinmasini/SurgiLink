@@ -54,7 +54,13 @@ export const calculateDaysUntilSurgery = (surgeryDate) => {
  */
 export const formatDateFR = (date, options = { day: 'numeric', month: 'long', year: 'numeric' }) => {
     if (!date) return 'Non définie';
-    return new Date(date).toLocaleDateString('fr-FR', options);
+    try {
+        const d = new Date(date);
+        if (isNaN(d.getTime())) return 'Date invalide';
+        return d.toLocaleDateString('fr-FR', options);
+    } catch (e) {
+        return 'Date invalide';
+    }
 };
 
 /**
@@ -64,11 +70,17 @@ export const formatDateFR = (date, options = { day: 'numeric', month: 'long', ye
  */
 export const formatDateTimeFR = (date) => {
     if (!date) return 'Non définie';
-    return new Date(date).toLocaleString('fr-FR', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-    }).replace(' à ', ' • ');
+    try {
+        const d = new Date(date);
+        if (isNaN(d.getTime())) return 'Date invalide';
+        return d.toLocaleString('fr-FR', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        }).replace(' à ', ' • ');
+    } catch (e) {
+        return 'Date invalide';
+    }
 };

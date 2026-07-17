@@ -941,7 +941,16 @@ export default function PatientPortal({ patient: initialPatient }) {
                                             <Calendar size={16} color="#6b7280" />
                                         </div>
                                         <span style={{ fontSize: '15px', color: '#374151', fontWeight: '500' }}>
-                                            {patient.date ? new Date(patient.date).toLocaleDateString(i18n.language, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) : t('Date à confirmer')}
+                                            {(() => {
+                                                if (!patient.date) return t('Date à confirmer');
+                                                try {
+                                                    const d = new Date(patient.date);
+                                                    if (isNaN(d.getTime())) return t('Date à confirmer');
+                                                    return d.toLocaleDateString(i18n.language, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+                                                } catch (e) {
+                                                    return t('Date à confirmer');
+                                                }
+                                            })()}
                                         </span>
                                     </div>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: '#374151' }}>

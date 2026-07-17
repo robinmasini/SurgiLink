@@ -310,6 +310,10 @@ export default function PatientReview() {
 
     const handleOpenPortal = async () => {
         let currentToken = tokenData?.token;
+        
+        // Open the tab immediately to bypass popup blockers
+        const newTab = window.open('about:blank', '_blank');
+        
         if (!currentToken) {
             try {
                 const res = await generatePatientToken(id);
@@ -322,17 +326,24 @@ export default function PatientReview() {
                         is_active: true
                     });
                 } else {
+                    if (newTab) newTab.close();
                     alert(`Erreur lors de la génération du lien portail : ${res.error}`);
                     return;
                 }
             } catch (err) {
+                if (newTab) newTab.close();
                 console.error(err);
                 alert('Erreur lors de la génération du lien portail.');
                 return;
             }
         }
         const url = `${window.location.origin}/patient-portal/${currentToken}`;
-        window.open(url, '_blank');
+        if (newTab) {
+            newTab.location.href = url;
+        } else {
+            // Fallback if window.open was totally blocked and returned null
+            window.location.href = url;
+        }
     };
 
     const copyToClipboard = async (text) => {
