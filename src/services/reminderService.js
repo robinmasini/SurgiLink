@@ -155,7 +155,7 @@ export async function processPendingReminders(supabaseClient = null) {
             const token = tokenData?.token;
             const screenPath = getScreenPath(reminder.screen);
             const baseUrl = `https://surgilink.eu/patient-portal/${token || ''}`;
-            const directLink = screenPath ? `${baseUrl}/${screenPath}` : baseUrl;
+            const directLink = baseUrl; // User requested to always land on portal first
 
             const variables = {
                 first_name: patient.name?.split(' ')[0] || 'Patient',
@@ -257,7 +257,7 @@ export async function sendManualReminder(patientId, screen, itemId, templateKey,
         const token = tokenData?.token;
         const screenPath = getScreenPath(screen);
         const baseUrl = `https://surgilink.eu/patient-portal/${token || ''}`;
-        const directLink = screenPath ? `${baseUrl}/${screenPath}` : baseUrl;
+        const directLink = baseUrl; // User requested to always land on portal first
 
 
         // Prepare variables
