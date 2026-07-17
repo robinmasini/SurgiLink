@@ -21,8 +21,8 @@ export default function Header({ title, subtitle, actions, hideTitleMobile = fal
 
                 {/* Mobile Left: Combined Logo */}
                 <div className="show-mobile" style={{ display: 'none', alignItems: 'center', gap: '8px' }}>
-                    <img src={logoSurgilink} alt="SurgiLink" style={{ height: '36px', objectFit: 'contain' }} />
-                    <img src={logoMA} alt="Medical Alliance" style={{ height: '36px', objectFit: 'contain' }} />
+                    <img src={logoSurgilink} alt="SurgiLink" style={{ height: '52px', objectFit: 'contain' }} />
+                    <img src={logoMA} alt="Medical Alliance" style={{ height: '52px', objectFit: 'contain' }} />
                 </div>
 
                 {/* Right: Actions */}
