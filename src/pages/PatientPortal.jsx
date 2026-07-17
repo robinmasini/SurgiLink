@@ -650,9 +650,9 @@ export default function PatientPortal({ patient: initialPatient }) {
                 {/* Top Bar Logo - Left Aligned with Content */}
                 <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', marginBottom: '32px', marginTop: '10px' }}>
                     <div style={{ display: 'flex', flexDirection: 'row', gap: isMobile ? '12px' : '16px', alignItems: 'center' }}>
-                        <img src={logoSurgilink} alt="SurgiLink" style={{ height: isMobile ? '30px' : '38px', width: isMobile ? '29px' : '37px', objectFit: 'contain', transition: 'all 0.3s ease' }} />
-                        <div style={{ width: '1px', height: isMobile ? '30px' : '38px', background: '#D1D5DB' }} />
-                        <img src={logoMA} alt="Medical Alliance" style={{ height: isMobile ? '30px' : '38px', width: isMobile ? '46px' : '58px', objectFit: 'contain', transition: 'all 0.3s ease' }} />
+                        <img src={logoSurgilink} alt="SurgiLink" style={{ height: isMobile ? '56px' : '64px', width: isMobile ? '54px' : '62px', objectFit: 'contain', transition: 'all 0.3s ease' }} />
+                        <div style={{ width: '1px', height: isMobile ? '56px' : '64px', background: '#D1D5DB' }} />
+                        <img src={logoMA} alt="Medical Alliance" style={{ height: isMobile ? '56px' : '64px', width: isMobile ? '85px' : '98px', objectFit: 'contain', transition: 'all 0.3s ease' }} />
                     </div>
                 </div>
 
