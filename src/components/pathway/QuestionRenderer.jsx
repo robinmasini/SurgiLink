@@ -2,6 +2,46 @@ import { Info, AlertTriangle, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
+function TextInputArea({ item, value, onChange }) {
+    const [localText, setLocalText] = useState(value || '');
+
+    useEffect(() => {
+        setLocalText(value || '');
+    }, [value]);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (localText !== (value || '')) {
+                onChange(localText);
+            }
+        }, 400);
+        return () => clearTimeout(timer);
+    }, [localText, value, onChange]);
+
+    return (
+        <textarea
+            value={localText}
+            onChange={(e) => setLocalText(e.target.value)}
+            onBlur={() => {
+                if (localText !== (value || '')) {
+                    onChange(localText);
+                }
+            }}
+            placeholder={item.placeholder || ''}
+            rows={item.multiline ? 4 : 2}
+            style={{
+                width: '100%',
+                padding: 'var(--spacing-3)',
+                border: '1px solid var(--color-gray-300)',
+                borderRadius: 'var(--border-radius-lg)',
+                fontSize: 'var(--font-size-base)',
+                fontFamily: 'inherit',
+                resize: 'vertical'
+            }}
+        />
+    );
+}
+
 /**
  * QuestionRenderer - Generic question component based on pathway config
  */
@@ -200,23 +240,7 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
 
             case 'textarea':
             case 'text':
-                return (
-                    <textarea
-                        value={value || ''}
-                        onChange={(e) => handleChange(e.target.value)}
-                        placeholder={item.placeholder || ''}
-                        rows={item.multiline ? 4 : 2}
-                        style={{
-                            width: '100%',
-                            padding: 'var(--spacing-3)',
-                            border: '1px solid var(--color-gray-300)',
-                            borderRadius: 'var(--border-radius-lg)',
-                            fontSize: 'var(--font-size-base)',
-                            fontFamily: 'inherit',
-                            resize: 'vertical'
-                        }}
-                    />
-                );
+                return <TextInputArea item={item} value={value} onChange={handleChange} />;
 
             case 'select':
             case 'scale': {

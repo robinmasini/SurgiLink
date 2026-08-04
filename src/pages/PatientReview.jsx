@@ -1433,14 +1433,14 @@ export default function PatientReview() {
                             </div>
 
                             {/* Patient Comments Section */}
-                            {(customQuestions.some(q => q.response) || clinicalResponses.J4_Satisfaction.verbatim) && (
+                            {(customQuestions.some(q => q.response) || (clinicalResponses.J4_Satisfaction && (clinicalResponses.J4_Satisfaction.verbatim || clinicalResponses.J4_Satisfaction.comment))) && (
                                 <div id="patient-comments-section">
                                     <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-gray-400)', textTransform: 'uppercase', marginBottom: 'var(--spacing-4)', letterSpacing: '0.05em' }}>
                                         Commentaires Patient
                                     </div>
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-4)' }}>
                                         {/* Verbatim J+4 */}
-                                        {clinicalResponses.J4_Satisfaction.verbatim && (
+                                        {(clinicalResponses.J4_Satisfaction?.verbatim || clinicalResponses.J4_Satisfaction?.comment) && (
                                             <div style={{
                                                 padding: 'var(--spacing-4)',
                                                 background: 'white',
@@ -1456,13 +1456,13 @@ export default function PatientReview() {
                                                         <span style={{ fontSize: '11px', color: 'var(--color-gray-400)', fontWeight: '500' }}>• Satisfaction J+4</span>
                                                     </div>
                                                     <div style={{ fontSize: '11px', color: 'var(--color-gray-400)' }}>
-                                                        {responsesMeta.J4_Satisfaction?.verbatim ? (
-                                                            `${new Date(responsesMeta.J4_Satisfaction.verbatim.updated_at).toLocaleDateString('fr-FR')} à ${new Date(responsesMeta.J4_Satisfaction.verbatim.updated_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`
+                                                        {(responsesMeta.J4_Satisfaction?.verbatim || responsesMeta.J4_Satisfaction?.comment) ? (
+                                                            `${new Date((responsesMeta.J4_Satisfaction?.verbatim || responsesMeta.J4_Satisfaction?.comment).updated_at).toLocaleDateString('fr-FR')} à ${new Date((responsesMeta.J4_Satisfaction?.verbatim || responsesMeta.J4_Satisfaction?.comment).updated_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`
                                                         ) : ''}
                                                     </div>
                                                 </div>
                                                 <div style={{ fontSize: '14px', color: 'var(--color-gray-700)', lineHeight: '1.5', fontStyle: 'italic', paddingLeft: '32px' }}>
-                                                    "{clinicalResponses.J4_Satisfaction.verbatim}"
+                                                    "{clinicalResponses.J4_Satisfaction.verbatim || clinicalResponses.J4_Satisfaction.comment}"
                                                 </div>
                                             </div>
                                         )}

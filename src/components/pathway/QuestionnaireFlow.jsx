@@ -133,10 +133,15 @@ export default function QuestionnaireFlow({
 
     // When answer changes, we might want a slight delay before auto-advancing if it's a simple choice
     const onQuestionAnswer = async (itemId, value) => {
-        if (inputBlocked || saving) return;
-        setInputBlocked(true);
+        if (saving) return;
+        const isTextInput = currentItem && (currentItem.type === 'text' || currentItem.type === 'textarea');
 
-        if (currentItem.isCustom) {
+        if (!isTextInput) {
+            if (inputBlocked) return;
+            setInputBlocked(true);
+        }
+
+        if (currentItem?.isCustom) {
             // Save to custom_questions table
             await answerCustomQuestion(currentItem.originalId, value);
             // Update local responses state via parent
@@ -146,7 +151,7 @@ export default function QuestionnaireFlow({
         }
 
         // Ludic: If it's a yes_no or select, we can auto-advance after 500ms
-        if (currentItem.type === 'yes_no' || currentItem.type === 'select' || currentItem.type === 'tri_state') {
+        if (currentItem?.type === 'yes_no' || currentItem?.type === 'select' || currentItem?.type === 'tri_state') {
             setTimeout(() => {
                 // Re-verify currentItem inside timeout to be safe
                 if (currentIndex < allItems.length - 1) {
@@ -156,8 +161,8 @@ export default function QuestionnaireFlow({
                     onComplete();
                 }
             }, 350);
-        } else {
-            // For text/slider inputs, unblock input immediately so they can update their text/slider value
+        } else if (!isTextInput) {
+            // For other inputs, unblock input immediately
             setInputBlocked(false);
         }
     };

@@ -38,12 +38,12 @@ export default function Comments() {
             const patientMap = {};
             patients.forEach(p => patientMap[p.id] = p);
 
-            // 2. Fetch all verbatim from pathway_responses
+            // 2. Fetch all verbatim/comments from pathway_responses
             const { data: verbatimData, error: verbatimError } = await supabase
                 .from('pathway_responses')
                 .select('*')
-                .eq('item_id', 'verbatim')
-                .not('value', 'is', null);
+                .in('item_id', ['verbatim', 'comment', 'commentaire'])
+                .not('response', 'is', null);
 
             if (verbatimError) throw verbatimError;
 
@@ -55,29 +55,38 @@ export default function Comments() {
 
             if (customError) throw customError;
 
-            // 4. Combine and format
-            const allComments = [
-                ...verbatimData.map(v => ({
+            const verbatimComments = (verbatimData || []).map(v => {
+                const textVal = typeof v.response === 'string'
+                    ? v.response
+                    : (v.response?.value || v.response?.main || '');
+                return {
                     id: `v-${v.id}`,
                     patientId: v.patient_id,
                     patientName: patientMap[v.patient_id]?.name || 'Patient Inconnu',
                     patientOp: patientMap[v.patient_id]?.operation || '',
                     type: 'Satisfaction J+4',
-                    text: v.value,
+                    text: textVal,
                     timestamp: v.updated_at,
                     category: 'verbatim'
-                })),
-                ...customData.map(c => ({
-                    id: `c-${c.id}`,
-                    patientId: c.patient_id,
-                    patientName: patientMap[c.patient_id]?.name || 'Patient Inconnu',
-                    patientOp: patientMap[c.patient_id]?.operation || '',
-                    type: 'Question Ponctuelle',
-                    text: c.response,
-                    question: c.question_text,
-                    timestamp: c.updated_at,
-                    category: 'custom'
-                }))
+                };
+            }).filter(c => c.text && typeof c.text === 'string' && c.text.trim() !== '');
+
+            const customComments = (customData || []).map(c => ({
+                id: `c-${c.id}`,
+                patientId: c.patient_id,
+                patientName: patientMap[c.patient_id]?.name || 'Patient Inconnu',
+                patientOp: patientMap[c.patient_id]?.operation || '',
+                type: 'Question Ponctuelle',
+                text: c.response,
+                question: c.question_text,
+                timestamp: c.updated_at,
+                category: 'custom'
+            })).filter(c => c.text && typeof c.text === 'string' && c.text.trim() !== '');
+
+            // 4. Combine and format
+            const allComments = [
+                ...verbatimComments,
+                ...customComments
             ];
 
             // Sort by descending timestamp
