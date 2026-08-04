@@ -143,6 +143,7 @@ export default function IntakeForm() {
         last_name: '', first_name: '', maiden_name: '', birth_date: '',
         address: '', postal_code: '', city: '', phone: '', email: '', mutuelle: '',
         emergency_contact_name: '', emergency_contact_phone: '',
+        provide_cni_in_person: false,
         // Section 2
         general_practitioner: '', gp_city: '', specialist: '', specialist_city: '',
         // Section 3
@@ -262,10 +263,18 @@ export default function IntakeForm() {
         let error = '';
         switch (formStep) {
             case 1:
-                if (!form.first_name?.trim() || !form.last_name?.trim() || !form.birth_date || !form.phone?.trim()) {
-                    error = 'Veuillez remplir les champs obligatoires (prénom, nom, date de naissance, téléphone).';
-                } else if (!form.id_card_recto || !form.id_card_verso) {
-                    error = 'Veuillez fournir votre pièce d\'identité recto et verso.';
+                if (
+                    !form.first_name?.trim() ||
+                    !form.last_name?.trim() ||
+                    !form.birth_date ||
+                    !form.phone?.trim() ||
+                    !form.address?.trim() ||
+                    !form.postal_code?.trim() ||
+                    !form.city?.trim() ||
+                    !form.emergency_contact_name?.trim() ||
+                    !form.emergency_contact_phone?.trim()
+                ) {
+                    error = 'Veuillez remplir tous les champs obligatoires (prénom, nom, date de naissance, adresse, code postal, ville, téléphone, personne à prévenir).';
                 }
                 break;
             case 2:
@@ -680,14 +689,14 @@ export default function IntakeForm() {
                         <Field label="Date de naissance" required>
                             <StyledInput type="date" value={form.birth_date} onChange={e => setF('birth_date', e.target.value)} />
                         </Field>
-                        <Field label="Adresse">
+                        <Field label="Adresse" required>
                             <StyledInput value={form.address} onChange={e => setF('address', e.target.value)} placeholder="12 rue de la Paix" />
                         </Field>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '10px' }}>
-                            <Field label="Code postal">
+                            <Field label="Code postal" required>
                                 <StyledInput value={form.postal_code} onChange={e => setF('postal_code', e.target.value)} placeholder="75001" inputMode="numeric" />
                             </Field>
-                            <Field label="Ville">
+                            <Field label="Ville" required>
                                 <StyledInput value={form.city} onChange={e => setF('city', e.target.value)} placeholder="Paris" />
                             </Field>
                         </div>
@@ -704,110 +713,181 @@ export default function IntakeForm() {
                         </Field>
                         <div style={{ background: '#F9FAFB', borderRadius: '12px', padding: '12px', border: '1px solid #F3F4F6' }}>
                             <p style={{ margin: '0 0 10px', fontSize: '12px', fontWeight: '700', color: '#374151', textTransform: 'uppercase' }}>
-                                Personne à prévenir en cas d'urgence
+                                Personne à prévenir en cas d'urgence <span style={{ color: '#EF4444' }}>*</span>
                             </p>
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                                <Field label="Nom">
+                                <Field label="Nom" required>
                                     <StyledInput value={form.emergency_contact_name} onChange={e => setF('emergency_contact_name', e.target.value)} placeholder="Nom" />
                                 </Field>
-                                <Field label="Téléphone">
+                                <Field label="Téléphone" required>
                                     <StyledInput type="tel" value={form.emergency_contact_phone} onChange={e => handlePhoneChange('emergency_contact_phone', e.target.value)} placeholder="+33 6…" />
                                 </Field>
                             </div>
                         </div>
 
-                        {/* ID Card Upload */}
+                        {/* ID Card Upload / In Person Option */}
                         <div style={{ background: '#F9FAFB', borderRadius: '14px', padding: '14px', border: '1px solid #F3F4F6' }}>
-                            <p style={{ margin: '0 0 12px', fontSize: '12px', fontWeight: '800', color: 'var(--color-primary-500)', textTransform: 'uppercase' }}>
-                                Pièce d'identité *
+                            <p style={{ margin: '0 0 4px', fontSize: '12px', fontWeight: '800', color: 'var(--color-primary-500)', textTransform: 'uppercase' }}>
+                                Pièce d'identité <span style={{ fontWeight: '500', color: '#6B7280', textTransform: 'none' }}>(optionnel)</span>
                             </p>
                             <p style={{ margin: '0 0 12px', fontSize: '12px', color: '#6B7280' }}>
-                                Veuillez nous transmettre une copie de votre pièce d'identité (recto/verso) pour votre dossier.
+                                Vous pouvez nous transmettre une copie de votre pièce d'identité (recto/verso) ou choisir de la fournir lors de votre venue au cabinet.
                             </p>
-                            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '10px' }}>
-                                <div>
-                                    <label style={{
-                                        position: 'relative',
-                                        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                                        background: form.id_card_recto ? '#ECFDF5' : 'white',
-                                        border: `2px dashed ${form.id_card_recto ? '#10B981' : '#D1D5DB'}`,
-                                        borderRadius: '12px', padding: '16px 8px', cursor: 'pointer', transition: 'all 0.2s', textAlign: 'center'
-                                    }}>
-                                        {form.id_card_recto ? (
-                                            <>
-                                                <CheckCircle size={28} color="#10B981" style={{ marginBottom: '8px' }} />
-                                                <span style={{ fontSize: '13px', fontWeight: '700', color: '#065F46' }}>Recto chargé</span>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <div style={{ display: 'flex', gap: '8px', marginBottom: '8px', color: '#9CA3AF' }}>
-                                                    <Camera size={22} />
-                                                    <ImageIcon size={22} />
-                                                </div>
-                                                <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--color-primary-600)' }}>Ajouter Recto</span>
-                                                <span style={{ fontSize: '10px', color: '#9CA3AF', marginTop: '4px' }}>Photo ou Galerie</span>
-                                            </>
-                                        )}
-                                        <input
-                                            type="file"
-                                            accept="image/*"
-                                            onChange={async (e) => {
-                                                if (e.target.files && e.target.files[0]) {
-                                                    const b64 = await processImageToBase64(e.target.files[0]);
-                                                    setF('id_card_recto', b64);
-                                                }
-                                            }}
-                                            style={{ 
-                                                position: 'absolute', 
-                                                top: 0, left: 0, right: 0, bottom: 0, 
-                                                width: '100%', height: '100%', 
-                                                opacity: 0, cursor: 'pointer', zIndex: 10
-                                            }}
-                                        />
-                                    </label>
+
+                            {form.provide_cni_in_person ? (
+                                <div style={{
+                                    background: '#ECFDF5',
+                                    border: '2px solid #10B981',
+                                    borderRadius: '12px',
+                                    padding: '14px 16px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                    gap: '12px'
+                                }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                        <CheckCircle size={28} color="#10B981" style={{ flexShrink: 0 }} />
+                                        <div>
+                                            <div style={{ fontSize: '13px', fontWeight: '700', color: '#065F46' }}>
+                                                CNI en main propre au cabinet
+                                            </div>
+                                            <div style={{ fontSize: '11px', color: '#047857', marginTop: '2px' }}>
+                                                Vous présenterez votre CNI au cabinet.
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => setF('provide_cni_in_person', false)}
+                                        style={{
+                                            padding: '6px 12px',
+                                            borderRadius: '20px',
+                                            border: '1px solid #10B981',
+                                            background: 'white',
+                                            color: '#047857',
+                                            fontSize: '12px',
+                                            fontWeight: '700',
+                                            cursor: 'pointer',
+                                            whiteSpace: 'nowrap',
+                                            flexShrink: 0
+                                        }}
+                                    >
+                                        Modifier
+                                    </button>
                                 </div>
-                                <div>
-                                    <label style={{
-                                        position: 'relative',
-                                        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                                        background: form.id_card_verso ? '#ECFDF5' : 'white',
-                                        border: `2px dashed ${form.id_card_verso ? '#10B981' : '#D1D5DB'}`,
-                                        borderRadius: '12px', padding: '16px 8px', cursor: 'pointer', transition: 'all 0.2s', textAlign: 'center'
-                                    }}>
-                                        {form.id_card_verso ? (
-                                            <>
-                                                <CheckCircle size={28} color="#10B981" style={{ marginBottom: '8px' }} />
-                                                <span style={{ fontSize: '13px', fontWeight: '700', color: '#065F46' }}>Verso chargé</span>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <div style={{ display: 'flex', gap: '8px', marginBottom: '8px', color: '#9CA3AF' }}>
-                                                    <Camera size={22} />
-                                                    <ImageIcon size={22} />
-                                                </div>
-                                                <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--color-primary-600)' }}>Ajouter Verso</span>
-                                                <span style={{ fontSize: '10px', color: '#9CA3AF', marginTop: '4px' }}>Photo ou Galerie</span>
-                                            </>
-                                        )}
-                                        <input
-                                            type="file"
-                                            accept="image/*"
-                                            onChange={async (e) => {
-                                                if (e.target.files && e.target.files[0]) {
-                                                    const b64 = await processImageToBase64(e.target.files[0]);
-                                                    setF('id_card_verso', b64);
-                                                }
-                                            }}
-                                            style={{ 
-                                                position: 'absolute', 
-                                                top: 0, left: 0, right: 0, bottom: 0, 
-                                                width: '100%', height: '100%', 
-                                                opacity: 0, cursor: 'pointer', zIndex: 10
-                                            }}
-                                        />
-                                    </label>
-                                </div>
-                            </div>
+                            ) : (
+                                <>
+                                    <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '10px', marginBottom: '12px' }}>
+                                        <div>
+                                            <label style={{
+                                                position: 'relative',
+                                                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                                                background: form.id_card_recto ? '#ECFDF5' : 'white',
+                                                border: `2px dashed ${form.id_card_recto ? '#10B981' : '#D1D5DB'}`,
+                                                borderRadius: '12px', padding: '16px 8px', cursor: 'pointer', transition: 'all 0.2s', textAlign: 'center'
+                                            }}>
+                                                {form.id_card_recto ? (
+                                                    <>
+                                                        <CheckCircle size={28} color="#10B981" style={{ marginBottom: '8px' }} />
+                                                        <span style={{ fontSize: '13px', fontWeight: '700', color: '#065F46' }}>Recto chargé</span>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <div style={{ display: 'flex', gap: '8px', marginBottom: '8px', color: '#9CA3AF' }}>
+                                                            <Camera size={22} />
+                                                            <ImageIcon size={22} />
+                                                        </div>
+                                                        <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--color-primary-600)' }}>Ajouter Recto</span>
+                                                        <span style={{ fontSize: '10px', color: '#9CA3AF', marginTop: '4px' }}>Photo ou Galerie</span>
+                                                    </>
+                                                )}
+                                                <input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    onChange={async (e) => {
+                                                        if (e.target.files && e.target.files[0]) {
+                                                            const b64 = await processImageToBase64(e.target.files[0]);
+                                                            setF('id_card_recto', b64);
+                                                        }
+                                                    }}
+                                                    style={{ 
+                                                        position: 'absolute', 
+                                                        top: 0, left: 0, right: 0, bottom: 0, 
+                                                        width: '100%', height: '100%', 
+                                                        opacity: 0, cursor: 'pointer', zIndex: 10
+                                                    }}
+                                                />
+                                            </label>
+                                        </div>
+                                        <div>
+                                            <label style={{
+                                                position: 'relative',
+                                                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                                                background: form.id_card_verso ? '#ECFDF5' : 'white',
+                                                border: `2px dashed ${form.id_card_verso ? '#10B981' : '#D1D5DB'}`,
+                                                borderRadius: '12px', padding: '16px 8px', cursor: 'pointer', transition: 'all 0.2s', textAlign: 'center'
+                                            }}>
+                                                {form.id_card_verso ? (
+                                                    <>
+                                                        <CheckCircle size={28} color="#10B981" style={{ marginBottom: '8px' }} />
+                                                        <span style={{ fontSize: '13px', fontWeight: '700', color: '#065F46' }}>Verso chargé</span>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <div style={{ display: 'flex', gap: '8px', marginBottom: '8px', color: '#9CA3AF' }}>
+                                                            <Camera size={22} />
+                                                            <ImageIcon size={22} />
+                                                        </div>
+                                                        <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--color-primary-600)' }}>Ajouter Verso</span>
+                                                        <span style={{ fontSize: '10px', color: '#9CA3AF', marginTop: '4px' }}>Photo ou Galerie</span>
+                                                    </>
+                                                )}
+                                                <input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    onChange={async (e) => {
+                                                        if (e.target.files && e.target.files[0]) {
+                                                            const b64 = await processImageToBase64(e.target.files[0]);
+                                                            setF('id_card_verso', b64);
+                                                        }
+                                                    }}
+                                                    style={{ 
+                                                        position: 'absolute', 
+                                                        top: 0, left: 0, right: 0, bottom: 0, 
+                                                        width: '100%', height: '100%', 
+                                                        opacity: 0, cursor: 'pointer', zIndex: 10
+                                                    }}
+                                                />
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => setF('provide_cni_in_person', true)}
+                                        style={{
+                                            width: '100%',
+                                            padding: '11px 14px',
+                                            borderRadius: '12px',
+                                            border: '1.5px solid #D1D5DB',
+                                            background: 'white',
+                                            color: '#374151',
+                                            fontWeight: '600',
+                                            fontSize: '13px',
+                                            cursor: 'pointer',
+                                            transition: 'all 0.15s',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            gap: '8px',
+                                        }}
+                                        onMouseOver={e => { e.currentTarget.style.borderColor = 'var(--color-primary-500)'; e.currentTarget.style.color = 'var(--color-primary-600)'; }}
+                                        onMouseOut={e => { e.currentTarget.style.borderColor = '#D1D5DB'; e.currentTarget.style.color = '#374151'; }}
+                                    >
+                                        🤝 Je préfère fournir ma CNI en main propre au cabinet
+                                    </button>
+                                </>
+                            )}
                         </div>
                     </div>
                 );

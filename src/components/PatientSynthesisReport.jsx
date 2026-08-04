@@ -214,6 +214,9 @@ export default function PatientSynthesisReport({
                             <div style={{ color: '#555' }}><strong>Email :</strong> {intakeData.email || '-'}</div>
                             {intakeData.mutuelle && <div style={{ color: '#555' }}><strong>Mutuelle :</strong> {intakeData.mutuelle}</div>}
                             <div style={{ color: '#555' }}><strong>Contact urgence :</strong> {intakeData.emergency_contact_name || '-'} {intakeData.emergency_contact_phone ? `(${intakeData.emergency_contact_phone})` : ''}</div>
+                            {(intakeData.cni_in_person || intakeData.id_card_recto === 'IN_PERSON') && (
+                                <div style={{ color: '#047857', fontWeight: '600' }}><strong>Pièce d'identité :</strong> Fourniture en main propre au cabinet</div>
+                            )}
                             <div style={{ color: '#555', marginTop: '4px' }}><strong>Profession :</strong> {intakeData.profession || '-'}</div>
                             <div style={{ color: '#555' }}><strong>Connu par :</strong> {intakeData.referral_source?.join(', ') || '-'} {intakeData.referral_other ? `(${intakeData.referral_other})` : ''}</div>
 
@@ -268,7 +271,7 @@ export default function PatientSynthesisReport({
         </div>
     );
 
-    const totalPages = intakeData?.id_card_recto ? 3 : 2;
+    const totalPages = (intakeData?.id_card_recto && intakeData.id_card_recto !== 'IN_PERSON') ? 3 : 2;
 
     return (
         <div id="patient-synthesis-report">
@@ -459,7 +462,7 @@ export default function PatientSynthesisReport({
             </div>
 
             {/* ═══════════════════ PAGE 3 (ID CARDS) ═══════════════════ */}
-            {intakeData?.id_card_recto && (
+            {intakeData?.id_card_recto && intakeData.id_card_recto !== 'IN_PERSON' && (
                 <div className="pdf-page" style={pageStyle}>
                     <ReportHeader pageNumber={3} totalPages={totalPages} />
                     <h2 style={h2Style}>Pièce d'identité</h2>
