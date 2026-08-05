@@ -213,7 +213,7 @@ export async function calculateGlobalProgress(patientId) {
             status = 'alerte';
         } else {
             // Success if all due milestones are complete and some progress is made
-            if (allDueMilestonesComplete && progress > 0) {
+            if (allDueMilestonesComplete && (progress > 0 || hasAcessedPortal)) {
                 status = 'success';
             } else {
                 // Timing-based Alerte/Critique using dynamic rules
@@ -221,12 +221,10 @@ export async function calculateGlobalProgress(patientId) {
                     status = 'alerte';
                 } else if (!j7Status.isComplete && daysUntilSurgery <= rules.j7_incomplete_days) {
                     status = 'alerte';
-                } else if (progress < 50 && daysUntilSurgery <= rules.j7_incomplete_days) {
-                    status = 'alerte';
                 }
 
                 // Upgrade logic
-                if ((status === 'alerte' || progress < rules.progress_critical_threshold) && daysUntilSurgery <= rules.j3_critical_upgrade) {
+                if (status === 'alerte' && daysUntilSurgery <= rules.j3_critical_upgrade) {
                     status = 'critique';
                 }
 
