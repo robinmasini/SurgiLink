@@ -224,7 +224,6 @@ export async function submitIntakeForm(token, formData) {
             aesthetic_satisfied: formData.aesthetic_satisfied ?? null,
             id_card_recto: formData.provide_cni_in_person ? 'IN_PERSON' : (formData.id_card_recto || null),
             id_card_verso: formData.provide_cni_in_person ? null : (formData.id_card_verso || null),
-            cni_in_person: formData.provide_cni_in_person || false,
             signed_city: formData.signed_city || null,
             signed_date: formData.signed_date || new Date().toISOString().split('T')[0],
         };
