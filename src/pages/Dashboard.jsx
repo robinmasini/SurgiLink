@@ -46,6 +46,7 @@ import PatientStatusBadges from '../components/PatientStatusBadges';
 import PatientDetailPanel from '../components/PatientDetailPanel';
 import SMSAlarmsModal from '../components/SMSAlarmsModal'; // Added
 import QuestionsPreviewModal from '../components/QuestionsPreviewModal';
+import { consolidateDuplicatePatients } from '../services/pathwayService';
 
 export default function Dashboard() {
     const { t } = useTranslation();
@@ -253,23 +254,38 @@ export default function Dashboard() {
                     });
                 }
 
-                // Fetch responses & intake form responses
+                // Background cleanup of duplicate records in DB
+                consolidateDuplicatePatients();
+
+                // Fetch responses & intake form responses for all patient IDs (including duplicates)
+                const allIdsToFetch = (allPatientsData || []).map(p => p.id);
+                const idToName = {};
+                (allPatientsData || []).forEach(p => { idToName[p.id] = (p.name || '').trim().toLowerCase(); });
+                const nameToPrimaryId = {};
+                formattedPatients.forEach(p => { nameToPrimaryId[(p.name || '').trim().toLowerCase()] = p.id; });
+
                 const [respDataRes, intakeDataRes] = await Promise.all([
-                    supabase.from('pathway_responses').select('*').in('patient_id', formattedPatients.map(p => p.id)),
-                    supabase.from('intake_form_responses').select('patient_id, id_card_recto, cni_in_person').in('patient_id', formattedPatients.map(p => p.id))
+                    supabase.from('pathway_responses').select('*').in('patient_id', allIdsToFetch),
+                    supabase.from('intake_form_responses').select('patient_id, id_card_recto, cni_in_person').in('patient_id', allIdsToFetch)
                 ]);
 
                 if (isMounted) {
                     const respMap = {};
                     (respDataRes.data || []).forEach(r => {
-                        if (!respMap[r.patient_id]) respMap[r.patient_id] = [];
-                        respMap[r.patient_id].push(r);
+                        const pName = idToName[r.patient_id];
+                        const targetId = nameToPrimaryId[pName] || r.patient_id;
+                        if (!respMap[targetId]) respMap[targetId] = [];
+                        respMap[targetId].push(r);
                     });
                     setResponses(respMap);
 
                     const intakeMap = {};
                     (intakeDataRes.data || []).forEach(r => {
-                        intakeMap[r.patient_id] = r;
+                        const pName = idToName[r.patient_id];
+                        const targetId = nameToPrimaryId[pName] || r.patient_id;
+                        if (!intakeMap[targetId] || r.id_card_recto || r.cni_in_person) {
+                            intakeMap[targetId] = r;
+                        }
                     });
                     setIntakeResponses(intakeMap);
                 }

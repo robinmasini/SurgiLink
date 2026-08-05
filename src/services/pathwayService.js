@@ -406,3 +406,70 @@ export async function getIncompleteItemsWithReminders(patientId, screen) {
 
     return incompleteWithReminders;
 }
+
+/**
+ * Consolidate duplicate patient records in Supabase
+ * Merges responses, tokens, and history of duplicate patients into the primary record
+ */
+export async function consolidateDuplicatePatients() {
+    try {
+        const { data: allPatients, error } = await supabase
+            .from('patients')
+            .select('*')
+            .order('created_at', { ascending: true });
+
+        if (error || !allPatients || allPatients.length === 0) return;
+
+        // Group by normalized name
+        const groups = {};
+        allPatients.forEach(p => {
+            const normName = (p.name || '').trim().toLowerCase();
+            if (!normName) return;
+            if (!groups[normName]) groups[normName] = [];
+            groups[normName].push(p);
+        });
+
+        for (const [normName, list] of Object.entries(groups)) {
+            if (list.length <= 1) continue;
+
+            // Pick primary patient: prefer the one with a date & operation, or the latest
+            const primary = list.find(p => p.date && p.operation && p.operation !== 'Non renseigné') || list[list.length - 1];
+            const duplicates = list.filter(p => p.id !== primary.id);
+
+            for (const dup of duplicates) {
+                console.log(`[Consolidate] Merging duplicate patient ${dup.id} (${dup.name}) into primary patient ${primary.id}`);
+                
+                // 1. Move pathway_responses
+                await supabase.from('pathway_responses').update({ patient_id: primary.id }).eq('patient_id', dup.id);
+                
+                // 2. Move intake_form_responses
+                await supabase.from('intake_form_responses').update({ patient_id: primary.id }).eq('patient_id', dup.id);
+                
+                // 3. Move patient_review_tokens
+                await supabase.from('patient_review_tokens').update({ patient_id: primary.id }).eq('patient_id', dup.id);
+
+                // 4. Move medical_history
+                await supabase.from('medical_history').update({ patient_id: primary.id }).eq('patient_id', dup.id);
+
+                // 5. Move sms_logs
+                await supabase.from('sms_logs').update({ patient_id: primary.id }).eq('patient_id', dup.id);
+
+                // 6. Move reminder_queue
+                await supabase.from('reminder_queue').update({ patient_id: primary.id }).eq('patient_id', dup.id);
+
+                // Copy onboarding_completed_at if primary doesn't have it
+                if (dup.onboarding_completed_at && !primary.onboarding_completed_at) {
+                    await supabase.from('patients').update({ onboarding_completed_at: dup.onboarding_completed_at }).eq('id', primary.id);
+                }
+
+                // Delete duplicate patient record
+                await supabase.from('patients').delete().eq('id', dup.id);
+            }
+
+            // Recalculate progress for primary patient
+            await calculateGlobalProgress(primary.id);
+        }
+    } catch (e) {
+        console.error('Error consolidating duplicate patients:', e);
+    }
+}
