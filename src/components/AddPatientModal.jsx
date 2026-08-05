@@ -71,6 +71,7 @@ export default function AddPatientModal({ isOpen, onClose, onSuccess, prefilledP
     const [showResults, setShowResults] = useState(false);
     const [isExistingPatient, setIsExistingPatient] = useState(false);
     const [existingPatientId, setExistingPatientId] = useState(null);
+    const selectedPatientId = existingPatientId;
 
     useEffect(() => {
         const loadProfile = async () => {
