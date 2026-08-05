@@ -126,7 +126,7 @@ export async function calculateGlobalProgress(patientId) {
         // 4. Get patient data for time-based risks
         const { data: patient, error: patientFetchError } = await supabase
             .from('patients')
-            .select('created_at, date')
+            .select('created_at, date, last_consulted_at')
             .eq('id', patientId)
             .single();
 
@@ -146,7 +146,7 @@ export async function calculateGlobalProgress(patientId) {
         const daysUntilSurgery = surgeryDateForDiff ? Math.ceil((surgeryDateForDiff - todayForDiff) / (1000 * 60 * 60 * 24)) : 999;
 
         const j7Status = await getCompletionStatus(patientId, 'J7');
-        const hasAcessedPortal = hoursSinceCreation > 0 && (responses || []).length > 0;
+        const hasAcessedPortal = !!patient.last_consulted_at || (responses || []).length > 0;
 
         // --- DYNAMIC STATUS LOGIC ---
         // 1. Fetch rules with fallback

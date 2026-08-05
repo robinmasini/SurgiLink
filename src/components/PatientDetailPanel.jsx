@@ -331,7 +331,7 @@ export default function PatientDetailPanel({ patient, responses = [], onClose })
                 {/* Stats Summary */}
                 <div style={{ marginBottom: 'var(--spacing-6)' }}>
                     <div style={STYLES.sectionTitle}>Retours Patient</div>
-                    <PatientStatusBadges responses={responses} daysUntil={patient.daysUntil} patientStatus={patient.status} intakeData={intakeData} />
+                    <PatientStatusBadges responses={responses} daysUntil={patient.daysUntil} patientStatus={patient.status} intakeData={intakeData} lastConsultedAt={patient.last_consulted_at} />
                 </div>
 
                 {/* Quick Info Grid */}

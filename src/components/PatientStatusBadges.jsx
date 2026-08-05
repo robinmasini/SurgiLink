@@ -14,7 +14,7 @@ import { supabase } from '../lib/supabase';
  * PatientStatusBadges Component
  * Renders feedback pastilles based on pathway responses
  */
-export default function PatientStatusBadges({ responses = [], daysUntil = '', patientStatus = '', intakeData = null, hasCni = undefined }) {
+export default function PatientStatusBadges({ responses = [], daysUntil = '', patientStatus = '', intakeData = null, hasCni = undefined, lastConsultedAt = null }) {
     const [rules, setRules] = useState({
         j7_incomplete_days: 7,
         j1_incomplete_days: 1,
@@ -91,13 +91,14 @@ export default function PatientStatusBadges({ responses = [], daysUntil = '', pa
     const isJ1PreOpComplete = responses.some(r => r.screen && (r.screen.toLowerCase() === 'j1_preop' || r.screen.toLowerCase() === 'j1preop'));
     const isBienvenueComplete = responses.some(r => r.screen && r.screen.toLowerCase() === 'bienvenue');
     const hasAnyResponse = responses.length > 0;
+    const wasConsulted = !!lastConsultedAt || hasAnyResponse;
 
     // PRE-OP LOGIC (J-7 to J-0)
     const days = parseInt(daysUntil.replace('J', '')) || 0;
     const isPreOp = days <= 0;
     const isPostOp = days > 0;
 
-    if (!hasAnyResponse && isPreOp && days >= -10) {
+    if (!wasConsulted && isPreOp && days >= -10) {
         badges.push({ label: 'Portail non consulté', color: 'gray' });
     }
 

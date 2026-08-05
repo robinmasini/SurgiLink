@@ -856,7 +856,7 @@ export default function Dashboard() {
                                                     <div>
                                                         <div style={{ fontWeight: '600', color: 'var(--color-gray-900)' }}>{patient.name}</div>
                                                         <div style={{ fontSize: '11px', color: 'var(--color-gray-500)' }}>{patient.operation}</div>
-                                                        {isMobile && (
+                                                         {isMobile && (
                                                             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'flex-start', marginTop: '8px' }}>
                                                                 <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
                                                                     {!patient.date && patient.status !== 'intake' && (
@@ -874,6 +874,7 @@ export default function Dashboard() {
                                                                     daysUntil={patient.daysUntil}
                                                                     patientStatus={patient.status}
                                                                     intakeData={intakeResponses[patient.id]}
+                                                                    lastConsultedAt={patient.last_consulted_at}
                                                                 />
                                                             </div>
                                                         )}
@@ -898,6 +899,7 @@ export default function Dashboard() {
                                                         daysUntil={patient.daysUntil}
                                                         patientStatus={patient.status}
                                                         intakeData={intakeResponses[patient.id] || intakeResponses[String(patient.id)] || intakeResponses[(patient.name || '').trim().toLowerCase()]}
+                                                        lastConsultedAt={patient.last_consulted_at}
                                                     />
                                                 </div>
                                             </td>

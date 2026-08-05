@@ -27,6 +27,7 @@ import CompactAppointmentCard from '../components/CompactAppointmentCard';
 import ProtocolStatus from '../components/ProtocolStatus';
 import PatientTraceability from '../components/PatientTraceability';
 import { getScreenItems } from '../config/pathway.config';
+import { calculateGlobalProgress } from '../services/pathwayService';
 
 import { HelpCircle, Send, RefreshCw, Download, Info, Circle } from 'lucide-react';
 import { generateSynthesisPDF } from '../services/pdfService';
@@ -502,14 +503,17 @@ export default function PatientPortal({ patient: initialPatient }) {
             loadMedicalHistory(patientData.id);
             loadDocuments(patientData.id);
 
-            // Update last_consulted_at proof
+            // Update last_consulted_at proof and recalculate global progress
             const { error: trackError } = await supabase
                 .from('patients')
                 .update({ last_consulted_at: new Date().toISOString() })
                 .eq('id', patientData.id);
 
             if (trackError) console.error('Consultation tracking error:', trackError);
-            else console.log('Consultation tracked successfully');
+            else {
+                console.log('Consultation tracked successfully');
+                await calculateGlobalProgress(patientData.id);
+            }
 
             let { data: intakeResp } = await supabase
                 .from('intake_form_responses')
