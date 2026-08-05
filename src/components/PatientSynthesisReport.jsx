@@ -157,24 +157,53 @@ export default function PatientSynthesisReport({
         </div>
     );
 
+    const getCniStatusInfo = () => {
+        if (intakeData?.cni_in_person || intakeData?.id_card_recto === 'IN_PERSON') {
+            return {
+                label: "Pièce d'identité (CNI) : Fournie en main propre au cabinet",
+                bg: '#ECFDF5',
+                border: '#A7F3D0',
+                color: '#047857'
+            };
+        }
+        if (intakeData?.id_card_recto && intakeData.id_card_recto !== 'IN_PERSON') {
+            return {
+                label: "Pièce d'identité (CNI) : Transmise au dossier (Photocopies en Annexe - Page 3)",
+                bg: '#EFF6FF',
+                border: '#BFDBFE',
+                color: '#1D4ED8'
+            };
+        }
+        return {
+            label: "Pièce d'identité (CNI) : Non fournie à ce jour",
+            bg: '#FEF3C7',
+            border: '#FDE68A',
+            color: '#D97706'
+        };
+    };
+
+    const cniInfo = getCniStatusInfo();
+
     const PatientBlock = () => (
         <div style={{
-            display: 'flex', flexDirection: 'column', gap: '14px',
-            marginBottom: '14px', padding: '14px',
+            display: 'flex', flexDirection: 'column', gap: '10px',
+            marginBottom: '10px', padding: '12px',
             background: '#F8F9FA', borderRadius: '10px', border: '1px solid #E9ECEF'
         }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                 <div>
-                    <div style={{ fontSize: '9px', color: '#888', textTransform: 'uppercase', fontWeight: '700', marginBottom: '3px' }}>Identité du Patient</div>
-                    <div style={{ fontSize: '15px', fontWeight: '800', color: '#1A1A1A' }}>{patient.name}</div>
+                    <div style={{ fontSize: '9px', color: '#888', textTransform: 'uppercase', fontWeight: '700', marginBottom: '2px' }}>Identité du Patient</div>
+                    <div style={{ fontSize: '14px', fontWeight: '800', color: '#1A1A1A' }}>{patient.name}</div>
                     <div style={{ color: '#444' }}>Né(e) le : {patient.birth_date ? formatDateFR(patient.birth_date) : 'Non renseigné'}</div>
                     <div style={{ color: '#444' }}>Tél : {patient.phone || 'Non renseigné'}</div>
+                    {patient.email && <div style={{ color: '#444' }}>Email : {patient.email}</div>}
                 </div>
                 <div>
-                    <div style={{ fontSize: '9px', color: '#888', textTransform: 'uppercase', fontWeight: '700', marginBottom: '3px' }}>Intervention</div>
+                    <div style={{ fontSize: '9px', color: '#888', textTransform: 'uppercase', fontWeight: '700', marginBottom: '2px' }}>Intervention & Chirurgie</div>
                     <div style={{ fontSize: '13px', fontWeight: '700', color: '#6D8C7C' }}>{patient.operation}</div>
                     <div style={{ color: '#444' }}>Date : {patient.date ? formatDateFR(patient.date) : 'Non définie'}</div>
-                    <div style={{ fontWeight: '600', marginTop: '4px' }}>
+                    <div style={{ color: '#444' }}>Lieu : {patient.clinic_name || 'Clinique de Vitrolles'}</div>
+                    <div style={{ fontWeight: '600', marginTop: '2px' }}>
                         Statut : <span style={{ color: patient.status === 'critique' ? '#D32F2F' : patient.status === 'ready' ? '#2E7D32' : '#E65100' }}>
                             {getStatusLabel(patient.status)} ({patient.progress}%)
                         </span>
@@ -182,12 +211,26 @@ export default function PatientSynthesisReport({
                 </div>
             </div>
 
+            {/* CNI Status Banner */}
+            <div style={{
+                padding: '6px 10px',
+                borderRadius: '6px',
+                background: cniInfo.bg,
+                border: `1px solid ${cniInfo.border}`,
+                color: cniInfo.color,
+                fontWeight: '700',
+                fontSize: '10px',
+                marginTop: '4px'
+            }}>
+                {cniInfo.label}
+            </div>
+
             {patientHistory && patientHistory.length > 1 && (
-                <div style={{ borderTop: '1px solid #E9ECEF', paddingTop: '10px', marginTop: '4px' }}>
-                    <div style={{ fontSize: '11px', color: '#1A1A1A', textTransform: 'uppercase', fontWeight: '800', marginBottom: '8px' }}>Historique des Interventions</div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <div style={{ borderTop: '1px solid #E9ECEF', paddingTop: '8px', marginTop: '2px' }}>
+                    <div style={{ fontSize: '10px', color: '#1A1A1A', textTransform: 'uppercase', fontWeight: '800', marginBottom: '4px' }}>Historique des Interventions</div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                         {patientHistory.map((item, idx) => (
-                            <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', padding: '6px', background: item.id === patient.id ? '#E8F5E9' : '#FFF', border: item.id === patient.id ? '1px solid #C8E6C9' : '1px solid #E9ECEF', borderRadius: '6px' }}>
+                            <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '9px', padding: '4px 6px', background: item.id === patient.id ? '#E8F5E9' : '#FFF', border: item.id === patient.id ? '1px solid #C8E6C9' : '1px solid #E9ECEF', borderRadius: '4px' }}>
                                 <div style={{ fontWeight: item.id === patient.id ? '700' : '500', color: '#333' }}>
                                     {item.operation || 'Intervention non définie'} 
                                     {item.id === patient.id && <span style={{ color: '#2E7D32', marginLeft: '6px', fontSize: '8px', fontWeight: '800' }}>(ACTUELLE)</span>}
@@ -202,52 +245,56 @@ export default function PatientSynthesisReport({
             )}
 
             {intakeData && (
-                <div style={{ borderTop: '1px solid #E9ECEF', paddingTop: '10px', marginTop: '4px' }}>
-                    <div style={{ fontSize: '11px', color: '#1A1A1A', textTransform: 'uppercase', fontWeight: '800', marginBottom: '8px' }}>Fiche de Renseignements Complète</div>
+                <div style={{ borderTop: '1px solid #E9ECEF', paddingTop: '8px', marginTop: '2px' }}>
+                    <div style={{ fontSize: '11px', color: '#1A1A1A', textTransform: 'uppercase', fontWeight: '800', marginBottom: '6px' }}>Fiche de Renseignements Patient</div>
                     
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', fontSize: '10px' }}>
-                        {/* Column 1: Coordonnées & Administratif */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', fontSize: '9.5px' }}>
+                        {/* Column 1: Coordonnées & Contact */}
                         <div>
-                            <div style={{ marginBottom: '6px', fontWeight: '700', color: '#6D8C7C', fontSize: '10px' }}>Coordonnées & Contact</div>
+                            <div style={{ marginBottom: '4px', fontWeight: '700', color: '#6D8C7C', fontSize: '9.5px' }}>Coordonnées & Situation</div>
                             {intakeData.maiden_name && <div style={{ color: '#555' }}><strong>Nom de jeune fille / Homme :</strong> {intakeData.maiden_name}</div>}
                             <div style={{ color: '#555' }}><strong>Adresse :</strong> {intakeData.address ? `${intakeData.address}, ${intakeData.postal_code || ''} ${intakeData.city || ''}` : '-'}</div>
                             <div style={{ color: '#555' }}><strong>Email :</strong> {intakeData.email || '-'}</div>
                             {intakeData.mutuelle && <div style={{ color: '#555' }}><strong>Mutuelle :</strong> {intakeData.mutuelle}</div>}
                             <div style={{ color: '#555' }}><strong>Contact urgence :</strong> {intakeData.emergency_contact_name || '-'} {intakeData.emergency_contact_phone ? `(${intakeData.emergency_contact_phone})` : ''}</div>
-                            {(intakeData.cni_in_person || intakeData.id_card_recto === 'IN_PERSON') && (
-                                <div style={{ color: '#047857', fontWeight: '600' }}><strong>Pièce d'identité :</strong> Fourniture en main propre au cabinet</div>
-                            )}
-                            <div style={{ color: '#555', marginTop: '4px' }}><strong>Profession :</strong> {intakeData.profession || '-'}</div>
+                            <div style={{ color: '#555', marginTop: '2px' }}><strong>Profession :</strong> {intakeData.profession || '-'}</div>
                             <div style={{ color: '#555' }}><strong>Connu par :</strong> {intakeData.referral_source?.join(', ') || '-'} {intakeData.referral_other ? `(${intakeData.referral_other})` : ''}</div>
 
-                            <div style={{ marginBottom: '6px', marginTop: '8px', fontWeight: '700', color: '#6D8C7C', fontSize: '10px' }}>Médecins</div>
-                            <div style={{ color: '#555' }}><strong>Médecin traitant :</strong> {intakeData.general_practitioner || '-'} {intakeData.gp_city ? `(${intakeData.gp_city})` : ''}</div>
+                            <div style={{ marginBottom: '4px', marginTop: '6px', fontWeight: '700', color: '#6D8C7C', fontSize: '9.5px' }}>Médecins</div>
+                            <div style={{ color: '#555' }}>
+                                <strong>Médecin traitant :</strong> {(() => {
+                                    const fromPatient = (patient?.referring_doctor || '').trim();
+                                    const fromIntake = (intakeData?.general_practitioner || '').trim();
+                                    const name = (fromIntake && fromIntake.length > fromPatient.length) ? fromIntake : (fromPatient || fromIntake);
+                                    const city = intakeData?.gp_city ? ` (${intakeData.gp_city})` : '';
+                                    return name ? `${name}${city}` : '-';
+                                })()}
+                            </div>
                             <div style={{ color: '#555' }}><strong>Spécialiste :</strong> {intakeData.specialist || '-'} {intakeData.specialist_city ? `(${intakeData.specialist_city})` : ''}</div>
                             
-                            <div style={{ marginBottom: '6px', marginTop: '8px', fontWeight: '700', color: '#6D8C7C', fontSize: '10px' }}>Motif & Ressenti</div>
+                            <div style={{ marginBottom: '4px', marginTop: '6px', fontWeight: '700', color: '#6D8C7C', fontSize: '9.5px' }}>Motif & Ressenti</div>
                             <div style={{ color: '#555' }}><strong>Motif :</strong> {intakeData.consultation_reasons?.join(', ') || '-'} {intakeData.consultation_other ? `(${intakeData.consultation_other})` : ''}</div>
-                            <div style={{ color: '#555' }}><strong>Gêne esthétique :</strong> {intakeData.discomfort_level === 'tres_importante' ? 'Très importante' : intakeData.discomfort_level === 'moyenne' ? 'Moyenne' : intakeData.discomfort_level === 'legere' ? 'Légère' : '-'} {intakeData.discomfort_duration === 'peu' ? '(depuis peu de temps)' : intakeData.discomfort_duration === 'longtemps' ? '(depuis longtemps)' : intakeData.discomfort_duration === 'toujours' ? '(depuis toujours)' : ''}</div>
-                            <div style={{ color: '#555' }}><strong>Déjà consulté :</strong> {intakeData.previous_consultation === true ? 'Oui' : intakeData.previous_consultation === false ? 'Non' : '-'}</div>
+                            <div style={{ color: '#555' }}><strong>Gêne esthétique :</strong> {intakeData.discomfort_level === 'tres_importante' ? 'Très importante' : intakeData.discomfort_level === 'moyenne' ? 'Moyenne' : intakeData.discomfort_level === 'legere' ? 'Légère' : '-'} {intakeData.discomfort_duration === 'peu' ? '(depuis peu)' : intakeData.discomfort_duration === 'longtemps' ? '(depuis longtemps)' : intakeData.discomfort_duration === 'toujours' ? '(toujours)' : ''}</div>
                             <div style={{ color: '#555' }}><strong>Déjà opéré(e) esthétique :</strong> {intakeData.has_aesthetic_interventions === true ? `Oui` : intakeData.has_aesthetic_interventions === false ? 'Non' : '-'} {intakeData.aesthetic_satisfied === true ? '(Satisfait(e))' : intakeData.aesthetic_satisfied === false ? '(Insatisfait(e))' : ''}</div>
                         </div>
 
                         {/* Column 2: Médical & Antécédents */}
                         <div>
-                            <div style={{ marginBottom: '6px', fontWeight: '700', color: '#6D8C7C', fontSize: '10px' }}>Données Médicales</div>
+                            <div style={{ marginBottom: '4px', fontWeight: '700', color: '#6D8C7C', fontSize: '9.5px' }}>Données Médicales</div>
                             <div style={{ color: '#555' }}><strong>Mensurations :</strong> {intakeData.height_cm ? `${intakeData.height_cm} cm` : '-'} / {intakeData.weight_kg ? `${intakeData.weight_kg} kg` : '-'}</div>
                             <div style={{ color: '#555' }}><strong>Fumeur :</strong> {intakeData.is_smoker === true ? `Oui (${intakeData.cigarettes_per_day || '?'} /j)` : intakeData.is_smoker === false ? 'Non' : '-'}</div>
                             <div style={{ color: '#555' }}><strong>Allergies :</strong> {intakeData.has_allergies === true ? `Oui (${intakeData.allergies_detail})` : intakeData.has_allergies === false ? 'Non' : '-'}</div>
                             <div style={{ color: '#555' }}><strong>Traitement :</strong> {intakeData.has_treatment === true ? `Oui (${intakeData.treatment_detail})` : intakeData.has_treatment === false ? 'Non' : '-'}</div>
 
-                            <div style={{ marginBottom: '6px', marginTop: '8px', fontWeight: '700', color: '#6D8C7C', fontSize: '10px' }}>Antécédents</div>
+                            <div style={{ marginBottom: '4px', marginTop: '6px', fontWeight: '700', color: '#6D8C7C', fontSize: '9.5px' }}>Antécédents & Risques</div>
                             <div style={{ color: '#555' }}><strong>Chirurgicaux :</strong> {intakeData.previous_surgery === true ? `Oui (${intakeData.previous_surgery_detail})` : intakeData.previous_surgery === false ? 'Non' : '-'}</div>
                             <div style={{ color: '#555' }}><strong>Complications chir. :</strong> {intakeData.surgical_complications === true ? `Oui (${intakeData.complications_detail})` : intakeData.surgical_complications === false ? 'Non' : '-'}</div>
                             <div style={{ color: '#555' }}><strong>Hématomes faciles :</strong> {intakeData.easy_hematomas === true ? 'Oui' : intakeData.easy_hematomas === false ? 'Non' : '-'}</div>
                             <div style={{ color: '#555' }}><strong>Cicatrices chéloïdes :</strong> {intakeData.keloid_scars === true ? 'Oui' : intakeData.keloid_scars === false ? 'Non' : '-'}</div>
-                            <div style={{ color: '#555' }}><strong>Maladies auto-immunes :</strong> {intakeData.autoimmune_family === true ? `Oui (${intakeData.autoimmune_detail})` : intakeData.autoimmune_family === false ? 'Non' : '-'}</div>
+                            <div style={{ color: '#555' }}><strong>Auto-immunes (famille) :</strong> {intakeData.autoimmune_family === true ? `Oui (${intakeData.autoimmune_detail})` : intakeData.autoimmune_family === false ? 'Non' : '-'}</div>
                             
                             {(intakeData.antecedents && Object.keys(intakeData.antecedents).filter(k => intakeData.antecedents[k]?.checked).length > 0) && (
-                                <div style={{ color: '#555', marginTop: '4px' }}>
+                                <div style={{ color: '#555', marginTop: '2px' }}>
                                     <strong>Pathologies :</strong> {Object.keys(intakeData.antecedents)
                                         .filter(k => intakeData.antecedents[k]?.checked)
                                         .map(k => {
@@ -262,7 +309,7 @@ export default function PatientSynthesisReport({
                         </div>
                     </div>
                     {(intakeData.signed_city || intakeData.signed_date) && (
-                        <div style={{ marginTop: '12px', fontSize: '9px', color: '#888', fontStyle: 'italic' }}>
+                        <div style={{ marginTop: '8px', fontSize: '8.5px', color: '#888', fontStyle: 'italic' }}>
                             Fiche remplie et validée {intakeData.signed_city ? `à ${intakeData.signed_city}` : ''} {intakeData.signed_date ? `le ${intakeData.signed_date}` : ''}
                         </div>
                     )}
@@ -280,10 +327,16 @@ export default function PatientSynthesisReport({
             <div className="pdf-page" style={pageStyle}>
                 <ReportHeader pageNumber={1} totalPages={totalPages} />
                 <PatientBlock />
+                <ReportFooter />
+            </div>
 
-                {/* Clinical Responses - Part 1 (Pre-op & Early Post-op) */}
-                <div>
-                    <h2 style={h2Style}>Pré-opératoire & J+1</h2>
+            {/* ═══════════════════ PAGE 2 ═══════════════════ */}
+            <div className="pdf-page" style={pageStyle}>
+                <ReportHeader pageNumber={2} totalPages={totalPages} />
+
+                {/* Questionnaire Responses - Part 1 (Pre-op & Early Post-op) */}
+                <div style={{ marginBottom: '12px' }}>
+                    <h2 style={h2Style}>Pré-opératoire & Suivi Post-opératoire (J+1 à J+7)</h2>
                     {['Bienvenue', 'J7', 'J1_PreOp', 'J1'].map(screenKey => {
                         const config = pathwayConfig[screenKey];
                         const responses = clinicalResponses?.[screenKey] || {};
@@ -329,12 +382,6 @@ export default function PatientSynthesisReport({
                         );
                     })}
                 </div>
-                <ReportFooter />
-            </div>
-
-            {/* ═══════════════════ PAGE 2 ═══════════════════ */}
-            <div className="pdf-page" style={pageStyle}>
-                <ReportHeader pageNumber={2} totalPages={totalPages} />
 
                 {/* Clinical Responses - Part 2 (Satisfaction) */}
                 {['J4_Satisfaction', 'ESATIS'].map(screenKey => {
@@ -351,7 +398,7 @@ export default function PatientSynthesisReport({
                     if (answeredItems.length === 0) return null;
 
                     return (
-                        <div key={screenKey} style={{ marginBottom: '16px' }}>
+                        <div key={screenKey} style={{ marginBottom: '12px' }}>
                             <h2 style={h2Style}>Enquêtes de Satisfaction</h2>
                             <h3 style={h3Style}>{config.title}</h3>
                             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -383,7 +430,7 @@ export default function PatientSynthesisReport({
 
                 {/* Custom Questions */}
                 {customQuestions.length > 0 && (
-                    <div style={{ marginBottom: '16px' }}>
+                    <div style={{ marginBottom: '12px' }}>
                         <h2 style={h2Style}>Questions Personnalisées du Praticien</h2>
                         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                             <tbody>
@@ -412,26 +459,26 @@ export default function PatientSynthesisReport({
 
                 {/* SMS History */}
                 {smsData.length > 0 && (
-                    <div style={{ marginBottom: '16px' }}>
+                    <div style={{ marginBottom: '12px' }}>
                         <h2 style={h2Style}>Traçabilité des Communications (SMS)</h2>
-                        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '10px' }}>
+                        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '9.5px' }}>
                             <thead>
                                 <tr style={{ textAlign: 'left', borderBottom: '1px solid #DDD', background: '#F8F8F8' }}>
-                                    <th style={{ padding: '5px 6px', fontWeight: '700' }}>Date / Heure</th>
-                                    <th style={{ padding: '5px 6px', fontWeight: '700' }}>Type</th>
-                                    <th style={{ padding: '5px 6px', fontWeight: '700' }}>Message</th>
-                                    <th style={{ padding: '5px 6px', fontWeight: '700' }}>Statut</th>
+                                    <th style={{ padding: '4px 6px', fontWeight: '700' }}>Date / Heure</th>
+                                    <th style={{ padding: '4px 6px', fontWeight: '700' }}>Type</th>
+                                    <th style={{ padding: '4px 6px', fontWeight: '700' }}>Message</th>
+                                    <th style={{ padding: '4px 6px', fontWeight: '700' }}>Statut</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {smsData.map(sms => (
                                     <tr key={sms.id} style={{ borderBottom: '1px solid #F0F0F0' }}>
-                                        <td style={{ padding: '5px 6px', whiteSpace: 'nowrap' }}>{formatDateTimeFR(sms.sent_at || sms.created_at)}</td>
-                                        <td style={{ padding: '5px 6px' }}>{sms.screen || sms.template_key || 'Manuel'}</td>
-                                        <td style={{ padding: '5px 6px', maxWidth: '220px', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                        <td style={{ padding: '4px 6px', whiteSpace: 'nowrap' }}>{formatDateTimeFR(sms.sent_at || sms.created_at)}</td>
+                                        <td style={{ padding: '4px 6px' }}>{sms.screen || sms.template_key || 'Manuel'}</td>
+                                        <td style={{ padding: '4px 6px', maxWidth: '220px', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                             {sms.message}
                                         </td>
-                                        <td style={{ padding: '5px 6px' }}>
+                                        <td style={{ padding: '4px 6px' }}>
                                             {sms.status === 'delivered' ? '✓ Délivré' : sms.status === 'sent' ? '→ Envoyé' : sms.status}
                                         </td>
                                     </tr>
@@ -443,14 +490,14 @@ export default function PatientSynthesisReport({
 
                 {/* Documents */}
                 {documents.length > 0 && (
-                    <div style={{ marginBottom: '16px' }}>
+                    <div style={{ marginBottom: '12px' }}>
                         <h2 style={h2Style}>Documents du Dossier</h2>
-                        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '10px' }}>
+                        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '9.5px' }}>
                             <tbody>
                                 {documents.map(doc => (
                                     <tr key={doc.id} style={{ borderBottom: '1px solid #F0F0F0' }}>
-                                        <td style={{ padding: '5px 0', fontWeight: '600' }}>{doc.name}</td>
-                                        <td style={{ padding: '5px 0', textAlign: 'right', color: '#888' }}>Ajouté le {formatDateFR(doc.created_at)}</td>
+                                        <td style={{ padding: '4px 0', fontWeight: '600' }}>{doc.name}</td>
+                                        <td style={{ padding: '4px 0', textAlign: 'right', color: '#888' }}>Ajouté le {formatDateFR(doc.created_at)}</td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -465,7 +512,7 @@ export default function PatientSynthesisReport({
             {intakeData?.id_card_recto && intakeData.id_card_recto !== 'IN_PERSON' && (
                 <div className="pdf-page" style={pageStyle}>
                     <ReportHeader pageNumber={3} totalPages={totalPages} />
-                    <h2 style={h2Style}>Pièce d'identité</h2>
+                    <h2 style={h2Style}>Pièce d'identité (Photos transmises)</h2>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '20px', marginTop: '20px' }}>
                         <div style={{ textAlign: 'center' }}>
                             <div style={{ fontSize: '12px', fontWeight: 'bold', marginBottom: '8px', color: '#555' }}>Recto</div>

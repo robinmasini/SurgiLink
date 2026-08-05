@@ -145,22 +145,41 @@ export default function HMScannerModal({ isOpen, onClose, onSuccess }) {
                 const mimeType = selectedFile.type;
 
                 const prompt = scannerCategory === 'Doctolib'
-                    ? `Tu es un extracteur de données médicales à partir de captures d'écran de l'interface Doctolib Pro (fiche patient ou RDV du planning).
-Analyse l'image et extrait les informations suivantes sous forme de JSON structuré. Ne retourne AUCUN blabla, uniquement du JSON valide.
-Les clés doivent être exactement :
+                    ? `Tu es un extracteur de données médicales expert à partir de captures d'écran de l'interface Doctolib Pro (fiche patient et détails du rendez-vous).
+Analyse minutieusement l'image et extrait les informations sous forme de JSON structuré. Ne retourne AUCUN texte explicatif, uniquement du JSON valide.
+
+RÈGLES D'EXTRACTION DOCTOLIB PRO :
+1. PATIENT (Volet de gauche) :
+   - Nom de famille (ex: "DUCROCQ") -> last_name
+   - Prénom (ex: "Cecile" ou "Cécile") -> first_name
+   - Nom complet -> name (ex: "Cecile DUCROCQ")
+   - Date de naissance (ex: "18/11/1979" -> "1979-11-18") -> birth_date
+   - Téléphone portable (ex: "07 86 13 88 02" -> "+33 7 86 13 88 02") -> phone
+   - Email (ex: "cecileducrocq1979@gmail.com") -> email
+
+2. RENDEZ-VOUS & BLOC OPÉRATOIRE (Volet central) :
+   - Agenda (ex: "DESOUCHES Bloc Vitrolles") :
+     * Nom du chirurgien -> surgeon_name (ex: "Christophe DESOUCHES")
+     * Nom de la clinique / lieu -> clinic_name (ex: "Clinique de Vitrolles")
+   - Motif de consultation / Type d'acte (ex: "Bloc > Bloc opératoire" ou "Bloc opératoire") -> operation
+     * RÈGLE CRITIQUE : Si le motif ou l'agenda mentionne "Bloc", "Bloc opératoire", "Chirurgie", "Intervention" ou "Bloc Vitrolles", il s'agit d'une OPÉRATION CHIRURGICALE EN BLOC OPÉRATOIRE.
+     * Définis TOUJOURS "stay_type": "Ambulatoire" (ou "Hospitalisation"). Ne mets JAMAIS "Consultation" pour des créneaux de bloc opératoire !
+   - Date et Heure (ex: "vendredi 28 août 2026", "12:15" -> date: "2026-08-28", admission_datetime: "2026-08-28 12:15")
+
+Format JSON exact à retourner :
 {
-  "name": "Nom complet (ex: Jean DUPONT)",
-  "first_name": "Prénom (ex: Jean)",
-  "last_name": "Nom de famille (ex: DUPONT)",
-  "birth_date": "Date de naissance au format YYYY-MM-DD si présente (ex: 1985-04-12)",
-  "phone": "Numéro de téléphone portable (ex: +33612345678)",
-  "email": "Adresse email (ex: jean.dupont@gmail.com)",
-  "operation": "Motif de consultation / intervention (ex: Consultation Chirurgie Plastique)",
-  "surgeon_name": "Nom du chirurgien (ex: Christophe DESOUCHES)",
-  "admission_datetime": "Date et heure du rendez-vous au format ISO ou YYYY-MM-DD HH:MM",
-  "stay_type": "Consultation ou Ambulatoire",
-  "clinic_name": "Nom du cabinet ou clinique",
-  "address": "Adresse du patient si présente"
+  "first_name": "Cécile",
+  "last_name": "DUCROCQ",
+  "name": "Cécile DUCROCQ",
+  "birth_date": "1979-11-18",
+  "phone": "+33 7 86 13 88 02",
+  "email": "cecileducrocq1979@gmail.com",
+  "operation": "Bloc opératoire",
+  "surgeon_name": "Christophe DESOUCHES",
+  "stay_type": "Ambulatoire",
+  "clinic_name": "Clinique de Vitrolles",
+  "date": "2026-08-28",
+  "admission_datetime": "2026-08-28 12:15"
 }`
                     : `Tu es un extracteur de données médicales à partir de captures d'écran du logiciel Hopital Manager.
 Analyse l'image et extrait les informations suivantes sous forme de JSON structuré. Ne retourne AUCUN blabla, uniquement du JSON valide.
@@ -226,20 +245,20 @@ Les clés doivent être exactement :
                 await new Promise(resolve => setTimeout(resolve, 2000));
                 
                 const mockParsed = scannerCategory === 'Doctolib' ? {
-                    first_name: "Jean",
-                    last_name: "DUPONT",
-                    birth_date: "1985-04-12",
-                    operation: "Consultation Chirurgie Plastique",
+                    first_name: "Cécile",
+                    last_name: "DUCROCQ",
+                    birth_date: "1979-11-18",
+                    operation: "Bloc opératoire",
                     surgeon_name: "Christophe DESOUCHES",
-                    stay_type: "Consultation",
-                    date: new Date().toISOString().split('T')[0],
-                    phone: "+33 6 12 34 56 78",
-                    email: "jean.dupont@gmail.com",
-                    clinic_name: "Cabinet Dr Desouches",
-                    ipp: "DOC-89421",
-                    stay_number: "RDV-2026-0810",
-                    address: "24 rue de la République, 13001 Marseille, France",
-                    admission_datetime: `${new Date().toISOString().split('T')[0]}T14:30:00`
+                    stay_type: "Ambulatoire",
+                    date: "2026-08-28",
+                    phone: "+33 7 86 13 88 02",
+                    email: "cecileducrocq1979@gmail.com",
+                    clinic_name: "Clinique de Vitrolles",
+                    ipp: "DOC-791118",
+                    stay_number: "BLOC-2026-0828",
+                    address: "Vitrolles, France",
+                    admission_datetime: "2026-08-28T12:15:00"
                 } : {
                     first_name: "Amanda",
                     last_name: "RIPERT",
@@ -273,20 +292,20 @@ Les clés doivent être exactement :
             
             // Fail-safe mock fallback
             applyExtractedData(scannerCategory === 'Doctolib' ? {
-                first_name: "Jean",
-                last_name: "DUPONT",
-                birth_date: "1985-04-12",
-                operation: "Consultation Chirurgie Plastique",
+                first_name: "Cécile",
+                last_name: "DUCROCQ",
+                birth_date: "1979-11-18",
+                operation: "Bloc opératoire",
                 surgeon_name: "Christophe DESOUCHES",
-                stay_type: "Consultation",
-                date: new Date().toISOString().split('T')[0],
-                phone: "+33 6 12 34 56 78",
-                email: "jean.dupont@gmail.com",
-                clinic_name: "Cabinet Dr Desouches",
-                ipp: "DOC-89421",
-                stay_number: "RDV-2026-0810",
-                address: "24 rue de la République, 13001 Marseille, France",
-                admission_datetime: `${new Date().toISOString().split('T')[0]}T14:30:00`
+                stay_type: "Ambulatoire",
+                date: "2026-08-28",
+                phone: "+33 7 86 13 88 02",
+                email: "cecileducrocq1979@gmail.com",
+                clinic_name: "Clinique de Vitrolles",
+                ipp: "DOC-791118",
+                stay_number: "BLOC-2026-0828",
+                address: "Vitrolles, France",
+                admission_datetime: "2026-08-28T12:15:00"
             } : {
                 first_name: "Amanda",
                 last_name: "RIPERT",
@@ -321,15 +340,25 @@ Les clés doivent être exactement :
     };
 
     const applyExtractedData = (data) => {
+        // Formatter l'heure d'intervention
+        let timeStr = '12:15';
+        if (data.admission_datetime && data.admission_datetime.includes('T')) {
+            timeStr = data.admission_datetime.split('T')[1].slice(0, 5);
+        } else if (data.admission_datetime && data.admission_datetime.includes(' ')) {
+            timeStr = data.admission_datetime.split(' ')[1].slice(0, 5);
+        } else if (data.surgery_time) {
+            timeStr = data.surgery_time;
+        }
+
         setFormData({
             firstName: data.first_name || '',
             lastName: data.last_name || '',
             birthDate: data.birth_date || '',
             operation: data.operation || '',
             surgeonName: data.surgeon_name ? (data.surgeon_name.includes('DESOUCHES') ? 'Christophe DESOUCHES' : data.surgeon_name) : 'Christophe DESOUCHES',
-            stayType: 'Hospitalisation',
-            date: data.date || (data.admission_datetime ? data.admission_datetime.split('T')[0] : ''),
-            surgeryTime: data.admission_datetime ? new Date(data.admission_datetime).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : 'Non-communiquée',
+            stayType: data.stay_type || (scannerCategory === 'Doctolib' ? 'Ambulatoire' : 'Hospitalisation'),
+            date: data.date || (data.admission_datetime ? data.admission_datetime.split(/T| /)[0] : ''),
+            surgeryTime: timeStr,
             phone: data.phone || '+33 ',
             email: data.email || '',
             clinicName: data.clinic_name || 'Clinique de Vitrolles',
@@ -342,8 +371,8 @@ Les clés doivent être exactement :
             referringDoctorPhone: data.referring_doctor_phone || '',
             entryMode: data.entry_mode || '8 - Domicile',
             exitMode: data.exit_mode || '8 - Retour domicile',
-            admissionDatetime: data.admission_datetime ? new Date(data.admission_datetime).toISOString().slice(0, 16) : '',
-            dischargeDatetime: data.discharge_datetime ? new Date(data.discharge_datetime).toISOString().slice(0, 16) : '',
+            admissionDatetime: data.admission_datetime ? data.admission_datetime.replace(' ', 'T').slice(0, 16) : '',
+            dischargeDatetime: data.discharge_datetime ? data.discharge_datetime.replace(' ', 'T').slice(0, 16) : '',
             roomNumber: data.room_number || ''
         });
         setExtractedData(data);
@@ -565,7 +594,7 @@ Les clés doivent être exactement :
                                 </button>
                             </div>
                             <p style={{ fontSize: '11px', color: 'var(--color-gray-400)', margin: 0 }}>
-                                Sans clé API, le scanner exécutera une simulation intelligente sur les captures de démonstration ({scannerCategory === 'HM' ? 'ex: Amanda Ripert' : 'ex: Jean Dupont'}).
+                                Sans clé API, le scanner exécutera une simulation sur les captures de démonstration ({scannerCategory === 'HM' ? 'ex: Amanda Ripert' : 'ex: Cécile Ducrocq - Bloc Opératoire'}).
                             </p>
                         </form>
                     </div>
@@ -765,9 +794,9 @@ Les clés doivent être exactement :
                                 )}
                                 <span style={{ fontSize: '11px', color: scannerCategory === 'Doctolib' ? '#0077B6' : '#996B00', lineHeight: '1.4' }}>
                                     {scannerCategory === 'Doctolib' ? (
-                                        <><strong>Mode Démo Doctolib Actif :</strong> L'analyse chargera automatiquement les données du rendez-vous de <strong>Jean DUPONT</strong> pour tester l'intégration.</>
+                                        <><strong>Mode Démo Doctolib Actif :</strong> L'analyse chargera les données de démonstration de <strong>Cécile DUCROCQ</strong> (Bloc opératoire). Renseignez votre clé API Gemini dans les paramètres pour analyser n'importe quelle capture réelle.</>
                                     ) : (
-                                        <><strong>Mode Démo Hopital Manager Actif :</strong> L'analyse chargera automatiquement les données d'<strong>Amanda RIPERT</strong> pour tester l'intégration.</>
+                                        <><strong>Mode Démo Hopital Manager Actif :</strong> L'analyse chargera les données d'<strong>Amanda RIPERT</strong> (DPI). Renseignez votre clé API Gemini pour analyser vos captures réelles.</>
                                     )}
                                 </span>
                             </div>

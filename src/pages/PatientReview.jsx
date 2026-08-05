@@ -136,11 +136,42 @@ export default function PatientReview() {
             if (patientError) throw patientError;
             setPatient(patientData);
 
-            const { data: intakeResp } = await supabase
+            let { data: intakeResp } = await supabase
                 .from('intake_form_responses')
                 .select('*')
                 .eq('patient_id', id)
                 .maybeSingle();
+
+            if (!intakeResp && patientData) {
+                if (patientData.phone) {
+                    const { data: byPhone } = await supabase
+                        .from('intake_form_responses')
+                        .select('*')
+                        .eq('phone', patientData.phone)
+                        .order('submitted_at', { ascending: false })
+                        .limit(1)
+                        .maybeSingle();
+                    if (byPhone) intakeResp = byPhone;
+                }
+                if (!intakeResp && patientData.name && patientData.birth_date) {
+                    const { data: otherPatients } = await supabase
+                        .from('patients')
+                        .select('id')
+                        .eq('name', patientData.name)
+                        .eq('birth_date', patientData.birth_date);
+                    if (otherPatients && otherPatients.length > 0) {
+                        const pIds = otherPatients.map(p => p.id);
+                        const { data: byHistory } = await supabase
+                            .from('intake_form_responses')
+                            .select('*')
+                            .in('patient_id', pIds)
+                            .order('submitted_at', { ascending: false })
+                            .limit(1)
+                            .maybeSingle();
+                        if (byHistory) intakeResp = byHistory;
+                    }
+                }
+            }
             setIntakeData(intakeResp || null);
 
             if (patientData && patientData.name && patientData.birth_date) {
@@ -967,7 +998,13 @@ export default function PatientReview() {
                                                 Médecin Traitant
                                             </div>
                                             <div style={{ fontWeight: '700', color: 'var(--color-gray-900)', fontSize: '14px' }}>
-                                                {patient.referring_doctor || 'Non renseigné'}
+                                                {(() => {
+                                                    const fromPatient = (patient.referring_doctor || '').trim();
+                                                    const fromIntake = (intakeData?.general_practitioner || '').trim();
+                                                    const name = (fromIntake && fromIntake.length > fromPatient.length) ? fromIntake : (fromPatient || fromIntake);
+                                                    const city = intakeData?.gp_city ? ` (${intakeData.gp_city})` : '';
+                                                    return name ? `${name}${city}` : 'Non renseigné';
+                                                })()}
                                             </div>
                                             {patient.referring_doctor_phone && (
                                                 <div style={{ fontSize: '12px', color: 'var(--color-gray-500)', marginTop: '2px' }}>

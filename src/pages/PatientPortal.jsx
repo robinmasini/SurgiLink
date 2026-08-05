@@ -492,11 +492,42 @@ export default function PatientPortal({ patient: initialPatient }) {
             if (trackError) console.error('Consultation tracking error:', trackError);
             else console.log('Consultation tracked successfully');
 
-            const { data: intakeResp } = await supabase
+            let { data: intakeResp } = await supabase
                 .from('intake_form_responses')
                 .select('*')
                 .eq('patient_id', patientData.id)
                 .maybeSingle();
+
+            if (!intakeResp && patientData) {
+                if (patientData.phone) {
+                    const { data: byPhone } = await supabase
+                        .from('intake_form_responses')
+                        .select('*')
+                        .eq('phone', patientData.phone)
+                        .order('submitted_at', { ascending: false })
+                        .limit(1)
+                        .maybeSingle();
+                    if (byPhone) intakeResp = byPhone;
+                }
+                if (!intakeResp && patientData.name && patientData.birth_date) {
+                    const { data: otherPatients } = await supabase
+                        .from('patients')
+                        .select('id')
+                        .eq('name', patientData.name)
+                        .eq('birth_date', patientData.birth_date);
+                    if (otherPatients && otherPatients.length > 0) {
+                        const pIds = otherPatients.map(p => p.id);
+                        const { data: byHistory } = await supabase
+                            .from('intake_form_responses')
+                            .select('*')
+                            .in('patient_id', pIds)
+                            .order('submitted_at', { ascending: false })
+                            .limit(1)
+                            .maybeSingle();
+                        if (byHistory) intakeResp = byHistory;
+                    }
+                }
+            }
             setIntakeData(intakeResp || null);
 
         } catch (err) {

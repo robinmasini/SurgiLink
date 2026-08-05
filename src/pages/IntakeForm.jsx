@@ -899,8 +899,8 @@ export default function IntakeForm() {
                         <div style={{ background: '#F9FAFB', borderRadius: '14px', padding: '14px', border: '1px solid #F3F4F6' }}>
                             <p style={{ margin: '0 0 12px', fontSize: '12px', fontWeight: '700', color: '#374151', textTransform: 'uppercase' }}>Médecin traitant</p>
                             <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '10px' }}>
-                                <Field label="Dr.">
-                                    <StyledInput value={form.general_practitioner} onChange={e => setF('general_practitioner', e.target.value)} placeholder="Nom du médecin" />
+                                <Field label="Nom et Prénom (Dr.)" required hint="Merci de saisir le NOM et le PRÉNOM">
+                                    <StyledInput value={form.general_practitioner} onChange={e => setF('general_practitioner', e.target.value)} placeholder="ex: Dr. DAUMAS Marie-Laure" />
                                 </Field>
                                 <Field label="Ville">
                                     <StyledInput value={form.gp_city} onChange={e => setF('gp_city', e.target.value)} placeholder="Marseille" />
