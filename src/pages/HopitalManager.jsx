@@ -426,8 +426,8 @@ Les clés doivent être exactement :
             <Sidebar />
             <main className="main-content">
                 <Header
-                    title="Portail Hopital Manager"
-                    subtitle="Intégration du Dossier Patient Informatisé (DPI)"
+                    title="Portail HM / Doctolib"
+                    subtitle="Intégration Hopital Manager (DPI) & Doctolib"
                 />
 
                 <div className="fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-6)' }}>

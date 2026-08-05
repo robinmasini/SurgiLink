@@ -16,12 +16,12 @@ import {
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-import hmIcon from '../assets/hm-icon.png';
+import hmDoctolibIcon from '../assets/hm-doctolib.png';
 
 const navItems = [
     { path: '/dashboard', label: 'Tableau de bord', icon: LayoutDashboard },
     { path: '/patients', label: 'Listes patients', icon: Users },
-    { path: '/hopital-manager', label: 'Hopital Manager', icon: hmIcon, isCustomIcon: true },
+    { path: '/hopital-manager', label: 'HM / Doctolib', icon: hmDoctolibIcon, isCustomIcon: true },
     { path: '/comments', label: 'Commentaires Patients', icon: MessageSquare },
     { path: '/users', label: 'Utilisateurs', icon: Stethoscope },
     { path: '/account', label: 'Mon compte', icon: User },
