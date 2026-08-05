@@ -8,6 +8,7 @@ import AddPatientModal from '../components/AddPatientModal';
 import HMScannerModal from '../components/HMScannerModal';
 import NewIntakeModal from '../components/NewIntakeModal';
 import hmIcon from '../assets/hm-icon.png';
+import hmDoctolibIcon from '../assets/hm-doctolib.png';
 import LogoIcon from '../components/LogoIcon';
 import practitionerAvatar from '../assets/practitioner-avatar.png';
 import welcomeCardV4 from '../assets/welcome-card-v4.jpg';
@@ -370,8 +371,8 @@ export default function Dashboard() {
                                     fontWeight: '700'
                                 }}
                             >
-                                <Sparkles size={18} />
-                                <span>Scanner patient</span>
+                                <img src={hmDoctolibIcon} alt="HM / Doctolib" style={{ height: '22px', width: 'auto', objectFit: 'contain' }} />
+                                <span>Scanner patient(e)</span>
                             </button>
                              <div className="hide-mobile" style={{ display: 'flex', flexDirection: 'row', gap: '8px', alignItems: 'center' }}>
                                 <button
@@ -463,8 +464,8 @@ export default function Dashboard() {
                                         boxShadow: 'var(--shadow-sm)'
                                     }}
                                 >
-                                    <Sparkles size={16} />
-                                    <span>Scanner patient</span>
+                                    <img src={hmDoctolibIcon} alt="HM / Doctolib" style={{ height: '20px', width: 'auto', objectFit: 'contain' }} />
+                                    <span>Scanner patient(e)</span>
                                 </button>
                             </div>
 

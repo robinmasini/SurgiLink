@@ -442,11 +442,11 @@ Les clés doivent être exactement :
                 {/* Header */}
                 <div style={{ padding: 'var(--spacing-5)', borderBottom: '1px solid rgba(0,0,0,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)' }}>
-                        <div style={{ width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <div style={{ minWidth: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             {scannerCategory === 'HM' ? (
                                 <img src={hmIcon} alt="HM Icon" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
                             ) : (
-                                <img src={doctolibLogo} alt="Doctolib" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
+                                <img src={doctolibLogo} alt="Doctolib" style={{ height: '32px', width: 'auto', maxWidth: '110px', objectFit: 'contain' }} />
                             )}
                         </div>
                         <div>
@@ -539,7 +539,7 @@ Les clés doivent être exactement :
                             transition: 'all 0.2s'
                         }}
                     >
-                        <img src={doctolibLogo} alt="Doctolib" style={{ width: '20px', height: '20px', objectFit: 'contain' }} />
+                        <img src={doctolibLogo} alt="Doctolib" style={{ height: '26px', width: 'auto', maxWidth: '90px', objectFit: 'contain' }} />
                         <span>Doctolib</span>
                     </button>
                 </div>
@@ -624,11 +624,7 @@ Les clés doivent être exactement :
                                     boxShadow: 'var(--shadow-sm)',
                                     color: scannerCategory === 'Doctolib' ? '#0098E4' : '#0F70B7'
                                 }}>
-                                    {scannerCategory === 'Doctolib' ? (
-                                        <img src={doctolibLogo} alt="Doctolib" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
-                                    ) : (
-                                        <UploadCloud size={28} />
-                                    )}
+                                    <UploadCloud size={28} />
                                 </div>
                                 <div>
                                     <p style={{ margin: 0, fontWeight: '700', fontSize: '14px', color: 'var(--color-gray-800)' }}>
