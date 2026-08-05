@@ -218,11 +218,11 @@ export async function processPendingReminders(supabaseClient = null) {
  * @param {Object} patient - Patient object with phone, name, etc.
  * @returns {Promise<Object>} - { success, canSend, reason, error }
  */
-export async function sendManualReminder(patientId, screen, itemId, templateKey, patient) {
+export async function sendManualReminder(patientId, screen, itemId, templateKey, patient, force = true) {
     try {
         console.log(`[sendManualReminder] Vérification anti-spam pour Patient:${patientId}, Item:${itemId || screen}`);
         // Check anti-spam - use screen if itemId is null
-        const canSend = await canSendReminder(patientId, itemId || screen, 24, 3);
+        const canSend = await canSendReminder(patientId, itemId || screen, 24, 3, null, force);
 
         if (!canSend.canSend) {
             console.warn(`[sendManualReminder] Anti-spam bloqué: ${canSend.reason}`);

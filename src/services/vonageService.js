@@ -173,7 +173,8 @@ export async function getSMSHistory(patientId, filters = {}, supabaseClient = nu
     return error ? [] : data || [];
 }
 
-export async function canSendReminder(patientId, linkedItemId, minHoursBetween = 24, maxReminders = 3, supabaseClient = null) {
+export async function canSendReminder(patientId, linkedItemId, minHoursBetween = 24, maxReminders = 3, supabaseClient = null, force = false) {
+    if (force) return { canSend: true };
     const history = await getSMSHistory(patientId, { linkedItemId }, supabaseClient);
     const successfulSends = history.filter(log => log.status === 'sent' || log.status === 'delivered');
     if (successfulSends.length >= maxReminders) return { canSend: false, reason: `Maximum reminders reached (${maxReminders})` };

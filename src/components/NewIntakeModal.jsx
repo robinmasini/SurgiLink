@@ -5,6 +5,9 @@ import { createIntakePatient } from '../services/intakeService';
 import { supabase } from '../lib/supabase';
 import PhoneInput from './PhoneInput';
 
+import { generatePatientToken } from '../services/tokenService';
+import { sendSMS } from '../services/vonageService';
+
 export default function NewIntakeModal({ isOpen, onClose, onSuccess }) {
     const navigate = useNavigate();
     const [phone, setPhone] = useState('');
@@ -33,6 +36,39 @@ export default function NewIntakeModal({ isOpen, onClose, onSuccess }) {
     }, [isOpen]);
 
     if (!isOpen) return null;
+
+    const handleForceSendExisting = async () => {
+        if (!existingPatient) return;
+        setIsSending(true);
+        setError('');
+        try {
+            const tokenRes = await generatePatientToken(existingPatient.id);
+            if (!tokenRes.success) throw new Error(`Erreur génération lien: ${tokenRes.error}`);
+
+            const token = tokenRes.token;
+            const intakeLink = `${window.location.origin}/fiche/${token}`;
+            const targetPhone = phone || existingPatient.phone;
+
+            const smsRes = await sendSMS(
+                'intake_form',
+                targetPhone,
+                { intake_link: intakeLink, first_name: existingPatient.name?.split(' ')[0] || 'cher(e) patient(e)' },
+                { patientId: existingPatient.id, screen: 'Intake', linkedItemId: null }
+            );
+
+            if (!smsRes.success) {
+                throw new Error(smsRes.error || 'Erreur lors de l\'envoi du SMS.');
+            }
+
+            setIsDone(true);
+            setExistingPatient(null);
+            if (onSuccess) onSuccess({ success: true, patientId: existingPatient.id });
+        } catch (err) {
+            setError(err.message || 'Erreur d\'envoi du SMS.');
+        } finally {
+            setIsSending(false);
+        }
+    };
 
     const formatPhoneDisplay = (val) => {
         // Allow digits, spaces, +, -, ()
@@ -172,17 +208,42 @@ export default function NewIntakeModal({ isOpen, onClose, onSuccess }) {
                                 </div>
                             </div>
 
+                            {error && (
+                                <div style={{
+                                    background: '#FEF2F2', border: '1px solid #FECACA',
+                                    borderRadius: '10px', padding: '10px 12px',
+                                    fontSize: '13px', color: '#DC2626', marginBottom: '14px'
+                                }}>
+                                    ⚠️ {error}
+                                </div>
+                            )}
+
+                            <button
+                                onClick={handleForceSendExisting}
+                                disabled={isSending}
+                                className="btn btn-primary"
+                                style={{
+                                    width: '100%', height: '46px', borderRadius: '12px', fontWeight: '800',
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                                    background: 'linear-gradient(135deg, var(--color-success-500), var(--color-success-600))',
+                                    border: 'none', color: 'white', marginBottom: '10px'
+                                }}
+                            >
+                                {isSending ? <Loader size={18} style={{ animation: 'spin 1s linear infinite' }} /> : <Send size={16} />}
+                                {isSending ? 'Envoi en cours…' : 'Envoyer la fiche par SMS à ce patient'}
+                            </button>
+
                             <button
                                 onClick={() => navigate(`/patient/${existingPatient.id}`)}
-                                className="btn btn-primary"
-                                style={{ width: '100%', height: '46px', borderRadius: '12px', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                                className="btn btn-secondary"
+                                style={{ width: '100%', height: '42px', borderRadius: '12px', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
                             >
                                 Ouvrir sa fiche patient <ExternalLink size={16} />
                             </button>
                             <button
                                 onClick={() => setExistingPatient(null)}
                                 className="btn btn-secondary"
-                                style={{ width: '100%', height: '46px', borderRadius: '12px', fontWeight: '700', marginTop: '12px' }}
+                                style={{ width: '100%', height: '42px', borderRadius: '12px', fontWeight: '600', marginTop: '8px', border: 'none', background: 'transparent', color: 'var(--color-gray-500)' }}
                             >
                                 Essayer un autre numéro
                             </button>
