@@ -80,12 +80,16 @@ export default function PatientStatusBadges({ responses = [], daysUntil = '', pa
     // Create a map for quick lookup
     const responseMap = {};
     responses.forEach(r => {
+        if (!r || !r.screen) return;
         const key = `${r.screen}:${r.item_id}`;
+        const lowerKey = `${r.screen.toLowerCase()}:${r.item_id}`;
         responseMap[key] = r.response?.value;
+        responseMap[lowerKey] = r.response?.value;
     });
 
-    const isJ7Complete = responses.some(r => r.screen === 'J7');
-    const isJ1PreOpComplete = responses.some(r => r.screen === 'J1_PreOp');
+    const isJ7Complete = responses.some(r => r.screen && r.screen.toLowerCase() === 'j7');
+    const isJ1PreOpComplete = responses.some(r => r.screen && (r.screen.toLowerCase() === 'j1_preop' || r.screen.toLowerCase() === 'j1preop'));
+    const isBienvenueComplete = responses.some(r => r.screen && r.screen.toLowerCase() === 'bienvenue');
     const hasAnyResponse = responses.length > 0;
 
     // PRE-OP LOGIC (J-7 to J-0)
