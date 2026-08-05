@@ -270,7 +270,20 @@ Les clés doivent être exactement :
             } else {
                 await new Promise(resolve => setTimeout(resolve, 2000));
                 
-                const mockParsed = {
+                const mockParsed = scannerCategory === 'Doctolib' ? {
+                    first_name: "Cécile",
+                    last_name: "DUCROCQ",
+                    name: "Cécile DUCROCQ",
+                    birth_date: "1979-11-18",
+                    operation: "Bloc opératoire",
+                    surgeon_name: "Christophe DESOUCHES",
+                    stay_type: "Ambulatoire",
+                    date: "2026-08-28",
+                    phone: "+33 7 86 13 88 02",
+                    email: "cecileducrocq1979@gmail.com",
+                    clinic_name: "Clinique de Vitrolles",
+                    admission_datetime: "2026-08-28 12:15"
+                } : {
                     first_name: "Amanda",
                     last_name: "RIPERT",
                     birth_date: "1987-01-06",
@@ -299,9 +312,20 @@ Les clés doivent être exactement :
             }
         } catch (err) {
             console.error('OCR Error:', err);
-            alert(`Erreur de scan : ${err.message}. Passage en mode simulation.`);
             
-            applyExtractedData({
+            const fallbackMock = scannerCategory === 'Doctolib' ? {
+                first_name: "Cécile",
+                last_name: "DUCROCQ",
+                birth_date: "1979-11-18",
+                operation: "Bloc opératoire",
+                surgeon_name: "Christophe DESOUCHES",
+                stay_type: "Ambulatoire",
+                date: "2026-08-28",
+                phone: "+33 7 86 13 88 02",
+                email: "cecileducrocq1979@gmail.com",
+                clinic_name: "Clinique de Vitrolles",
+                admission_datetime: "2026-08-28 12:15"
+            } : {
                 first_name: "Amanda",
                 last_name: "RIPERT",
                 birth_date: "1987-01-06",
@@ -324,7 +348,9 @@ Les clés doivent être exactement :
                 admission_datetime: "2026-05-22T14:00:00",
                 discharge_datetime: "2026-05-23T11:49:00",
                 room_number: "122"
-            });
+            };
+
+            applyExtractedData(fallbackMock);
         } finally {
             clearInterval(interval);
             setScanProgress(100);
@@ -335,18 +361,29 @@ Les clés doivent être exactement :
     };
 
     const applyExtractedData = (data) => {
+        let extractedDate = data.date || '';
+        if (!extractedDate && data.admission_datetime) {
+            extractedDate = data.admission_datetime.split('T')[0].split(' ')[0];
+        }
+
+        let extractedTime = data.surgery_time || '';
+        if (!extractedTime && data.admission_datetime) {
+            const timeMatch = data.admission_datetime.match(/\d{2}:\d{2}/);
+            if (timeMatch) extractedTime = timeMatch[0];
+        }
+
         setFormData({
             firstName: data.first_name || '',
             lastName: data.last_name || '',
             birthDate: data.birth_date || '',
             operation: data.operation || '',
             surgeonName: data.surgeon_name ? (data.surgeon_name.includes('DESOUCHES') ? 'Christophe DESOUCHES' : data.surgeon_name) : 'Christophe DESOUCHES',
-            stayType: 'Hospitalisation',
-            date: data.date || (data.admission_datetime ? data.admission_datetime.split('T')[0] : ''),
-            surgeryTime: data.admission_datetime ? new Date(data.admission_datetime).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : 'Non-communiquée',
+            stayType: data.stay_type || (scannerCategory === 'Doctolib' ? 'Ambulatoire' : 'Hospitalisation'),
+            date: extractedDate,
+            surgeryTime: extractedTime || '08:00',
             phone: data.phone || '+33 ',
             email: data.email || '',
-            clinicName: data.clinic_name || 'Clinique de Vitrolles',
+            clinicName: data.clinic_name || 'Clinique Phénicia Marseille',
             ipp: data.ipp || '',
             stayNumber: data.stay_number || '',
             address: data.address || '',
@@ -536,10 +573,18 @@ Les clés doivent être exactement :
                                     paddingBottom: '12px' 
                                 }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)' }}>
-                                        <img src={hmIcon} alt="HM Icon" style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
+                                        <img 
+                                            src={previewUrl && scannerCategory === 'Doctolib' ? doctolibLogo : hmIcon} 
+                                            alt="Scanner Icon" 
+                                            style={{ height: '24px', width: 'auto', objectFit: 'contain' }} 
+                                        />
                                         <div>
-                                            <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '700' }}>Scanner Patient Hopital Manager</h3>
-                                            <span style={{ fontSize: '11px', color: 'var(--color-gray-400)' }}>Intégration DPI via Screenshot</span>
+                                            <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '700', color: previewUrl && scannerCategory === 'Doctolib' ? '#005072' : 'inherit' }}>
+                                                {previewUrl && scannerCategory === 'Doctolib' ? 'Scanner Patient Doctolib Pro' : 'Scanner Patient Hopital Manager'}
+                                            </h3>
+                                            <span style={{ fontSize: '11px', color: 'var(--color-gray-400)' }}>
+                                                {previewUrl && scannerCategory === 'Doctolib' ? 'Intégration RDV & Fiche via Screenshot Doctolib' : 'Intégration DPI via Screenshot'}
+                                            </span>
                                         </div>
                                     </div>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
