@@ -106,6 +106,12 @@ export default function EditPatientModal({ isOpen, onClose, patient, onPatientUp
             const dateChanged = formData.date !== (patient.date || '');
             const timeChanged = formData.reminderTime !== (patient.reminder_time || '08:30');
 
+            const safeISOString = (val) => {
+                if (!val) return null;
+                const d = new Date(val);
+                return isNaN(d.getTime()) ? null : d.toISOString();
+            };
+
             const { data, error } = await supabase
                 .from('patients')
                 .update({
@@ -116,7 +122,7 @@ export default function EditPatientModal({ isOpen, onClose, patient, onPatientUp
                     phone: formData.phone,
                     email: formData.email,
                     clinic_name: formData.clinicName || null,
-                    appointment_datetime: formData.appointmentDatetime || null,
+                    appointment_datetime: safeISOString(formData.appointmentDatetime),
                     surgeon_name: formData.surgeonName,
                     surgery_time: formData.surgeryTime,
                     stay_type: formData.stayType,
@@ -130,8 +136,8 @@ export default function EditPatientModal({ isOpen, onClose, patient, onPatientUp
                     referring_doctor_phone: formData.referringDoctorPhone,
                     entry_mode: formData.entryMode,
                     exit_mode: formData.exitMode,
-                    admission_datetime: formData.admissionDatetime ? new Date(formData.admissionDatetime).toISOString() : null,
-                    discharge_datetime: formData.dischargeDatetime ? new Date(formData.dischargeDatetime).toISOString() : null,
+                    admission_datetime: safeISOString(formData.admissionDatetime),
+                    discharge_datetime: safeISOString(formData.dischargeDatetime),
                     room_number: formData.roomNumber
                 })
                 .eq('id', patient.id)

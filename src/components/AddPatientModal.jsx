@@ -463,6 +463,18 @@ Les clés doivent être exactement :
                 }
             }
 
+            const safeISOString = (val) => {
+                if (!val) return null;
+                const d = new Date(val);
+                return isNaN(d.getTime()) ? null : d.toISOString();
+            };
+
+            const derivedAdmission = formData.admissionDatetime 
+                ? safeISOString(formData.admissionDatetime)
+                : (formData.date && formData.surgeryTime && formData.surgeryTime !== 'Non-communiquée'
+                    ? safeISOString(`${formData.date}T${formData.surgeryTime.length === 5 ? formData.surgeryTime : '07:30'}`)
+                    : (existingPatient?.admission_datetime || null));
+
             const patientPayload = {
                 name: fullName,
                 operation: formData.operation,
@@ -488,8 +500,8 @@ Les clés doivent être exactement :
                 referring_doctor_phone: formData.referringDoctorPhone || existingPatient?.referring_doctor_phone || '',
                 entry_mode: formData.entryMode || existingPatient?.entry_mode || '8 - Domicile',
                 exit_mode: formData.exitMode || existingPatient?.exit_mode || '8 - Retour domicile',
-                admission_datetime: formData.admissionDatetime ? new Date(formData.admissionDatetime).toISOString() : (existingPatient?.admission_datetime || null),
-                discharge_datetime: formData.dischargeDatetime ? new Date(formData.dischargeDatetime).toISOString() : (existingPatient?.discharge_datetime || null),
+                admission_datetime: derivedAdmission,
+                discharge_datetime: safeISOString(formData.dischargeDatetime) || (existingPatient?.discharge_datetime || null),
                 room_number: formData.roomNumber || existingPatient?.room_number || ''
             };
 
@@ -501,7 +513,7 @@ Les clés doivent être exactement :
                     .eq('id', existingPatient.id)
                     .select();
                 if (updateError) throw updateError;
-                savedPatient = updateData[0];
+                savedPatient = (updateData && updateData.length > 0) ? updateData[0] : { ...existingPatient, ...patientPayload };
             } else {
                 const { data: insertData, error: insertError } = await supabase
                     .from('patients')
@@ -527,8 +539,8 @@ Les clés doivent être exactement :
             if (onSuccess) onSuccess({ ...savedPatient, token });
             onClose();
         } catch (err) {
-            console.error('Unexpected error:', err);
-            alert('Une erreur inattendue est survenue.');
+            console.error('Save error details:', err);
+            alert(`Erreur lors de l'enregistrement : ${err.message || String(err)}`);
         } finally {
             setIsSaving(false);
         }
@@ -1034,45 +1046,61 @@ Les clés doivent être exactement :
                                                 <input
                                                     className="input"
                                                     style={{ paddingLeft: '40px' }}
+                                                    placeholder="07:30"
                                                     value={formData.surgeryTime}
+                                                    onFocus={() => {
+                                                        if (formData.surgeryTime === 'Non-communiquée') {
+                                                            setFormData({ ...formData, surgeryTime: '' });
+                                                        }
+                                                    }}
                                                     onChange={(e) => setFormData({ ...formData, surgeryTime: e.target.value })}
                                                 />
+                                            </div>
+                                            <div style={{ display: 'flex', gap: '4px', marginTop: '6px', flexWrap: 'wrap' }}>
+                                                {['07:00', '07:30', '08:00', '08:30', '09:00', '13:30', 'Non-communiquée'].map(t => (
+                                                    <button
+                                                        key={t}
+                                                        type="button"
+                                                        onClick={() => setFormData({ ...formData, surgeryTime: t })}
+                                                        style={{
+                                                            padding: '2px 7px',
+                                                            borderRadius: '5px',
+                                                            border: formData.surgeryTime === t ? '1px solid var(--color-primary-500)' : '1px solid var(--color-gray-200)',
+                                                            background: formData.surgeryTime === t ? 'var(--color-primary-50)' : 'white',
+                                                            color: formData.surgeryTime === t ? 'var(--color-primary-700)' : 'var(--color-gray-600)',
+                                                            fontSize: '10px',
+                                                            fontWeight: '600',
+                                                            cursor: 'pointer'
+                                                        }}
+                                                    >
+                                                        {t}
+                                                    </button>
+                                                ))}
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div className="grid-2">
-                                        <div>
-                                            <label className="form-label-add">Clinique ou Établissement *</label>
-                                            <select
-                                                className="input"
-                                                value={formData.clinicName}
-                                                onChange={(e) => setFormData({ ...formData, clinicName: e.target.value })}
-                                                required
-                                            >
-                                                <option value="" disabled>Sélectionnez un établissement</option>
-                                                {formData.stayType === 'Consultation' ? (
-                                                    <>
-                                                        <option value="Medical Alliance Aix en Provence">Medical Alliance Aix en Provence</option>
-                                                        <option value="Medical Alliance Marseille">Medical Alliance Marseille</option>
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <option value="Clinique de Vitrolles">Clinique de Vitrolles</option>
-                                                        <option value="Clinique Phenicia Marseille">Clinique Phénicia Marseille</option>
-                                                    </>
-                                                )}
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <label className="form-label-add">Date/Heure RDV</label>
-                                            <input
-                                                type="datetime-local"
-                                                className="input"
-                                                value={formData.admissionDatetime}
-                                                onChange={(e) => setFormData({ ...formData, admissionDatetime: e.target.value })}
-                                            />
-                                        </div>
+                                    <div>
+                                        <label className="form-label-add">Clinique ou Établissement *</label>
+                                        <select
+                                            className="input"
+                                            value={formData.clinicName}
+                                            onChange={(e) => setFormData({ ...formData, clinicName: e.target.value })}
+                                            required
+                                        >
+                                            <option value="" disabled>Sélectionnez un établissement</option>
+                                            {formData.stayType === 'Consultation' ? (
+                                                <>
+                                                    <option value="Medical Alliance Aix en Provence">Medical Alliance Aix en Provence</option>
+                                                    <option value="Medical Alliance Marseille">Medical Alliance Marseille</option>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <option value="Clinique de Vitrolles">Clinique de Vitrolles</option>
+                                                    <option value="Clinique Phenicia Marseille">Clinique Phénicia Marseille</option>
+                                                </>
+                                            )}
+                                        </select>
                                     </div>
                                 </div>
                             )}
