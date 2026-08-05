@@ -201,15 +201,22 @@ export default function PatientPortal({ patient: initialPatient }) {
     const isMilestoneComplete = (milestoneId) => {
         const items = getScreenItems(milestoneId);
         const required = items.filter(i => i.required !== false && i.type !== 'text' && i.type !== 'verbatim');
+
+        const getVal = (id) => {
+            if (responses[id] !== undefined && responses[id] !== null) return responses[id];
+            if (responses[`${milestoneId}:${id}`] !== undefined && responses[`${milestoneId}:${id}`] !== null) return responses[`${milestoneId}:${id}`];
+            if (responses[`${milestoneId.toLowerCase()}:${id}`] !== undefined && responses[`${milestoneId.toLowerCase()}:${id}`] !== null) return responses[`${milestoneId.toLowerCase()}:${id}`];
+            return undefined;
+        };
+
         if (required.length === 0) {
-            // For screens with no required fields (like ESATIS), it is complete only if at least one question has been answered
             return items.some(i => {
-                const val = responses[i.id];
+                const val = getVal(i.id);
                 return val !== undefined && val !== null && val !== '';
             });
         }
         return required.every(i => {
-            const val = responses[i.id];
+            const val = getVal(i.id);
             return val !== undefined && val !== null && val !== '';
         });
     };
@@ -363,7 +370,7 @@ export default function PatientPortal({ patient: initialPatient }) {
                 setSmsData(smsLogs || []);
             }
 
-            loadPatientResponses(patientId);
+            await loadPatientResponses(patientId);
         } catch (err) {
             console.error('Error loading history:', err);
         } finally {
@@ -400,12 +407,11 @@ export default function PatientPortal({ patient: initialPatient }) {
                     const screen = row.screen;
                     
                     aggregated[itemId] = value;
-                    // Support legacy/incorrect mappings for portal local logic
-                    if (itemId === 'recommendation') aggregated['recommandation'] = value;
-                    else if (itemId === 'recommandation') aggregated['recommendation'] = value;
-                    
                     if (screen) {
                         const lowerScreen = screen.toLowerCase();
+                        aggregated[`${screen}:${itemId}`] = value;
+                        aggregated[`${lowerScreen}:${itemId}`] = value;
+
                         let targetScreen = screen;
                         
                         // Handle legacy mapping for nested object
@@ -423,6 +429,10 @@ export default function PatientPortal({ patient: initialPatient }) {
                             };
                         }
                     }
+
+                    // Support legacy/incorrect mappings for portal local logic
+                    if (itemId === 'recommendation') aggregated['recommandation'] = value;
+                    else if (itemId === 'recommandation') aggregated['recommendation'] = value;
                 });
                 setResponses(aggregated);
                 setClinicalResponses(nested);
@@ -855,45 +865,50 @@ export default function PatientPortal({ patient: initialPatient }) {
                             width: '100%',
                             padding: '18px',
                             borderRadius: '20px',
-                            background: isUpToDate ? '#f3f4f6' : 'var(--grad-premium-purple)',
-                            color: isUpToDate ? '#9ca3af' : 'white',
-                            border: isUpToDate ? '1px solid #e5e7eb' : 'none',
+                            background: isUpToDate ? '#E8F5E9' : 'var(--grad-premium-purple)',
+                            color: isUpToDate ? '#2E7D32' : 'white',
+                            border: isUpToDate ? '1px solid #A5D6A7' : 'none',
                             fontSize: '15px',
                             fontWeight: '800',
                             letterSpacing: '0.05em',
                             boxShadow: isUpToDate ? 'none' : '0 10px 20px rgba(109, 140, 124, 0.3)',
-                            cursor: isUpToDate ? 'not-allowed' : 'pointer',
+                            cursor: isUpToDate ? 'default' : 'pointer',
                             transition: 'all 0.2s',
-                            opacity: isUpToDate ? 0.8 : 1
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '8px'
                         }}
-                    onClick={() => {
-                        const today = new Date();
-                        const surgeryDate = patient.date ? new Date(patient.date) : null;
-                        const diffDays = surgeryDate ? Math.ceil((surgeryDate - today) / (1000 * 60 * 60 * 24)) : 999;
-                        
-                        let nextStep = 'bienvenue';
-                        
-                        // Smart Routing: Find the first incomplete milestone that is due
-                        if (diffDays <= 18 && !isMilestoneComplete('Bienvenue')) nextStep = 'bienvenue';
-                        else if (diffDays <= 7 && !isMilestoneComplete('J7')) nextStep = 'j7';
-                        else if (diffDays <= 1 && !isMilestoneComplete('J1_PreOp')) nextStep = 'j1-preop';
-                        else if (diffDays <= -1 && !isMilestoneComplete('J1')) nextStep = 'j1';
-                        else if (diffDays <= -4 && !isMilestoneComplete('J4_Satisfaction')) nextStep = 'j4';
-                        else if (diffDays <= -4 && !isMilestoneComplete('ESATIS')) nextStep = 'e-satis';
-                        else {
-                            // If everything is done or nothing is due, go to next upcoming or j7 by default
-                            if (diffDays > 18) nextStep = 'bienvenue';
-                            else if (diffDays > 7) nextStep = 'bienvenue';
-                            else if (diffDays > 1) nextStep = 'j7';
-                            else nextStep = 'j7'; // Fallback
-                        }
-                        
-                        navigate(`/patient-portal/${token}/${nextStep}`);
-                    }}
-                    onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
-                    onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                        onClick={() => {
+                            if (isUpToDate) return;
+                            const today = new Date();
+                            const surgeryDate = patient.date ? new Date(patient.date) : null;
+                            const diffDays = surgeryDate ? Math.ceil((surgeryDate - today) / (1000 * 60 * 60 * 24)) : 999;
+                            
+                            let nextStep = 'bienvenue';
+                            
+                            // Smart Routing: Find the first incomplete milestone that is due
+                            if (diffDays <= 18 && !isMilestoneComplete('Bienvenue')) nextStep = 'bienvenue';
+                            else if (diffDays <= 7 && !isMilestoneComplete('J7')) nextStep = 'j7';
+                            else if (diffDays <= 1 && !isMilestoneComplete('J1_PreOp')) nextStep = 'j1-preop';
+                            else if (diffDays <= -1 && !isMilestoneComplete('J1')) nextStep = 'j1';
+                            else if (diffDays <= -4 && !isMilestoneComplete('J4_Satisfaction')) nextStep = 'j4';
+                            else if (diffDays <= -4 && !isMilestoneComplete('ESATIS')) nextStep = 'e-satis';
+                            
+                            navigate(`/patient-portal/${token}/${nextStep}`);
+                        }}
+                        onMouseOver={(e) => { if (!isUpToDate) e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                        onMouseOut={(e) => { if (!isUpToDate) e.currentTarget.style.transform = 'translateY(0)'; }}
                     >
-                        {t('DÉMARRER MON QUESTIONNAIRE')} {!isUpToDate && nextMilestoneLabel ? `(${nextMilestoneLabel})` : ''}
+                        {isUpToDate ? (
+                            <>
+                                <CheckCircle2 size={18} /> TOUS MES QUESTIONNAIRES SONT À JOUR
+                            </>
+                        ) : (
+                            <>
+                                {t('DÉMARRER MON QUESTIONNAIRE')} {nextMilestoneLabel ? `(${nextMilestoneLabel})` : ''}
+                            </>
+                        )}
                     </button>
 
                     {getActiveMilestoneIndex() > 0 && (
