@@ -173,16 +173,30 @@ export default function IntakeForm() {
     const setF = useCallback((key, val) => setForm(prev => ({ ...prev, [key]: val })), []);
 
     const handlePhoneChange = (key, val) => {
-        let cleaned = val.replace(/[^\d+]/g, '');
-        let formatted = '';
-        if (cleaned.startsWith('+')) {
-            let prefix = cleaned.substring(0, 3);
-            let rest = cleaned.substring(3).match(/.{1,2}/g)?.join('.') || '';
-            formatted = rest ? `${prefix}.${rest}` : prefix;
-        } else {
-            formatted = cleaned.match(/.{1,2}/g)?.join('.') || '';
+        if (!val) {
+            setF(key, '');
+            return;
         }
-        setF(key, formatted);
+        let raw = String(val);
+        if (raw.startsWith('+33')) raw = raw.substring(3);
+        else if (raw.startsWith('33')) raw = raw.substring(2);
+
+        let digits = raw.replace(/\D/g, '');
+        while (digits.startsWith('0')) {
+            digits = digits.substring(1);
+        }
+
+        if (digits.length === 0) {
+            setF(key, '+33 ');
+            return;
+        }
+
+        let formatted = '';
+        for (let i = 0; i < digits.length && i < 9; i++) {
+            if (i === 1 || i === 3 || i === 5 || i === 7) formatted += ' ';
+            formatted += digits[i];
+        }
+        setF(key, `+33 ${formatted}`);
     };
 
     const processImageToBase64 = (file) => {

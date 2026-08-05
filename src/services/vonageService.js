@@ -11,16 +11,13 @@ const API_BASE_URL = typeof window !== 'undefined' ? '' :
 export function normalizeFrenchPhone(to) {
     if (!to) return '';
     let digits = String(to).replace(/\D/g, '');
-    if (digits.length === 10 && digits.startsWith('0')) {
-        return `33${digits.substring(1)}`;
+    if (digits.startsWith('33')) {
+        digits = digits.substring(2);
     }
-    if (digits.length === 11 && digits.startsWith('330')) {
-        return `33${digits.substring(3)}`;
+    while (digits.startsWith('0')) {
+        digits = digits.substring(1);
     }
-    if (digits.length === 11 && digits.startsWith('33')) {
-        return digits;
-    }
-    return digits;
+    return `33${digits}`;
 }
 
 export async function sendSMS(templateKey, to, variables, metadata = {}, supabaseClient = null) {

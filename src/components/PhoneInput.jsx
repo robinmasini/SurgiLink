@@ -89,14 +89,14 @@ export default function PhoneInput({ value, onChange, placeholder = '6 00 00 00 
             rawInput = rawInput.replace(selectedCountry.code, '');
         }
 
-        // Clean, strip leading 0, and reformat
+        // Clean, strip ALL leading zeros so typing '0' is impossible
         let numbersOnly = rawInput.replace(/\D/g, '');
-        if (numbersOnly.startsWith('0')) {
+        while (numbersOnly.startsWith('0')) {
             numbersOnly = numbersOnly.substring(1);
         }
         const formatted = formatValue(numbersOnly, selectedCountry.code);
 
-        onChange(`${selectedCountry.code} ${formatted}`);
+        onChange(numbersOnly ? `${selectedCountry.code} ${formatted}` : `${selectedCountry.code} `);
     };
 
     const displayValue = value ? value.replace(selectedCountry.code, '').trim() : '';
