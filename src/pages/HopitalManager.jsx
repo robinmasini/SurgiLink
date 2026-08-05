@@ -23,6 +23,7 @@ import { useTranslation } from 'react-i18next';
 
 import hmLogo from '../assets/HM.png';
 import hmIcon from '../assets/hm-icon.png';
+import doctolibLogo from '../assets/doctolib-bleu.png';
 import PhoneInput from '../components/PhoneInput';
 import { scheduleTimeBasedReminders } from '../services/reminderService';
 import { generatePatientToken } from '../services/tokenService';
@@ -36,6 +37,7 @@ export default function HopitalManager() {
     const [isLoading, setIsLoading] = useState(true);
 
     // Scanner state
+    const [scannerCategory, setScannerCategory] = useState('HM'); // 'HM' or 'Doctolib'
     const [apiKey, setApiKey] = useState(localStorage.getItem('SL_GEMINI_API_KEY') || '');
     const [showSettings, setShowSettings] = useState(false);
     const [isDragging, setIsDragging] = useState(false);
@@ -115,11 +117,12 @@ export default function HopitalManager() {
         }
     };
 
-    const processFile = (file) => {
+    const processFile = (file, category = 'HM') => {
         if (!file.type.startsWith('image/')) {
             alert('Veuillez sélectionner un fichier image (PNG, JPG, JPEG).');
             return;
         }
+        setScannerCategory(category);
         setSelectedFile(file);
         const reader = new FileReader();
         reader.onloadend = () => {
@@ -141,7 +144,7 @@ export default function HopitalManager() {
         e.preventDefault();
         setIsDragging(false);
         if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-            processFile(e.dataTransfer.files[0]);
+            processFile(e.dataTransfer.files[0], 'HM');
         }
     };
 
@@ -168,7 +171,44 @@ export default function HopitalManager() {
                 const base64Content = previewUrl.split(',')[1];
                 const mimeType = selectedFile.type;
 
-                const prompt = `Tu es un extracteur de données médicales à partir de captures d'écran du logiciel Hopital Manager.
+                const prompt = scannerCategory === 'Doctolib' 
+                    ? `Tu es un extracteur de données médicales expert spécialisé dans l'analyse de captures d'écran Doctolib Pro (Fiche patient, planning de rendez-vous ou créneaux de bloc opératoire).
+Analyse l'image et extrait les informations suivantes sous forme de JSON structuré. Ne retourne AUCUN blabla, uniquement du JSON valide.
+
+RÈGLES D'EXTRACTION DOCTOLIB PRO :
+1. PATIENT (Volet de gauche) :
+   - Nom de famille (ex: "DUCROCQ") -> last_name
+   - Prénom (ex: "Cecile" ou "Cécile") -> first_name
+   - Nom complet -> name (ex: "Cecile DUCROCQ")
+   - Date de naissance (ex: "18/11/1979" -> "1979-11-18") -> birth_date
+   - Téléphone portable (ex: "07 86 13 88 02" -> "+33 7 86 13 88 02") -> phone
+   - Email (ex: "cecileducrocq1979@gmail.com") -> email
+
+2. RENDEZ-VOUS & BLOC OPÉRATOIRE (Volet central) :
+   - Agenda (ex: "DESOUCHES Bloc Vitrolles") :
+     * Nom du chirurgien -> surgeon_name (ex: "Christophe DESOUCHES")
+     * Nom de la clinique / lieu -> clinic_name (ex: "Clinique de Vitrolles" ou "Clinique Phenicia Marseille")
+   - Motif de consultation / Type d'acte (ex: "Bloc > Bloc opératoire" ou "Bloc opératoire") -> operation
+     * RÈGLE CRITIQUE : Si le motif ou l'agenda mentionne "Bloc", "Bloc opératoire", "Chirurgie", "Intervention" ou "Bloc Vitrolles", il s'agit d'une OPÉRATION CHIRURGICALE EN BLOC OPÉRATOIRE.
+     * Définis TOUJOURS "stay_type": "Ambulatoire" (ou "Hospitalisation"). Ne mets JAMAIS "Consultation" pour des créneaux de bloc opératoire !
+   - Date et Heure (ex: "vendredi 28 août 2026", "12:15" -> date: "2026-08-28", admission_datetime: "2026-08-28 12:15")
+
+Format JSON exact à retourner :
+{
+  "first_name": "Cécile",
+  "last_name": "DUCROCQ",
+  "name": "Cécile DUCROCQ",
+  "birth_date": "1979-11-18",
+  "phone": "+33 7 86 13 88 02",
+  "email": "cecileducrocq1979@gmail.com",
+  "operation": "Bloc opératoire",
+  "surgeon_name": "Christophe DESOUCHES",
+  "stay_type": "Ambulatoire",
+  "clinic_name": "Clinique de Vitrolles",
+  "date": "2026-08-28",
+  "admission_datetime": "2026-08-28 12:15"
+}`
+                    : `Tu es un extracteur de données médicales à partir de captures d'écran du logiciel Hopital Manager.
 Analyse l'image et extrait les informations suivantes sous forme de JSON structuré. Ne retourne AUCUN blabla, uniquement du JSON valide.
 Les clés doivent être exactement :
 {
@@ -477,137 +517,148 @@ Les clés doivent être exactement :
                         gap: 'var(--spacing-6)',
                         alignItems: 'start'
                     }}>
-                        {/* Scanner Workspace Card */}
-                        <div className="card" style={{
-                            padding: 'var(--spacing-6)',
-                            background: 'white',
-                            border: '1px solid var(--color-gray-100)',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            minHeight: '400px'
-                        }}>
-                            <div style={{ 
-                                display: 'flex', 
-                                justifyContent: 'space-between', 
-                                alignItems: 'center', 
-                                marginBottom: 'var(--spacing-4)', 
-                                borderBottom: '1px solid var(--color-gray-100)', 
-                                paddingBottom: '12px' 
+                        {/* Left Workspace Column: Scanners (Hopital Manager + Doctolib) */}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-6)' }}>
+                            {/* Card 1: Scanner Patient Hopital Manager */}
+                            <div className="card" style={{
+                                padding: 'var(--spacing-6)',
+                                background: 'white',
+                                border: '1px solid var(--color-gray-100)',
+                                display: 'flex',
+                                flexDirection: 'column'
                             }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)' }}>
-                                    <img src={hmIcon} alt="HM Icon" style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
-                                    <div>
-                                        <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '700' }}>Scanner Patient Hopital Manager</h3>
-                                        <span style={{ fontSize: '11px', color: 'var(--color-gray-400)' }}>Intégration DPI via Screenshot</span>
-                                    </div>
-                                </div>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                    <button 
-                                        onClick={() => setShowSettings(!showSettings)} 
-                                        style={{ background: 'none', border: 'none', color: 'var(--color-gray-500)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
-                                        title="Paramètres API"
-                                    >
-                                        <Settings size={18} />
-                                    </button>
-                                </div>
-                            </div>
-
-                            {/* Settings Panel */}
-                            {showSettings && (
-                                <div style={{ padding: 'var(--spacing-4)', background: 'var(--color-gray-50)', borderBottom: '1px solid var(--color-gray-100)', borderRadius: 'var(--radius-lg)', marginBottom: 'var(--spacing-4)' }}>
-                                    <form onSubmit={handleSaveApiKey} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                        <label style={{ fontSize: '12px', fontWeight: '600', color: 'var(--color-gray-700)' }}>
-                                            Clé API Gemini (Optionnelle)
-                                        </label>
-                                        <div style={{ display: 'flex', gap: '10px' }}>
-                                            <input
-                                                type="password"
-                                                placeholder="AlzaSy..."
-                                                className="input"
-                                                value={apiKey}
-                                                onChange={e => setApiKey(e.target.value)}
-                                                style={{ flex: 1, height: '38px', fontSize: '13px' }}
-                                            />
-                                            <button type="submit" className="btn btn-primary" style={{ height: '38px', padding: '0 16px', background: '#0F70B7', fontSize: '13px' }}>
-                                                Enregistrer
-                                            </button>
+                                <div style={{ 
+                                    display: 'flex', 
+                                    justifyContent: 'space-between', 
+                                    alignItems: 'center', 
+                                    marginBottom: 'var(--spacing-4)', 
+                                    borderBottom: '1px solid var(--color-gray-100)', 
+                                    paddingBottom: '12px' 
+                                }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)' }}>
+                                        <img src={hmIcon} alt="HM Icon" style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
+                                        <div>
+                                            <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '700' }}>Scanner Patient Hopital Manager</h3>
+                                            <span style={{ fontSize: '11px', color: 'var(--color-gray-400)' }}>Intégration DPI via Screenshot</span>
                                         </div>
-                                    </form>
+                                    </div>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                        <button 
+                                            onClick={() => setShowSettings(!showSettings)} 
+                                            style={{ background: 'none', border: 'none', color: 'var(--color-gray-500)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                                            title="Paramètres API"
+                                        >
+                                            <Settings size={18} />
+                                        </button>
+                                    </div>
                                 </div>
-                            )}
 
-                            {/* Dropzone or Preview / Form Workspace */}
-                            {!previewUrl ? (
-                                <div
-                                    onDragOver={handleDragOver}
-                                    onDragLeave={handleDragLeave}
-                                    onDrop={handleDrop}
-                                    style={{
-                                        border: isDragging ? '2px dashed #0F70B7' : '2px dashed var(--color-gray-200)',
-                                        background: isDragging ? 'rgba(15, 112, 183, 0.05)' : 'var(--color-gray-50)',
-                                        borderRadius: 'var(--radius-xl)',
-                                        padding: 'var(--spacing-10) var(--spacing-4)',
-                                        textAlign: 'center',
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        gap: 'var(--spacing-3)',
-                                        cursor: 'pointer',
-                                        flex: 1,
-                                        transition: 'all 0.2s ease-in-out'
-                                    }}
-                                    onClick={() => document.getElementById('page-screenshot-uploader').click()}
-                                >
-                                    <div style={{
-                                        width: '60px',
-                                        height: '60px',
-                                        borderRadius: '50%',
-                                        background: 'white',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        boxShadow: 'var(--shadow-sm)',
-                                        color: 'var(--color-gray-400)'
-                                    }}>
-                                        <UploadCloud size={28} />
+                                {/* Settings Panel */}
+                                {showSettings && (
+                                    <div style={{ padding: 'var(--spacing-4)', background: 'var(--color-gray-50)', borderBottom: '1px solid var(--color-gray-100)', borderRadius: 'var(--radius-lg)', marginBottom: 'var(--spacing-4)' }}>
+                                        <form onSubmit={handleSaveApiKey} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                            <label style={{ fontSize: '12px', fontWeight: '600', color: 'var(--color-gray-700)' }}>
+                                                Clé API Gemini (Optionnelle)
+                                            </label>
+                                            <div style={{ display: 'flex', gap: '10px' }}>
+                                                <input
+                                                    type="password"
+                                                    placeholder="AlzaSy..."
+                                                    className="input"
+                                                    value={apiKey}
+                                                    onChange={e => setApiKey(e.target.value)}
+                                                    style={{ flex: 1, height: '38px', fontSize: '13px' }}
+                                                />
+                                                <button type="submit" className="btn btn-primary" style={{ height: '38px', padding: '0 16px', background: '#0F70B7', fontSize: '13px' }}>
+                                                    Enregistrer
+                                                </button>
+                                            </div>
+                                        </form>
                                     </div>
-                                    <div>
-                                        <p style={{ margin: 0, fontWeight: '700', fontSize: '14px', color: 'var(--color-gray-800)' }}>
-                                            Glissez-déposez une capture d'écran ici
-                                        </p>
-                                        <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: 'var(--color-gray-400)' }}>
-                                            ou cliquez pour parcourir
-                                        </p>
+                                )}
+
+                                {/* Dropzone or Preview / Form Workspace */}
+                                {!previewUrl ? (
+                                    <div
+                                        onDragOver={handleDragOver}
+                                        onDragLeave={handleDragLeave}
+                                        onDrop={(e) => {
+                                            e.preventDefault();
+                                            setIsDragging(false);
+                                            if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                                                processFile(e.dataTransfer.files[0], 'HM');
+                                            }
+                                        }}
+                                        style={{
+                                            border: isDragging && scannerCategory === 'HM' ? '2px dashed #0F70B7' : '2px dashed var(--color-gray-200)',
+                                            background: isDragging && scannerCategory === 'HM' ? 'rgba(15, 112, 183, 0.05)' : 'var(--color-gray-50)',
+                                            borderRadius: 'var(--radius-xl)',
+                                            padding: 'var(--spacing-10) var(--spacing-4)',
+                                            textAlign: 'center',
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            gap: 'var(--spacing-3)',
+                                            cursor: 'pointer',
+                                            flex: 1,
+                                            transition: 'all 0.2s ease-in-out'
+                                        }}
+                                        onClick={() => document.getElementById('page-screenshot-uploader').click()}
+                                    >
+                                        <div style={{
+                                            width: '60px',
+                                            height: '60px',
+                                            borderRadius: '50%',
+                                            background: 'white',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            boxShadow: 'var(--shadow-sm)',
+                                            color: 'var(--color-gray-400)'
+                                        }}>
+                                            <UploadCloud size={28} />
+                                        </div>
+                                        <div>
+                                            <p style={{ margin: 0, fontWeight: '700', fontSize: '14px', color: 'var(--color-gray-800)' }}>
+                                                Glissez-déposez une capture d'écran Hopital Manager ici
+                                            </p>
+                                            <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: 'var(--color-gray-400)' }}>
+                                                ou cliquez pour parcourir
+                                            </p>
+                                        </div>
+                                        <span style={{ 
+                                            background: 'rgba(0, 0, 0, 0.05)', 
+                                            padding: '4px 12px', 
+                                            borderRadius: 'var(--radius-md)', 
+                                            fontSize: '11px', 
+                                            fontWeight: '600', 
+                                            color: 'var(--color-gray-600)',
+                                            marginTop: '8px'
+                                        }}>
+                                            PNG, JPG ou JPEG
+                                        </span>
+                                        <input
+                                            type="file"
+                                            id="page-screenshot-uploader"
+                                            style={{ display: 'none' }}
+                                            accept="image/*"
+                                            onChange={(e) => {
+                                                if (e.target.files && e.target.files[0]) {
+                                                    processFile(e.target.files[0], 'HM');
+                                                }
+                                            }}
+                                        />
                                     </div>
-                                    <span style={{ 
-                                        background: 'rgba(0, 0, 0, 0.05)', 
-                                        padding: '4px 12px', 
-                                        borderRadius: 'var(--radius-md)', 
-                                        fontSize: '11px', 
-                                        fontWeight: '600', 
-                                        color: 'var(--color-gray-600)',
-                                        marginTop: '8px'
-                                    }}>
-                                        PNG, JPG ou JPEG
-                                    </span>
-                                    <input
-                                        type="file"
-                                        id="page-screenshot-uploader"
-                                        style={{ display: 'none' }}
-                                        accept="image/*"
-                                        onChange={handleFileChange}
-                                    />
-                                </div>
-                            ) : !extractedData || isScanning ? (
-                                /* Image scanning view */
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-4)', flex: 1 }}>
-                                    <div style={{ 
-                                        position: 'relative', 
-                                        flex: 1, 
-                                        borderRadius: 'var(--radius-xl)', 
-                                        overflow: 'hidden', 
-                                        border: '1px solid var(--color-gray-200)',
+                                ) : !extractedData || isScanning ? (
+                                    /* Image scanning view */
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-4)', flex: 1 }}>
+                                        <div style={{ 
+                                            position: 'relative', 
+                                            flex: 1, 
+                                            borderRadius: 'var(--radius-xl)', 
+                                            overflow: 'hidden', 
+                                            border: '1px solid var(--color-gray-200)',
                                         background: '#000',
                                         display: 'flex',
                                         alignItems: 'center',
@@ -990,6 +1041,111 @@ Les clés doivent être exactement :
                                 </div>
                             )}
                         </div>
+
+                        {/* Card 2: Uploader Patient Doctolib */}
+                        {!previewUrl && (
+                            <div className="card" style={{
+                                padding: 'var(--spacing-6)',
+                                background: 'white',
+                                border: '1px solid var(--color-gray-100)',
+                                display: 'flex',
+                                flexDirection: 'column'
+                            }}>
+                                <div style={{ 
+                                    display: 'flex', 
+                                    justifyContent: 'space-between', 
+                                    alignItems: 'center', 
+                                    marginBottom: 'var(--spacing-4)', 
+                                    borderBottom: '1px solid var(--color-gray-100)', 
+                                    paddingBottom: '12px' 
+                                }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)' }}>
+                                        <img src={doctolibLogo} alt="Doctolib Logo" style={{ height: '22px', width: 'auto', objectFit: 'contain' }} />
+                                        <div>
+                                            <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '700', color: '#005072' }}>Uploader Patient Doctolib</h3>
+                                            <span style={{ fontSize: '11px', color: 'var(--color-gray-400)' }}>Intégration RDV & Fiche via Screenshot Doctolib</span>
+                                        </div>
+                                    </div>
+                                    <span className="badge" style={{ background: '#E0F2FE', color: '#0369A1', border: '1px solid #BAE6FD', fontSize: '10px', fontWeight: '700' }}>
+                                        Doctolib Pro
+                                    </span>
+                                </div>
+
+                                <div
+                                    onDragOver={handleDragOver}
+                                    onDragLeave={handleDragLeave}
+                                    onDrop={(e) => {
+                                        e.preventDefault();
+                                        setIsDragging(false);
+                                        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                                            processFile(e.dataTransfer.files[0], 'Doctolib');
+                                        }
+                                    }}
+                                    style={{
+                                        border: '2px dashed #0284C7',
+                                        background: '#F0F9FF',
+                                        borderRadius: 'var(--radius-xl)',
+                                        padding: 'var(--spacing-10) var(--spacing-4)',
+                                        textAlign: 'center',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        gap: 'var(--spacing-3)',
+                                        cursor: 'pointer',
+                                        flex: 1,
+                                        transition: 'all 0.2s ease-in-out'
+                                    }}
+                                    onClick={() => document.getElementById('doctolib-page-screenshot-uploader').click()}
+                                >
+                                    <div style={{
+                                        width: '60px',
+                                        height: '60px',
+                                        borderRadius: '50%',
+                                        background: 'white',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        boxShadow: 'var(--shadow-sm)',
+                                        color: '#0284C7'
+                                    }}>
+                                        <UploadCloud size={28} />
+                                    </div>
+                                    <div>
+                                        <p style={{ margin: 0, fontWeight: '700', fontSize: '14px', color: '#0369A1' }}>
+                                            Glissez-déposez une capture d'écran Doctolib ici
+                                        </p>
+                                        <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: 'var(--color-gray-500)' }}>
+                                            Fiche patient, créneau de bloc opératoire ou RDV
+                                        </p>
+                                    </div>
+                                    <span style={{ 
+                                        background: 'white', 
+                                        padding: '4px 12px', 
+                                        borderRadius: 'var(--radius-md)', 
+                                        fontSize: '11px', 
+                                        fontWeight: '600', 
+                                        color: '#0284C7',
+                                        border: '1px solid #BAE6FD',
+                                        marginTop: '8px'
+                                    }}>
+                                        PNG, JPG ou JPEG
+                                    </span>
+                                    <input
+                                        type="file"
+                                        id="doctolib-page-screenshot-uploader"
+                                        style={{ display: 'none' }}
+                                        accept="image/*"
+                                        onChange={(e) => {
+                                            if (e.target.files && e.target.files[0]) {
+                                                processFile(e.target.files[0], 'Doctolib');
+                                            }
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                        )}
+                    </div>
 
                         {/* Patients Sync Table */}
                         <div className="card" style={{ padding: 0, overflow: 'hidden', background: 'white', border: '1px solid var(--color-gray-100)' }}>
