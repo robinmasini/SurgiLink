@@ -393,61 +393,83 @@ Les clés doivent être exactement :
         try {
             const fullName = `${formData.firstName.trim()} ${formData.lastName.trim()}`;
             
-            // Insert patient into Supabase
-            const { data, error } = await supabase
+            // Check if patient already exists to update instead of duplicate insert
+            let existingPatient = null;
+            const { data: byName } = await supabase
                 .from('patients')
-                .insert([
-                    {
-                        name: fullName,
-                        operation: formData.operation,
-                        date: formData.date || new Date().toISOString().split('T')[0],
-                        birth_date: formData.birthDate || null,
-                        phone: formData.phone,
-                        email: formData.email,
-                        surgeon_name: formData.surgeonName,
-                        surgery_time: formData.surgeryTime,
-                        stay_type: formData.stayType,
-                        clinic_name: formData.clinicName,
-                        status: 'pending',
-                        progress: 0,
-                        days_until: 'J-0',
-                        
-                        // New fields
-                        ipp: formData.ipp,
-                        stay_number: formData.stayNumber,
-                        address: formData.address,
-                        weight: formData.weight,
-                        height: formData.height,
-                        referring_doctor: formData.referringDoctor,
-                        referring_doctor_phone: formData.referringDoctorPhone,
-                        entry_mode: formData.entryMode,
-                        exit_mode: formData.exitMode,
-                        admission_datetime: formData.admissionDatetime ? new Date(formData.admissionDatetime).toISOString() : null,
-                        discharge_datetime: formData.dischargeDatetime ? new Date(formData.dischargeDatetime).toISOString() : null,
-                        room_number: formData.roomNumber
-                    }
-                ])
-                .select();
+                .select('*')
+                .ilike('name', fullName)
+                .order('created_at', { ascending: false })
+                .limit(1);
 
-            if (error) {
-                console.error('Error inserting scanned patient:', error);
-                alert(`Erreur lors de la création : ${error.message}`);
-            } else {
-                const newPatient = data[0];
-
-                // 1. Generate Token Immediately
-                const tokenRes = await generatePatientToken(newPatient.id);
-                const token = tokenRes.success ? tokenRes.token : null;
-
-                // 2. Schedule automated reminders (J-18, J-7, J-1)
-                if (newPatient.date) {
-                    const surgeryDate = new Date(newPatient.date);
-                    await scheduleTimeBasedReminders(newPatient.id, surgeryDate);
-                    alert(`Patient ${fullName} créé avec succès par importation !`);
-                    if (onSuccess) onSuccess({ ...newPatient, token });
-                    onClose();
-                }
+            if (byName && byName.length > 0) {
+                existingPatient = byName[0];
             }
+
+            const patientPayload = {
+                name: fullName,
+                operation: formData.operation,
+                date: formData.date || new Date().toISOString().split('T')[0],
+                birth_date: formData.birthDate || existingPatient?.birth_date || null,
+                phone: formData.phone || existingPatient?.phone || '',
+                email: formData.email || existingPatient?.email || '',
+                surgeon_name: formData.surgeonName,
+                surgery_time: formData.surgeryTime,
+                stay_type: formData.stayType,
+                clinic_name: formData.clinicName,
+                status: 'pending',
+                progress: 0,
+                days_until: 'J-0',
+                
+                // DPI fields
+                ipp: formData.ipp || existingPatient?.ipp || '',
+                stay_number: formData.stayNumber || existingPatient?.stay_number || '',
+                address: formData.address || existingPatient?.address || '',
+                weight: formData.weight || existingPatient?.weight || '',
+                height: formData.height || existingPatient?.height || '',
+                referring_doctor: formData.referringDoctor || existingPatient?.referring_doctor || '',
+                referring_doctor_phone: formData.referringDoctorPhone || existingPatient?.referring_doctor_phone || '',
+                entry_mode: formData.entryMode || existingPatient?.entry_mode || '8 - Domicile',
+                exit_mode: formData.exitMode || existingPatient?.exit_mode || '8 - Retour domicile',
+                admission_datetime: formData.admissionDatetime ? new Date(formData.admissionDatetime).toISOString() : (existingPatient?.admission_datetime || null),
+                discharge_datetime: formData.dischargeDatetime ? new Date(formData.dischargeDatetime).toISOString() : (existingPatient?.discharge_datetime || null),
+                room_number: formData.roomNumber || existingPatient?.room_number || ''
+            };
+
+            let savedPatient;
+            if (existingPatient) {
+                const { data: updateData, error: updateError } = await supabase
+                    .from('patients')
+                    .update(patientPayload)
+                    .eq('id', existingPatient.id)
+                    .select();
+
+                if (updateError) throw updateError;
+                savedPatient = updateData[0];
+            } else {
+                const { data: insertData, error: insertError } = await supabase
+                    .from('patients')
+                    .insert([patientPayload])
+                    .select();
+
+                if (insertError) throw insertError;
+                savedPatient = insertData[0];
+            }
+
+            // 1. Generate Token Immediately
+            const tokenRes = await generatePatientToken(savedPatient.id);
+            const token = tokenRes.success ? tokenRes.token : null;
+
+            // 2. Schedule automated reminders
+            if (savedPatient.date) {
+                await supabase.from('reminder_queue').delete().eq('patient_id', savedPatient.id).eq('status', 'pending');
+                const surgeryDate = new Date(savedPatient.date);
+                await scheduleTimeBasedReminders(savedPatient.id, surgeryDate);
+            }
+
+            alert(`Patient ${fullName} ${existingPatient ? 'mis à jour' : 'créé'} via scan !`);
+            if (onPatientAdded) onPatientAdded({ ...savedPatient, token });
+            onClose();
         } catch (err) {
             console.error('Unexpected error:', err);
             alert('Une erreur inattendue est survenue.');

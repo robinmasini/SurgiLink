@@ -18,6 +18,15 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'Missing to or text fields' });
     }
 
+    // Phone formatting helper
+    let digits = String(to).replace(/\D/g, '');
+    let formattedPhone = digits;
+    if (digits.length === 10 && digits.startsWith('0')) {
+        formattedPhone = `33${digits.substring(1)}`;
+    } else if (digits.length === 11 && digits.startsWith('330')) {
+        formattedPhone = `33${digits.substring(3)}`;
+    }
+
     try {
         const response = await fetch('https://rest.nexmo.com/sms/json', {
             method: 'POST',
@@ -28,7 +37,7 @@ export default async function handler(req, res) {
             body: JSON.stringify({
                 api_key: VONAGE_API_KEY,
                 api_secret: VONAGE_API_SECRET,
-                to: to,
+                to: formattedPhone,
                 from: VONAGE_FROM,
                 text: text,
                 type: 'unicode'

@@ -8,6 +8,21 @@ const API_BASE_URL = typeof window !== 'undefined' ? '' :
     (typeof import.meta.env !== 'undefined' && import.meta.env.VITE_APP_URL) || 
     'http://localhost:5173');
 
+export function normalizeFrenchPhone(to) {
+    if (!to) return '';
+    let digits = String(to).replace(/\D/g, '');
+    if (digits.length === 10 && digits.startsWith('0')) {
+        return `33${digits.substring(1)}`;
+    }
+    if (digits.length === 11 && digits.startsWith('330')) {
+        return `33${digits.substring(3)}`;
+    }
+    if (digits.length === 11 && digits.startsWith('33')) {
+        return digits;
+    }
+    return digits;
+}
+
 export async function sendSMS(templateKey, to, variables, metadata = {}, supabaseClient = null) {
     const db = supabaseClient || supabase;
     try {
@@ -25,15 +40,7 @@ export async function sendSMS(templateKey, to, variables, metadata = {}, supabas
         message = `Medical Alliance - ${message}`;
 
         // Phone formatting: Vonage requires numbers in E.164 format without the '+'
-        let cleanedPhone = to.replace(/[\s\.\-\(\)\+]/g, '');
-
-        // Handle French numbers starting with 0 (convert 06... to 336...)
-        let formattedPhone;
-        if (cleanedPhone.startsWith('0') && cleanedPhone.length === 10) {
-            formattedPhone = `33${cleanedPhone.substring(1)}`;
-        } else {
-            formattedPhone = cleanedPhone;
-        }
+        const formattedPhone = normalizeFrenchPhone(to);
 
         const logEntry = {
             patient_id: metadata.patientId,

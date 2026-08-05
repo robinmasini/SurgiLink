@@ -98,15 +98,25 @@ export default function Patients() {
 
             if (allPatientsError) throw allPatientsError;
 
-            // Deduplicate by name and birth_date (keeping the most recent/active intervention)
-            const uniquePatientsData = [];
-            const seen = new Set();
-            allPatientsData.forEach(p => {
-                const key = `${p.name}-${p.birth_date}`;
-                if (!seen.has(key)) {
-                    seen.add(key);
-                    uniquePatientsData.push(p);
+            // Group by normalized name to deduplicate and keep the most complete/active intervention
+            const patientGroups = {};
+            (allPatientsData || []).forEach(p => {
+                const normName = (p.name || '').trim().toLowerCase();
+                if (!normName) return;
+                if (!patientGroups[normName]) {
+                    patientGroups[normName] = [];
                 }
+                patientGroups[normName].push(p);
+            });
+
+            const uniquePatientsData = Object.values(patientGroups).map(group => {
+                if (group.length === 1) return group[0];
+                // If multiple records exist for same name, pick the one with a date & operation, or the latest
+                const withDate = group.find(p => p.date && p.operation && p.operation !== 'Non renseigné');
+                if (withDate) return withDate;
+                const withOp = group.find(p => p.operation && p.operation !== 'Non renseigné');
+                if (withOp) return withOp;
+                return group[0];
             });
 
             // Sort descending by created_at so newest patients are at the top

@@ -216,7 +216,25 @@ export default function Dashboard() {
                     recentActive: recentActiveCount
                 });
 
-                let formattedPatients = allPatientsData.map(patient => ({
+                // Deduplicate by normalized name
+                const patientGroups = {};
+                (allPatientsData || []).forEach(p => {
+                    const normName = (p.name || '').trim().toLowerCase();
+                    if (!normName) return;
+                    if (!patientGroups[normName]) patientGroups[normName] = [];
+                    patientGroups[normName].push(p);
+                });
+
+                const uniquePatientsData = Object.values(patientGroups).map(group => {
+                    if (group.length === 1) return group[0];
+                    const withDate = group.find(p => p.date && p.operation && p.operation !== 'Non renseigné');
+                    if (withDate) return withDate;
+                    const withOp = group.find(p => p.operation && p.operation !== 'Non renseigné');
+                    if (withOp) return withOp;
+                    return group[0];
+                });
+
+                let formattedPatients = uniquePatientsData.map(patient => ({
                     ...patient,
                     daysUntil: calculateDaysUntilSurgery(patient.date),
                     formattedDate: patient.date ? new Date(patient.date).toLocaleDateString('fr-FR', {
