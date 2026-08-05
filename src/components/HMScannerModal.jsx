@@ -20,8 +20,10 @@ import { scheduleTimeBasedReminders } from '../services/reminderService';
 import { generatePatientToken } from '../services/tokenService';
 import PhoneInput from './PhoneInput';
 import hmIcon from '../assets/hm-icon.png';
+import doctolibLogo from '../assets/doctolib-bleu.png';
 
 export default function HMScannerModal({ isOpen, onClose, onSuccess }) {
+    const [scannerCategory, setScannerCategory] = useState('HM'); // 'HM' or 'Doctolib'
     const [apiKey, setApiKey] = useState(localStorage.getItem('SL_GEMINI_API_KEY') || '');
     const [showSettings, setShowSettings] = useState(false);
     const [isDragging, setIsDragging] = useState(false);
@@ -142,7 +144,25 @@ export default function HMScannerModal({ isOpen, onClose, onSuccess }) {
                 const base64Content = previewUrl.split(',')[1];
                 const mimeType = selectedFile.type;
 
-                const prompt = `Tu es un extracteur de données médicales à partir de captures d'écran du logiciel Hopital Manager.
+                const prompt = scannerCategory === 'Doctolib'
+                    ? `Tu es un extracteur de données médicales à partir de captures d'écran de l'interface Doctolib Pro (fiche patient ou RDV du planning).
+Analyse l'image et extrait les informations suivantes sous forme de JSON structuré. Ne retourne AUCUN blabla, uniquement du JSON valide.
+Les clés doivent être exactement :
+{
+  "name": "Nom complet (ex: Jean DUPONT)",
+  "first_name": "Prénom (ex: Jean)",
+  "last_name": "Nom de famille (ex: DUPONT)",
+  "birth_date": "Date de naissance au format YYYY-MM-DD si présente (ex: 1985-04-12)",
+  "phone": "Numéro de téléphone portable (ex: +33612345678)",
+  "email": "Adresse email (ex: jean.dupont@gmail.com)",
+  "operation": "Motif de consultation / intervention (ex: Consultation Chirurgie Plastique)",
+  "surgeon_name": "Nom du chirurgien (ex: Christophe DESOUCHES)",
+  "admission_datetime": "Date et heure du rendez-vous au format ISO ou YYYY-MM-DD HH:MM",
+  "stay_type": "Consultation ou Ambulatoire",
+  "clinic_name": "Nom du cabinet ou clinique",
+  "address": "Adresse du patient si présente"
+}`
+                    : `Tu es un extracteur de données médicales à partir de captures d'écran du logiciel Hopital Manager.
 Analyse l'image et extrait les informations suivantes sous forme de JSON structuré. Ne retourne AUCUN blabla, uniquement du JSON valide.
 Les clés doivent être exactement :
 {
@@ -202,17 +222,31 @@ Les clés doivent être exactement :
                 const parsed = JSON.parse(jsonText);
                 applyExtractedData(parsed);
             } else {
-                // High-fidelity Simulation Mock for testing (Amanda Ripert)
-                // Simulate a slight network delay
+                // High-fidelity Simulation Mock for testing
                 await new Promise(resolve => setTimeout(resolve, 2000));
                 
-                const mockParsed = {
+                const mockParsed = scannerCategory === 'Doctolib' ? {
+                    first_name: "Jean",
+                    last_name: "DUPONT",
+                    birth_date: "1985-04-12",
+                    operation: "Consultation Chirurgie Plastique",
+                    surgeon_name: "Christophe DESOUCHES",
+                    stay_type: "Consultation",
+                    date: new Date().toISOString().split('T')[0],
+                    phone: "+33 6 12 34 56 78",
+                    email: "jean.dupont@gmail.com",
+                    clinic_name: "Cabinet Dr Desouches",
+                    ipp: "DOC-89421",
+                    stay_number: "RDV-2026-0810",
+                    address: "24 rue de la République, 13001 Marseille, France",
+                    admission_datetime: `${new Date().toISOString().split('T')[0]}T14:30:00`
+                } : {
                     first_name: "Amanda",
                     last_name: "RIPERT",
                     birth_date: "1987-01-06",
                     operation: "CHANGEMENT PROTHESES MAMMAIRES",
                     surgeon_name: "Christophe DESOUCHES",
-                    stay_type: "Hospitalisation", // Since it is "1 nuit" on the screen
+                    stay_type: "Hospitalisation",
                     date: "2026-05-22",
                     phone: "+33 6 19 65 19 61",
                     email: "amanda.ripert@hotmail.fr",
@@ -238,7 +272,22 @@ Les clés doivent être exactement :
             alert(`Erreur de scan : ${err.message}. Passage en mode simulation.`);
             
             // Fail-safe mock fallback
-            applyExtractedData({
+            applyExtractedData(scannerCategory === 'Doctolib' ? {
+                first_name: "Jean",
+                last_name: "DUPONT",
+                birth_date: "1985-04-12",
+                operation: "Consultation Chirurgie Plastique",
+                surgeon_name: "Christophe DESOUCHES",
+                stay_type: "Consultation",
+                date: new Date().toISOString().split('T')[0],
+                phone: "+33 6 12 34 56 78",
+                email: "jean.dupont@gmail.com",
+                clinic_name: "Cabinet Dr Desouches",
+                ipp: "DOC-89421",
+                stay_number: "RDV-2026-0810",
+                address: "24 rue de la République, 13001 Marseille, France",
+                admission_datetime: `${new Date().toISOString().split('T')[0]}T14:30:00`
+            } : {
                 first_name: "Amanda",
                 last_name: "RIPERT",
                 birth_date: "1987-01-06",
@@ -394,11 +443,21 @@ Les clés doivent être exactement :
                 <div style={{ padding: 'var(--spacing-5)', borderBottom: '1px solid rgba(0,0,0,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)' }}>
                         <div style={{ width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <img src={hmIcon} alt="HM Icon" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
+                            {scannerCategory === 'HM' ? (
+                                <img src={hmIcon} alt="HM Icon" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
+                            ) : (
+                                <img src={doctolibLogo} alt="Doctolib" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
+                            )}
                         </div>
                         <div>
-                            <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '700' }}>Scanner Patient Hopital Manager</h3>
-                            <span style={{ fontSize: '11px', color: 'var(--color-gray-400)' }}>Intégration intelligente DPI par screenshot</span>
+                            <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '700' }}>
+                                {scannerCategory === 'HM' ? 'Scanner Patient Hopital Manager' : 'Scanner Patient Doctolib'}
+                            </h3>
+                            <span style={{ fontSize: '11px', color: 'var(--color-gray-400)' }}>
+                                {scannerCategory === 'HM' 
+                                    ? 'Intégration intelligente DPI par screenshot' 
+                                    : 'Importation intelligente par screenshot du planning Doctolib'}
+                            </span>
                         </div>
                     </div>
                     
@@ -414,6 +473,75 @@ Les clés doivent être exactement :
                             <X size={24} />
                         </button>
                     </div>
+                </div>
+
+                {/* Category Switcher Tabs */}
+                <div style={{
+                    display: 'flex',
+                    gap: '12px',
+                    padding: '12px 20px',
+                    background: '#F8FAFC',
+                    borderBottom: '1px solid #E2E8F0'
+                }}>
+                    <button
+                        type="button"
+                        onClick={() => {
+                            setScannerCategory('HM');
+                            setPreviewUrl(null);
+                            setSelectedFile(null);
+                            setExtractedData(null);
+                        }}
+                        style={{
+                            flex: 1,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '10px',
+                            padding: '10px 16px',
+                            borderRadius: '12px',
+                            border: scannerCategory === 'HM' ? '2px solid #0F70B7' : '1px solid #E2E8F0',
+                            background: scannerCategory === 'HM' ? '#EFF6FF' : 'white',
+                            color: scannerCategory === 'HM' ? '#0F70B7' : '#64748B',
+                            fontWeight: '700',
+                            fontSize: '13px',
+                            cursor: 'pointer',
+                            boxShadow: scannerCategory === 'HM' ? '0 2px 6px rgba(15, 112, 183, 0.12)' : 'none',
+                            transition: 'all 0.2s'
+                        }}
+                    >
+                        <img src={hmIcon} alt="Hopital Manager" style={{ width: '20px', height: '20px', objectFit: 'contain' }} />
+                        <span>Hopital Manager (DPI)</span>
+                    </button>
+
+                    <button
+                        type="button"
+                        onClick={() => {
+                            setScannerCategory('Doctolib');
+                            setPreviewUrl(null);
+                            setSelectedFile(null);
+                            setExtractedData(null);
+                        }}
+                        style={{
+                            flex: 1,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '10px',
+                            padding: '10px 16px',
+                            borderRadius: '12px',
+                            border: scannerCategory === 'Doctolib' ? '2px solid #0098E4' : '1px solid #E2E8F0',
+                            background: scannerCategory === 'Doctolib' ? '#F0F9FF' : 'white',
+                            color: scannerCategory === 'Doctolib' ? '#0077B6' : '#64748B',
+                            fontWeight: '700',
+                            fontSize: '13px',
+                            cursor: 'pointer',
+                            boxShadow: scannerCategory === 'Doctolib' ? '0 2px 6px rgba(0, 152, 228, 0.12)' : 'none',
+                            transition: 'all 0.2s'
+                        }}
+                    >
+                        <img src={doctolibLogo} alt="Doctolib" style={{ width: '20px', height: '20px', objectFit: 'contain' }} />
+                        <span>Doctolib</span>
+                    </button>
                 </div>
 
                 {/* Settings Panel */}
@@ -432,12 +560,12 @@ Les clés doivent être exactement :
                                     onChange={e => setApiKey(e.target.value)}
                                     style={{ flex: 1, height: '38px', fontSize: '13px' }}
                                 />
-                                <button type="submit" className="btn btn-primary" style={{ height: '38px', padding: '0 16px', background: '#0F70B7', fontSize: '13px' }}>
+                                <button type="submit" className="btn btn-primary" style={{ height: '38px', padding: '0 16px', background: scannerCategory === 'Doctolib' ? '#0098E4' : '#0F70B7', fontSize: '13px' }}>
                                     Enregistrer
                                 </button>
                             </div>
                             <p style={{ fontSize: '11px', color: 'var(--color-gray-400)', margin: 0 }}>
-                                Sans clé API, le scanner exécutera une simulation intelligente sur les captures de démonstration (ex: Amanda Ripert).
+                                Sans clé API, le scanner exécutera une simulation intelligente sur les captures de démonstration ({scannerCategory === 'HM' ? 'ex: Amanda Ripert' : 'ex: Jean Dupont'}).
                             </p>
                         </form>
                     </div>
@@ -464,8 +592,12 @@ Les clés doivent être exactement :
                                 onDragLeave={handleDragLeave}
                                 onDrop={handleDrop}
                                 style={{
-                                    border: isDragging ? '2px dashed #0F70B7' : '2px dashed var(--color-gray-200)',
-                                    background: isDragging ? 'rgba(15, 112, 183, 0.05)' : 'var(--color-gray-50)',
+                                    border: isDragging 
+                                        ? (scannerCategory === 'Doctolib' ? '2px dashed #0098E4' : '2px dashed #0F70B7') 
+                                        : '2px dashed var(--color-gray-200)',
+                                    background: isDragging 
+                                        ? (scannerCategory === 'Doctolib' ? 'rgba(0, 152, 228, 0.05)' : 'rgba(15, 112, 183, 0.05)') 
+                                        : 'var(--color-gray-50)',
                                     borderRadius: 'var(--radius-xl)',
                                     padding: 'var(--spacing-8) var(--spacing-4)',
                                     textAlign: 'center',
@@ -490,16 +622,20 @@ Les clés doivent être exactement :
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                     boxShadow: 'var(--shadow-sm)',
-                                    color: 'var(--color-gray-400)'
+                                    color: scannerCategory === 'Doctolib' ? '#0098E4' : '#0F70B7'
                                 }}>
-                                    <UploadCloud size={28} />
+                                    {scannerCategory === 'Doctolib' ? (
+                                        <img src={doctolibLogo} alt="Doctolib" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
+                                    ) : (
+                                        <UploadCloud size={28} />
+                                    )}
                                 </div>
                                 <div>
                                     <p style={{ margin: 0, fontWeight: '700', fontSize: '14px', color: 'var(--color-gray-800)' }}>
-                                        Sélectionnez une capture d'écran
+                                        {scannerCategory === 'Doctolib' ? 'Sélectionnez une capture Doctolib' : 'Sélectionnez une capture Hopital Manager'}
                                     </p>
                                     <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: 'var(--color-gray-400)' }}>
-                                        Glissez-déposez l'image ou parcourez vos fichiers
+                                        {scannerCategory === 'Doctolib' ? 'Glissez-déposez le screenshot de la fiche ou du RDV Doctolib' : 'Glissez-déposez l\'image du DPI Hopital Manager ou parcourez vos fichiers'}
                                     </p>
                                 </div>
                                 <span style={{ 
@@ -549,8 +685,8 @@ Les clés doivent être exactement :
                                             left: 0,
                                             right: 0,
                                             height: '3px',
-                                            background: 'linear-gradient(to bottom, transparent, #10B981, transparent)',
-                                            boxShadow: '0 0 12px #10B981, 0 0 4px #10B981',
+                                            background: scannerCategory === 'Doctolib' ? 'linear-gradient(to bottom, transparent, #0098E4, transparent)' : 'linear-gradient(to bottom, transparent, #10B981, transparent)',
+                                            boxShadow: scannerCategory === 'Doctolib' ? '0 0 12px #0098E4, 0 0 4px #0098E4' : '0 0 12px #10B981, 0 0 4px #10B981',
                                             animation: 'scan-motion 2s linear infinite',
                                             zIndex: 5
                                         }} />
@@ -572,7 +708,7 @@ Les clés doivent être exactement :
                                         }}>
                                             <Loader2 size={36} className="spinner" style={{ animation: 'spin 1.5s linear infinite' }} />
                                             <span style={{ fontSize: '13px', fontWeight: '700', letterSpacing: '1px', textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>
-                                                ANALYSE EN COURS...
+                                                ANALYSE EN COURS ({scannerCategory.toUpperCase()})...
                                             </span>
                                         </div>
                                     )}
@@ -593,11 +729,23 @@ Les clés doivent être exactement :
                                     </button>
                                     <button 
                                         className="btn btn-primary btn-scanner-animate" 
-                                        style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }} 
+                                        style={{ 
+                                            flex: 1, 
+                                            display: 'flex', 
+                                            alignItems: 'center', 
+                                            justifyContent: 'center', 
+                                            gap: '8px',
+                                            background: scannerCategory === 'Doctolib' ? '#0098E4' : '#0F70B7'
+                                        }} 
                                         onClick={triggerScan}
                                         disabled={isScanning}
                                     >
-                                        <img src={hmIcon} alt="HM Icon" style={{ width: '16px', height: '16px', objectFit: 'contain', filter: 'brightness(0) invert(1)' }} /> Analyser
+                                        {scannerCategory === 'Doctolib' ? (
+                                            <img src={doctolibLogo} alt="Doctolib" style={{ width: '18px', height: '18px', objectFit: 'contain' }} />
+                                        ) : (
+                                            <img src={hmIcon} alt="HM Icon" style={{ width: '16px', height: '16px', objectFit: 'contain', filter: 'brightness(0) invert(1)' }} />
+                                        )}
+                                        <span>Analyser</span>
                                     </button>
                                 </div>
                             </div>
@@ -607,16 +755,24 @@ Les clés doivent être exactement :
                         {!apiKey && !import.meta.env.VITE_GEMINI_API_KEY && (
                             <div style={{ 
                                 padding: '12px', 
-                                background: 'rgba(235, 163, 0, 0.05)', 
-                                border: '1px solid rgba(235, 163, 0, 0.2)', 
+                                background: scannerCategory === 'Doctolib' ? 'rgba(0, 152, 228, 0.05)' : 'rgba(235, 163, 0, 0.05)', 
+                                border: scannerCategory === 'Doctolib' ? '1px solid rgba(0, 152, 228, 0.2)' : '1px solid rgba(235, 163, 0, 0.2)', 
                                 borderRadius: 'var(--radius-lg)', 
                                 display: 'flex', 
                                 gap: '8px',
                                 alignItems: 'flex-start'
                             }}>
-                                <Info size={16} style={{ color: '#EBA300', flexShrink: 0, marginTop: '2px' }} />
-                                <span style={{ fontSize: '11px', color: '#996B00', lineHeight: '1.4' }}>
-                                    <strong>Mode Démo Actif :</strong> L'analyse chargera automatiquement les données d'<strong>Amanda Ripert</strong> pour tester l'intégration des nouveaux champs dans SurgiLink.
+                                {scannerCategory === 'Doctolib' ? (
+                                    <img src={doctolibLogo} alt="Doctolib" style={{ width: '18px', height: '18px', objectFit: 'contain', flexShrink: 0, marginTop: '2px' }} />
+                                ) : (
+                                    <Info size={16} style={{ color: '#EBA300', flexShrink: 0, marginTop: '2px' }} />
+                                )}
+                                <span style={{ fontSize: '11px', color: scannerCategory === 'Doctolib' ? '#0077B6' : '#996B00', lineHeight: '1.4' }}>
+                                    {scannerCategory === 'Doctolib' ? (
+                                        <><strong>Mode Démo Doctolib Actif :</strong> L'analyse chargera automatiquement les données du rendez-vous de <strong>Jean DUPONT</strong> pour tester l'intégration.</>
+                                    ) : (
+                                        <><strong>Mode Démo Hopital Manager Actif :</strong> L'analyse chargera automatiquement les données d'<strong>Amanda RIPERT</strong> pour tester l'intégration.</>
+                                    )}
                                 </span>
                             </div>
                         )}

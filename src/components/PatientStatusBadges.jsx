@@ -14,8 +14,8 @@ import { supabase } from '../lib/supabase';
  * PatientStatusBadges Component
  * Renders feedback pastilles based on pathway responses
  */
-export default function PatientStatusBadges({ responses = [], daysUntil = '', patientStatus = '' }) {
-        const [rules, setRules] = useState({
+export default function PatientStatusBadges({ responses = [], daysUntil = '', patientStatus = '', intakeData = null, hasCni = undefined }) {
+    const [rules, setRules] = useState({
         j7_incomplete_days: 7,
         j1_incomplete_days: 1,
         no_portal_access_hours: 24
@@ -45,9 +45,37 @@ export default function PatientStatusBadges({ responses = [], daysUntil = '', pa
         loadRules();
     }, []);
 
-    if (!responses || !Array.isArray(responses)) return null;
-
     const badges = [];
+
+    // Check CNI Status
+    const isCniProvided = hasCni !== undefined 
+        ? hasCni 
+        : (intakeData ? Boolean(intakeData.id_card_recto || intakeData.cni_in_person) : false);
+
+    if (!isCniProvided) {
+        badges.push({ label: 'CNI à renseigner', color: 'danger' });
+    }
+
+    if (!responses || !Array.isArray(responses)) {
+        if (badges.length === 0) return null;
+        return (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-1)' }}>
+                {badges.map((badge, idx) => (
+                    <span
+                        key={idx}
+                        className={`badge badge-${badge.color}`}
+                        style={{
+                            fontSize: '10px',
+                            padding: '2px 8px',
+                            whiteSpace: 'nowrap'
+                        }}
+                    >
+                        {badge.label}
+                    </span>
+                ))}
+            </div>
+        );
+    }
 
     // Create a map for quick lookup
     const responseMap = {};

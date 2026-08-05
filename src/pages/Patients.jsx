@@ -34,6 +34,7 @@ export default function Patients() {
     const [allPatients, setAllPatients] = useState([]);
     const [patients, setPatients] = useState([]);
     const [responses, setResponses] = useState({});
+    const [intakeResponses, setIntakeResponses] = useState({});
     const [isLoading, setIsLoading] = useState(true);
     const [selectedPatientId, setSelectedPatientId] = useState(null);
     const [nextReminders, setNextReminders] = useState({});
@@ -124,17 +125,23 @@ export default function Patients() {
             setAllPatients(formattedPatients);
 
             if (formattedPatients.length > 0) {
-                const { data: respData } = await supabase
-                    .from('pathway_responses')
-                    .select('*')
-                    .in('patient_id', formattedPatients.map(p => p.id));
+                const [respDataRes, intakeDataRes] = await Promise.all([
+                    supabase.from('pathway_responses').select('*').in('patient_id', formattedPatients.map(p => p.id)),
+                    supabase.from('intake_form_responses').select('patient_id, id_card_recto, cni_in_person').in('patient_id', formattedPatients.map(p => p.id))
+                ]);
 
                 const respMap = {};
-                (respData || []).forEach(r => {
+                (respDataRes.data || []).forEach(r => {
                     if (!respMap[r.patient_id]) respMap[r.patient_id] = [];
                     respMap[r.patient_id].push(r);
                 });
                 setResponses(respMap);
+
+                const intakeMap = {};
+                (intakeDataRes.data || []).forEach(r => {
+                    intakeMap[r.patient_id] = r;
+                });
+                setIntakeResponses(intakeMap);
 
                 // Fetch next pending reminders for each patient
                 const { data: remindersData, error: remindersError } = await supabase
@@ -570,6 +577,7 @@ export default function Patients() {
                                                                         responses={responses[patient.id] || []}
                                                                         daysUntil={patient.daysUntil}
                                                                         patientStatus={patient.status}
+                                                                        intakeData={intakeResponses[patient.id]}
                                                                     />
                                                                 </div>
                                                             )}

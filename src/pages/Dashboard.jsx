@@ -57,6 +57,7 @@ export default function Dashboard() {
     const [allPatients, setAllPatients] = useState([]);
     const [patients, setPatients] = useState([]);
     const [responses, setResponses] = useState({});
+    const [intakeResponses, setIntakeResponses] = useState({});
     const [financialImpactUnit, setFinancialImpactUnit] = useState(2450);
     const [isLoading, setIsLoading] = useState(true);
     const [selectedPatientId, setSelectedPatientId] = useState(null);
@@ -233,19 +234,25 @@ export default function Dashboard() {
                     });
                 }
 
-                // Fetch responses
-                const { data: respData } = await supabase
-                    .from('pathway_responses')
-                    .select('*')
-                    .in('patient_id', formattedPatients.map(p => p.id));
+                // Fetch responses & intake form responses
+                const [respDataRes, intakeDataRes] = await Promise.all([
+                    supabase.from('pathway_responses').select('*').in('patient_id', formattedPatients.map(p => p.id)),
+                    supabase.from('intake_form_responses').select('patient_id, id_card_recto, cni_in_person').in('patient_id', formattedPatients.map(p => p.id))
+                ]);
 
                 if (isMounted) {
                     const respMap = {};
-                    (respData || []).forEach(r => {
+                    (respDataRes.data || []).forEach(r => {
                         if (!respMap[r.patient_id]) respMap[r.patient_id] = [];
                         respMap[r.patient_id].push(r);
                     });
                     setResponses(respMap);
+
+                    const intakeMap = {};
+                    (intakeDataRes.data || []).forEach(r => {
+                        intakeMap[r.patient_id] = r;
+                    });
+                    setIntakeResponses(intakeMap);
                 }
 
                 // 4. Fetch financial impact unit
@@ -363,8 +370,8 @@ export default function Dashboard() {
                                     fontWeight: '700'
                                 }}
                             >
-                                <img src={hmIcon} alt="HM Icon" style={{ width: '18px', height: '18px', objectFit: 'contain' }} />
-                                <span>Scanner patient(e)</span>
+                                <Sparkles size={18} />
+                                <span>Scanner patient</span>
                             </button>
                              <div className="hide-mobile" style={{ display: 'flex', flexDirection: 'row', gap: '8px', alignItems: 'center' }}>
                                 <button
@@ -456,8 +463,8 @@ export default function Dashboard() {
                                         boxShadow: 'var(--shadow-sm)'
                                     }}
                                 >
-                                    <img src={hmIcon} alt="HM Icon" style={{ width: '16px', height: '16px', objectFit: 'contain' }} />
-                                    <span>{t('Scanner HM')}</span>
+                                    <Sparkles size={16} />
+                                    <span>Scanner patient</span>
                                 </button>
                             </div>
 
@@ -831,6 +838,7 @@ export default function Dashboard() {
                                                                     responses={responses[patient.id] || []}
                                                                     daysUntil={patient.daysUntil}
                                                                     patientStatus={patient.status}
+                                                                    intakeData={intakeResponses[patient.id]}
                                                                 />
                                                             </div>
                                                         )}
@@ -854,6 +862,7 @@ export default function Dashboard() {
                                                         responses={responses[patient.id] || []}
                                                         daysUntil={patient.daysUntil}
                                                         patientStatus={patient.status}
+                                                        intakeData={intakeResponses[patient.id]}
                                                     />
                                                 </div>
                                             </td>

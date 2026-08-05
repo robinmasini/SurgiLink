@@ -78,17 +78,33 @@ export default function PatientDetailPanel({ patient, responses = [], onClose })
     const [isLoading, setIsLoading] = useState(false);
     const [pendingReminders, setPendingReminders] = useState([]);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [intakeData, setIntakeData] = useState(null);
 
     useEffect(() => {
         if (patient) {
             setToken(null);
             setSmsLogs([]);
             setPendingReminders([]);
+            setIntakeData(null);
             loadSmsLogs();
             loadPendingReminders();
             loadPatientToken();
+            loadIntakeData();
         }
     }, [patient]);
+
+    const loadIntakeData = async () => {
+        try {
+            const { data } = await supabase
+                .from('intake_form_responses')
+                .select('*')
+                .eq('patient_id', patient.id)
+                .maybeSingle();
+            setIntakeData(data || null);
+        } catch (e) {
+            console.warn('Error loading intake data in panel:', e);
+        }
+    };
 
     const loadPatientToken = async () => {
         try {
@@ -315,7 +331,7 @@ export default function PatientDetailPanel({ patient, responses = [], onClose })
                 {/* Stats Summary */}
                 <div style={{ marginBottom: 'var(--spacing-6)' }}>
                     <div style={STYLES.sectionTitle}>Retours Patient</div>
-                    <PatientStatusBadges responses={responses} daysUntil={patient.daysUntil} patientStatus={patient.status} />
+                    <PatientStatusBadges responses={responses} daysUntil={patient.daysUntil} patientStatus={patient.status} intakeData={intakeData} />
                 </div>
 
                 {/* Quick Info Grid */}
