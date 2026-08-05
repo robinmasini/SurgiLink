@@ -94,7 +94,7 @@ export default function PatientStatusBadges({ responses = [], daysUntil = '', pa
 
     // PRE-OP LOGIC (J-7 to J-0)
     const days = parseInt(daysUntil.replace('J', '')) || 0;
-    const isPreOp = days < 0;
+    const isPreOp = days <= 0;
     const isPostOp = days > 0;
 
     if (!hasAnyResponse && isPreOp && days >= -10) {

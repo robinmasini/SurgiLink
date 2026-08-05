@@ -75,15 +75,11 @@ export default function OnboardingFlow() {
             // Set local storage as fallback
             localStorage.setItem(`onboarding_completed_${patient.id}`, 'true');
 
-            // Update patient to mark onboarding as completed in DB
+            // Update patient to mark last_consulted_at in DB
             const { error: updateError } = await supabase
                 .from('patients')
-                .update({ onboarding_completed_at: new Date().toISOString() })
+                .update({ last_consulted_at: new Date().toISOString() })
                 .eq('id', patient.id);
-
-            if (updateError) {
-                console.warn('Could not update onboarding status (column may not exist yet):', updateError);
-            }
 
             console.log('-> Onboarding complete, navigating to Portal');
             navigate(`/patient-portal/${token}`);

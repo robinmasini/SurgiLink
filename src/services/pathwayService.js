@@ -239,9 +239,10 @@ export async function calculateGlobalProgress(patientId) {
         // --- END DYNAMIC STATUS LOGIC ---
 
         // 5. Update the patients table
+        const formattedDaysUntil = daysUntilSurgery === 999 ? '' : (daysUntilSurgery >= 0 ? `J-${daysUntilSurgery}` : `J+${Math.abs(daysUntilSurgery)}`);
         const { error: updateError } = await supabase
             .from('patients')
-            .update({ progress, status })
+            .update({ progress, status, days_until: formattedDaysUntil })
             .eq('id', patientId);
 
         if (updateError) throw updateError;

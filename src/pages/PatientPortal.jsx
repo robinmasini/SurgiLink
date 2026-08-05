@@ -473,8 +473,17 @@ export default function PatientPortal({ patient: initialPatient }) {
 
             // Check onboarding completion before showing portal
             const storageKey = `onboarding_completed_${patientData.id}`;
-            if (!patientData.onboarding_completed_at) {
-                localStorage.removeItem(storageKey);
+            const localOnboarded = localStorage.getItem(storageKey) === 'true';
+            const consultedOnboarded = !!patientData.last_consulted_at;
+
+            const { data: userResponses } = await supabase
+                .from('pathway_responses')
+                .select('id')
+                .eq('patient_id', patientData.id)
+                .limit(1);
+
+            const hasResponsesOnboarded = (userResponses || []).length > 0;
+            if (!localOnboarded && !consultedOnboarded && !hasResponsesOnboarded) {
                 navigate(`/patient-portal/${token}/onboarding`);
                 return;
             }

@@ -51,11 +51,21 @@ export default function PatientTokenRoute({ children }) {
                 // 3. Onboarding check
                 const storageKey = `onboarding_completed_${patientData.id}`;
                 const localOnboarded = localStorage.getItem(storageKey) === 'true';
-                const dbOnboarded = !!patientData.onboarding_completed_at;
+                const consultedOnboarded = !!patientData.last_consulted_at;
+
+                // Check if patient has any responses in pathway_responses table
+                const { data: userResponses } = await supabase
+                    .from('pathway_responses')
+                    .select('id')
+                    .eq('patient_id', patientData.id)
+                    .limit(1);
+
+                const hasResponsesOnboarded = (userResponses || []).length > 0;
+                const isOnboarded = localOnboarded || consultedOnboarded || hasResponsesOnboarded;
                 const isAlreadyOnboarding = location.pathname.includes('/onboarding');
-                
+
                 // Trigger onboarding for any portal route if not completed
-                if (!dbOnboarded && !localOnboarded && !isAlreadyOnboarding) {
+                if (!isOnboarded && !isAlreadyOnboarding) {
                     console.log('[TokenRoute] -> Setting needsOnboarding=true');
                     setNeedsOnboarding(true);
                 }
