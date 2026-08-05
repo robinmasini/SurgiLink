@@ -526,25 +526,25 @@ export default function Patients() {
                                                                       </div>
                                                                   </>
                                                               )}
-                                                             {patient.onboarding_completed_at && patient.status !== 'intake' && (
-                                                                 <div style={{
-                                                                     display: 'inline-flex',
-                                                                     alignItems: 'center',
-                                                                     gap: '2px',
-                                                                     color: 'var(--color-success-600)',
-                                                                     fontWeight: '700',
-                                                                     fontSize: '9px',
-                                                                     background: 'var(--color-success-50)',
-                                                                     padding: '2px 6px',
-                                                                     borderRadius: '4px',
-                                                                     border: '1px solid var(--color-success-100)',
-                                                                     lineHeight: '1',
-                                                                     whiteSpace: 'nowrap'
-                                                                 }}>
-                                                                     <CheckCircle2 size={10} />
-                                                                     {t('Tuto OK')}
-                                                                 </div>
-                                                             )}
+                                                             {(patient.last_consulted_at || (responses[patient.id] && responses[patient.id].length > 0)) && patient.status !== 'intake' && (
+                                                                  <div style={{
+                                                                      display: 'inline-flex',
+                                                                      alignItems: 'center',
+                                                                      gap: '2px',
+                                                                      color: 'var(--color-success-600)',
+                                                                      fontWeight: '700',
+                                                                      fontSize: '9px',
+                                                                      background: 'var(--color-success-50)',
+                                                                      padding: '2px 6px',
+                                                                      borderRadius: '4px',
+                                                                      border: '1px solid var(--color-success-100)',
+                                                                      lineHeight: '1',
+                                                                      whiteSpace: 'nowrap'
+                                                                  }}>
+                                                                      <CheckCircle2 size={10} />
+                                                                      {t('Tuto OK')}
+                                                                  </div>
+                                                              )}
                                                              {!patient.date && patient.status !== 'intake' && (
                                                                  <div style={{
                                                                      display: 'inline-flex',
