@@ -70,6 +70,7 @@ export default function AddPatientModal({ isOpen, onClose, onSuccess, prefilledP
     const [isSearching, setIsSearching] = useState(false);
     const [showResults, setShowResults] = useState(false);
     const [isExistingPatient, setIsExistingPatient] = useState(false);
+    const [existingPatientId, setExistingPatientId] = useState(null);
 
     useEffect(() => {
         const loadProfile = async () => {
@@ -421,6 +422,7 @@ Les clés doivent être exactement :
         }));
         setSearchQuery('');
         setShowResults(false);
+        setExistingPatientId(patient.id);
         setIsExistingPatient(true);
         setActiveTab('stay');
     };
@@ -442,11 +444,11 @@ Les clés doivent être exactement :
 
             // Check if patient already exists (to update instead of creating duplicate)
             let existingPatient = null;
-            if (isExistingPatient && selectedPatientId) {
+            if (isExistingPatient && existingPatientId) {
                 const { data: byId } = await supabase
                     .from('patients')
                     .select('*')
-                    .eq('id', selectedPatientId)
+                    .eq('id', existingPatientId)
                     .maybeSingle();
                 if (byId) existingPatient = byId;
             }
