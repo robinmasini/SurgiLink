@@ -485,7 +485,7 @@ export default function PatientPortal({ patient: initialPatient }) {
             // Check onboarding completion before showing portal
             const storageKey = `onboarding_completed_${patientData.id}`;
             const localOnboarded = localStorage.getItem(storageKey) === 'true';
-            const consultedOnboarded = !!patientData.last_consulted_at;
+            const consultedOnboarded = !!(patientData.last_consulted_at || patientData.onboarding_completed_at);
 
             const { data: userResponses } = await supabase
                 .from('pathway_responses')

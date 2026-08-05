@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowRight, MessageSquare, CheckCircle2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { validateToken } from '../services/tokenService';
-import { saveResponse, markScreenCompleted } from '../services/pathwayService';
+import { saveResponse, markScreenCompleted, calculateGlobalProgress } from '../services/pathwayService';
 import logoSurgilink from '../assets/logo_surgilink_premium_green.png';
 import logoMA from '../assets/logo-medical-alliance.png';
 import medecinImg from '../assets/medecin.png';
@@ -49,7 +49,7 @@ export default function OnboardingFlow() {
                 // If onboarding is already completed (DB), skip to portal
                 const storageKey = `onboarding_completed_${validation.patientId}`;
                 
-                if (patientData.onboarding_completed_at) {
+                if (patientData.onboarding_completed_at || patientData.last_consulted_at) {
                     console.log('-> Onboarding already done (DB), skipping');
                     navigate(`/patient-portal/${token}`);
                     return;
@@ -75,11 +75,21 @@ export default function OnboardingFlow() {
             // Set local storage as fallback
             localStorage.setItem(`onboarding_completed_${patient.id}`, 'true');
 
-            // Update patient to mark last_consulted_at in DB
+            const nowIso = new Date().toISOString();
+
+            // Update patient to mark last_consulted_at AND onboarding_completed_at in DB
             const { error: updateError } = await supabase
                 .from('patients')
-                .update({ last_consulted_at: new Date().toISOString() })
+                .update({ 
+                    last_consulted_at: nowIso,
+                    onboarding_completed_at: nowIso
+                })
                 .eq('id', patient.id);
+
+            if (updateError) console.error('Error updating patient onboarding:', updateError);
+
+            // Trigger progress calculation
+            await calculateGlobalProgress(patient.id);
 
             console.log('-> Onboarding complete, navigating to Portal');
             navigate(`/patient-portal/${token}`);

@@ -51,7 +51,7 @@ export default function PatientTokenRoute({ children }) {
                 // 3. Onboarding check
                 const storageKey = `onboarding_completed_${patientData.id}`;
                 const localOnboarded = localStorage.getItem(storageKey) === 'true';
-                const consultedOnboarded = !!patientData.last_consulted_at;
+                const consultedOnboarded = !!(patientData.last_consulted_at || patientData.onboarding_completed_at);
 
                 // Check if patient has any responses in pathway_responses table
                 const { data: userResponses } = await supabase
