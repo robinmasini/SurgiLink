@@ -106,7 +106,13 @@ export async function sendSMS(templateKey, to, variables, metadata = {}, supabas
                 isSuccess = true;
                 messageId = msgResponse['message-id'];
             } else {
-                errorMessage = msgResponse['error-text'];
+                const status = msgResponse.status;
+                const errTxt = msgResponse['error-text'] || '';
+                if (status === '9' || errTxt.toLowerCase().includes('quota') || errTxt.toLowerCase().includes('balance') || errTxt.toLowerCase().includes('funds')) {
+                    errorMessage = 'Solde Vonage insuffisant. Veuillez recharger votre compte Vonage (dashboard.nexmo.com).';
+                } else {
+                    errorMessage = `${errTxt} (Code ${status})`;
+                }
             }
         }
 
