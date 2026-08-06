@@ -885,21 +885,21 @@ export default function PatientPortal({ patient: initialPatient }) {
                         }}
                         onClick={() => {
                             if (isUpToDate) return;
-                            const today = new Date();
-                            const surgeryDate = patient.date ? new Date(patient.date) : null;
-                            const diffDays = surgeryDate ? Math.ceil((surgeryDate - today) / (1000 * 60 * 60 * 24)) : 999;
-                            
-                            let nextStep = 'bienvenue';
-                            
-                            // Smart Routing: Find the first incomplete milestone that is due
-                            if (diffDays <= 18 && !isMilestoneComplete('Bienvenue')) nextStep = 'bienvenue';
-                            else if (diffDays <= 7 && !isMilestoneComplete('J7')) nextStep = 'j7';
-                            else if (diffDays <= 1 && !isMilestoneComplete('J1_PreOp')) nextStep = 'j1-preop';
-                            else if (diffDays <= -1 && !isMilestoneComplete('J1')) nextStep = 'j1';
-                            else if (diffDays <= -4 && !isMilestoneComplete('J4_Satisfaction')) nextStep = 'j4';
-                            else if (diffDays <= -4 && !isMilestoneComplete('ESATIS')) nextStep = 'e-satis';
-                            
-                            navigate(`/patient-portal/${token}/${nextStep}`);
+
+                            // Smart Routing: Find the first incomplete milestone
+                            const milestones = [
+                                { id: 'Bienvenue', route: 'bienvenue' },
+                                { id: 'J7', route: 'j7' },
+                                { id: 'J1_PreOp', route: 'j1-preop' },
+                                { id: 'J1', route: 'j1' },
+                                { id: 'J4_Satisfaction', route: 'j4' },
+                                { id: 'ESATIS', route: 'e-satis' }
+                            ];
+
+                            const nextIncomplete = milestones.find(m => !isMilestoneComplete(m.id));
+                            const targetRoute = nextIncomplete ? nextIncomplete.route : 'success';
+
+                            navigate(`/patient-portal/${token}/${targetRoute}`);
                         }}
                         onMouseOver={(e) => { if (!isUpToDate) e.currentTarget.style.transform = 'translateY(-2px)'; }}
                         onMouseOut={(e) => { if (!isUpToDate) e.currentTarget.style.transform = 'translateY(0)'; }}
