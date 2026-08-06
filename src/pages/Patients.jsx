@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import wppPhone from '../assets/wpp-phone.png';
 import { useNavigate } from 'react-router-dom';
 import doctolibLogo from '../assets/doctolib.png';
