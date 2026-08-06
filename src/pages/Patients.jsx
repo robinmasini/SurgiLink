@@ -618,10 +618,11 @@ export default function Patients() {
                                                                         <span style={{ padding: '2px 8px', borderRadius: '4px', background: '#FEF3C7', color: '#D97706', border: '1px solid #FDE68A', fontWeight: '700', fontSize: '11px' }}>Date à renseigner</span>
                                                                     )}
                                                                     <PatientStatusBadges
-                                                                        responses={responses[patient.id] || []}
-                                                                        daysUntil={patient.daysUntil}
+                                                                        responses={responses[patient.id] || responses[String(patient.id)] || responses[(patient.name || '').trim().toLowerCase()] || []}
+                                                                        daysUntil={patient.date ? patient.daysUntil : ''}
+                                                                        hasDate={!!patient.date}
                                                                         patientStatus={patient.status}
-                                                                        intakeData={intakeResponses[patient.id]}
+                                                                        intakeData={intakeResponses[patient.id] || intakeResponses[String(patient.id)] || intakeResponses[(patient.name || '').trim().toLowerCase()]}
                                                                         lastConsultedAt={patient.last_consulted_at}
                                                                     />
                                                                 </div>
