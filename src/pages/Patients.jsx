@@ -171,8 +171,12 @@ export default function Patients() {
                 (respDataRes.data || []).forEach(r => {
                     const pName = idToName[r.patient_id];
                     const targetId = nameToPrimaryId[pName] || r.patient_id;
-                    if (!respMap[targetId]) respMap[targetId] = [];
-                    respMap[targetId].push(r);
+                    [targetId, String(targetId), pName].forEach(key => {
+                        if (key !== undefined && key !== null) {
+                            if (!respMap[key]) respMap[key] = [];
+                            respMap[key].push(r);
+                        }
+                    });
                 });
                 setResponses(respMap);
 
@@ -180,9 +184,13 @@ export default function Patients() {
                 (intakeDataRes.data || []).forEach(r => {
                     const pName = idToName[r.patient_id];
                     const targetId = nameToPrimaryId[pName] || r.patient_id;
-                    if (!intakeMap[targetId] || r.id_card_recto || r.cni_in_person) {
-                        intakeMap[targetId] = r;
-                    }
+                    [targetId, String(targetId), pName].forEach(key => {
+                        if (key !== undefined && key !== null) {
+                            if (!intakeMap[key] || r.id_card_recto || r.cni_in_person) {
+                                intakeMap[key] = r;
+                            }
+                        }
+                    });
                 });
                 setIntakeResponses(intakeMap);
 
