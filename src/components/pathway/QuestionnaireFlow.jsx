@@ -105,9 +105,8 @@ export default function QuestionnaireFlow({
     // Auto-advance logic for yes/no if desired, but user didn't explicitly ask for auto-advance, 
     // just one-by-one with attention. I'll add a "Next" button for clarity, but auto-submit on last.
 
-    const handleNext = () => {
-        if (direction === 'out' || saving || inputBlocked) return; // Prevent multiple clicks during transition
-        setInputBlocked(true);
+    const advanceToNext = () => {
+        if (direction === 'out' || saving) return;
         
         if (isLast) {
             onComplete();
@@ -118,6 +117,12 @@ export default function QuestionnaireFlow({
                 setDirection('in');
             }, 280);
         }
+    };
+
+    const handleNext = () => {
+        if (direction === 'out' || saving || inputBlocked) return;
+        setInputBlocked(true);
+        advanceToNext();
     };
 
     const handleBack = () => {
@@ -131,38 +136,26 @@ export default function QuestionnaireFlow({
         }, 280);
     };
 
-    // When answer changes, we might want a slight delay before auto-advancing if it's a simple choice
     const onQuestionAnswer = async (itemId, value) => {
-        if (saving) return;
+        if (saving || inputBlocked) return;
+        setInputBlocked(true);
+
         const isTextInput = currentItem && (currentItem.type === 'text' || currentItem.type === 'textarea');
 
-        if (!isTextInput) {
-            if (inputBlocked) return;
-            setInputBlocked(true);
+        try {
+            if (currentItem?.isCustom) {
+                await answerCustomQuestion(currentItem.originalId, value);
+            }
+            await onChange(itemId, value);
+        } catch (err) {
+            console.error('Error saving answer:', err);
         }
 
-        if (currentItem?.isCustom) {
-            // Save to custom_questions table
-            await answerCustomQuestion(currentItem.originalId, value);
-            // Update local responses state via parent
-            await onChange(itemId, value);
-        } else {
-            await onChange(itemId, value);
-        }
-
-        // Ludic: If it's a yes_no or select, we can auto-advance after 500ms
         if (currentItem?.type === 'yes_no' || currentItem?.type === 'select' || currentItem?.type === 'tri_state') {
             setTimeout(() => {
-                // Re-verify currentItem inside timeout to be safe
-                if (currentIndex < allItems.length - 1) {
-                    handleNext();
-                } else if (currentIndex === allItems.length - 1) {
-                    // It's the last one, auto-submit
-                    onComplete();
-                }
-            }, 350);
+                advanceToNext();
+            }, 300);
         } else if (!isTextInput) {
-            // For other inputs, unblock input immediately
             setInputBlocked(false);
         }
     };
