@@ -14,7 +14,7 @@ import { supabase } from '../lib/supabase';
  * PatientStatusBadges Component
  * Renders feedback pastilles based on pathway responses
  */
-export default function PatientStatusBadges({ responses = [], daysUntil = '', patientStatus = '', intakeData = null, hasCni = undefined, lastConsultedAt = null }) {
+export default function PatientStatusBadges({ responses = [], daysUntil = '', patientStatus = '', intakeData = null, hasCni = undefined, lastConsultedAt = null, hasDate = undefined }) {
     const [rules, setRules] = useState({
         j7_incomplete_days: 7,
         j1_incomplete_days: 1,
@@ -94,47 +94,52 @@ export default function PatientStatusBadges({ responses = [], daysUntil = '', pa
     const wasConsulted = !!lastConsultedAt || hasAnyResponse;
 
     // PRE-OP LOGIC (J-7 to J-0)
-    const days = parseInt((daysUntil || '').replace('J', '')) || 0;
-    const isPreOp = days <= 0;
-    const isPostOp = days > 0;
+    // Only run time-based overdue checks if a valid surgery date is defined!
+    const isDateSet = hasDate !== undefined ? Boolean(hasDate) : (daysUntil !== '' && daysUntil !== undefined && daysUntil !== null);
 
-    if (!wasConsulted && isPreOp && days >= -10) {
-        badges.push({ label: 'Portail non consulté', color: 'gray' });
-    }
+    if (isDateSet) {
+        const days = parseInt((daysUntil || '').replace('J', '')) || 0;
+        const isPreOp = days <= 0;
+        const isPostOp = days > 0;
 
-    if (isPreOp) {
-        // J-7 checks
-        if (!isJ7Complete && days >= -rules.j7_incomplete_days) {
-            badges.push({ label: `Questionnaire J-${rules.j7_incomplete_days} non rempli`, color: 'orange' });
+        if (!wasConsulted && isPreOp && days >= -10) {
+            badges.push({ label: 'Portail non consulté', color: 'gray' });
         }
 
-        if (responseMap['Bienvenue:blood_work'] === false) {
-            badges.push({ label: 'Bilan sanguin manquant', color: 'danger' });
-        }
+        if (isPreOp) {
+            // J-7 checks
+            if (!isJ7Complete && days >= -rules.j7_incomplete_days) {
+                badges.push({ label: `Questionnaire J-${rules.j7_incomplete_days} non rempli`, color: 'orange' });
+            }
 
-        if (responseMap['J7:anesthesia_consultation'] === false) {
-            badges.push({ label: 'Anesthésie non confirmée', color: 'orange' });
-        }
+            if (responseMap['Bienvenue:blood_work'] === false) {
+                badges.push({ label: 'Bilan sanguin manquant', color: 'danger' });
+            }
 
-        // J-1 checks
-        if (!isJ1PreOpComplete && days >= -rules.j1_incomplete_days) {
-            badges.push({ label: `Questionnaire J-${rules.j1_incomplete_days} non rempli`, color: 'danger' });
-        }
+            if (responseMap['J7:anesthesia_consultation'] === false) {
+                badges.push({ label: 'Anesthésie non confirmée', color: 'orange' });
+            }
 
-        const isUpToDate = (
-            (Math.abs(days) > rules.j7_incomplete_days) ||
-            (Math.abs(days) <= rules.j7_incomplete_days && isJ7Complete)
-        ) && (
-                (Math.abs(days) > rules.j1_incomplete_days) ||
-                (Math.abs(days) <= rules.j1_incomplete_days && isJ1PreOpComplete)
-            );
+            // J-1 checks
+            if (!isJ1PreOpComplete && days >= -rules.j1_incomplete_days) {
+                badges.push({ label: `Questionnaire J-${rules.j1_incomplete_days} non rempli`, color: 'danger' });
+            }
 
-        if (isUpToDate && hasAnyResponse) {
-            badges.push({ label: 'À jour ✓', color: 'success' });
-        }
+            const isUpToDate = (
+                (Math.abs(days) > rules.j7_incomplete_days) ||
+                (Math.abs(days) <= rules.j7_incomplete_days && isJ7Complete)
+            ) && (
+                    (Math.abs(days) > rules.j1_incomplete_days) ||
+                    (Math.abs(days) <= rules.j1_incomplete_days && isJ1PreOpComplete)
+                );
 
-        if (isJ7Complete && isJ1PreOpComplete && patientStatus === 'ready') {
-            badges.push({ label: 'Prêt pour l\'intervention ✓', color: 'success' });
+            if (isUpToDate && hasAnyResponse) {
+                badges.push({ label: 'À jour ✓', color: 'success' });
+            }
+
+            if (isJ7Complete && isJ1PreOpComplete && patientStatus === 'ready') {
+                badges.push({ label: 'Prêt pour l\'intervention ✓', color: 'success' });
+            }
         }
     }
 
