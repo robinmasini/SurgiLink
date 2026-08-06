@@ -1314,21 +1314,28 @@ export default function PatientReview() {
                                             { id: 'fasting_understood', label: 'Jeûne J-1', screen: 'J1_PreOp' },
                                             { id: 'shower_understood', label: 'Douche J-1', screen: 'J1_PreOp' },
                                             { id: 'admission_confirmed', label: 'Confirmation J-1', screen: 'J1_PreOp' }
-                                        ].map(item => (
-                                            <div key={item.id} className="card" style={{ padding: 'var(--spacing-4)', background: 'rgba(255,255,255,0.4)', border: '1px solid var(--color-gray-100)' }}>
-                                                <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', marginBottom: '4px' }}>{item.label}</div>
-                                                <div style={{ fontWeight: 'var(--font-weight-semibold)', color: clinicalResponses[item.screen][item.id] !== undefined ? 'var(--color-primary-600)' : 'var(--color-gray-300)', fontStyle: clinicalResponses[item.screen][item.id] === undefined ? 'italic' : 'normal' }}>
-                                                    {clinicalResponses[item.screen][item.id] === true ? 'OUI' :
-                                                        clinicalResponses[item.screen][item.id] === false ? 'NON' : 
-                                                        (clinicalResponses[item.screen][item.id] !== undefined && clinicalResponses[item.screen][item.id] !== null ? clinicalResponses[item.screen][item.id] : 'Non renseigné')}
-                                                </div>
-                                                {responsesMeta[item.screen]?.[item.id]?.updated_at && (
-                                                    <div style={{ fontSize: '9px', color: 'var(--color-gray-400)', marginTop: '4px', fontStyle: 'italic' }}>
-                                                        le {new Date(responsesMeta[item.screen][item.id].updated_at).toLocaleDateString('fr-FR')} à {new Date(responsesMeta[item.screen][item.id].updated_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
-                                                    </div>
-                                                )}
-                                            </div>
-                                        ))}
+                                        ].map(item => {
+                                             let val = clinicalResponses[item.screen]?.[item.id];
+                                             if (item.id === 'welcome_ok') {
+                                                 val = (patient.last_consulted_at || patient.onboarding_completed_at || clinicalResponses.Bienvenue?.blood_work !== undefined) ? true : undefined;
+                                             }
+                                             const isAnswered = val !== undefined && val !== null;
+                                             return (
+                                                 <div key={item.id} className="card" style={{ padding: 'var(--spacing-4)', background: 'rgba(255,255,255,0.4)', border: '1px solid var(--color-gray-100)' }}>
+                                                     <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', marginBottom: '4px' }}>{item.label}</div>
+                                                     <div style={{ fontWeight: 'var(--font-weight-semibold)', color: isAnswered ? 'var(--color-primary-600)' : 'var(--color-gray-300)', fontStyle: !isAnswered ? 'italic' : 'normal' }}>
+                                                         {val === true ? 'OUI' :
+                                                             val === false ? 'NON' : 
+                                                             (isAnswered ? val : 'Non renseigné')}
+                                                     </div>
+                                                     {responsesMeta[item.screen]?.[item.id]?.updated_at && (
+                                                         <div style={{ fontSize: '9px', color: 'var(--color-gray-400)', marginTop: '4px', fontStyle: 'italic' }}>
+                                                             le {new Date(responsesMeta[item.screen][item.id].updated_at).toLocaleDateString('fr-FR')} à {new Date(responsesMeta[item.screen][item.id].updated_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                                                         </div>
+                                                     )}
+                                                 </div>
+                                             );
+                                         })}
                                     </div>
                                 </div>
 
