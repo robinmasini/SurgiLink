@@ -22,7 +22,7 @@ import { calculateDaysUntilSurgery } from '../utils/dateUtils';
 import StatusBolt from '../components/StatusBolt';
 import PatientStatusBadges from '../components/PatientStatusBadges';
 import PatientDetailPanel from '../components/PatientDetailPanel';
-import { consolidateDuplicatePatients } from '../services/pathwayService';
+import { consolidateDuplicatePatients, calculateGlobalProgress } from '../services/pathwayService';
 
 export default function Patients() {
     const { t } = useTranslation();
@@ -91,12 +91,22 @@ export default function Patients() {
     const loadPatients = async () => {
         setIsLoading(true);
         try {
-            const { data: allPatientsData, error: allPatientsError } = await supabase
+            let { data: allPatientsData, error: allPatientsError } = await supabase
                 .from('patients')
                 .select('*')
                 .order('date', { ascending: false });
 
             if (allPatientsError) throw allPatientsError;
+
+            // Recalculate progress for all patients to ensure live date status is accurate
+            if (allPatientsData && allPatientsData.length > 0) {
+                await Promise.all(allPatientsData.map(p => calculateGlobalProgress(p.id)));
+                const { data: refreshedData } = await supabase
+                    .from('patients')
+                    .select('*')
+                    .order('date', { ascending: false });
+                if (refreshedData) allPatientsData = refreshedData;
+            }
 
             // Group by normalized name to deduplicate and keep the most complete/active intervention
             const patientGroups = {};

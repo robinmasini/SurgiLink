@@ -46,7 +46,7 @@ import PatientStatusBadges from '../components/PatientStatusBadges';
 import PatientDetailPanel from '../components/PatientDetailPanel';
 import SMSAlarmsModal from '../components/SMSAlarmsModal'; // Added
 import QuestionsPreviewModal from '../components/QuestionsPreviewModal';
-import { consolidateDuplicatePatients } from '../services/pathwayService';
+import { consolidateDuplicatePatients, calculateGlobalProgress } from '../services/pathwayService';
 
 export default function Dashboard() {
     const { t } = useTranslation();
@@ -181,10 +181,17 @@ export default function Dashboard() {
                 query = query.eq('user_id', session.user.id);
             }
 
-            const { data: allPatientsData, error: allPatientsError } = await query;
+            let { data: allPatientsData, error: allPatientsError } = await query;
 
             if (allPatientsError) throw allPatientsError;
             if (!isMounted) return;
+
+            // Recalculate progress for all patients to ensure live date status is accurate
+            if (allPatientsData && allPatientsData.length > 0) {
+                await Promise.all(allPatientsData.map(p => calculateGlobalProgress(p.id)));
+                const { data: refreshedData } = await query;
+                if (refreshedData) allPatientsData = refreshedData;
+            }
 
             // Calculate stats
             const now = new Date();

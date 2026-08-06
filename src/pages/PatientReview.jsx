@@ -45,7 +45,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { calculateAge, calculateDaysUntilSurgery, formatDateFR, formatDateTimeFR } from '../utils/dateUtils';
-import { getPatientPathwayStatus, getResponses, calculateRiskFlags } from '../services/pathwayService';
+import { getPatientPathwayStatus, getResponses, calculateRiskFlags, calculateGlobalProgress } from '../services/pathwayService';
 import { getDocuments, uploadDocument, deleteDocument, downloadDocument } from '../services/documentService';
 import { generatePatientToken, getPatientTokens, revokeToken } from '../services/tokenService';
 import { generateSynthesisPDF } from '../services/pdfService';
@@ -126,6 +126,9 @@ export default function PatientReview() {
     const loadPatientData = async () => {
         setIsLoading(true);
         try {
+            // Recalculate global progress in DB to ensure status is up to date
+            await calculateGlobalProgress(id);
+
             // Load patient
             const { data: patientData, error: patientError } = await supabase
                 .from('patients')
