@@ -923,7 +923,7 @@ export default function Dashboard() {
                                                     className={
                                                         patient.daysUntil === 'J-1' ? 'deadline-red' :
                                                             patient.daysUntil === 'J-7' || patient.daysUntil === 'J-18' ? 'deadline-green' :
-                                                                patient.daysUntil.includes('J+') ? 'deadline-orange' : 'deadline-green'
+                                                                (patient.daysUntil || '').includes('J+') ? 'deadline-orange' : 'deadline-green'
                                                     }
                                                     style={{ fontSize: '11px', fontWeight: '700' }}
                                                 >

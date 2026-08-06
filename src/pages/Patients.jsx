@@ -79,9 +79,10 @@ export default function Patients() {
         }
 
         if (searchTerm) {
+            const term = (searchTerm || '').toLowerCase();
             filtered = filtered.filter(p =>
-                p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                p.operation.toLowerCase().includes(searchTerm.toLowerCase())
+                ((p?.name || '').toLowerCase()).includes(term) ||
+                ((p?.operation || '').toLowerCase()).includes(term)
             );
         }
 
@@ -647,7 +648,7 @@ export default function Patients() {
                                                     className={
                                                         patient.daysUntil === 'J-1' ? 'deadline-red' :
                                                             patient.daysUntil === 'J-7' || patient.daysUntil === 'J-18' ? 'deadline-green' :
-                                                                patient.daysUntil.includes('J+') ? 'deadline-orange' : 'deadline-green'
+                                                                 (patient.daysUntil || '').includes('J+') ? 'deadline-orange' : 'deadline-green'
                                                     }
                                                     style={{ fontSize: '11px', fontWeight: '700' }}
                                                 >
