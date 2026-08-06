@@ -97,10 +97,13 @@ export default function PatientStatusBadges({ responses = [], daysUntil = '', pa
     // Only run time-based overdue checks if a valid surgery date is defined!
     const isDateSet = hasDate !== undefined ? Boolean(hasDate) : (daysUntil !== '' && daysUntil !== undefined && daysUntil !== null);
 
+    let isPreOp = false;
+    let isPostOp = false;
+
     if (isDateSet) {
         const days = parseInt((daysUntil || '').replace('J', '')) || 0;
-        const isPreOp = days <= 0;
-        const isPostOp = days > 0;
+        isPreOp = days <= 0;
+        isPostOp = days > 0;
 
         if (!wasConsulted && isPreOp && days >= -10) {
             badges.push({ label: 'Portail non consulté', color: 'gray' });
@@ -156,7 +159,7 @@ export default function PatientStatusBadges({ responses = [], daysUntil = '', pa
         }
     }
 
-    if (patientStatus === 'ready' && !isPreOp && !isPostOp) {
+    if (patientStatus === 'ready' && isDateSet && !isPreOp && !isPostOp) {
         badges.push({ label: 'Traité ✓', color: 'success' });
     }
 
