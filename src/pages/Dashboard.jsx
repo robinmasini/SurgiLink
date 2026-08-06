@@ -181,17 +181,25 @@ export default function Dashboard() {
                 query = query.eq('user_id', session.user.id);
             }
 
-            let { data: allPatientsData, error: allPatientsError } = await query;
+            const { data: rawPatientsData, error: allPatientsError } = await query;
 
             if (allPatientsError) throw allPatientsError;
-            if (!isMounted) return;
+            if (!isMounted || !rawPatientsData) return;
+
+            const allPatientsData = [...rawPatientsData];
 
             // Recalculate progress for all patients to ensure live date status is accurate
-            if (allPatientsData && allPatientsData.length > 0) {
-                await Promise.all(allPatientsData.map(p => calculateGlobalProgress(p.id)));
-                const { data: refreshedData } = await query;
-                if (refreshedData) allPatientsData = refreshedData;
-            }
+            await Promise.all(allPatientsData.map(async (p) => {
+                try {
+                    const res = await calculateGlobalProgress(p.id);
+                    if (res && typeof res === 'object') {
+                        if (res.status) p.status = res.status;
+                        if (res.progress !== undefined) p.progress = res.progress;
+                    }
+                } catch (e) {
+                    console.warn('Error updating patient progress:', e);
+                }
+            }));
 
             // Calculate stats
             const now = new Date();

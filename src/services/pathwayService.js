@@ -243,12 +243,10 @@ export async function calculateGlobalProgress(patientId) {
             .update({ progress, status, days_until: formattedDaysUntil })
             .eq('id', patientId);
 
-        if (updateError) throw updateError;
-
-        return progress;
+        return { progress, status, daysUntil: formattedDaysUntil };
     } catch (error) {
         console.error('Error calculating global progress:', error);
-        return 0;
+        return { progress: 0, status: 'neutre', daysUntil: '' };
     }
 }
 
