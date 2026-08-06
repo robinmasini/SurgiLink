@@ -1512,7 +1512,7 @@ export default function PatientReview() {
                                                     </div>
                                                 </div>
                                                 <div style={{ fontSize: '14px', color: 'var(--color-gray-700)', lineHeight: '1.5', fontStyle: 'italic', paddingLeft: '32px' }}>
-                                                    "{clinicalResponses.J4_Satisfaction.verbatim || clinicalResponses.J4_Satisfaction.comment}"
+                                                    "{clinicalResponses.J4_Satisfaction?.verbatim || clinicalResponses.J4_Satisfaction?.comment}"
                                                 </div>
                                             </div>
                                         )}
@@ -1587,10 +1587,10 @@ export default function PatientReview() {
                                     ].map(item => (
                                         <div key={item.id} className="card" style={{ padding: 'var(--spacing-4)', background: 'rgba(255,255,255,0.4)', border: '1px solid var(--color-gray-100)' }}>
                                             <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', marginBottom: '4px' }}>{item.label}</div>
-                                            <div style={{ fontWeight: 'var(--font-weight-semibold)', color: clinicalResponses.J1[item.id] !== undefined ? 'var(--color-primary-600)' : 'var(--color-gray-300)', fontStyle: clinicalResponses.J1[item.id] === undefined ? 'italic' : 'normal' }}>
-                                                {clinicalResponses.J1[item.id] === true ? 'OUI' : 
-                                                 clinicalResponses.J1[item.id] === false ? 'NON' : 
-                                                 (clinicalResponses.J1[item.id] !== undefined && clinicalResponses.J1[item.id] !== null ? clinicalResponses.J1[item.id] : 'Non renseigné')}
+                                            <div style={{ fontWeight: 'var(--font-weight-semibold)', color: clinicalResponses.J1?.[item.id] !== undefined ? 'var(--color-primary-600)' : 'var(--color-gray-300)', fontStyle: clinicalResponses.J1?.[item.id] === undefined ? 'italic' : 'normal' }}>
+                                                {clinicalResponses.J1?.[item.id] === true ? 'OUI' : 
+                                                 clinicalResponses.J1?.[item.id] === false ? 'NON' : 
+                                                 (clinicalResponses.J1?.[item.id] !== undefined && clinicalResponses.J1?.[item.id] !== null ? clinicalResponses.J1?.[item.id] : 'Non renseigné')}
                                             </div>
                                             {responsesMeta.J1?.[item.id]?.updated_at && (
                                                 <div style={{ fontSize: '9px', color: 'var(--color-gray-400)', marginTop: '4px', fontStyle: 'italic' }}>
@@ -1621,10 +1621,10 @@ export default function PatientReview() {
                                                 <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', marginBottom: '4px' }}>{item.label}</div>
                                                 <div style={{
                                                     fontWeight: 'var(--font-weight-semibold)',
-                                                    color: clinicalResponses.J4_Satisfaction[item.id] !== undefined ? 'var(--color-primary-600)' : 'var(--color-gray-300)',
-                                                    fontStyle: clinicalResponses.J4_Satisfaction[item.id] === undefined ? 'italic' : 'normal'
+                                                    color: clinicalResponses.J4_Satisfaction?.[item.id] !== undefined ? 'var(--color-primary-600)' : 'var(--color-gray-300)',
+                                                    fontStyle: clinicalResponses.J4_Satisfaction?.[item.id] === undefined ? 'italic' : 'normal'
                                                 }}>
-                                                    {clinicalResponses.J4_Satisfaction[item.id] || 'Non renseigné'}
+                                                    {clinicalResponses.J4_Satisfaction?.[item.id] || 'Non renseigné'}
                                                 </div>
                                                 {responsesMeta.J4_Satisfaction?.[item.id]?.updated_at && (
                                                     <div style={{ fontSize: '9px', color: 'var(--color-gray-400)', marginTop: '4px', fontStyle: 'italic' }}>
@@ -1653,12 +1653,12 @@ export default function PatientReview() {
                                                 <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', marginBottom: '4px' }}>{item.label}</div>
                                                 <div style={{
                                                     fontWeight: 'var(--font-weight-semibold)',
-                                                    color: clinicalResponses.ESATIS[item.id] !== undefined ? 'var(--color-primary-600)' : 'var(--color-gray-300)',
-                                                    fontStyle: clinicalResponses.ESATIS[item.id] === undefined ? 'italic' : 'normal'
+                                                    color: clinicalResponses.ESATIS?.[item.id] !== undefined ? 'var(--color-primary-600)' : 'var(--color-gray-300)',
+                                                    fontStyle: clinicalResponses.ESATIS?.[item.id] === undefined ? 'italic' : 'normal'
                                                 }}>
-                                                    {clinicalResponses.ESATIS[item.id] === true ? 'OUI' : 
-                                                     clinicalResponses.ESATIS[item.id] === false ? 'NON' : 
-                                                     (clinicalResponses.ESATIS[item.id] !== undefined && clinicalResponses.ESATIS[item.id] !== null ? clinicalResponses.ESATIS[item.id] : 'Non renseigné')}
+                                                    {clinicalResponses.ESATIS?.[item.id] === true ? 'OUI' : 
+                                                     clinicalResponses.ESATIS?.[item.id] === false ? 'NON' : 
+                                                     (clinicalResponses.ESATIS?.[item.id] !== undefined && clinicalResponses.ESATIS?.[item.id] !== null ? clinicalResponses.ESATIS?.[item.id] : 'Non renseigné')}
                                                 </div>
                                                 {responsesMeta.ESATIS?.[item.id]?.updated_at && (
                                                     <div style={{ fontSize: '9px', color: 'var(--color-gray-400)', marginTop: '4px', fontStyle: 'italic' }}>
