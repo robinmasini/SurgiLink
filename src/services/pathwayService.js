@@ -106,7 +106,7 @@ export async function calculateGlobalProgress(patientId) {
 
             const screenResponses = {};
             items.forEach(item => {
-                const val = responseMap[`${screen}:${item.id}`];
+                const val = responseMap[`${screen}:${item.id}`] ?? responseMap[`${screen.toLowerCase()}:${item.id}`];
                 screenResponses[item.id] = val;
                 if (item.required !== false && val !== undefined && val !== null && val !== '') {
                     totalCompleted += 1;
@@ -194,7 +194,7 @@ export async function calculateGlobalProgress(patientId) {
                 );
                 if (mRequired.length > 0) {
                     const mIsComplete = mRequired.every(item => {
-                        const val = responseMap[`${m.id}:${item.id}`];
+                        const val = responseMap[`${m.id}:${item.id}`] ?? responseMap[`${m.id.toLowerCase()}:${item.id}`];
                         return val !== undefined && val !== null && val !== '';
                     });
                     if (!mIsComplete) allDueMilestonesComplete = false;
@@ -357,12 +357,12 @@ export async function calculateRiskFlags(patientId, screen) {
  */
 export async function markScreenCompleted(patientId, screen) {
     try {
-        // Update all responses to mark as completed
+        // Update all responses to mark as completed (case-insensitive for screen)
         const { error } = await supabase
             .from('pathway_responses')
             .update({ completed_at: new Date().toISOString() })
             .eq('patient_id', patientId)
-            .eq('screen', screen);
+            .ilike('screen', screen);
 
         if (error) throw error;
 
