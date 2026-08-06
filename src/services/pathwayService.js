@@ -22,9 +22,12 @@ export async function saveResponse(patientId, screen, itemId, response, complete
             screen,
             item_id: itemId,
             response: { value: response },
-            completed_at: completed ? new Date().toISOString() : null,
             updated_at: new Date().toISOString()
         };
+
+        if (completed) {
+            payload.completed_at = new Date().toISOString();
+        }
 
         const { data, error } = await supabase
             .from('pathway_responses')

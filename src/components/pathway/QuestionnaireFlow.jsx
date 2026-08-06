@@ -152,9 +152,7 @@ export default function QuestionnaireFlow({
         }
 
         if (currentItem?.type === 'yes_no' || currentItem?.type === 'select' || currentItem?.type === 'tri_state') {
-            setTimeout(() => {
-                advanceToNext();
-            }, 300);
+            advanceToNext();
         } else if (!isTextInput) {
             setInputBlocked(false);
         }
