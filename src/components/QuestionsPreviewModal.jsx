@@ -82,7 +82,7 @@ export default function QuestionsPreviewModal({ isOpen, onClose }) {
                             <span>10 - Douleur maximale</span>
                         </div>
                         <div style={{ position: 'relative', height: '6px', background: 'var(--color-gray-200)', borderRadius: '3px' }}>
-                            <div style={{ position: 'absolute', left: '0', top: 0, bottom: 0, width: '40%', background: 'linear-gradient(to right, var(--color-success-500), var(--color-warning-500))', borderRadius: '3px' }}></div>
+                            <div style={{ position: 'absolute', left: '0', top: 0, bottom: 0, width: '40%', background: 'var(--color-success-500)', borderRadius: '3px' }}></div>
                             <div style={{
                                 position: 'absolute',
                                 left: '40%',

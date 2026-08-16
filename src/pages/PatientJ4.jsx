@@ -58,11 +58,23 @@ export default function PatientJ4({ patient: propPatient, token: propToken }) {
 
     const handleSubmit = async () => {
         setSaving(true);
-        if (resolvedPatientId) {
-            await markScreenCompleted(resolvedPatientId, 'J4_Satisfaction');
+        try {
+            if (resolvedPatientId) {
+                await markScreenCompleted(resolvedPatientId, 'J4_Satisfaction');
+            }
+        } catch (err) {
+            console.error('Error completing J4 satisfaction:', err);
+        } finally {
+            setSaving(false);
         }
-        setSaving(false);
-        navigate(`/patient-portal/${token}/success`);
+        
+        if (token) {
+            navigate(`/patient-portal/${token}/success`);
+        } else if (resolvedPatientId) {
+            navigate(`/patient/${resolvedPatientId}/success`);
+        } else {
+            navigate('/');
+        }
     };
 
     if (loadingPatientId || loading) {

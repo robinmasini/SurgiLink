@@ -196,6 +196,7 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
             case 'slider_0_10': {
                 const hasValue = value !== undefined && value !== null && value !== '';
                 const sliderVal = hasValue ? value : 10;
+                const fillPct = (sliderVal / 10) * 100;
                 return (
                     <div>
                         <input
@@ -209,12 +210,16 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
                             }}
                             style={{
                                 width: '100%',
-                                height: '8px',
-                                borderRadius: '4px',
+                                height: '10px',
+                                borderRadius: '5px',
+                                appearance: 'none',
+                                WebkitAppearance: 'none',
                                 background: hasValue
-                                    ? `linear-gradient(to right, var(--color-success-500) 0%, var(--color-warning-500) 50%, var(--color-danger-500) 100%)`
+                                    ? `linear-gradient(to right, var(--color-success-500) 0%, var(--color-success-500) ${fillPct}%, var(--color-gray-200) ${fillPct}%, var(--color-gray-200) 100%)`
                                     : 'var(--color-gray-200)',
-                                opacity: hasValue ? 1 : 0.6
+                                cursor: 'pointer',
+                                outline: 'none',
+                                opacity: hasValue ? 1 : 0.7
                             }}
                         />
                         <div style={{
@@ -228,9 +233,9 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
                             <span style={{
                                 fontWeight: 'var(--font-weight-bold)',
                                 fontSize: 'var(--font-size-xl)',
-                                color: hasValue ? 'var(--color-gray-900)' : 'var(--color-gray-400)'
+                                color: hasValue ? 'var(--color-success-600)' : 'var(--color-gray-400)'
                             }}>
-                                {hasValue ? sliderVal : '--'}
+                                {hasValue ? `${sliderVal}/10` : '--/10'}
                             </span>
                             <span>10 ({t('Insupportable')})</span>
                         </div>
@@ -281,6 +286,7 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
             case 'rating': {
                 const hasValue = value !== undefined && value !== null && value !== '';
                 const ratingVal = hasValue ? value : 10;
+                const fillPct = ((ratingVal - 1) / 9) * 100;
                 return (
                     <div style={{ marginTop: 'var(--spacing-2)' }}>
                         <div style={{
@@ -299,23 +305,24 @@ export default function QuestionRenderer({ item, value, onChange, screen }) {
                                     height: '12px',
                                     borderRadius: '6px',
                                     appearance: 'none',
+                                    WebkitAppearance: 'none',
                                     background: hasValue
-                                        ? `linear-gradient(to right, var(--color-danger-500) 0%, var(--color-warning-500) 50%, var(--color-success-500) 100%)`
+                                        ? `linear-gradient(to right, var(--color-success-500) 0%, var(--color-success-500) ${fillPct}%, var(--color-gray-200) ${fillPct}%, var(--color-gray-200) 100%)`
                                         : 'var(--color-gray-200)',
                                     cursor: 'pointer',
                                     outline: 'none',
-                                    opacity: hasValue ? 1 : 0.6
+                                    opacity: hasValue ? 1 : 0.7
                                 }}
                             />
                             {/* Value Display */}
                             <div style={{
                                 position: 'absolute',
-                                left: `${((ratingVal) - 1) * (100 / 9)}%`,
+                                left: `${fillPct}%`,
                                 top: '-10px',
                                 transform: 'translateX(-50%)',
                                 background: 'white',
-                                border: `2px solid ${hasValue ? 'var(--color-primary-500)' : 'var(--color-gray-300)'}`,
-                                color: hasValue ? 'var(--color-primary-700)' : 'var(--color-gray-400)',
+                                border: `2px solid ${hasValue ? 'var(--color-success-500)' : 'var(--color-gray-300)'}`,
+                                color: hasValue ? 'var(--color-success-600)' : 'var(--color-gray-400)',
                                 padding: '2px 8px',
                                 borderRadius: '12px',
                                 fontSize: 'var(--font-size-sm)',

@@ -120,14 +120,12 @@ export default function QuestionnaireFlow({
     };
 
     const handleNext = () => {
-        if (direction === 'out' || saving || inputBlocked) return;
-        setInputBlocked(true);
+        if (direction === 'out' || saving) return;
         advanceToNext();
     };
 
     const handleBack = () => {
-        if (direction === 'out' || isFirst || inputBlocked) return;
-        setInputBlocked(true);
+        if (direction === 'out' || isFirst || saving) return;
         
         setDirection('out');
         setTimeout(() => {
@@ -137,10 +135,7 @@ export default function QuestionnaireFlow({
     };
 
     const onQuestionAnswer = async (itemId, value) => {
-        if (saving || inputBlocked) return;
-        setInputBlocked(true);
-
-        const isTextInput = currentItem && (currentItem.type === 'text' || currentItem.type === 'textarea');
+        if (saving) return;
 
         try {
             if (currentItem?.isCustom) {
@@ -153,8 +148,6 @@ export default function QuestionnaireFlow({
 
         if (currentItem?.type === 'yes_no' || currentItem?.type === 'select' || currentItem?.type === 'tri_state') {
             advanceToNext();
-        } else if (!isTextInput) {
-            setInputBlocked(false);
         }
     };
 

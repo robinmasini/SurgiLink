@@ -667,7 +667,7 @@ textarea.input {
   height: 8px;
   -webkit-appearance: none;
   appearance: none;
-  background: linear-gradient(to right, var(--color-success-400), var(--color-warning-400), var(--color-danger-400));
+  background: var(--color-success-500);
   border-radius: var(--radius-full);
   outline: none;
 }
