@@ -1200,7 +1200,7 @@ export default function PatientReview() {
                                 </div>
                                 <div className="clinical-header-actions">
                                     {/* Onboarding Status & Reset Button */}
-                                    {(patient.last_consulted_at || (responses && responses.length > 0)) ? (
+                                    {(patient.last_consulted_at || (responsesMeta && Object.keys(responsesMeta).length > 0)) ? (
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                             <div style={{
                                                 fontSize: '11px',
