@@ -108,6 +108,7 @@ function App() {
           <Route path="/patient-portal/:token/j4" element={<PatientTokenRoute><PatientJ4 /></PatientTokenRoute>} />
           <Route path="/patient-portal/:token/j1-preop" element={<PatientTokenRoute><PatientJ1PreOp /></PatientTokenRoute>} />
           <Route path="/patient-portal/:token/j1" element={<PatientTokenRoute><PatientJ1 /></PatientTokenRoute>} />
+          <Route path="/patient-portal/:token/j2" element={<PatientTokenRoute><PatientJ1 /></PatientTokenRoute>} />
           <Route path="/patient-portal/:token/e-satis" element={<PatientTokenRoute><PatientESatis /></PatientTokenRoute>} />
           <Route path="/patient-portal/:token/success" element={<PatientTokenRoute><PatientSuccess /></PatientTokenRoute>} />
         </Routes>

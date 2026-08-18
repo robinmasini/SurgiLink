@@ -261,17 +261,23 @@ export async function calculateGlobalProgress(patientId) {
  */
 export async function getResponses(patientId, screen) {
     try {
-        const { data, error } = await supabase
+        const queryPromise = supabase
             .from('pathway_responses')
             .select('item_id, response, updated_at, screen')
             .eq('patient_id', patientId);
 
+        const timeoutPromise = new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Fetch timeout')), 1200)
+        );
+
+        const { data, error } = await Promise.race([queryPromise, timeoutPromise]);
+
         if (error) throw error;
 
         // Filter manually to be case-insensitive and handle legacy J1PreOp / J1_PreOp
-        const filteredData = data.filter(r => {
-            const rowScreen = r.screen.toLowerCase();
-            const targetScreen = screen.toLowerCase();
+        const filteredData = (data || []).filter(r => {
+            const rowScreen = (r.screen || '').toLowerCase();
+            const targetScreen = (screen || '').toLowerCase();
             if (rowScreen === targetScreen) return true;
             // Map legacy J1PreOp to J1_PreOp and vice-versa
             if ((rowScreen === 'j1preop' || rowScreen === 'j1_preop') && 
@@ -286,7 +292,7 @@ export async function getResponses(patientId, screen) {
 
         return responses;
     } catch (error) {
-        console.error('Error fetching pathway responses:', error);
+        console.warn('[pathwayService] getResponses fallback:', error.message);
         return {};
     }
 }
