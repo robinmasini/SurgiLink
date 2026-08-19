@@ -128,7 +128,8 @@ function YesNoGroup({ label, value, onChange, yesLabel = 'Oui', noLabel = 'Non',
    MAIN COMPONENT
 ───────────────────────────────────────────────────────────────── */
 export default function IntakeForm() {
-    const { token } = useParams();
+    const params = useParams();
+    const token = params.token || params.patientId;
     const navigate = useNavigate();
     const [phase, setPhase] = useState('loading'); // loading | error | tutorial | form | submitting | done
     const [tutorialStep, setTutorialStep] = useState(1);
