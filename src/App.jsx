@@ -88,11 +88,22 @@ function App() {
           <Route path="/patient/:patientId/postop" element={<PatientPostOp />} />
           <Route path="/patient/:patientId/success" element={<PatientSuccess />} />
 
-          {/* Pathway Routes - Patient-facing */}
+          {/* Pathway Routes - Patient-facing (No navbar, pure patient view) */}
+          <Route path="/patient/pathway/fiche/:patientId" element={<IntakeForm />} />
+          <Route path="/patient/pathway/bienvenue/:patientId" element={<Bienvenue />} />
+          <Route path="/patient/pathway/j-18/:patientId" element={<Bienvenue />} />
           <Route path="/patient/pathway/j7/:patientId" element={<PatientJ7 />} />
+          <Route path="/patient/pathway/j-7/:patientId" element={<PatientJ7 />} />
           <Route path="/patient/pathway/j4/:patientId" element={<PatientJ4 />} />
+          <Route path="/patient/pathway/j-4/:patientId" element={<PatientJ4 />} />
           <Route path="/patient/pathway/j1-preop/:patientId" element={<PatientJ1PreOp />} />
+          <Route path="/patient/pathway/j-1/:patientId" element={<PatientJ1PreOp />} />
           <Route path="/patient/pathway/j1/:patientId" element={<PatientJ1 />} />
+          <Route path="/patient/pathway/j2/:patientId" element={<PatientJ1 />} />
+          <Route path="/patient/pathway/j+2/:patientId" element={<PatientJ1 />} />
+          <Route path="/patient/pathway/j4-satisfaction/:patientId" element={<PatientJ4 />} />
+          <Route path="/patient/pathway/j+4/:patientId" element={<PatientJ4 />} />
+          <Route path="/patient/pathway/esatis/:patientId" element={<PatientESatis />} />
 
           {/* Pathway Routes - Staff-facing */}
           <Route path="/staff/pathway/:patientId" element={<ProtectedRoute><PatientPathwayTracker /></ProtectedRoute>} />
