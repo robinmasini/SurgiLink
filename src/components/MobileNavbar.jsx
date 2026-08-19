@@ -20,8 +20,8 @@ export default function MobileNavbar() {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    // Also hide on login, patient portal, and intake form pages
-    if (!isMobile || location.pathname === '/login' || location.pathname.startsWith('/patient-portal') || location.pathname.startsWith('/fiche/')) {
+    // Hide MobileNavbar on login and all patient-facing routes (/patient..., /fiche...)
+    if (!isMobile || location.pathname === '/login' || location.pathname.startsWith('/patient') || location.pathname.startsWith('/fiche')) {
         return null;
     }
 
