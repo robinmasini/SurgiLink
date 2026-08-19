@@ -35,8 +35,21 @@ export default function PatientJ1({ patient: propPatient, token: propToken }) {
 
     useEffect(() => {
         if (resolvedPatientId) {
-            loadResponses();
-            if (!propPatient) loadPatientData();
+            if (String(resolvedPatientId).toLowerCase().includes('demo')) {
+                setPatient({
+                    id: 'demo-patient',
+                    name: 'Marie DUPONT',
+                    clinic_name: 'Clinique de la Paix',
+                    date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                    surgery_time: '08:30'
+                });
+                setLoading(false);
+            } else {
+                loadResponses();
+                if (!propPatient) loadPatientData();
+            }
+        } else {
+            setLoading(false);
         }
     }, [resolvedPatientId]);
 
