@@ -224,18 +224,18 @@ export default function Dashboard() {
                 ];
             }
 
-            // Recalculate progress for all patients to ensure live date status is accurate
-            await Promise.all(allPatientsData.map(async (p) => {
-                try {
-                    const res = await calculateGlobalProgress(p.id);
-                    if (res && typeof res === 'object') {
-                        if (res.status) p.status = res.status;
-                        if (res.progress !== undefined) p.progress = res.progress;
-                    }
-                } catch (e) {
-                    console.warn('Error updating patient progress:', e);
-                }
-            }));
+            // Non-blocking background progress check (prevents latency delay from Thailand/overseas)
+            if (!isDemoMode) {
+                Promise.all(allPatientsData.map(async (p) => {
+                    try {
+                        const res = await calculateGlobalProgress(p.id);
+                        if (res && typeof res === 'object') {
+                            if (res.status) p.status = res.status;
+                            if (res.progress !== undefined) p.progress = res.progress;
+                        }
+                    } catch (e) {}
+                })).catch(() => {});
+            }
 
             // Calculate stats
             const now = new Date();
