@@ -4,7 +4,7 @@ import { Send, Clock, CheckCircle, AlertCircle, XCircle, Loader } from 'lucide-r
 import { getPatientPathwayStatus, getIncompleteItemsWithReminders } from '../services/pathwayService';
 import { sendManualReminder } from '../services/reminderService';
 import { getSMSHistory, canSendReminder } from '../services/vonageService';
-import { getPatientTokens, generatePatientToken } from '../services/tokenService';
+import { getPatientTokens, generatePatientToken, getOrCreatePatientToken } from '../services/tokenService';
 import AlertBanner from './pathway/AlertBanner';
 import { ExternalLink, Copy, ShieldCheck } from 'lucide-react';
 
@@ -74,10 +74,12 @@ export default function PatientPathwayTracker() {
     };
 
     const handleGenerateToken = async () => {
-        const res = await generatePatientToken(parseInt(patientId));
+        const res = await getOrCreatePatientToken(parseInt(patientId));
         if (res.success) {
             setToken(res.token);
             alert('Lien d’accès généré !');
+        } else {
+            alert('Erreur lors de la génération du lien d’accès : ' + (res.error || 'Erreur inconnue'));
         }
     };
 

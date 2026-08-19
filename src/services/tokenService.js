@@ -12,12 +12,38 @@ function generateSecureToken() {
 
 /**
  * Generate a unique patient portal token
- * @param {string} patientId - UUID of the patient
+ * @param {string|number} patientId - ID of the patient
  * @param {number|null} expiresInDays - Optional: number of days until expiration
- * @returns {Promise<{success: boolean, token?: string, error?: string}>}
+ * @returns {Promise<{success: boolean, token?: string, error?: string, tokenId?: string, expiresAt?: string}>}
  */
 export async function generatePatientToken(patientId, expiresInDays = null) {
     try {
+        const pid = typeof patientId === 'string' && !isNaN(patientId) ? parseInt(patientId, 10) : patientId;
+
+        // Try to get current session user to satisfy RLS if patient has no user_id
+        let userId = null;
+        try {
+            const { data: { session } } = await supabase.auth.getSession();
+            userId = session?.user?.id || null;
+        } catch (e) {
+            console.warn('Could not retrieve auth session:', e);
+        }
+
+        if (userId) {
+            const { data: patientData } = await supabase
+                .from('patients')
+                .select('user_id')
+                .eq('id', pid)
+                .maybeSingle();
+
+            if (patientData && !patientData.user_id) {
+                await supabase
+                    .from('patients')
+                    .update({ user_id: userId })
+                    .eq('id', pid);
+            }
+        }
+
         // Generate unique token
         const token = generateSecureToken();
 
@@ -26,19 +52,43 @@ export async function generatePatientToken(patientId, expiresInDays = null) {
             ? new Date(Date.now() + expiresInDays * 24 * 60 * 60 * 1000).toISOString()
             : null;
 
+        const insertPayload = {
+            patient_id: pid,
+            token: token,
+            expires_at: expiresAt,
+            is_active: true
+        };
+        if (userId) {
+            insertPayload.user_id = userId;
+        }
+
         // Insert into database
         const { data, error } = await supabase
             .from('patient_review_tokens')
-            .insert([{
-                patient_id: patientId,
-                token: token,
-                expires_at: expiresAt,
-                is_active: true
-            }])
+            .insert([insertPayload])
             .select()
             .single();
 
-        if (error) throw error;
+        if (error) {
+            // Check if active token exists despite insert error
+            const { data: fallbackTokens } = await supabase
+                .from('patient_review_tokens')
+                .select('*')
+                .eq('patient_id', pid)
+                .eq('is_active', true)
+                .order('created_at', { ascending: false })
+                .limit(1);
+
+            if (fallbackTokens && fallbackTokens.length > 0) {
+                return {
+                    success: true,
+                    token: fallbackTokens[0].token,
+                    tokenId: fallbackTokens[0].id,
+                    expiresAt: fallbackTokens[0].expires_at
+                };
+            }
+            throw error;
+        }
 
         return {
             success: true,
@@ -52,6 +102,44 @@ export async function generatePatientToken(patientId, expiresInDays = null) {
             success: false,
             error: err.message
         };
+    }
+}
+
+/**
+ * Get an existing active token or generate a new one for a patient
+ * @param {string|number} patientId - ID of the patient
+ * @param {number|null} expiresInDays - Optional expiration in days
+ * @returns {Promise<{success: boolean, token?: string, error?: string, tokenId?: string, expiresAt?: string}>}
+ */
+export async function getOrCreatePatientToken(patientId, expiresInDays = null) {
+    try {
+        const pid = typeof patientId === 'string' && !isNaN(patientId) ? parseInt(patientId, 10) : patientId;
+
+        // 1. Check for existing active token
+        const { data: existingTokens, error } = await supabase
+            .from('patient_review_tokens')
+            .select('*')
+            .eq('patient_id', pid)
+            .eq('is_active', true)
+            .order('created_at', { ascending: false });
+
+        if (!error && existingTokens && existingTokens.length > 0) {
+            const activeToken = existingTokens.find(t => !t.expires_at || new Date(t.expires_at) > new Date());
+            if (activeToken) {
+                return {
+                    success: true,
+                    token: activeToken.token,
+                    tokenId: activeToken.id,
+                    expiresAt: activeToken.expires_at
+                };
+            }
+        }
+
+        // 2. Generate new token if no valid active token exists
+        return await generatePatientToken(pid, expiresInDays);
+    } catch (err) {
+        console.error('Error in getOrCreatePatientToken:', err);
+        return await generatePatientToken(patientId, expiresInDays);
     }
 }
 

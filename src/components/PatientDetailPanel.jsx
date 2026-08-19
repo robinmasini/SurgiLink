@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import PatientStatusBadges from './PatientStatusBadges';
-import { generatePatientToken } from '../services/tokenService';
+import { generatePatientToken, getOrCreatePatientToken } from '../services/tokenService';
 import EditPatientModal from './EditPatientModal';
 
 
@@ -277,13 +277,12 @@ export default function PatientDetailPanel({ patient, responses = [], onClose })
                         onClick={async () => {
                             let currentToken = token;
                             if (!currentToken) {
-                                // Auto-generate token if missing for "single click" access
-                                const res = await generatePatientToken(patient.id);
+                                const res = await getOrCreatePatientToken(patient.id);
                                 if (res.success) {
                                     currentToken = res.token;
                                     setToken(res.token);
                                 } else {
-                                    alert('Erreur lors de la génération du lien portal.');
+                                    alert('Erreur lors de la génération du lien portail : ' + (res.error || 'Erreur inconnue'));
                                     return;
                                 }
                             }

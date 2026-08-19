@@ -20,8 +20,16 @@ export default function MobileNavbar() {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    // Hide MobileNavbar on login and all patient-facing routes (/patient..., /fiche...)
-    if (!isMobile || location.pathname === '/login' || location.pathname.startsWith('/patient') || location.pathname.startsWith('/fiche')) {
+    // Hide MobileNavbar on login and patient-facing routes (/patient-portal..., /patient/pathway..., /fiche...)
+    const isPatientFacingRoute = 
+        location.pathname === '/login' || 
+        location.pathname.startsWith('/patient-portal') || 
+        location.pathname.startsWith('/patient/pathway') || 
+        location.pathname.startsWith('/fiche') ||
+        location.pathname.includes('/checklist') ||
+        location.pathname.includes('/postop');
+
+    if (!isMobile || isPatientFacingRoute) {
         return null;
     }
 

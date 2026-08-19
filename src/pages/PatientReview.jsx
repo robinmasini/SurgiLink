@@ -47,7 +47,7 @@ import { supabase } from '../lib/supabase';
 import { calculateAge, calculateDaysUntilSurgery, formatDateFR, formatDateTimeFR } from '../utils/dateUtils';
 import { getPatientPathwayStatus, getResponses, calculateRiskFlags, calculateGlobalProgress } from '../services/pathwayService';
 import { getDocuments, uploadDocument, deleteDocument, downloadDocument } from '../services/documentService';
-import { generatePatientToken, getPatientTokens, revokeToken } from '../services/tokenService';
+import { generatePatientToken, getPatientTokens, revokeToken, getOrCreatePatientToken } from '../services/tokenService';
 import { generateSynthesisPDF } from '../services/pdfService';
 import PatientSynthesisReport from '../components/PatientSynthesisReport';
 import { sendManualReminder, getNextPendingReminder, getPendingReminders, sendOverrideSMS, updateReminder, sendPunctualSMS } from '../services/reminderService';
@@ -350,7 +350,7 @@ export default function PatientReview() {
         
         if (!currentToken) {
             try {
-                const res = await generatePatientToken(id);
+                const res = await getOrCreatePatientToken(id);
                 if (res.success) {
                     currentToken = res.token;
                     setTokenData({
