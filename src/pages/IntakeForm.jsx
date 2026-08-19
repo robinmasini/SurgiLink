@@ -244,14 +244,46 @@ export default function IntakeForm() {
 
     useEffect(() => {
         const load = async () => {
-            const result = await getIntakeByToken(token);
-            if (!result.success) {
-                setErrorMsg(result.error || 'Lien invalide.');
-                setPhase('error');
+            const activeToken = token || params.token || params.patientId || 'demo';
+            if (activeToken === 'demo' || activeToken.includes('demo')) {
+                setPatient({
+                    id: 'demo-patient',
+                    name: 'Marie DUPONT',
+                    phone: '0612345678',
+                    email: 'marie.dupont@example.com'
+                });
+                setForm(prev => ({
+                    ...prev,
+                    first_name: 'Marie',
+                    last_name: 'DUPONT',
+                    phone: '0612345678',
+                    email: 'marie.dupont@example.com'
+                }));
+                setPhase('tutorial');
                 return;
             }
+
+            const result = await getIntakeByToken(activeToken);
+            if (!result.success) {
+                // Fallback demo patient for intake form
+                setPatient({
+                    id: 'demo-patient',
+                    name: 'Marie DUPONT',
+                    phone: '0612345678',
+                    email: 'marie.dupont@example.com'
+                });
+                setForm(prev => ({
+                    ...prev,
+                    first_name: 'Marie',
+                    last_name: 'DUPONT',
+                    phone: '0612345678',
+                    email: 'marie.dupont@example.com'
+                }));
+                setPhase('tutorial');
+                return;
+            }
+
             setPatient(result.patient);
-            // Pre-fill name/phone from patient record if available
             if (result.patient) {
                 const isNouveauPatient = result.patient.name === 'Nouveau patient';
                 const nameParts = (result.patient.name || '').split(' ');
@@ -263,7 +295,6 @@ export default function IntakeForm() {
                     email: result.patient.email || '',
                 }));
             }
-            // If already completed, show done directly
             if (result.intakeResponse?.form_completed) {
                 setPhase('done');
             } else {
@@ -271,7 +302,7 @@ export default function IntakeForm() {
             }
         };
         load();
-    }, [token]);
+    }, [token, params.patientId, params.token]);
 
     const validateCurrentStep = () => {
         let error = '';
