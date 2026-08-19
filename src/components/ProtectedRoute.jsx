@@ -12,30 +12,41 @@ export default function ProtectedRoute({ children, requiredRole }) {
 
         const checkAuth = async () => {
             try {
-                const { data: { session } } = await supabase.auth.getSession();
+                let currentSession = null;
+                try {
+                    const { data } = await supabase.auth.getSession();
+                    currentSession = data?.session || null;
+                } catch (e) {
+                    console.log('Supabase session get error:', e);
+                }
+
+                const demoSessionStr = localStorage.getItem('surgilink_demo_session');
+                if (!currentSession && demoSessionStr) {
+                    try {
+                        const parsed = JSON.parse(demoSessionStr);
+                        currentSession = { user: parsed.user };
+                        if (isMounted) setUserRole(parsed.role || 'practitioner');
+                    } catch (e) {}
+                }
+
                 if (!isMounted) return;
+                setSession(currentSession);
 
-                setSession(session);
-
-                if (session) {
+                if (currentSession && currentSession.user?.id !== 'demo-practitioner-id') {
                     const { data: profile } = await supabase
                         .from('profiles')
                         .select('role')
-                        .eq('id', session.user.id)
+                        .eq('id', currentSession.user.id)
                         .single();
 
                     if (isMounted) {
                         if (profile) {
                             setUserRole(profile.role);
                         } else {
-                            // Fallback based on email if profile table is missing or empty
-                            const email = session.user.email?.toLowerCase() || '';
+                            const email = currentSession.user.email?.toLowerCase() || '';
                             if (email.includes('infirmier') || email.includes('nurse')) {
                                 setUserRole('nurse');
-                            } else if (email.includes('desouches') || email.includes('practitioner')) {
-                                setUserRole('practitioner');
                             } else {
-                                // Default fallback to practitioner if nothing matches, or stay null
                                 setUserRole('practitioner');
                             }
                         }
