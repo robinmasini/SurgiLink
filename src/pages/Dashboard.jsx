@@ -368,35 +368,14 @@ export default function Dashboard() {
                     formattedPatients.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
                     setAllPatients(formattedPatients);
 
-                    // Profile for mobile
-                    const { data: { session } } = await supabase.auth.getSession();
-                    if (session && isMounted) {
-                        const { data: profileData, error: profileError } = await supabase
-                            .from('profiles')
-                            .select('*')
-                            .eq('id', session.user.id)
-                            .single();
-
-                        if (isMounted) {
-                            if (profileData && !profileError) {
-                                setProfile(profileData);
-                            } else {
-                                // Fallback based on email
-                                const email = session.user.email?.toLowerCase() || '';
-                                if (email.includes('infirmier') || email.includes('nurse')) {
-                                    setProfile({
-                                        full_name: 'Dr. Christophe DESOUCHES',
-                                        role: 'nurse',
-                                        practitioner_id: 'c512fc61-e751-4ea3-872e-8a04fee4da12'
-                                    });
-                                } else {
-                                    setProfile({
-                                        full_name: 'Dr. Christophe DESOUCHES',
-                                        role: 'practitioner'
-                                    });
-                                }
-                            }
-                        }
+                    // Profile for mobile - use already fetched curProfile/userRole
+                    if (curProfile) {
+                        setProfile(curProfile);
+                    } else {
+                        setProfile({
+                            full_name: 'Dr. Christophe DESOUCHES',
+                            role: userRole || 'practitioner'
+                        });
                     }
                 }
             }
