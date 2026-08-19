@@ -120,6 +120,7 @@ export default function Login() {
                 loop 
                 muted 
                 playsInline
+                onError={(e) => { e.currentTarget.style.display = 'none'; }}
                 className="login-bg-video"
                 style={{
                     position: 'absolute',
