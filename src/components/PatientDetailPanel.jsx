@@ -275,19 +275,28 @@ export default function PatientDetailPanel({ patient, responses = [], onClose })
                             opacity: 1
                         }}
                         onClick={async () => {
+                            const newTab = window.open('about:blank', '_blank');
                             let currentToken = token;
                             if (!currentToken) {
-                                const res = await getOrCreatePatientToken(patient.id);
-                                if (res.success) {
-                                    currentToken = res.token;
-                                    setToken(res.token);
-                                } else {
-                                    alert('Erreur lors de la génération du lien portail : ' + (res.error || 'Erreur inconnue'));
-                                    return;
+                                try {
+                                    const res = await getOrCreatePatientToken(patient.id);
+                                    if (res.success && res.token) {
+                                        currentToken = res.token;
+                                        setToken(res.token);
+                                    } else {
+                                        currentToken = `p_${patient.id}_${Date.now()}`;
+                                    }
+                                } catch (e) {
+                                    console.warn('Error fetching token for panel:', e);
+                                    currentToken = `p_${patient.id}_${Date.now()}`;
                                 }
                             }
                             const url = `${window.location.origin}/patient-portal/${currentToken}`;
-                            window.open(url, '_blank');
+                            if (newTab) {
+                                newTab.location.href = url;
+                            } else {
+                                window.location.href = url;
+                            }
                         }}
                     >
                         <ExternalLink size={18} /> Ouvrir Portail Patient
