@@ -82,9 +82,10 @@ export default function PatientTokenRoute({ children }) {
 
                 const isOnboarded = isDemoToken || localOnboarded || consultedOnboarded || hasResponsesOnboarded;
                 const isAlreadyOnboarding = location.pathname.includes('/onboarding');
+                const isPortalDashboard = location.pathname === `/patient-portal/${token}` || location.pathname === `/patient-portal/${token}/`;
 
-                // Trigger onboarding for any portal route if not completed
-                if (!isOnboarded && !isAlreadyOnboarding) {
+                // Trigger onboarding only for the portal home dashboard if not completed
+                if (!isOnboarded && !isAlreadyOnboarding && isPortalDashboard) {
                     console.log('[TokenRoute] -> Setting needsOnboarding=true');
                     setNeedsOnboarding(true);
                 }
