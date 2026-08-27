@@ -57,6 +57,7 @@ import clinicImage from '../assets/clinic.png';
 import hmIcon from '../assets/hm-icon.png';
 import StatusBolt from '../components/StatusBolt';
 import LogoIcon from '../components/LogoIcon';
+import CNIUploaderCard from '../components/CNIUploaderCard';
 
 const Drawer = ({ isOpen, onClose, title, icon, children }) => {
     return (
@@ -1016,50 +1017,18 @@ export default function PatientReview() {
                             </div>
                         </div>
 
-                        {/* ID Card Display */}
-                        <div className="card glass-effect patient-card" style={{ marginTop: 'var(--spacing-6)' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)', marginBottom: 'var(--spacing-6)', borderBottom: '1px solid rgba(0,0,0,0.05)', paddingBottom: 'var(--spacing-4)' }}>
-                                <div>
-                                    <h3 style={{ margin: 0, fontSize: 'var(--font-size-lg)', fontWeight: '700' }}>Pièce d'identité</h3>
-                                    <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: 'var(--color-gray-500)' }}>Transmise via la fiche de renseignements</p>
-                                </div>
-                            </div>
-                            {(intakeData?.cni_in_person || intakeData?.id_card_recto === 'IN_PERSON') ? (
-                                <div style={{ padding: '12px 16px', background: '#ECFDF5', border: '1px solid #10B981', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '10px', color: '#065F46', fontWeight: '700', fontSize: '14px' }}>
-                                    <ShieldCheck size={20} color="#10B981" />
-                                    Le patient a choisi de fournir sa CNI en main propre au cabinet.
-                                </div>
-                            ) : intakeData?.id_card_recto ? (
-                                <div style={{ display: 'flex', gap: 'var(--spacing-6)', flexWrap: 'wrap' }}>
-                                    <div>
-                                        <div style={{ fontSize: '12px', fontWeight: '800', color: 'var(--color-gray-500)', textTransform: 'uppercase', marginBottom: '8px' }}>Recto</div>
-                                        <img 
-                                            src={intakeData.id_card_recto} 
-                                            alt="ID Recto" 
-                                            style={{ height: '80px', width: 'auto', borderRadius: '8px', border: '1px solid #E5E7EB', cursor: 'pointer', objectFit: 'cover' }} 
-                                            onClick={() => setSelectedImage(intakeData.id_card_recto)}
-                                        />
-                                    </div>
-                                    <div>
-                                        <div style={{ fontSize: '12px', fontWeight: '800', color: 'var(--color-gray-500)', textTransform: 'uppercase', marginBottom: '8px' }}>Verso</div>
-                                        {intakeData.id_card_verso ? (
-                                            <img 
-                                                src={intakeData.id_card_verso} 
-                                                alt="ID Verso" 
-                                                style={{ height: '80px', width: 'auto', borderRadius: '8px', border: '1px solid #E5E7EB', cursor: 'pointer', objectFit: 'cover' }} 
-                                                onClick={() => setSelectedImage(intakeData.id_card_verso)}
-                                            />
-                                        ) : (
-                                            <div style={{ padding: '20px', height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#F9FAFB', borderRadius: '8px', border: '1px dashed #E5E7EB', color: '#6B7280', fontSize: '12px' }}>Non fourni</div>
-                                        )}
-                                    </div>
-                                </div>
-                            ) : (
-                                <div style={{ padding: '12px 16px', background: '#FEF2F2', border: '1px solid #FCA5A5', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '10px', color: '#991B1B', fontWeight: '700', fontSize: '14px' }}>
-                                    <AlertCircle size={20} color="#EF4444" />
-                                    <span>CNI à renseigner : Le patient n'a pas encore fourni sa pièce d'identité.</span>
-                                </div>
-                            )}
+                        {/* ID Card / CNI Uploader */}
+                        <div style={{ marginTop: 'var(--spacing-6)' }}>
+                            <CNIUploaderCard
+                                patientId={id}
+                                intakeData={intakeData}
+                                onCNIUpdated={(updatedIntake) => {
+                                    setIntakeData(prev => ({
+                                        ...prev,
+                                        ...updatedIntake
+                                    }));
+                                }}
+                            />
                         </div>
 
                         {/* Patient History Display */}

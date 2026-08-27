@@ -19,6 +19,7 @@ import { supabase } from '../lib/supabase';
 import PatientStatusBadges from './PatientStatusBadges';
 import { generatePatientToken, getOrCreatePatientToken } from '../services/tokenService';
 import EditPatientModal from './EditPatientModal';
+import CNIUploaderModal from './CNIUploaderModal';
 
 
 const STYLES = {
@@ -78,6 +79,7 @@ export default function PatientDetailPanel({ patient, responses = [], onClose })
     const [isLoading, setIsLoading] = useState(false);
     const [pendingReminders, setPendingReminders] = useState([]);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isCNIModalOpen, setIsCNIModalOpen] = useState(false);
     const [intakeData, setIntakeData] = useState(null);
 
     useEffect(() => {
@@ -423,6 +425,57 @@ export default function PatientDetailPanel({ patient, responses = [], onClose })
                     </div>
                 )}
 
+                {/* CNI Status & Management */}
+                <div style={{
+                    marginBottom: 'var(--spacing-6)',
+                    padding: 'var(--spacing-3) var(--spacing-4)',
+                    background: 'white',
+                    border: '1px solid var(--color-gray-200)',
+                    borderRadius: 'var(--radius-lg)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: '12px'
+                }}>
+                    <div>
+                        <div style={{ fontSize: '10px', fontWeight: '800', color: 'var(--color-gray-400)', textTransform: 'uppercase' }}>
+                            Pièce d'identité (CNI)
+                        </div>
+                        <div style={{
+                            fontSize: '12px',
+                            fontWeight: '700',
+                            marginTop: '2px',
+                            color: (intakeData?.cni_in_person || intakeData?.id_card_recto === 'IN_PERSON')
+                                ? '#047857'
+                                : (intakeData?.id_card_recto)
+                                ? '#1D4ED8'
+                                : '#B91C1C'
+                        }}>
+                            {(intakeData?.cni_in_person || intakeData?.id_card_recto === 'IN_PERSON')
+                                ? '🤝 Fournie en main propre'
+                                : (intakeData?.id_card_recto)
+                                ? '✓ Pièce chargée'
+                                : '⚠️ Non fournie'}
+                        </div>
+                    </div>
+                    <button
+                        type="button"
+                        style={{
+                            fontSize: '11px',
+                            padding: '6px 12px',
+                            borderRadius: '8px',
+                            fontWeight: '700',
+                            border: '1px solid var(--color-primary-200)',
+                            background: 'var(--color-primary-50)',
+                            color: 'var(--color-primary-700)',
+                            cursor: 'pointer'
+                        }}
+                        onClick={() => setIsCNIModalOpen(true)}
+                    >
+                        Gérer la CNI
+                    </button>
+                </div>
+
                 {/* Reminder Queue */}
                 <div style={{ marginBottom: 'var(--spacing-6)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-3)' }}>
@@ -574,6 +627,19 @@ export default function PatientDetailPanel({ patient, responses = [], onClose })
                     setIsEditModalOpen(false);
                     onClose();
                     window.location.reload();
+                }}
+            />
+
+            <CNIUploaderModal
+                isOpen={isCNIModalOpen}
+                onClose={() => setIsCNIModalOpen(false)}
+                patientId={patient.id}
+                intakeData={intakeData}
+                onCNIUpdated={(updatedIntake) => {
+                    setIntakeData(prev => ({
+                        ...prev,
+                        ...updatedIntake
+                    }));
                 }}
             />
         </div>
