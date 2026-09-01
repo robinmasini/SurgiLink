@@ -2,10 +2,12 @@ import { useState, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 
+let cachedUserRole = localStorage.getItem('surgilink_user_role');
+
 export default function ProtectedRoute({ children, requiredRole }) {
     const [isLoading, setIsLoading] = useState(true);
     const [session, setSession] = useState(null);
-    const [userRole, setUserRole] = useState(null);
+    const [userRole, setUserRole] = useState(() => cachedUserRole);
 
     useEffect(() => {
         let isMounted = true;
@@ -14,7 +16,10 @@ export default function ProtectedRoute({ children, requiredRole }) {
             try {
                 let currentSession = null;
                 try {
-                    const { data } = await supabase.auth.getSession();
+                    // Maximum 1.5s timeout so ProtectedRoute never hangs on "Chargement sécurisé..."
+                    const sessionPromise = supabase.auth.getSession();
+                    const timeoutPromise = new Promise(resolve => setTimeout(() => resolve({ data: { session: null } }), 1500));
+                    const { data } = await Promise.race([sessionPromise, timeoutPromise]);
                     currentSession = data?.session || null;
                 } catch (e) {
                     console.log('Supabase session get error:', e);
@@ -25,31 +30,39 @@ export default function ProtectedRoute({ children, requiredRole }) {
                     try {
                         const parsed = JSON.parse(demoSessionStr);
                         currentSession = { user: parsed.user };
-                        if (isMounted) setUserRole(parsed.role || 'practitioner');
+                        const role = parsed.role || 'practitioner';
+                        cachedUserRole = role;
+                        localStorage.setItem('surgilink_user_role', role);
+                        if (isMounted) setUserRole(role);
                     } catch (e) {}
                 }
 
                 if (!isMounted) return;
                 setSession(currentSession);
 
-                if (currentSession && currentSession.user?.id !== 'demo-practitioner-id') {
-                    const { data: profile } = await supabase
-                        .from('profiles')
-                        .select('role')
-                        .eq('id', currentSession.user.id)
-                        .single();
+                if (currentSession) {
+                    const email = currentSession.user?.email?.toLowerCase() || '';
+                    const defaultRole = (email.includes('infirmier') || email.includes('nurse')) ? 'nurse' : 'practitioner';
+                    if (!userRole) {
+                        const initialRole = cachedUserRole || defaultRole;
+                        setUserRole(initialRole);
+                    }
 
-                    if (isMounted) {
-                        if (profile) {
-                            setUserRole(profile.role);
-                        } else {
-                            const email = currentSession.user.email?.toLowerCase() || '';
-                            if (email.includes('infirmier') || email.includes('nurse')) {
-                                setUserRole('nurse');
-                            } else {
-                                setUserRole('practitioner');
-                            }
-                        }
+                    // Non-blocking async profile role check
+                    if (currentSession.user?.id && currentSession.user.id !== 'demo-practitioner-id') {
+                        supabase
+                            .from('profiles')
+                            .select('role')
+                            .eq('id', currentSession.user.id)
+                            .maybeSingle()
+                            .then(({ data: profile }) => {
+                                if (isMounted && profile?.role) {
+                                    cachedUserRole = profile.role;
+                                    localStorage.setItem('surgilink_user_role', profile.role);
+                                    setUserRole(profile.role);
+                                }
+                            })
+                            .catch(() => {});
                     }
                 }
             } catch (err) {
