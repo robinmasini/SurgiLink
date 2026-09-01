@@ -27,12 +27,14 @@ const navItems = [
     { path: '/account', label: 'Mon compte', icon: User },
 ];
 
+let cachedSidebarProfile = null;
+
 export default function Sidebar() {
     const { t } = useTranslation();
     const location = useLocation();
     const navigate = useNavigate();
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
-    const [profile, setProfile] = useState(null);
+    const [profile, setProfile] = useState(() => cachedSidebarProfile);
 
     useEffect(() => {
         const handleResize = () => {
@@ -46,6 +48,10 @@ export default function Sidebar() {
     }, []);
 
     const loadProfile = async () => {
+        if (cachedSidebarProfile) {
+            setProfile(cachedSidebarProfile);
+            return;
+        }
         let isMounted = true;
         try {
             const { data: { session } } = await supabase.auth.getSession();
@@ -57,24 +63,27 @@ export default function Sidebar() {
                     .single();
 
                 if (isMounted) {
+                    let prof = null;
                     if (!error && data) {
-                        setProfile(data);
+                        prof = data;
                     } else {
                         // Fallback based on email if profile not in table
                         const email = session.user.email?.toLowerCase() || '';
                         if (email.includes('infirmier') || email.includes('nurse')) {
-                            setProfile({
+                            prof = {
                                 full_name: 'Dr. Christophe DESOUCHES',
                                 role: 'nurse',
                                 practitioner_id: 'c512fc61-e751-4ea3-872e-8a04fee4da12'
-                            });
+                            };
                         } else {
-                            setProfile({
+                            prof = {
                                 full_name: 'Dr. Christophe DESOUCHES',
                                 role: 'practitioner'
-                            });
+                            };
                         }
                     }
+                    cachedSidebarProfile = prof;
+                    setProfile(prof);
                 }
             }
         } catch (err) {

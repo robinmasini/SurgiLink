@@ -14,29 +14,43 @@ import { supabase } from '../lib/supabase';
  * PatientStatusBadges Component
  * Renders feedback pastilles based on pathway responses
  */
+let cachedStatusRules = null;
+let statusRulesPromise = null;
+
 export default function PatientStatusBadges({ responses = [], daysUntil = '', patientStatus = '', intakeData = null, hasCni = undefined, lastConsultedAt = null, hasDate = undefined }) {
-    const [rules, setRules] = useState({
+    const [rules, setRules] = useState(() => cachedStatusRules || {
         j7_incomplete_days: 7,
         j1_incomplete_days: 1,
         no_portal_access_hours: 24
     });
 
     useEffect(() => {
+        if (cachedStatusRules) {
+            setRules(cachedStatusRules);
+            return;
+        }
+
         const loadRules = async () => {
             try {
-                const { data } = await supabase
-                    .from('app_settings')
-                    .select('value')
-                    .eq('key', 'status_rules')
-                    .maybeSingle();
+                if (!statusRulesPromise) {
+                    statusRulesPromise = supabase
+                        .from('app_settings')
+                        .select('value')
+                        .eq('key', 'status_rules')
+                        .maybeSingle();
+                }
+                const { data } = await statusRulesPromise;
 
                 if (data?.value) {
                     const parsed = typeof data.value === 'string' ? JSON.parse(data.value) : data.value;
-                    setRules(prevRules => ({
-                        ...prevRules,
+                    const finalRules = {
+                        j7_incomplete_days: 7,
+                        no_portal_access_hours: 24,
                         ...parsed,
-                        j1_incomplete_days: parsed.j1_incomplete_days || parsed.j2_incomplete_days || 1
-                    }));
+                        j1_incomplete_days: parsed?.j1_incomplete_days || parsed?.j2_incomplete_days || 1
+                    };
+                    cachedStatusRules = finalRules;
+                    setRules(finalRules);
                 }
             } catch (e) {
                 console.warn('Error loading rules in PatientStatusBadges:', e);

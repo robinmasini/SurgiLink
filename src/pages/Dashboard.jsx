@@ -87,6 +87,8 @@ export default function Dashboard() {
 
     useEffect(() => {
         const fixSettings = async () => {
+            if (isSettingsFixed) return;
+            isSettingsFixed = true;
             try {
                 const { data, error } = await supabase
                     .from('app_settings')
