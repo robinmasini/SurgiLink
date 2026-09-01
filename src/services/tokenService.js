@@ -177,13 +177,14 @@ export async function validateToken(token) {
     }
 
     const cleanToken = token.trim().toLowerCase();
-    const isDemo = !cleanToken || cleanToken === 'demo' || cleanToken.startsWith('test') || cleanToken.includes('token') || cleanToken === 'patient';
+    const isDemo = !cleanToken || cleanToken === 'demo' || cleanToken.includes('demo') || cleanToken.startsWith('test') || cleanToken.includes('token') || cleanToken === 'patient';
 
-    // Parse self-describing fallback pattern (e.g., p_15_..., pid_15_...)
-    const fallbackMatch = cleanToken.match(/^p(?:id)?[_-](\d+)(?:[_-].*)?$/i);
+    // Parse self-describing fallback pattern (e.g., p_15_..., p_demo-p1_..., pid_15_...)
     let fallbackPatientId = null;
+    const fallbackMatch = cleanToken.match(/^p(?:id)?[_-](demo-p\d+|\d+|[a-z0-9-]+?)(?:[_-][a-f0-9]{16,32})?$/i);
     if (fallbackMatch && fallbackMatch[1]) {
-        fallbackPatientId = isNaN(fallbackMatch[1]) ? fallbackMatch[1] : parseInt(fallbackMatch[1], 10);
+        const rawId = fallbackMatch[1];
+        fallbackPatientId = (!isNaN(rawId) && !rawId.startsWith('0')) ? parseInt(rawId, 10) : rawId;
     }
 
     try {
