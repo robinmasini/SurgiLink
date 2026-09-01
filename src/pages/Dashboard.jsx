@@ -154,12 +154,10 @@ export default function Dashboard() {
         let isMounted = true;
         setIsLoading(true);
         try {
-            // 0. Get current session and profile with 500ms timeout
+            // 0. Get current session and profile
             let session = null;
             try {
-                const sessionPromise = supabase.auth.getSession();
-                const timeoutPromise = new Promise(resolve => setTimeout(() => resolve({ data: { session: null } }), 500));
-                const res = await Promise.race([sessionPromise, timeoutPromise]);
+                const res = await supabase.auth.getSession();
                 session = res?.data?.session || null;
             } catch (e) {
                 session = null;
@@ -184,9 +182,7 @@ export default function Dashboard() {
             let curProfile = null;
             if (!isDemoMode && session.user?.id) {
                 try {
-                    const profileQuery = supabase.from('profiles').select('*').eq('id', session.user.id).maybeSingle();
-                    const timeoutPromise = new Promise(resolve => setTimeout(() => resolve({ data: null }), 600));
-                    const res = await Promise.race([profileQuery, timeoutPromise]);
+                    const res = await supabase.from('profiles').select('*').eq('id', session.user.id).maybeSingle();
                     curProfile = res?.data || null;
                 } catch (e) {}
             }
@@ -203,8 +199,7 @@ export default function Dashboard() {
                     } else {
                         query = query.eq('user_id', session.user.id);
                     }
-                    const timeoutPromise = new Promise(resolve => setTimeout(() => resolve({ data: [] }), 1200));
-                    const res = await Promise.race([query, timeoutPromise]);
+                    const res = await query;
                     allPatientsData = (res && res.data) ? res.data : [];
                 } catch (e) {
                     console.warn('Patients fetch error:', e);
@@ -222,19 +217,6 @@ export default function Dashboard() {
                     { id: 'demo-p2', name: 'Jean MARTIN', date: d2, operation: 'Rhinoplastie', status: 'alerte', progress: 50, phone: '0698765432', created_at: new Date().toISOString() },
                     { id: 'demo-p3', name: 'Sophie LEROY', date: d3, operation: 'Blépharoplastie', status: 'intake', progress: 20, phone: '0655443322', created_at: new Date().toISOString() }
                 ];
-            }
-
-            // Non-blocking background progress check (prevents latency delay from Thailand/overseas)
-            if (!isDemoMode) {
-                Promise.all(allPatientsData.map(async (p) => {
-                    try {
-                        const res = await calculateGlobalProgress(p.id);
-                        if (res && typeof res === 'object') {
-                            if (res.status) p.status = res.status;
-                            if (res.progress !== undefined) p.progress = res.progress;
-                        }
-                    } catch (e) {}
-                })).catch(() => {});
             }
 
             // Calculate stats
@@ -305,19 +287,17 @@ export default function Dashboard() {
                     });
                 }
 
-                // Background cleanup of duplicate records in DB
-                consolidateDuplicatePatients();
-
-                // Fetch responses & intake form responses for all patient IDs (including duplicates)
+                // Fetch responses, intake form responses, and settings concurrently
                 const allIdsToFetch = (allPatientsData || []).map(p => p.id);
                 const idToName = {};
                 (allPatientsData || []).forEach(p => { idToName[p.id] = (p.name || '').trim().toLowerCase(); });
                 const nameToPrimaryId = {};
                 formattedPatients.forEach(p => { nameToPrimaryId[(p.name || '').trim().toLowerCase()] = p.id; });
 
-                const [respDataRes, intakeDataRes] = await Promise.all([
+                const [respDataRes, intakeDataRes, settingsDataRes] = await Promise.all([
                     supabase.from('pathway_responses').select('*').in('patient_id', allIdsToFetch),
-                    supabase.from('intake_form_responses').select('patient_id, id_card_recto, cni_in_person').in('patient_id', allIdsToFetch)
+                    supabase.from('intake_form_responses').select('patient_id, id_card_recto, cni_in_person').in('patient_id', allIdsToFetch),
+                    supabase.from('app_settings').select('value').eq('key', 'financial_impact_unit').maybeSingle()
                 ]);
 
                 if (isMounted) {
@@ -347,24 +327,11 @@ export default function Dashboard() {
                         });
                     });
                     setIntakeResponses(intakeMap);
-                }
 
-                // 4. Fetch financial impact unit
-                try {
-                    const { data: settingsData } = await supabase
-                        .from('app_settings')
-                        .select('value')
-                        .eq('key', 'financial_impact_unit')
-                        .maybeSingle();
-
-                    if (settingsData?.value) {
-                        setFinancialImpactUnit(parseInt(settingsData.value) || 2450);
+                    if (settingsDataRes?.data?.value) {
+                        setFinancialImpactUnit(parseInt(settingsDataRes.data.value) || 2450);
                     }
-                } catch (e) {
-                    console.warn('Error fetching financial impact setting:', e);
-                }
 
-                if (isMounted) {
                     formattedPatients.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
                     setAllPatients(formattedPatients);
 

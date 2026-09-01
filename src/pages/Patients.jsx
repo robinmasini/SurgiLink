@@ -95,12 +95,10 @@ export default function Patients() {
         try {
             let allPatientsData = [];
             try {
-                const queryPromise = supabase
+                const res = await supabase
                     .from('patients')
                     .select('*')
                     .order('date', { ascending: false });
-                const timeoutPromise = new Promise(resolve => setTimeout(() => resolve({ data: [] }), 1200));
-                const res = await Promise.race([queryPromise, timeoutPromise]);
                 allPatientsData = (res && res.data) ? res.data : [];
             } catch (e) {
                 console.warn('Patients fetch error:', e);
@@ -118,17 +116,6 @@ export default function Patients() {
                     { id: 'demo-p3', name: 'Sophie LEROY', date: d3, operation: 'Blépharoplastie', status: 'intake', progress: 20, phone: '0655443322', created_at: new Date().toISOString() }
                 ];
             }
-
-            // Non-blocking background progress recalculation
-            Promise.all(allPatientsData.map(async (p) => {
-                try {
-                    const res = await calculateGlobalProgress(p.id);
-                    if (res && typeof res === 'object') {
-                        if (res.status) p.status = res.status;
-                        if (res.progress !== undefined) p.progress = res.progress;
-                    }
-                } catch (e) {}
-            })).catch(() => {});
 
             // Group by normalized name to deduplicate and keep the most complete/active intervention
             const patientGroups = {};
@@ -166,20 +153,18 @@ export default function Patients() {
 
             setAllPatients(formattedPatients);
 
-            // Consolidate duplicate records in DB in background
-            consolidateDuplicatePatients();
-
             if (formattedPatients.length > 0) {
-                // Fetch responses for all patient IDs (including potential duplicates)
+                // Fetch responses and pending reminders for all patient IDs concurrently
                 const allIdsToFetch = (allPatientsData || []).map(p => p.id);
                 const idToName = {};
                 (allPatientsData || []).forEach(p => { idToName[p.id] = (p.name || '').trim().toLowerCase(); });
                 const nameToPrimaryId = {};
                 formattedPatients.forEach(p => { nameToPrimaryId[(p.name || '').trim().toLowerCase()] = p.id; });
 
-                const [respDataRes, intakeDataRes] = await Promise.all([
+                const [respDataRes, intakeDataRes, remindersDataRes] = await Promise.all([
                     supabase.from('pathway_responses').select('*').in('patient_id', allIdsToFetch),
-                    supabase.from('intake_form_responses').select('patient_id, id_card_recto, cni_in_person').in('patient_id', allIdsToFetch)
+                    supabase.from('intake_form_responses').select('patient_id, id_card_recto, cni_in_person').in('patient_id', allIdsToFetch),
+                    supabase.from('reminder_queue').select('patient_id, screen, scheduled_for').in('patient_id', allIdsToFetch).eq('status', 'pending').order('scheduled_for', { ascending: true })
                 ]);
 
                 const respMap = {};
@@ -209,17 +194,9 @@ export default function Patients() {
                 });
                 setIntakeResponses(intakeMap);
 
-                // Fetch next pending reminders for each patient
-                const { data: remindersData, error: remindersError } = await supabase
-                    .from('reminder_queue')
-                    .select('patient_id, screen, scheduled_for')
-                    .in('patient_id', formattedPatients.map(p => p.id))
-                    .eq('status', 'pending')
-                    .order('scheduled_for', { ascending: true });
-
-                if (!remindersError && remindersData) {
+                if (!remindersDataRes.error && remindersDataRes.data) {
                     const remindersMap = {};
-                    remindersData.forEach(r => {
+                    remindersDataRes.data.forEach(r => {
                         if (!remindersMap[r.patient_id]) {
                             remindersMap[r.patient_id] = r;
                         }

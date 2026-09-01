@@ -68,13 +68,11 @@ export default function PatientTokenRoute({ children }) {
 
                 let hasResponsesOnboarded = false;
                 try {
-                    const queryPromise = supabase
+                    const { data: userResponses } = await supabase
                         .from('pathway_responses')
                         .select('id')
                         .eq('patient_id', patientData.id)
                         .limit(1);
-                    const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 1000));
-                    const { data: userResponses } = await Promise.race([queryPromise, timeoutPromise]);
                     hasResponsesOnboarded = (userResponses || []).length > 0;
                 } catch (e) {
                     hasResponsesOnboarded = false;

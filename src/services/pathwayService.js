@@ -261,16 +261,10 @@ export async function calculateGlobalProgress(patientId) {
  */
 export async function getResponses(patientId, screen) {
     try {
-        const queryPromise = supabase
+        const { data, error } = await supabase
             .from('pathway_responses')
             .select('item_id, response, updated_at, screen')
             .eq('patient_id', patientId);
-
-        const timeoutPromise = new Promise((_, reject) => 
-            setTimeout(() => reject(new Error('Fetch timeout')), 1200)
-        );
-
-        const { data, error } = await Promise.race([queryPromise, timeoutPromise]);
 
         if (error) throw error;
 

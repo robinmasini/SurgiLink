@@ -14,9 +14,7 @@ export default function ProtectedRoute({ children, requiredRole }) {
             try {
                 let currentSession = null;
                 try {
-                    const sessionPromise = supabase.auth.getSession();
-                    const timeoutPromise = new Promise(resolve => setTimeout(() => resolve({ data: { session: null } }), 500));
-                    const { data } = await Promise.race([sessionPromise, timeoutPromise]);
+                    const { data } = await supabase.auth.getSession();
                     currentSession = data?.session || null;
                 } catch (e) {
                     console.log('Supabase session get error:', e);

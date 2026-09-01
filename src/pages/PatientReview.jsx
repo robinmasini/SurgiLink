@@ -46,6 +46,7 @@ import {
 import { supabase } from '../lib/supabase';
 import { calculateAge, calculateDaysUntilSurgery, formatDateFR, formatDateTimeFR } from '../utils/dateUtils';
 import { getPatientPathwayStatus, getResponses, calculateRiskFlags, calculateGlobalProgress } from '../services/pathwayService';
+import { getRiskFlags } from '../config/pathway.config.js';
 import { getDocuments, uploadDocument, deleteDocument, downloadDocument } from '../services/documentService';
 import { generatePatientToken, getPatientTokens, revokeToken, getOrCreatePatientToken } from '../services/tokenService';
 import { generateSynthesisPDF } from '../services/pdfService';
@@ -127,25 +128,26 @@ export default function PatientReview() {
     const loadPatientData = async () => {
         setIsLoading(true);
         try {
-            // Recalculate global progress in DB to ensure status is up to date
-            await calculateGlobalProgress(id);
+            // Fetch patient, pathway responses, intake form response, documents, and custom questions concurrently
+            const [patientRes, responsesRes, intakeRes, docData, questions] = await Promise.all([
+                supabase.from('patients').select('*').eq('id', id).single(),
+                supabase.from('pathway_responses').select('screen, item_id, response, updated_at, user_id').eq('patient_id', id),
+                supabase.from('intake_form_responses').select('*').eq('patient_id', id).maybeSingle(),
+                getDocuments(parseInt(id)),
+                getCustomQuestions(id)
+            ]);
 
-            // Load patient
-            const { data: patientData, error: patientError } = await supabase
-                .from('patients')
-                .select('*')
-                .eq('id', id)
-                .single();
+            if (patientRes.error) throw patientRes.error;
+            const patientData = patientRes.data;
+            setPatient({
+                ...patientData,
+                displayProgress: patientData?.progress || 0
+            });
+            setDocuments(docData);
+            setCustomQuestions(questions);
 
-            if (patientError) throw patientError;
-            setPatient(patientData);
-
-            let { data: intakeResp } = await supabase
-                .from('intake_form_responses')
-                .select('*')
-                .eq('patient_id', id)
-                .maybeSingle();
-
+            // Intake form fallback
+            let intakeResp = intakeRes.data;
             if (!intakeResp && patientData) {
                 if (patientData.phone) {
                     const { data: byPhone } = await supabase
@@ -189,74 +191,55 @@ export default function PatientReview() {
                 setPatientHistory(historyData || []);
             }
 
-            // Calculate risk status
-            const [riskJ7, riskJ1Pre, riskJ1, riskJ4, riskESatis] = await Promise.all([
-                calculateRiskFlags(id, 'J7'),
-                calculateRiskFlags(id, 'J1_PreOp'),
-                calculateRiskFlags(id, 'J1'),
-                calculateRiskFlags(id, 'J4_Satisfaction'),
-                calculateRiskFlags(id, 'ESATIS')
-            ]);
+            // Process clinical responses and metadata in memory
+            const clinical = {
+                Bienvenue: {},
+                J7: {},
+                J1_PreOp: {},
+                J1: {},
+                J4_Satisfaction: {},
+                ESATIS: {}
+            };
+            const meta = {};
 
-            const hasHardRisk = riskJ7.hard?.length > 0 || riskJ1Pre.hard?.length > 0 || riskJ1.hard?.length > 0 || riskJ4.hard?.length > 0 || riskESatis?.hard?.length > 0;
-            const hasSoftRisk = riskJ7.soft?.length > 0 || riskJ1Pre.soft?.length > 0 || riskJ1.soft?.length > 0 || riskJ4.soft?.length > 0 || riskESatis?.soft?.length > 0;
+            (responsesRes.data || []).forEach(r => {
+                const screenKey = r.screen;
+                if (!meta[screenKey]) meta[screenKey] = {};
+                meta[screenKey][r.item_id] = {
+                    updated_at: r.updated_at,
+                    user_id: r.user_id
+                };
+
+                // Map to clinical responses
+                Object.keys(clinical).forEach(s => {
+                    const sLower = s.toLowerCase();
+                    const rLower = (r.screen || '').toLowerCase();
+                    if (rLower === sLower || ((rLower === 'j1preop' || rLower === 'j1_preop') && (sLower === 'j1preop' || sLower === 'j1_preop'))) {
+                        clinical[s][r.item_id] = r.response?.value;
+                    }
+                });
+            });
+
+            setClinicalResponses(clinical);
+            setResponsesMeta(meta);
+
+            // Calculate risk flags in memory
+            const screensForRisk = ['J7', 'J1_PreOp', 'J1', 'J4_Satisfaction', 'ESATIS'];
+            let hasHardRisk = false;
+            let hasSoftRisk = false;
+
+            screensForRisk.forEach(screen => {
+                const risk = getRiskFlags(screen, clinical[screen] || {});
+                if (risk.hard && risk.hard.length > 0) hasHardRisk = true;
+                if (risk.soft && risk.soft.length > 0) hasSoftRisk = true;
+            });
 
             if (hasHardRisk) setRiskStatus('URGENT');
             else if (hasSoftRisk) setRiskStatus('VIGILANCE');
             else setRiskStatus('NORMAL');
 
-            // Load clinical responses for all steps
-            const [respBienvenue, respJ7, respJ1Pre, respJ1, respJ4, respESatis] = await Promise.all([
-                getResponses(id, 'Bienvenue'),
-                getResponses(id, 'J7'),
-                getResponses(id, 'J1_PreOp'),
-                getResponses(id, 'J1'),
-                getResponses(id, 'J4_Satisfaction'),
-                getResponses(id, 'ESATIS')
-            ]);
-
-            setClinicalResponses({
-                Bienvenue: respBienvenue || {},
-                J7: respJ7 || {},
-                J1_PreOp: respJ1Pre || {},
-                J1: respJ1 || {},
-                J4_Satisfaction: respJ4 || {},
-                ESATIS: respESatis || {}
-            });
-
-            // Fetch response metadata (timestamps + user_id) for PDF
-            const { data: metaRows } = await supabase
-                .from('pathway_responses')
-                .select('screen, item_id, updated_at, user_id')
-                .eq('patient_id', id);
-
-            if (metaRows) {
-                const meta = {};
-                metaRows.forEach(r => {
-                    if (!meta[r.screen]) meta[r.screen] = {};
-                    meta[r.screen][r.item_id] = {
-                        updated_at: r.updated_at,
-                        user_id: r.user_id
-                    };
-                });
-                setResponsesMeta(meta);
-            }
-
-            setPatient({
-                ...patientData,
-                displayProgress: patientData.progress || 0
-            });
-
             // Load history (unified)
             await loadHistoryData(id);
-
-            // Load documents
-            const docData = await getDocuments(parseInt(id));
-            setDocuments(docData);
-
-            // Load custom questions
-            const questions = await getCustomQuestions(id);
-            setCustomQuestions(questions);
 
         } catch (err) {
             console.error('Error loading patient:', err);
