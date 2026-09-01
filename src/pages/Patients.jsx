@@ -154,18 +154,19 @@ export default function Patients() {
             setAllPatients(formattedPatients);
 
             if (formattedPatients.length > 0) {
-                // Fetch responses and pending reminders for all patient IDs concurrently
-                const allIdsToFetch = (allPatientsData || []).map(p => p.id);
+                // Fetch responses and pending reminders for valid numeric patient IDs concurrently
+                const realIdsToFetch = (allPatientsData || []).map(p => p.id).filter(id => typeof id === 'number' || (typeof id === 'string' && /^\d+$/.test(id)));
                 const idToName = {};
                 (allPatientsData || []).forEach(p => { idToName[p.id] = (p.name || '').trim().toLowerCase(); });
                 const nameToPrimaryId = {};
                 formattedPatients.forEach(p => { nameToPrimaryId[(p.name || '').trim().toLowerCase()] = p.id; });
 
-                const [respDataRes, intakeDataRes, remindersDataRes] = await Promise.all([
-                    supabase.from('pathway_responses').select('*').in('patient_id', allIdsToFetch),
-                    supabase.from('intake_form_responses').select('patient_id, id_card_recto, cni_in_person').in('patient_id', allIdsToFetch),
-                    supabase.from('reminder_queue').select('patient_id, screen, scheduled_for').in('patient_id', allIdsToFetch).eq('status', 'pending').order('scheduled_for', { ascending: true })
-                ]);
+                if (realIdsToFetch.length > 0) {
+                    const [respDataRes, intakeDataRes, remindersDataRes] = await Promise.all([
+                        supabase.from('pathway_responses').select('*').in('patient_id', realIdsToFetch),
+                        supabase.from('intake_form_responses').select('patient_id, id_card_recto, cni_in_person').in('patient_id', realIdsToFetch),
+                        supabase.from('reminder_queue').select('patient_id, screen, scheduled_for').in('patient_id', realIdsToFetch).eq('status', 'pending').order('scheduled_for', { ascending: true })
+                    ]);
 
                 const respMap = {};
                 (respDataRes.data || []).forEach(r => {
@@ -202,6 +203,7 @@ export default function Patients() {
                         }
                     });
                     setNextReminders(remindersMap);
+                }
                 }
             }
         } catch (err) {

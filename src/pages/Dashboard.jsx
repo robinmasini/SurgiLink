@@ -290,15 +290,15 @@ export default function Dashboard() {
                 }
 
                 // Fetch responses, intake form responses, and settings concurrently
-                const allIdsToFetch = (allPatientsData || []).map(p => p.id);
+                const realIdsToFetch = (allPatientsData || []).map(p => p.id).filter(id => typeof id === 'number' || (typeof id === 'string' && /^\d+$/.test(id)));
                 const idToName = {};
                 (allPatientsData || []).forEach(p => { idToName[p.id] = (p.name || '').trim().toLowerCase(); });
                 const nameToPrimaryId = {};
                 formattedPatients.forEach(p => { nameToPrimaryId[(p.name || '').trim().toLowerCase()] = p.id; });
 
                 const [respDataRes, intakeDataRes, settingsDataRes] = await Promise.all([
-                    supabase.from('pathway_responses').select('*').in('patient_id', allIdsToFetch),
-                    supabase.from('intake_form_responses').select('patient_id, id_card_recto, cni_in_person').in('patient_id', allIdsToFetch),
+                    realIdsToFetch.length > 0 ? supabase.from('pathway_responses').select('*').in('patient_id', realIdsToFetch) : Promise.resolve({ data: [] }),
+                    realIdsToFetch.length > 0 ? supabase.from('intake_form_responses').select('patient_id, id_card_recto, cni_in_person').in('patient_id', realIdsToFetch) : Promise.resolve({ data: [] }),
                     supabase.from('app_settings').select('value').eq('key', 'financial_impact_unit').maybeSingle()
                 ]);
 
