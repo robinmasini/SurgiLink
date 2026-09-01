@@ -38,13 +38,14 @@ export default function PatientTokenRoute({ children }) {
                 };
 
                 try {
-                    const { data: dbPatientData } = await supabase
+                    const queryPromise = supabase
                         .from('patients')
                         .select('*')
                         .eq('id', validation.patientId)
                         .single();
-
-                    if (dbPatientData) patientData = dbPatientData;
+                    const timeoutPromise = new Promise(resolve => setTimeout(() => resolve({ data: null }), 1200));
+                    const res = await Promise.race([queryPromise, timeoutPromise]);
+                    if (res?.data) patientData = res.data;
                 } catch (e) {
                     console.log('[TokenRoute] Using fallback patient data');
                 }
