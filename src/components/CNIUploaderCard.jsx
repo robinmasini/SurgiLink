@@ -20,15 +20,29 @@ export default function CNIUploaderCard({ patientId, intakeData, onCNIUpdated, t
     const [selectedImage, setSelectedImage] = useState(null);
     const [dragOverRecto, setDragOverRecto] = useState(false);
     const [dragOverVerso, setDragOverVerso] = useState(false);
+    const [saveSuccess, setSaveSuccess] = useState(false);
 
     const rectoInputRef = useRef(null);
     const versoInputRef = useRef(null);
 
-    const isInPerson = intakeData?.cni_in_person || intakeData?.id_card_recto === 'IN_PERSON';
-    const rectoImg = intakeData?.id_card_recto && intakeData?.id_card_recto !== 'IN_PERSON' ? intakeData.id_card_recto : null;
-    const versoImg = intakeData?.id_card_verso || null;
+    const initialInPerson = intakeData?.cni_in_person || intakeData?.id_card_recto === 'IN_PERSON';
+    const initialRecto = intakeData?.id_card_recto && intakeData?.id_card_recto !== 'IN_PERSON' ? intakeData.id_card_recto : null;
+    const initialVerso = intakeData?.id_card_verso || null;
 
-    const hasCNI = isInPerson || !!rectoImg;
+    const [localInPerson, setLocalInPerson] = useState(initialInPerson);
+    const [localRecto, setLocalRecto] = useState(initialRecto);
+    const [localVerso, setLocalVerso] = useState(initialVerso);
+
+    React.useEffect(() => {
+        const isInP = intakeData?.cni_in_person || intakeData?.id_card_recto === 'IN_PERSON';
+        const rImg = intakeData?.id_card_recto && intakeData?.id_card_recto !== 'IN_PERSON' ? intakeData.id_card_recto : null;
+        const vImg = intakeData?.id_card_verso || null;
+        setLocalInPerson(isInP);
+        setLocalRecto(rImg);
+        setLocalVerso(vImg);
+    }, [intakeData]);
+
+    const hasCNI = localInPerson || !!localRecto;
 
     // Handle File Upload
     const handleFileSelect = async (filesInput, defaultSide = 'recto') => {
@@ -38,28 +52,34 @@ export default function CNIUploaderCard({ patientId, intakeData, onCNIUpdated, t
 
         setIsSaving(true);
         try {
-            let currentRecto = rectoImg || null;
-            let currentVerso = versoImg || null;
+            let newRecto = localRecto;
+            let newVerso = localVerso;
 
             if (fileList.length >= 2) {
-                currentRecto = await processImageToBase64(fileList[0]);
-                currentVerso = await processImageToBase64(fileList[1]);
+                newRecto = await processImageToBase64(fileList[0]);
+                newVerso = await processImageToBase64(fileList[1]);
             } else if (fileList.length === 1) {
                 const base64 = await processImageToBase64(fileList[0]);
                 if (defaultSide === 'recto') {
-                    currentRecto = base64;
+                    newRecto = base64;
                 } else {
-                    currentVerso = base64;
+                    newVerso = base64;
                 }
             }
 
+            setLocalInPerson(false);
+            setLocalRecto(newRecto);
+            setLocalVerso(newVerso);
+
             const res = await updatePatientCNI(patientId, {
-                id_card_recto: currentRecto,
-                id_card_verso: currentVerso,
+                id_card_recto: newRecto,
+                id_card_verso: newVerso,
                 cni_in_person: false
             });
 
             if (res.success) {
+                setSaveSuccess(true);
+                setTimeout(() => setSaveSuccess(false), 3000);
                 if (onCNIUpdated) onCNIUpdated(res.data);
             } else {
                 alert(`Erreur lors du téléchargement : ${res.error}`);
@@ -72,10 +92,39 @@ export default function CNIUploaderCard({ patientId, intakeData, onCNIUpdated, t
         }
     };
 
+    // Handle Explicit Save Button Click
+    const handleSaveAll = async () => {
+        setIsSaving(true);
+        try {
+            const res = await updatePatientCNI(patientId, {
+                id_card_recto: localInPerson ? 'IN_PERSON' : localRecto,
+                id_card_verso: localInPerson ? null : localVerso,
+                cni_in_person: localInPerson
+            });
+
+            if (res.success) {
+                setSaveSuccess(true);
+                setTimeout(() => setSaveSuccess(false), 3000);
+                if (onCNIUpdated) onCNIUpdated(res.data);
+            } else {
+                alert(`Erreur lors de l'enregistrement : ${res.error}`);
+            }
+        } catch (err) {
+            console.error('Error saving CNI:', err);
+            alert('Erreur lors de l\'enregistrement de la CNI.');
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
     // Handle Toggle In Person
     const handleSetInPerson = async () => {
         setIsSaving(true);
         try {
+            setLocalInPerson(true);
+            setLocalRecto(null);
+            setLocalVerso(null);
+
             const res = await updatePatientCNI(patientId, {
                 id_card_recto: 'IN_PERSON',
                 id_card_verso: null,
@@ -83,6 +132,8 @@ export default function CNIUploaderCard({ patientId, intakeData, onCNIUpdated, t
             });
 
             if (res.success) {
+                setSaveSuccess(true);
+                setTimeout(() => setSaveSuccess(false), 3000);
                 if (onCNIUpdated) onCNIUpdated(res.data);
             } else {
                 alert(`Erreur : ${res.error}`);
@@ -100,8 +151,11 @@ export default function CNIUploaderCard({ patientId, intakeData, onCNIUpdated, t
         if (!confirm(`Voulez-vous vraiment supprimer le ${side} de la pièce d'identité ?`)) return;
         setIsSaving(true);
         try {
-            const newRecto = side === 'recto' ? null : rectoImg;
-            const newVerso = side === 'verso' ? null : versoImg;
+            const newRecto = side === 'recto' ? null : localRecto;
+            const newVerso = side === 'verso' ? null : localVerso;
+
+            setLocalRecto(newRecto);
+            setLocalVerso(newVerso);
 
             const res = await updatePatientCNI(patientId, {
                 id_card_recto: newRecto,
@@ -110,6 +164,8 @@ export default function CNIUploaderCard({ patientId, intakeData, onCNIUpdated, t
             });
 
             if (res.success) {
+                setSaveSuccess(true);
+                setTimeout(() => setSaveSuccess(false), 3000);
                 if (onCNIUpdated) onCNIUpdated(res.data);
             } else {
                 alert(`Erreur : ${res.error}`);
@@ -127,8 +183,14 @@ export default function CNIUploaderCard({ patientId, intakeData, onCNIUpdated, t
         if (!confirm('Êtes-vous sûr de vouloir tout effacer pour la pièce d\'identité de ce patient ?')) return;
         setIsSaving(true);
         try {
+            setLocalInPerson(false);
+            setLocalRecto(null);
+            setLocalVerso(null);
+
             const res = await deletePatientCNI(patientId);
             if (res.success) {
+                setSaveSuccess(true);
+                setTimeout(() => setSaveSuccess(false), 3000);
                 if (onCNIUpdated) onCNIUpdated(res.data);
             } else {
                 alert(`Erreur : ${res.error}`);
@@ -194,7 +256,7 @@ export default function CNIUploaderCard({ patientId, intakeData, onCNIUpdated, t
 
                 {/* Status Pill */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    {isInPerson ? (
+                    {localInPerson ? (
                         <span style={{
                             padding: '6px 14px',
                             borderRadius: '20px',
@@ -209,7 +271,7 @@ export default function CNIUploaderCard({ patientId, intakeData, onCNIUpdated, t
                         }}>
                             <ShieldCheck size={14} /> Main Propre
                         </span>
-                    ) : rectoImg && versoImg ? (
+                    ) : localRecto && localVerso ? (
                         <span style={{
                             padding: '6px 14px',
                             borderRadius: '20px',
@@ -224,7 +286,7 @@ export default function CNIUploaderCard({ patientId, intakeData, onCNIUpdated, t
                         }}>
                             <CheckCircle size={14} /> Complète (Recto & Verso)
                         </span>
-                    ) : rectoImg ? (
+                    ) : localRecto ? (
                         <span style={{
                             padding: '6px 14px',
                             borderRadius: '20px',
@@ -262,7 +324,26 @@ export default function CNIUploaderCard({ patientId, intakeData, onCNIUpdated, t
 
             {/* Main Content Area: Always display RECTO and VERSO boxes (photo 2 interface) */}
             <div>
-                {isInPerson && (
+                {saveSuccess && (
+                    <div style={{
+                        padding: '10px 14px',
+                        background: '#ECFDF5',
+                        border: '1px solid #6EE7B7',
+                        borderRadius: '10px',
+                        marginBottom: 'var(--spacing-4)',
+                        color: '#047857',
+                        fontSize: '13px',
+                        fontWeight: '700',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px'
+                    }}>
+                        <CheckCircle size={18} color="#10B981" />
+                        <span>Modifications enregistrées avec succès !</span>
+                    </div>
+                )}
+
+                {localInPerson && (
                     <div style={{
                         padding: '10px 14px',
                         background: '#ECFDF5',
@@ -286,7 +367,7 @@ export default function CNIUploaderCard({ patientId, intakeData, onCNIUpdated, t
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                             <div style={{ fontSize: '12px', fontWeight: '800', color: 'var(--color-gray-500)', textTransform: 'uppercase', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <span>Recto</span>
-                                {rectoImg && (
+                                {localRecto && (
                                     <button
                                         type="button"
                                         onClick={() => handleRemoveSide('recto')}
@@ -298,13 +379,13 @@ export default function CNIUploaderCard({ patientId, intakeData, onCNIUpdated, t
                                 )}
                             </div>
 
-                            {rectoImg ? (
+                            {localRecto ? (
                                 <div style={{ position: 'relative', borderRadius: '12px', overflow: 'hidden', border: '1px solid #E5E7EB', height: '140px', background: '#F9FAFB' }}>
                                     <img
-                                        src={rectoImg}
+                                        src={localRecto}
                                         alt="CNI Recto"
                                         style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: 'pointer' }}
-                                        onClick={() => setSelectedImage(rectoImg)}
+                                        onClick={() => setSelectedImage(localRecto)}
                                     />
                                     <div style={{
                                         position: 'absolute',
@@ -319,7 +400,7 @@ export default function CNIUploaderCard({ patientId, intakeData, onCNIUpdated, t
                                     }}>
                                         <button
                                             type="button"
-                                            onClick={() => setSelectedImage(rectoImg)}
+                                            onClick={() => setSelectedImage(localRecto)}
                                             style={{ background: 'rgba(255,255,255,0.9)', border: 'none', borderRadius: '6px', padding: '4px 8px', fontSize: '11px', fontWeight: '700', color: '#111827', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
                                         >
                                             <Eye size={12} /> Agrandir
@@ -376,7 +457,7 @@ export default function CNIUploaderCard({ patientId, intakeData, onCNIUpdated, t
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                             <div style={{ fontSize: '12px', fontWeight: '800', color: 'var(--color-gray-500)', textTransform: 'uppercase', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <span>Verso</span>
-                                {versoImg && (
+                                {localVerso && (
                                     <button
                                         type="button"
                                         onClick={() => handleRemoveSide('verso')}
@@ -388,13 +469,13 @@ export default function CNIUploaderCard({ patientId, intakeData, onCNIUpdated, t
                                 )}
                             </div>
 
-                            {versoImg ? (
+                            {localVerso ? (
                                 <div style={{ position: 'relative', borderRadius: '12px', overflow: 'hidden', border: '1px solid #E5E7EB', height: '140px', background: '#F9FAFB' }}>
                                     <img
-                                        src={versoImg}
+                                        src={localVerso}
                                         alt="CNI Verso"
                                         style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: 'pointer' }}
-                                        onClick={() => setSelectedImage(versoImg)}
+                                        onClick={() => setSelectedImage(localVerso)}
                                     />
                                     <div style={{
                                         position: 'absolute',
@@ -409,7 +490,7 @@ export default function CNIUploaderCard({ patientId, intakeData, onCNIUpdated, t
                                     }}>
                                         <button
                                             type="button"
-                                            onClick={() => setSelectedImage(versoImg)}
+                                            onClick={() => setSelectedImage(localVerso)}
                                             style={{ background: 'rgba(255,255,255,0.9)', border: 'none', borderRadius: '6px', padding: '4px 8px', fontSize: '11px', fontWeight: '700', color: '#111827', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
                                         >
                                             <Eye size={12} /> Agrandir
@@ -465,25 +546,50 @@ export default function CNIUploaderCard({ patientId, intakeData, onCNIUpdated, t
 
                     {/* Bottom Toolbar Actions */}
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'var(--spacing-4)', flexWrap: 'wrap', gap: '10px', borderTop: '1px solid #F3F4F6', paddingTop: 'var(--spacing-3)' }}>
-                        <button
-                            type="button"
-                            onClick={handleSetInPerson}
-                            style={{
-                                padding: '8px 14px',
-                                borderRadius: '10px',
-                                border: '1px solid #D1D5DB',
-                                background: 'white',
-                                color: '#374151',
-                                fontSize: '12px',
-                                fontWeight: '600',
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '6px'
-                            }}
-                        >
-                            🤝 Marquer "CNI fournie en main propre"
-                        </button>
+                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                            <button
+                                type="button"
+                                onClick={handleSaveAll}
+                                disabled={isSaving}
+                                style={{
+                                    padding: '8px 16px',
+                                    borderRadius: '10px',
+                                    border: 'none',
+                                    background: 'var(--color-primary-600)',
+                                    color: 'white',
+                                    fontSize: '13px',
+                                    fontWeight: '700',
+                                    cursor: isSaving ? 'not-allowed' : 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '6px',
+                                    boxShadow: '0 2px 6px rgba(16, 185, 129, 0.3)'
+                                }}
+                            >
+                                {isSaving ? <RefreshCw size={14} className="animate-spin" /> : <CheckCircle size={14} />}
+                                Enregistrer la CNI
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={handleSetInPerson}
+                                style={{
+                                    padding: '8px 14px',
+                                    borderRadius: '10px',
+                                    border: '1px solid #D1D5DB',
+                                    background: 'white',
+                                    color: '#374151',
+                                    fontSize: '12px',
+                                    fontWeight: '600',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '6px'
+                                }}
+                            >
+                                🤝 Marquer "Main propre"
+                            </button>
+                        </div>
 
                         {hasCNI && (
                             <button
@@ -503,7 +609,7 @@ export default function CNIUploaderCard({ patientId, intakeData, onCNIUpdated, t
                                     gap: '6px'
                                 }}
                             >
-                                <Trash2 size={14} /> Supprimer la CNI
+                                <Trash2 size={14} /> Supprimer
                             </button>
                         )}
                     </div>
