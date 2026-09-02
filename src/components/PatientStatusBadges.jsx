@@ -68,6 +68,8 @@ export default function PatientStatusBadges({ responses = [], daysUntil = '', pa
 
     if (!isCniProvided) {
         badges.push({ label: 'CNI à renseigner', color: 'danger' });
+    } else {
+        badges.push({ label: 'CNI renseignée', color: 'success' });
     }
 
     if (!responses || !Array.isArray(responses)) {

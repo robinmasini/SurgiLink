@@ -72,7 +72,7 @@ const STYLES = {
     }
 };
 
-export default function PatientDetailPanel({ patient, responses = [], onClose }) {
+export default function PatientDetailPanel({ patient, responses = [], onClose, onCNIUpdated }) {
     const [token, setToken] = useState(null);
     const [copied, setCopied] = useState(false);
     const [smsLogs, setSmsLogs] = useState([]);
@@ -640,6 +640,7 @@ export default function PatientDetailPanel({ patient, responses = [], onClose })
                         ...prev,
                         ...updatedIntake
                     }));
+                    if (onCNIUpdated) onCNIUpdated(patient.id, updatedIntake);
                 }}
             />
         </div>

@@ -954,6 +954,12 @@ export default function Dashboard() {
                             patient={patients.find(p => p.id === selectedPatientId)}
                             responses={responses[selectedPatientId] || []}
                             onClose={() => setSelectedPatientId(null)}
+                            onCNIUpdated={(pId, updatedData) => {
+                                setIntakeResponses(prev => ({
+                                    ...prev,
+                                    [pId]: { ...(prev[pId] || {}), ...updatedData }
+                                }));
+                            }}
                         />
                     )}
                 </div>
