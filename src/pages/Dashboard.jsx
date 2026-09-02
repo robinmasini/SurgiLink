@@ -298,7 +298,7 @@ export default function Dashboard() {
 
                 const [respDataRes, intakeDataRes, settingsDataRes] = await Promise.all([
                     realIdsToFetch.length > 0 ? supabase.from('pathway_responses').select('*').in('patient_id', realIdsToFetch) : Promise.resolve({ data: [] }),
-                    realIdsToFetch.length > 0 ? supabase.from('intake_form_responses').select('patient_id, id_card_recto, cni_in_person').in('patient_id', realIdsToFetch) : Promise.resolve({ data: [] }),
+                    realIdsToFetch.length > 0 ? supabase.from('intake_form_responses').select('patient_id, id_card_recto, id_card_verso, cni_in_person').in('patient_id', realIdsToFetch) : Promise.resolve({ data: [] }),
                     supabase.from('app_settings').select('value').eq('key', 'financial_impact_unit').maybeSingle()
                 ]);
 
@@ -955,9 +955,13 @@ export default function Dashboard() {
                             responses={responses[selectedPatientId] || []}
                             onClose={() => setSelectedPatientId(null)}
                             onCNIUpdated={(pId, updatedData) => {
+                                const targetPatient = patients.find(p => p.id === pId);
+                                const normName = (targetPatient?.name || '').trim().toLowerCase();
                                 setIntakeResponses(prev => ({
                                     ...prev,
-                                    [pId]: { ...(prev[pId] || {}), ...updatedData }
+                                    [pId]: { ...(prev[pId] || {}), ...updatedData },
+                                    [String(pId)]: { ...(prev[String(pId)] || {}), ...updatedData },
+                                    ...(normName ? { [normName]: { ...(prev[normName] || {}), ...updatedData } } : {})
                                 }));
                             }}
                         />
