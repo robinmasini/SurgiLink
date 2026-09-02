@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import {
     ShieldCheck,
     AlertCircle,
@@ -11,7 +12,8 @@ import {
     X,
     RefreshCw,
     FileText,
-    Check
+    Check,
+    Download
 } from 'lucide-react';
 import { processImageToBase64, updatePatientCNI, deletePatientCNI } from '../services/cniService';
 
@@ -197,10 +199,20 @@ export default function CNIUploaderCard({ patientId, intakeData, onCNIUpdated, t
             }
         } catch (err) {
             console.error('Error deleting CNI:', err);
-            alert('Erreur lors de la suppression.');
         } finally {
             setIsSaving(false);
         }
+    };
+
+    // Handle Image Download
+    const handleDownloadImage = (dataUrl) => {
+        if (!dataUrl) return;
+        const a = document.createElement('a');
+        a.href = dataUrl;
+        a.download = `CNI_Patient_${patientId || 'piece_identite'}_${Date.now()}.jpg`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
     };
 
     return (
@@ -615,50 +627,103 @@ export default function CNIUploaderCard({ patientId, intakeData, onCNIUpdated, t
                     </div>
                 </div>
 
-            {/* Image Modal Lightbox */}
-            {selectedImage && (
+            {/* Image Modal Lightbox - Rendered via React Portal directly into body to stay on top of everything */}
+            {selectedImage && createPortal(
                 <div
                     style={{
                         position: 'fixed',
                         top: 0, left: 0, right: 0, bottom: 0,
-                        backgroundColor: 'rgba(0, 0, 0, 0.85)',
-                        zIndex: 99999,
+                        backgroundColor: 'rgba(0, 0, 0, 0.88)',
+                        backdropFilter: 'blur(4px)',
+                        zIndex: 9999999,
                         display: 'flex',
+                        flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
                         padding: '20px'
                     }}
                     onClick={() => setSelectedImage(null)}
                 >
-                    <div style={{ position: 'relative', maxWidth: '90vw', maxHeight: '90vh' }} onClick={e => e.stopPropagation()}>
+                    <div
+                        style={{
+                            position: 'relative',
+                            maxWidth: '92vw',
+                            maxHeight: '85vh',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            gap: '14px'
+                        }}
+                        onClick={e => e.stopPropagation()}
+                    >
                         <img
                             src={selectedImage}
                             alt="Pièce d'identité agrandie"
-                            style={{ maxWidth: '100%', maxHeight: '85vh', borderRadius: '12px', boxShadow: '0 20px 40px rgba(0,0,0,0.5)' }}
-                        />
-                        <button
-                            onClick={() => setSelectedImage(null)}
                             style={{
-                                position: 'absolute',
-                                top: '-16px',
-                                right: '-16px',
-                                background: 'white',
-                                border: 'none',
-                                borderRadius: '50%',
-                                width: '36px',
-                                height: '36px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                cursor: 'pointer',
-                                boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
-                                color: '#111827'
+                                maxWidth: '100%',
+                                maxHeight: '78vh',
+                                objectFit: 'contain',
+                                borderRadius: '14px',
+                                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.7)',
+                                border: '1px solid rgba(255, 255, 255, 0.2)'
                             }}
-                        >
-                            <X size={20} />
-                        </button>
+                        />
+
+                        {/* Floating Action Bar */}
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '12px',
+                            background: 'rgba(17, 24, 39, 0.95)',
+                            padding: '8px 16px',
+                            borderRadius: '30px',
+                            border: '1px solid rgba(255, 255, 255, 0.15)',
+                            boxShadow: '0 10px 25px rgba(0,0,0,0.5)'
+                        }}>
+                            <button
+                                type="button"
+                                onClick={() => handleDownloadImage(selectedImage)}
+                                style={{
+                                    background: 'var(--color-primary-600)',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '20px',
+                                    padding: '8px 18px',
+                                    fontSize: '13px',
+                                    fontWeight: '700',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '8px',
+                                    transition: 'transform 0.15s ease'
+                                }}
+                            >
+                                <Download size={16} /> Télécharger la photo
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={() => setSelectedImage(null)}
+                                style={{
+                                    background: 'rgba(255, 255, 255, 0.15)',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '20px',
+                                    padding: '8px 16px',
+                                    fontSize: '13px',
+                                    fontWeight: '600',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '6px'
+                                }}
+                            >
+                                <X size={16} /> Fermer
+                            </button>
+                        </div>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
         </div>
     );
