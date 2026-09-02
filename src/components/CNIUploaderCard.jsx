@@ -260,48 +260,28 @@ export default function CNIUploaderCard({ patientId, intakeData, onCNIUpdated, t
                 </div>
             </div>
 
-            {/* Main Content Area */}
-            {isInPerson ? (
-                /* Mode: In Person */
-                <div style={{
-                    padding: '16px 20px',
-                    background: 'linear-gradient(135deg, #ECFDF5 0%, #F0FDF4 100%)',
-                    border: '1px solid #6EE7B7',
-                    borderRadius: '14px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '14px'
-                }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: '#065F46', fontWeight: '700', fontSize: '15px' }}>
-                        <ShieldCheck size={24} color="#10B981" />
-                        <span>Le patient a choisi de fournir sa CNI en main propre au cabinet.</span>
+            {/* Main Content Area: Always display RECTO and VERSO boxes (photo 2 interface) */}
+            <div>
+                {isInPerson && (
+                    <div style={{
+                        padding: '10px 14px',
+                        background: '#ECFDF5',
+                        border: '1px solid #A7F3D0',
+                        borderRadius: '10px',
+                        marginBottom: 'var(--spacing-4)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        color: '#047857',
+                        fontSize: '13px',
+                        fontWeight: '600'
+                    }}>
+                        <ShieldCheck size={18} color="#10B981" />
+                        <span>Le patient a indiqué fournir sa CNI en main propre. Vous pouvez charger les photos (Recto / Verso) ci-dessous :</span>
                     </div>
+                )}
 
-                    <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '4px' }}>
-                        <button
-                            type="button"
-                            className="btn btn-secondary btn-sm"
-                            style={{ background: 'white', border: '1px solid #10B981', color: '#047857', fontWeight: '700' }}
-                            onClick={() => rectoInputRef.current?.click()}
-                        >
-                            <UploadCloud size={16} style={{ marginRight: '6px' }} />
-                            Téléverser les photos (Recto & Verso)
-                        </button>
-                        <button
-                            type="button"
-                            className="btn btn-secondary btn-sm"
-                            style={{ background: 'white', border: '1px solid #E5E7EB', color: '#6B7280' }}
-                            onClick={handleDeleteAll}
-                        >
-                            <Trash2 size={16} style={{ marginRight: '6px' }} />
-                            Effacer la sélection
-                        </button>
-                    </div>
-                </div>
-            ) : (
-                /* Mode: File Upload / Display */
-                <div>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-4)' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-4)' }}>
                         {/* RECTO BOX */}
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                             <div style={{ fontSize: '12px', fontWeight: '800', color: 'var(--color-gray-500)', textTransform: 'uppercase', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -528,7 +508,6 @@ export default function CNIUploaderCard({ patientId, intakeData, onCNIUpdated, t
                         )}
                     </div>
                 </div>
-            )}
 
             {/* Image Modal Lightbox */}
             {selectedImage && (
