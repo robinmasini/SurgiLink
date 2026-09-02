@@ -183,15 +183,25 @@ export default function Patients() {
 
                 const intakeMap = {};
                 (intakeDataRes.data || []).forEach(r => {
+                    if (!r) return;
                     const pName = idToName[r.patient_id];
-                    const targetId = nameToPrimaryId[pName] || r.patient_id;
-                    [targetId, String(targetId), pName].forEach(key => {
-                        if (key !== undefined && key !== null) {
-                            if (!intakeMap[key] || r.id_card_recto || r.cni_in_person) {
-                                intakeMap[key] = r;
-                            }
+                    [r.patient_id, String(r.patient_id)].forEach(k => {
+                        if (!intakeMap[k] || r.id_card_recto || r.id_card_verso || r.cni_in_person) {
+                            intakeMap[k] = r;
                         }
                     });
+
+                    if (pName) {
+                        intakeMap[pName] = r;
+                        (allPatientsData || []).forEach(p => {
+                            if ((p.name || '').trim().toLowerCase() === pName) {
+                                if (!intakeMap[p.id] || r.id_card_recto || r.id_card_verso || r.cni_in_person) {
+                                    intakeMap[p.id] = r;
+                                    intakeMap[String(p.id)] = r;
+                                }
+                            }
+                        });
+                    }
                 });
                 setIntakeResponses(intakeMap);
 
