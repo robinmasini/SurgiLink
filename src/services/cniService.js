@@ -59,12 +59,18 @@ export async function getPatientCNI(patientId) {
     try {
         const { data, error } = await supabase
             .from('intake_form_responses')
-            .select('id, patient_id, id_card_recto, id_card_verso, cni_in_person')
+            .select('id, patient_id, id_card_recto, id_card_verso')
             .eq('patient_id', patientId)
             .maybeSingle();
 
         if (error) throw error;
-        return data || null;
+        if (data) {
+            return {
+                ...data,
+                cni_in_person: data.id_card_recto === 'IN_PERSON'
+            };
+        }
+        return null;
     } catch (err) {
         console.error('Error fetching patient CNI:', err);
         return null;
@@ -94,7 +100,6 @@ export async function updatePatientCNI(patientId, { id_card_recto = null, id_car
         const payload = {
             id_card_recto: cni_in_person ? 'IN_PERSON' : (id_card_recto || null),
             id_card_verso: cni_in_person ? null : (id_card_verso || null),
-            cni_in_person: !!cni_in_person,
             updated_at: new Date().toISOString()
         };
 

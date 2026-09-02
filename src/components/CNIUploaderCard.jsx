@@ -31,13 +31,27 @@ export default function CNIUploaderCard({ patientId, intakeData, onCNIUpdated, t
     const hasCNI = isInPerson || !!rectoImg;
 
     // Handle File Upload
-    const handleFileSelect = async (file, side) => {
-        if (!file) return;
+    const handleFileSelect = async (filesInput, defaultSide = 'recto') => {
+        if (!filesInput) return;
+        const fileList = Array.from(filesInput);
+        if (fileList.length === 0) return;
+
         setIsSaving(true);
         try {
-            const base64 = await processImageToBase64(file);
-            const currentRecto = side === 'recto' ? base64 : (rectoImg || null);
-            const currentVerso = side === 'verso' ? base64 : (versoImg || null);
+            let currentRecto = rectoImg || null;
+            let currentVerso = versoImg || null;
+
+            if (fileList.length >= 2) {
+                currentRecto = await processImageToBase64(fileList[0]);
+                currentVerso = await processImageToBase64(fileList[1]);
+            } else if (fileList.length === 1) {
+                const base64 = await processImageToBase64(fileList[0]);
+                if (defaultSide === 'recto') {
+                    currentRecto = base64;
+                } else {
+                    currentVerso = base64;
+                }
+            }
 
             const res = await updatePatientCNI(patientId, {
                 id_card_recto: currentRecto,
@@ -133,11 +147,12 @@ export default function CNIUploaderCard({ patientId, intakeData, onCNIUpdated, t
             <input
                 type="file"
                 ref={rectoInputRef}
-                accept="image/*"
+                accept="image/*,application/pdf"
+                multiple
                 style={{ display: 'none' }}
                 onChange={(e) => {
-                    if (e.target.files?.[0]) {
-                        handleFileSelect(e.target.files[0], 'recto');
+                    if (e.target.files && e.target.files.length > 0) {
+                        handleFileSelect(e.target.files, 'recto');
                         e.target.value = '';
                     }
                 }}
@@ -145,11 +160,12 @@ export default function CNIUploaderCard({ patientId, intakeData, onCNIUpdated, t
             <input
                 type="file"
                 ref={versoInputRef}
-                accept="image/*"
+                accept="image/*,application/pdf"
+                multiple
                 style={{ display: 'none' }}
                 onChange={(e) => {
-                    if (e.target.files?.[0]) {
-                        handleFileSelect(e.target.files[0], 'verso');
+                    if (e.target.files && e.target.files.length > 0) {
+                        handleFileSelect(e.target.files, 'verso');
                         e.target.value = '';
                     }
                 }}
@@ -269,7 +285,7 @@ export default function CNIUploaderCard({ patientId, intakeData, onCNIUpdated, t
                             onClick={() => rectoInputRef.current?.click()}
                         >
                             <UploadCloud size={16} style={{ marginRight: '6px' }} />
-                            Téléverser une photo (Recto / Verso)
+                            Téléverser les photos (Recto & Verso)
                         </button>
                         <button
                             type="button"
@@ -344,7 +360,7 @@ export default function CNIUploaderCard({ patientId, intakeData, onCNIUpdated, t
                                     onDrop={(e) => {
                                         e.preventDefault();
                                         setDragOverRecto(false);
-                                        if (e.dataTransfer.files?.[0]) handleFileSelect(e.dataTransfer.files[0], 'recto');
+                                        if (e.dataTransfer.files?.length > 0) handleFileSelect(e.dataTransfer.files, 'recto');
                                     }}
                                     onClick={() => rectoInputRef.current?.click()}
                                     style={{
@@ -434,7 +450,7 @@ export default function CNIUploaderCard({ patientId, intakeData, onCNIUpdated, t
                                     onDrop={(e) => {
                                         e.preventDefault();
                                         setDragOverVerso(false);
-                                        if (e.dataTransfer.files?.[0]) handleFileSelect(e.dataTransfer.files[0], 'verso');
+                                        if (e.dataTransfer.files?.length > 0) handleFileSelect(e.dataTransfer.files, 'verso');
                                     }}
                                     onClick={() => versoInputRef.current?.click()}
                                     style={{
