@@ -1014,8 +1014,10 @@ Les clés doivent être exactement :
                                                     let newClinicName = formData.clinicName;
                                                     if (newStayType === 'Consultation') {
                                                         if (!newClinicName?.includes('Medical Alliance')) newClinicName = '';
-                                                    } else {
+                                                    } else if (newStayType === 'Hospitalisation') {
                                                         if (!newClinicName?.includes('Clinique')) newClinicName = '';
+                                                    } else if (newStayType === 'Ambulatoire') {
+                                                        if (!newClinicName?.includes('Clinique') && !newClinicName?.includes('Medical Alliance')) newClinicName = '';
                                                     }
                                                     setFormData({ ...formData, stayType: newStayType, clinicName: newClinicName });
                                                 }}
@@ -1094,6 +1096,13 @@ Les clés doivent être exactement :
                                             <option value="" disabled>Sélectionnez un établissement</option>
                                             {formData.stayType === 'Consultation' ? (
                                                 <>
+                                                    <option value="Medical Alliance Aix en Provence">Medical Alliance Aix en Provence</option>
+                                                    <option value="Medical Alliance Marseille">Medical Alliance Marseille</option>
+                                                </>
+                                            ) : formData.stayType === 'Ambulatoire' ? (
+                                                <>
+                                                    <option value="Clinique de Vitrolles">Clinique de Vitrolles</option>
+                                                    <option value="Clinique Phenicia Marseille">Clinique Phénicia Marseille</option>
                                                     <option value="Medical Alliance Aix en Provence">Medical Alliance Aix en Provence</option>
                                                     <option value="Medical Alliance Marseille">Medical Alliance Marseille</option>
                                                 </>
