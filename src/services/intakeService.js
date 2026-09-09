@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabase.js';
-import { generatePatientToken } from './tokenService.js';
+import { generatePatientToken, validateToken } from './tokenService.js';
 import { sendSMS } from './vonageService.js';
 
 /**
@@ -72,46 +72,37 @@ export async function createIntakePatient(phone, firstName = null, lastName = nu
  * @returns {Promise<{success: boolean, patient?: object, intakeResponse?: object, error?: string}>}
  */
 export async function getIntakeByToken(token) {
-    const cleanToken = (token || '').trim().toLowerCase();
-    const isDemo = !cleanToken || cleanToken === 'demo' || cleanToken.startsWith('test') || cleanToken.includes('token') || cleanToken === 'patient';
+    if (!token) {
+        return { success: false, error: 'Token manquant' };
+    }
 
     try {
-        // 1. Resolve token → patient_id
-        const { data: tokenData, error: tokenError } = await supabase
-            .from('patient_review_tokens')
-            .select('patient_id, is_active, expires_at')
-            .eq('token', cleanToken)
-            .single();
-
-        if (tokenError || !tokenData) {
-            if (isDemo) {
-                return {
-                    success: true,
-                    patient: { id: 'demo-patient', name: 'Nouveau patient', phone: '', email: '' },
-                    intakeResponse: null
-                };
-            }
-            return { success: false, error: 'Lien invalide ou introuvable.' };
-        }
-        if (!tokenData.is_active) {
-            if (isDemo) return { success: true, patient: { id: 'demo-patient', name: 'Nouveau patient' }, intakeResponse: null };
-            return { success: false, error: 'Ce lien a été révoqué.' };
-        }
-        if (tokenData.expires_at && new Date(tokenData.expires_at) < new Date()) {
-            if (isDemo) return { success: true, patient: { id: 'demo-patient', name: 'Nouveau patient' }, intakeResponse: null };
-            return { success: false, error: 'Ce lien a expiré.' };
+        // 1. Resolve token → patient_id via validateToken
+        const validation = await validateToken(token);
+        if (!validation.valid) {
+            return { success: false, error: validation.error || 'Lien invalide ou introuvable.' };
         }
 
-        const patientId = tokenData.patient_id;
+        const patientId = validation.patientId;
+
+        if (patientId === 'demo-patient') {
+            return {
+                success: true,
+                patient: { id: 'demo-patient', name: 'Nouveau patient', phone: '', email: '' },
+                intakeResponse: null
+            };
+        }
 
         // 2. Fetch patient
         const { data: patient, error: patientError } = await supabase
             .from('patients')
             .select('*')
             .eq('id', patientId)
-            .single();
+            .maybeSingle();
 
         if (patientError || !patient) {
+            const cleanToken = (token || '').trim().toLowerCase();
+            const isDemo = cleanToken === 'demo' || cleanToken.includes('demo') || cleanToken.startsWith('test') || cleanToken === 'patient';
             if (isDemo) return { success: true, patient: { id: 'demo-patient', name: 'Nouveau patient' }, intakeResponse: null };
             return { success: false, error: 'Patient introuvable.' };
         }
@@ -126,12 +117,7 @@ export async function getIntakeByToken(token) {
         return { success: true, patient, intakeResponse: intakeResponse || null };
     } catch (err) {
         console.error('[intakeService] getIntakeByToken error:', err);
-        // Fallback for seamless demo/testing access
-        return {
-            success: true,
-            patient: { id: 'demo-patient', name: 'Nouveau patient', phone: '', email: '' },
-            intakeResponse: null
-        };
+        return { success: false, error: err.message || 'Erreur lors de la vérification du lien.' };
     }
 }
 
@@ -143,23 +129,21 @@ export async function getIntakeByToken(token) {
  * @returns {Promise<{success: boolean, error?: string}>}
  */
 export async function submitIntakeForm(token, formData) {
-    const cleanToken = (token || '').trim().toLowerCase();
-    const isDemo = !cleanToken || cleanToken === 'demo' || cleanToken.startsWith('test') || cleanToken.includes('token') || cleanToken === 'patient';
+    if (!token) {
+        return { success: false, error: 'Token manquant.' };
+    }
 
     try {
-        // 1. Get patient_id from token
-        const { data: tokenData, error: tokenError } = await supabase
-            .from('patient_review_tokens')
-            .select('patient_id')
-            .eq('token', cleanToken)
-            .single();
-
-        if (tokenError || !tokenData) {
-            if (isDemo) return { success: true };
-            return { success: false, error: 'Token invalide.' };
+        // 1. Resolve token → patient_id via validateToken
+        const validation = await validateToken(token);
+        if (!validation.valid) {
+            return { success: false, error: validation.error || 'Token invalide.' };
         }
 
-        const patientId = tokenData.patient_id;
+        const patientId = validation.patientId;
+        if (patientId === 'demo-patient') {
+            return { success: true };
+        }
 
         // 2. Build full name and update the patients table with key fields
         const fullName = [formData.first_name, formData.last_name].filter(Boolean).join(' ') || null;
@@ -175,7 +159,10 @@ export async function submitIntakeForm(token, formData) {
             status: 'pending', // Graduate from 'intake' to normal patient
         };
 
-        await supabase.from('patients').update(patientUpdate).eq('id', patientId);
+        const { error: patientUpdateErr } = await supabase.from('patients').update(patientUpdate).eq('id', patientId);
+        if (patientUpdateErr) {
+            console.warn('[intakeService] patient update warning:', patientUpdateErr);
+        }
 
         // 3. Upsert intake_form_responses
         const intakePayload = {
@@ -259,6 +246,6 @@ export async function submitIntakeForm(token, formData) {
         return { success: true };
     } catch (err) {
         console.error('[intakeService] submitIntakeForm error:', err);
-        return { success: true };
+        return { success: false, error: err.message || 'Erreur lors de la soumission.' };
     }
 }

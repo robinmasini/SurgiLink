@@ -257,6 +257,14 @@ export async function validateToken(token) {
             };
         }
 
+        // Direct numeric ID (e.g. cleanToken = "15")
+        if (!isNaN(cleanToken) && parseInt(cleanToken, 10) > 0) {
+            return {
+                valid: true,
+                patientId: parseInt(cleanToken, 10)
+            };
+        }
+
         if (isDemo) {
             return { valid: true, patientId: 'demo-patient' };
         }

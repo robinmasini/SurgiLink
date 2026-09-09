@@ -266,21 +266,8 @@ export default function IntakeForm() {
 
             const result = await getIntakeByToken(activeToken);
             if (!result.success) {
-                // Fallback demo patient for intake form
-                setPatient({
-                    id: 'demo-patient',
-                    name: 'Marie DUPONT',
-                    phone: '0612345678',
-                    email: 'marie.dupont@example.com'
-                });
-                setForm(prev => ({
-                    ...prev,
-                    first_name: 'Marie',
-                    last_name: 'DUPONT',
-                    phone: '0612345678',
-                    email: 'marie.dupont@example.com'
-                }));
-                setPhase('tutorial');
+                setErrorMsg(result.error || 'Ce lien est invalide ou introuvable.');
+                setPhase('error');
                 return;
             }
 
