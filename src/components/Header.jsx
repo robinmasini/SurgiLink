@@ -24,7 +24,7 @@ export default function Header({ title, subtitle, actions, hideTitleMobile = fal
                 </div>
 
                 {/* Right: Actions */}
-                <div className="header-right" style={{ display: 'flex', gap: 'var(--spacing-3)', alignItems: 'center' }}>
+                <div className="header-right" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                     <button
                         onClick={() => setIsQuestionsModalOpen(true)}
                         className="hide-mobile"
@@ -42,7 +42,8 @@ export default function Header({ title, subtitle, actions, hideTitleMobile = fal
                             cursor: 'pointer',
                             transition: 'all 0.2s',
                             boxShadow: 'var(--shadow-sm)',
-                            height: '38px'
+                            height: '42px',
+                            whiteSpace: 'nowrap'
                         }}
                         onMouseEnter={(e) => {
                             e.currentTarget.style.border = '1px solid var(--color-primary-200)';
@@ -54,7 +55,7 @@ export default function Header({ title, subtitle, actions, hideTitleMobile = fal
                         }}
                     >
                         <ClipboardList size={16} />
-                        <span>{t('Aperçu')}</span>
+                        <span>{t('Aperçu Questionnaire')}</span>
                     </button>
                     <LanguageSelector />
                     {actions}
@@ -102,7 +103,7 @@ export default function Header({ title, subtitle, actions, hideTitleMobile = fal
                     }}
                 >
                     <ClipboardList size={16} />
-                    <span>{t('Aperçu')}</span>
+                    <span>{t('Aperçu Questionnaire')}</span>
                 </button>
             )}
 

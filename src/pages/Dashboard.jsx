@@ -388,23 +388,29 @@ export default function Dashboard() {
                     hideQuestionsPreviewMobile={true}
                     actions={
                         <>
-                            <button className="btn btn-secondary hide-mobile" onClick={() => setIsAlarmsModalOpen(true)} style={{ borderRadius: '12px', padding: '10px 20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                <LogoIcon width="16px" />
-                                <span>{t('Alarme')}</span>
+                            <button 
+                                className="btn btn-secondary hide-mobile" 
+                                onClick={() => setIsAlarmsModalOpen(true)} 
+                                title={t('Alarme')}
+                                style={{ borderRadius: '12px', padding: '0 12px', height: '42px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                            >
+                                <LogoIcon width="18px" />
                             </button>
                             <button
                                 className="btn btn-secondary hide-mobile"
                                 onClick={() => setIsIntakeModalOpen(true)}
                                 style={{
                                     borderRadius: '12px',
-                                    padding: '10px 20px',
+                                    padding: '0 14px',
+                                    height: '42px',
                                     display: 'flex',
                                     alignItems: 'center',
                                     gap: '8px',
                                     background: 'var(--color-success-50)',
                                     color: 'var(--color-success-600)',
                                     border: '1px solid var(--color-success-200)',
-                                    fontWeight: '700'
+                                    fontWeight: '700',
+                                    whiteSpace: 'nowrap'
                                 }}
                             >
                                 <ClipboardList size={16} />
@@ -415,14 +421,16 @@ export default function Dashboard() {
                                 onClick={() => setIsHMScannerOpen(true)} 
                                 style={{ 
                                     borderRadius: '12px', 
-                                    padding: '10px 20px', 
+                                    padding: '0 14px', 
+                                    height: '42px',
                                     display: 'flex', 
                                     alignItems: 'center', 
                                     gap: '8px',
                                     background: 'rgba(15, 112, 183, 0.1)',
                                     color: '#0F70B7',
                                     border: '1px solid rgba(15, 112, 183, 0.2)',
-                                    fontWeight: '700'
+                                    fontWeight: '700',
+                                    whiteSpace: 'nowrap'
                                 }}
                             >
                                 <img src={hmDoctolibIcon} alt="HM / Doctolib" style={{ height: '22px', width: 'auto', objectFit: 'contain' }} />
@@ -443,9 +451,10 @@ export default function Dashboard() {
                                         color: 'white',
                                         border: 'none',
                                         cursor: 'pointer',
-                                        padding: '0 20px',
+                                        padding: '0 14px',
                                         boxShadow: 'var(--shadow-sm)',
-                                        transition: 'all 0.2s'
+                                        transition: 'all 0.2s',
+                                        whiteSpace: 'nowrap'
                                     }}
                                     onMouseOver={(e) => {
                                         e.currentTarget.style.background = '#0082c3';
@@ -462,7 +471,7 @@ export default function Dashboard() {
                                 <button
                                     className="btn btn-primary"
                                     onClick={() => setIsAddModalOpen(true)}
-                                    style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)', height: '42px', justifyContent: 'center' }}
+                                    style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)', height: '42px', padding: '0 14px', justifyContent: 'center', whiteSpace: 'nowrap' }}
                                 >
                                     <Plus size={18} /> Ajouter une intervention
                                 </button>
@@ -483,22 +492,19 @@ export default function Dashboard() {
                                 <button 
                                     className="btn btn-secondary" 
                                     onClick={() => setIsAlarmsModalOpen(true)} 
+                                    title={t('Alarme')}
                                     style={{ 
                                         borderRadius: '12px', 
                                         padding: '10px 14px', 
                                         display: 'flex', 
                                         alignItems: 'center', 
                                         justifyContent: 'center',
-                                        gap: '8px',
-                                        fontSize: '13px',
-                                        fontWeight: '700',
                                         background: 'white',
                                         border: '1px solid var(--color-gray-200)',
                                         boxShadow: 'var(--shadow-sm)'
                                     }}
                                 >
-                                    <LogoIcon width="16px" />
-                                    <span>{t('Alarme')}</span>
+                                    <LogoIcon width="18px" />
                                 </button>
                                 <button 
                                     className="btn btn-secondary" 
@@ -627,7 +633,7 @@ export default function Dashboard() {
                                 }}
                             >
                                 <Clipboard size={16} />
-                                <span>{t('Aperçu')}</span>
+                                <span>{t('Aperçu Questionnaire')}</span>
                             </button>
 
                             <button
