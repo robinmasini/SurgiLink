@@ -61,12 +61,14 @@ export default function PatientStatusBadges({ responses = [], daysUntil = '', pa
 
     const badges = [];
 
-    // Check CNI Status (Pièce chargée ou main propre -> pastille verte "CNI renseignée")
-    const isCniProvided = hasCni !== undefined 
-        ? Boolean(hasCni)
-        : Boolean(intakeData && (intakeData.id_card_recto || intakeData.id_card_verso || intakeData.cni_in_person));
+    // Check CNI Status (Main propre -> pastille "CNI main propre", Uploaded -> "CNI renseignée")
+    const isCniInPerson = Boolean(intakeData && (intakeData.cni_in_person || intakeData.id_card_recto === 'IN_PERSON'));
+    const isCniUploaded = Boolean(intakeData && (intakeData.id_card_recto || intakeData.id_card_verso) && !isCniInPerson);
+    const isCniProvided = hasCni !== undefined ? Boolean(hasCni) : (isCniInPerson || isCniUploaded);
 
-    if (isCniProvided) {
+    if (isCniInPerson) {
+        badges.push({ label: 'CNI main propre', color: 'success' });
+    } else if (isCniProvided) {
         badges.push({ label: 'CNI renseignée', color: 'success' });
     } else {
         badges.push({ label: 'CNI à renseigner', color: 'danger' });
