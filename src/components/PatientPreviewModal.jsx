@@ -347,7 +347,7 @@ export default function PatientPreviewModal({ isOpen, onClose, patient, onRespon
                             {['Bienvenue', 'J7', 'J1_PreOp'].includes(activeTab) && (
                                 <AlertBanner
                                     type="info"
-                                    title={`Arrivée prévue à ${patient?.surgery_time || '07:30'}`}
+                                    title={patient?.surgery_time ? `Arrivée prévue à ${patient.surgery_time}` : 'Heure non communiquée'}
                                     message="Rendez-vous à l'accueil principal. Prévoyez d'arriver 15 min avant. À apporter : pièce d'identité + documents."
                                 />
                             )}

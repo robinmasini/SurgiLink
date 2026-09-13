@@ -65,7 +65,7 @@ export default function CompactAppointmentCard({
                     <div style={{ width: '1px', height: '16px', background: 'var(--color-primary-100)' }} />
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <Clock size={18} style={{ color: 'var(--color-primary-500)' }} />
-                        <span style={{ fontWeight: '700', color: 'var(--color-primary-700)' }}>{appointmentTime || '07:30'}</span>
+                        <span style={{ fontWeight: '700', color: 'var(--color-primary-700)' }}>{appointmentTime || t('Non-communiquée')}</span>
                     </div>
                 </div>
 

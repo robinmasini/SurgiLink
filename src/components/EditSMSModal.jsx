@@ -35,7 +35,7 @@ export default function EditSMSModal({ isOpen, onClose, patient, reminder, onSen
                     const variables = {
                         first_name: patient.name?.split(' ')[0] || 'Patient',
                         procedure_date: patient.date || 'bientôt',
-                        arrival_time: patient.surgery_time || '07:30',
+                        arrival_time: patient.surgery_time || 'Non communiquée',
                         clinic_name: 'SurgiLink',
                         clinic_phone: '01 44 44 44 44',
                         checklist_link: directLink,

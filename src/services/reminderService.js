@@ -160,7 +160,7 @@ export async function processPendingReminders(supabaseClient = null) {
             const variables = {
                 first_name: patient.name?.split(' ')[0] || 'Patient',
                 procedure_date: patient.date || 'bientôt',
-                arrival_time: patient.surgery_time || '07:30',
+                arrival_time: patient.surgery_time || 'Non communiquée',
 
                 clinic_name: 'SurgiLink',
                 clinic_phone: '01 XX XX XX XX',
@@ -264,7 +264,7 @@ export async function sendManualReminder(patientId, screen, itemId, templateKey,
         const variables = {
             first_name: patient.name?.split(' ')[0] || 'Patient',
             procedure_date: patient.date || 'bientôt',
-            arrival_time: patient.arrival_time || '07:30',
+            arrival_time: patient.arrival_time || patient.surgery_time || 'Non communiquée',
             clinic_name: 'SurgiLink',
             clinic_phone: '01 44 44 44 44',
             checklist_link: directLink,
