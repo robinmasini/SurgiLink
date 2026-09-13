@@ -134,6 +134,42 @@ export default function PatientJ4({ patient: propPatient, token: propToken }) {
         );
     }
 
+    // Check timeline due guard: J+4 is only accessible when diffDays <= -4
+    const surgeryDate = patient?.date ? new Date(patient.date) : null;
+    let isNotYetDue = false;
+    if (surgeryDate && !isNaN(surgeryDate.getTime())) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        surgeryDate.setHours(0, 0, 0, 0);
+        const diffDays = Math.ceil((surgeryDate - today) / (1000 * 60 * 60 * 24));
+        if (diffDays > -4) {
+            isNotYetDue = true;
+        }
+    }
+
+    if (isNotYetDue) {
+        return (
+            <div className="patient-view" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', padding: '24px' }}>
+                <div className="card" style={{ maxWidth: '500px', textAlign: 'center', padding: '32px', borderRadius: '24px', background: '#f9fafb', border: '1px solid #e5e7eb' }}>
+                    <AlertCircle size={48} style={{ margin: '0 auto 16px', color: 'var(--color-primary-500)' }} />
+                    <h3 style={{ fontSize: '20px', fontWeight: '700', marginBottom: '12px', color: '#1f2937' }}>
+                        {t('Questionnaire pas encore disponible')}
+                    </h3>
+                    <p style={{ color: '#4b5563', fontSize: '15px', lineHeight: '1.5', marginBottom: '24px' }}>
+                        {t("Ce questionnaire de satisfaction J+4 sera disponible 4 jours après votre intervention. Tous vos questionnaires dus sont actuellement à jour !")}
+                    </p>
+                    <button
+                        onClick={() => navigate(token ? `/patient-portal/${token}` : '/')}
+                        className="btn btn-primary"
+                        style={{ width: '100%', padding: '16px', borderRadius: '16px', fontWeight: '800' }}
+                    >
+                        {t('Retour au portail')}
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="patient-view">
             <div className="patient-header" style={{ padding: 'var(--spacing-6) var(--spacing-4)', textAlign: 'center', display: 'block' }}>

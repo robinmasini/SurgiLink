@@ -332,16 +332,9 @@ export default function PatientPortal({ patient: initialPatient }) {
             { id: 'ESATIS', route: 'e-satis', label: 'e-Satis' }
         ];
 
-        // 1. Check due incomplete milestones first
+        // Check only currently due incomplete milestones (strictly respect timeline)
         for (const m of milestonesSequence) {
             if (isMilestoneDue(m.id, diffDays) && !isMilestoneComplete(m.id)) {
-                return m;
-            }
-        }
-
-        // 2. Check any incomplete milestone overall
-        for (const m of milestonesSequence) {
-            if (!isMilestoneComplete(m.id)) {
                 return m;
             }
         }

@@ -28,13 +28,42 @@ export default function PatientSuccess({ patient: propPatient }) {
     const checkNextMilestone = async () => {
         try {
             const milestonesSequence = [
-                { id: 'Bienvenue', route: 'bienvenue', label: 'J-18 (Bienvenue)' },
-                { id: 'J7', route: 'j7', label: 'J-7' },
-                { id: 'J1_PreOp', route: 'j1-preop', label: 'J-1' },
-                { id: 'J1', route: 'j1', label: 'J+1' },
-                { id: 'J4_Satisfaction', route: 'j4', label: 'J+4' },
-                { id: 'ESATIS', route: 'e-satis', label: 'e-Satis' }
+                { id: 'Bienvenue', route: 'bienvenue', label: 'J-18 (Bienvenue)', offset: 18 },
+                { id: 'J7', route: 'j7', label: 'J-7', offset: 7 },
+                { id: 'J1_PreOp', route: 'j1-preop', label: 'J-1', offset: 1 },
+                { id: 'J1', route: 'j1', label: 'J+1', offset: -1 },
+                { id: 'J4_Satisfaction', route: 'j4', label: 'J+4', offset: -4 },
+                { id: 'ESATIS', route: 'e-satis', label: 'e-Satis', offset: -4 }
             ];
+
+            // Fetch patient date to compute diffDays and due status
+            let diffDays = null;
+            const { data: pData } = await supabase
+                .from('patients')
+                .select('date')
+                .eq('id', resolvedPatientId)
+                .maybeSingle();
+
+            if (pData?.date) {
+                const parts = String(pData.date).split('T')[0].split(/[\/\.-]/);
+                let surgDate = null;
+                if (parts.length === 3) {
+                    if (parts[0].length === 4) surgDate = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+                    else surgDate = new Date(parseInt(parts[2], 10), parseInt(parts[1], 10) - 1, parseInt(parts[0], 10));
+                }
+                if (surgDate && !isNaN(surgDate.getTime())) {
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    surgDate.setHours(0, 0, 0, 0);
+                    diffDays = Math.ceil((surgDate - today) / (1000 * 60 * 60 * 24));
+                }
+            }
+
+            const isDue = (mId, offset) => {
+                if (mId === 'Bienvenue') return true;
+                if (diffDays === null || diffDays === undefined || isNaN(diffDays)) return true;
+                return diffDays <= offset;
+            };
 
             const { data: respData } = await supabase
                 .from('pathway_responses')
@@ -55,7 +84,8 @@ export default function PatientSuccess({ patient: propPatient }) {
                 }
             });
 
-            const next = milestonesSequence.find(m => !completedScreens.has(m.id.toLowerCase()));
+            // Strictly filter for milestones that are CURRENTLY DUE and incomplete
+            const next = milestonesSequence.find(m => isDue(m.id, m.offset) && !completedScreens.has(m.id.toLowerCase()));
             setNextMilestone(next || null);
         } catch (e) {
             console.warn('Error checking next milestone:', e);
@@ -168,19 +198,22 @@ export default function PatientSuccess({ patient: propPatient }) {
                             display: 'inline-flex',
                             alignItems: 'center',
                             gap: '8px',
-                            padding: '18px 32px',
+                            padding: '14px 16px',
                             borderRadius: '16px',
                             fontWeight: '800',
-                            fontSize: '16px',
+                            fontSize: '14px',
+                            lineHeight: 1.35,
                             width: '100%',
                             justifyContent: 'center',
+                            textAlign: 'center',
+                            wordBreak: 'break-word',
                             marginBottom: '12px',
                             background: 'var(--grad-premium-purple)',
                             color: 'white',
                             boxShadow: '0 10px 15px -3px rgba(var(--color-primary-rgb), 0.3)'
                         }}
                     >
-                        {t('CONTINUER AVEC LE QUESTIONNAIRE')} ({nextMilestone.label})
+                        {t('QUESTIONNAIRE SUIVANT')} ({nextMilestone.label})
                     </Link>
                 )}
 
