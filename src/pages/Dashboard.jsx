@@ -361,7 +361,6 @@ export default function Dashboard() {
                         });
                     }
                 }
-            }
         } catch (err) {
             console.error('Error loading patients:', err);
         } finally {
