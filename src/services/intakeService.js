@@ -273,9 +273,24 @@ export async function submitIntakeForm(token, formData) {
             signed_date: formData.signed_date || new Date().toISOString().split('T')[0],
         };
 
-        const { error: upsertError } = await supabase
+        // Ensure non-existent columns are removed
+        delete intakePayload.specialists;
+
+        let { error: upsertError } = await supabase
             .from('intake_form_responses')
             .upsert(intakePayload, { onConflict: 'patient_id' });
+
+        if (upsertError && upsertError.message && upsertError.message.includes('column')) {
+            console.warn('[submitIntakeForm] Upsert error encountered, attempting auto-fix:', upsertError.message);
+            const match = upsertError.message.match(/Could not find the '([^']+)' column/);
+            if (match && match[1]) {
+                delete intakePayload[match[1]];
+                const retry = await supabase
+                    .from('intake_form_responses')
+                    .upsert(intakePayload, { onConflict: 'patient_id' });
+                upsertError = retry.error;
+            }
+        }
 
         if (upsertError) throw upsertError;
 
