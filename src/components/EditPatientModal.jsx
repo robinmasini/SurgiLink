@@ -68,7 +68,7 @@ export default function EditPatientModal({ isOpen, onClose, patient, onPatientUp
                 clinicName: patient.clinic_name || '',
                 appointmentDatetime: patient.appointment_datetime ? new Date(patient.appointment_datetime).toISOString().slice(0, 16) : '',
                 surgeonName: patient.surgeon_name || '',
-                surgeryTime: patient.surgery_time || '',
+                surgeryTime: (patient.surgery_time && patient.surgery_time !== '07:30' && patient.surgery_time !== 'Non-communiquée') ? patient.surgery_time : '',
                 stayType: patient.stay_type || '',
                 reminderTime: patient.reminder_time || '08:30',
                 ipp: patient.ipp || '',

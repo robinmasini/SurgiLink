@@ -474,8 +474,8 @@ Les clés doivent être exactement :
 
             const derivedAdmission = formData.admissionDatetime 
                 ? safeISOString(formData.admissionDatetime)
-                : (formData.date && formData.surgeryTime && formData.surgeryTime !== 'Non-communiquée'
-                    ? safeISOString(`${formData.date}T${formData.surgeryTime.length === 5 ? formData.surgeryTime : '07:30'}`)
+                : (formData.date && formData.surgeryTime && formData.surgeryTime.length === 5
+                    ? safeISOString(`${formData.date}T${formData.surgeryTime}`)
                     : (existingPatient?.admission_datetime || null));
 
             const patientPayload = {
@@ -1049,7 +1049,7 @@ Les clés doivent être exactement :
                                                 <input
                                                     className="input"
                                                     style={{ paddingLeft: '40px' }}
-                                                    placeholder="07:30"
+                                                    placeholder="Optionnel (Ex: 08:00)"
                                                     value={formData.surgeryTime}
                                                     onFocus={() => {
                                                         if (formData.surgeryTime === 'Non-communiquée') {
