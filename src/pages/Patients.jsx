@@ -40,7 +40,7 @@ export default function Patients() {
     const [selectedPatientId, setSelectedPatientId] = useState(null);
     const [nextReminders, setNextReminders] = useState({});
 
-    const tabs = ['Actifs', 'J-18', 'J-7', 'J-1', 'Jour J', 'J+1', 'J+4', 'ESATIS', 'Tous', 'Nouveaux patients', 'Fiches', 'Archivés'];
+    const tabs = ['Actifs', 'J-18 (Bienvenue)', 'J-7', 'J-1', 'Jour J', 'J+1', 'J+4', 'ESATIS', 'Tous', 'Nouveaux patients', 'Fiches', 'Archivés'];
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
 
     useEffect(() => {
@@ -76,6 +76,9 @@ export default function Patients() {
                 let tabDate = activeTab === 'Jour J' ? 'J-0' : activeTab;
                 if (activeTab === 'ESATIS') {
                     tabDate = 'J+4';
+                }
+                if (activeTab === 'J-18 (Bienvenue)') {
+                    tabDate = 'J-18';
                 }
                 return daysUntil === tabDate;
             });

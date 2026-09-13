@@ -6,7 +6,7 @@ export const pathwayConfig = {
     // Bienvenue: Configuration du portail
     // Bienvenue: Configuration du portail (J-18)
     Bienvenue: {
-        title: "Questionnaire J-18",
+        title: "Questionnaire J-18 (Bienvenue)",
         subtitle: "Activation de votre suivi",
         sections: [
             {

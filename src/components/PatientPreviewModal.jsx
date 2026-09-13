@@ -7,7 +7,7 @@ import AlertBanner from './pathway/AlertBanner';
 
 // All SMS steps in order with their specific alert color coding
 const ALL_TABS = [
-    { key: 'Bienvenue', label: 'J-18', sublabel: 'Accueil', color: null },
+    { key: 'Bienvenue', label: 'J-18 (Bienvenue)', sublabel: 'Accueil', color: null },
     { key: 'J7', label: 'J-7', sublabel: 'Préparation', color: null },
     { key: 'J1_PreOp', label: 'J-1', sublabel: 'Veille', color: 'red' },
     { key: 'J1', label: 'J+1', sublabel: 'Suivi', color: 'red' },

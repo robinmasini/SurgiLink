@@ -27,7 +27,7 @@ export default function QuestionsPreviewModal({ isOpen, onClose }) {
 
     const tabs = [
         { key: 'Intake', label: 'Fiche patient', icon: '📝', subtitle: 'Avant tout' },
-        { key: 'Bienvenue', label: 'Accueil (J-18)', icon: '👋', subtitle: 'Activation' },
+        { key: 'Bienvenue', label: 'J-18 (Bienvenue)', icon: '👋', subtitle: 'Activation' },
         { key: 'J7', label: 'Pré-admission (J-7)', icon: '📋', subtitle: 'Sécurité & Anesthésie' },
         { key: 'J1_PreOp', label: 'Admission (J-1)', icon: '✅', subtitle: 'Consignes & Confirmation' },
         { key: 'J1', label: 'Suivi J+1', icon: '🌡️', subtitle: 'Récupération & Douleur' },

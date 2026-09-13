@@ -530,7 +530,7 @@ Les clés doivent être exactement :
             const tokenRes = await generatePatientToken(savedPatient.id);
             const token = tokenRes.success ? tokenRes.token : null;
 
-            // 2. Schedule automated reminders (J-18, J-7, J-1)
+            // 2. Schedule automated reminders (J-18 (Bienvenue), J-7, J-1)
             if (savedPatient.date) {
                 // Clear old pending reminders to avoid duplicates
                 await supabase.from('reminder_queue').delete().eq('patient_id', savedPatient.id).eq('status', 'pending');

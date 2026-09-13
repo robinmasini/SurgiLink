@@ -260,7 +260,7 @@ export default function PatientPortal({ patient: initialPatient }) {
             
             // Define all milestones with their offsets (days relative to surgery)
             const milestones = [
-                { id: 'Bienvenue', label: 'J-18', offset: 18 },
+                { id: 'Bienvenue', label: 'J-18 (Bienvenue)', offset: 18 },
                 { id: 'J7', label: 'J-7', offset: 7 },
                 { id: 'J1_PreOp', label: 'J-1', offset: 1 },
                 { id: 'J1', label: 'J+1', offset: -1 },

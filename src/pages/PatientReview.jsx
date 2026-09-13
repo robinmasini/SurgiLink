@@ -506,7 +506,7 @@ export default function PatientReview() {
     };
 
     const handleRegenerateSchedule = async () => {
-        if (!confirm('Cela va supprimer tous les rappels en attente et les remplacer par le nouveau planning complet (Bienvenue J-18 à ESATIS). Continuer ?')) return;
+        if (!confirm('Cela va supprimer tous les rappels en attente et les remplacer par le nouveau planning complet (J-18 (Bienvenue) à ESATIS). Continuer ?')) return;
 
         try {
             // 1. Delete pending

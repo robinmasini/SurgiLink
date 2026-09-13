@@ -332,7 +332,7 @@ export default function EditPatientModal({ isOpen, onClose, patient, onPatientUp
                                 />
                             </div>
                             <p style={{ fontSize: '10px', color: 'var(--color-gray-400)', marginTop: '4px' }}>
-                                Cette heure sera utilisée pour tous les rappels automatiques (J-18, J-7, etc.)
+                                Cette heure sera utilisée pour tous les rappels automatiques (J-18 (Bienvenue), J-7, etc.)
                             </p>
                         </div>
 

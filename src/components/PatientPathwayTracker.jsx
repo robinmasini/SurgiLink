@@ -30,7 +30,7 @@ export default function PatientPathwayTracker() {
     };
 
     const screenConfigs = {
-        'Bienvenue': { label: 'Questionnaire J-18', serviceName: 'Bienvenue', template: 'welcome_accueil' },
+        'Bienvenue': { label: 'Questionnaire J-18 (Bienvenue)', serviceName: 'Bienvenue', template: 'welcome_accueil' },
         'J7': { label: 'Questionnaire J-7', serviceName: 'J-7', template: 'j7_reminder' },
         'J1_PreOp': { label: 'Confirmation J-1', serviceName: 'J-1', template: 'j1_reminder_long' },
         'J1': { label: 'Suivi J+1', serviceName: 'J+1', template: 'j1_postop' },
