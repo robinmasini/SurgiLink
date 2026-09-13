@@ -325,104 +325,124 @@ export default function IntakeForm() {
 
     useEffect(() => {
         const load = async () => {
-            const activeToken = token || params.token || params.patientId || 'demo';
-            if (activeToken === 'demo' || activeToken.includes('demo')) {
-                setPatient({
-                    id: 'demo-patient',
-                    name: 'Nouveau patient',
-                    phone: '',
-                    email: ''
-                });
+            try {
+                const activeToken = token || params.token || params.patientId || 'demo';
+                if (activeToken === 'demo' || activeToken.includes('demo')) {
+                    setPatient({
+                        id: 'demo-patient',
+                        name: 'Nouveau patient',
+                        phone: '',
+                        email: ''
+                    });
+                    setForm(prev => ({
+                        ...prev,
+                        first_name: '',
+                        last_name: '',
+                        phone: '',
+                        email: ''
+                    }));
+                    setPhase('tutorial');
+                    return;
+                }
+
+                const result = await getIntakeByToken(activeToken);
+                if (!result.success) {
+                    setErrorMsg(result.error || 'Ce lien est invalide ou introuvable.');
+                    setPhase('error');
+                    return;
+                }
+
+                setPatient(result.patient);
+                
+                const savedData = result.intakeResponse || {};
+
+                // Populate form fields ONLY from saved intakeResponse if it exists.
+                // If intake response is not saved yet, keep inputs empty ('') so light-gray placeholders are displayed natively.
+                let defaultFirstName = savedData.first_name || '';
+                let defaultLastName = savedData.last_name || '';
+                if (!defaultFirstName && !defaultLastName && result.patient?.name && result.patient.name !== 'Nouveau patient') {
+                    const nameParts = result.patient.name.trim().split(' ');
+                    if (nameParts.length > 1) {
+                        defaultFirstName = nameParts[0];
+                        defaultLastName = nameParts.slice(1).join(' ');
+                    } else if (nameParts.length === 1) {
+                        defaultLastName = nameParts[0];
+                    }
+                }
+
+                let initialSpecialists = savedData.specialists;
+                if (!Array.isArray(initialSpecialists) || initialSpecialists.length === 0) {
+                    if (savedData.specialist || savedData.specialist_city) {
+                        initialSpecialists = [{ name: savedData.specialist || '', city: savedData.specialist_city || '' }];
+                    } else {
+                        initialSpecialists = [{ name: '', city: '' }];
+                    }
+                }
+
                 setForm(prev => ({
                     ...prev,
-                    first_name: '',
-                    last_name: '',
-                    phone: '',
-                    email: ''
+                    first_name: defaultFirstName,
+                    last_name: defaultLastName,
+                    maiden_name: savedData.maiden_name || '',
+                    birth_date: savedData.birth_date || '',
+                    address: savedData.address || '',
+                    postal_code: savedData.postal_code || '',
+                    city: savedData.city || '',
+                    phone: savedData.phone || result.patient?.phone || '',
+                    email: savedData.email || result.patient?.email || '',
+                    mutuelle: savedData.mutuelle || '',
+                    emergency_contact_name: savedData.emergency_contact_name || '',
+                    emergency_contact_phone: savedData.emergency_contact_phone || '',
+                    provide_cni_in_person: savedData.cni_in_person || false,
+                    general_practitioner: savedData.general_practitioner || '',
+                    gp_city: savedData.gp_city || '',
+                    specialist: savedData.specialist || '',
+                    specialist_city: savedData.specialist_city || '',
+                    specialists: initialSpecialists,
+                    profession: savedData.profession || '',
+                    referral_source: savedData.referral_source || [],
+                    referral_other: savedData.referral_other || '',
+                    height_cm: savedData.height_cm || '',
+                    weight_kg: savedData.weight_kg || '',
+                    has_allergies: savedData.has_allergies ?? null,
+                    allergies_detail: savedData.allergies_detail || '',
+                    is_smoker: savedData.is_smoker ?? null,
+                    cigarettes_per_day: savedData.cigarettes_per_day || '',
+                    has_treatment: savedData.has_treatment ?? null,
+                    treatment_detail: savedData.treatment_detail || '',
+                    consultation_reasons: savedData.consultation_reasons || [],
+                    consultation_other: savedData.consultation_other || '',
+                    discomfort_level: savedData.discomfort_level || '',
+                    discomfort_duration: savedData.discomfort_duration || '',
+                    previous_consultation: savedData.previous_consultation ?? null,
+                    antecedents: savedData.antecedents || {},
+                    antecedents_details: savedData.antecedents_details || '',
+                    has_aesthetic_interventions: savedData.has_aesthetic_interventions ?? null,
+                    aesthetic_satisfied: savedData.aesthetic_satisfied ?? null,
+                    previous_surgery: savedData.previous_surgery ?? null,
+                    previous_surgery_detail: savedData.previous_surgery_detail || '',
+                    surgical_complications: savedData.surgical_complications ?? null,
+                    complications_detail: savedData.complications_detail || '',
+                    easy_hematomas: savedData.easy_hematomas ?? null,
+                    keloid_scars: savedData.keloid_scars ?? null,
+                    autoimmune_family: savedData.autoimmune_family ?? null,
+                    autoimmune_detail: savedData.autoimmune_detail || '',
+                    family_history_other: savedData.family_history_other || '',
+                    id_card_recto: savedData.id_card_recto || '',
+                    id_card_verso: savedData.id_card_verso || '',
+                    signed_city: savedData.signed_city || '',
+                    signed_date: savedData.signed_date || new Date().toISOString().split('T')[0],
                 }));
-                setPhase('tutorial');
-                return;
-            }
 
-            const result = await getIntakeByToken(activeToken);
-            if (!result.success) {
-                setErrorMsg(result.error || 'Ce lien est invalide ou introuvable.');
-                setPhase('error');
-                return;
-            }
-
-            setPatient(result.patient);
-            
-            // Populate form fields ONLY from saved intakeResponse if it exists.
-            // If intake response is not saved yet, keep inputs empty ('') so light-gray placeholders are displayed natively.
-            let initialSpecialists = savedData.specialists;
-            if (!Array.isArray(initialSpecialists) || initialSpecialists.length === 0) {
-                if (savedData.specialist || savedData.specialist_city) {
-                    initialSpecialists = [{ name: savedData.specialist || '', city: savedData.specialist_city || '' }];
+                if (result.intakeResponse?.form_completed) {
+                    setPhase('done');
                 } else {
-                    initialSpecialists = [{ name: '', city: '' }];
+                    setPhase('tutorial');
                 }
-            }
-
-            setForm(prev => ({
-                ...prev,
-                first_name: savedData.first_name || '',
-                last_name: savedData.last_name || '',
-                maiden_name: savedData.maiden_name || '',
-                birth_date: savedData.birth_date || '',
-                address: savedData.address || '',
-                postal_code: savedData.postal_code || '',
-                city: savedData.city || '',
-                phone: savedData.phone || '',
-                email: savedData.email || '',
-                mutuelle: savedData.mutuelle || '',
-                emergency_contact_name: savedData.emergency_contact_name || '',
-                emergency_contact_phone: savedData.emergency_contact_phone || '',
-                provide_cni_in_person: savedData.cni_in_person || false,
-                general_practitioner: savedData.general_practitioner || '',
-                gp_city: savedData.gp_city || '',
-                specialist: savedData.specialist || '',
-                specialist_city: savedData.specialist_city || '',
-                specialists: initialSpecialists,
-                profession: savedData.profession || '',
-                referral_source: savedData.referral_source || [],
-                referral_other: savedData.referral_other || '',
-                height_cm: savedData.height_cm || '',
-                weight_kg: savedData.weight_kg || '',
-                has_allergies: savedData.has_allergies ?? null,
-                allergies_detail: savedData.allergies_detail || '',
-                is_smoker: savedData.is_smoker ?? null,
-                cigarettes_per_day: savedData.cigarettes_per_day || '',
-                has_treatment: savedData.has_treatment ?? null,
-                treatment_detail: savedData.treatment_detail || '',
-                consultation_reasons: savedData.consultation_reasons || [],
-                consultation_other: savedData.consultation_other || '',
-                discomfort_level: savedData.discomfort_level || '',
-                discomfort_duration: savedData.discomfort_duration || '',
-                previous_consultation: savedData.previous_consultation ?? null,
-                antecedents: savedData.antecedents || {},
-                antecedents_details: savedData.antecedents_details || '',
-                has_aesthetic_interventions: savedData.has_aesthetic_interventions ?? null,
-                aesthetic_satisfied: savedData.aesthetic_satisfied ?? null,
-                previous_surgery: savedData.previous_surgery ?? null,
-                previous_surgery_detail: savedData.previous_surgery_detail || '',
-                surgical_complications: savedData.surgical_complications ?? null,
-                complications_detail: savedData.complications_detail || '',
-                easy_hematomas: savedData.easy_hematomas ?? null,
-                keloid_scars: savedData.keloid_scars ?? null,
-                autoimmune_family: savedData.autoimmune_family ?? null,
-                autoimmune_detail: savedData.autoimmune_detail || '',
-                family_history_other: savedData.family_history_other || '',
-                id_card_recto: savedData.id_card_recto || '',
-                id_card_verso: savedData.id_card_verso || '',
-                signed_city: savedData.signed_city || '',
-                signed_date: savedData.signed_date || new Date().toISOString().split('T')[0],
-            }));
-
-            if (result.intakeResponse?.form_completed) {
-                setPhase('done');
-            } else {
-                setPhase('tutorial');
+            } catch (err) {
+                console.error('[IntakeForm] Error loading intake:', err);
+                setErrorMsg('Une erreur est survenue lors du chargement de la fiche.');
+                setPhase('error');
             }
         };
         load();
