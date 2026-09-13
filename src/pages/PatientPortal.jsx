@@ -198,9 +198,51 @@ export default function PatientPortal({ patient: initialPatient }) {
         };
     }, [patient, initialPatient, token]);
 
+    // Helper to robustly parse surgery date
+    const parseSurgeryDate = (dateVal) => {
+        if (!dateVal) return null;
+        if (dateVal instanceof Date) return isNaN(dateVal.getTime()) ? null : dateVal;
+        let d = new Date(dateVal);
+        if (!isNaN(d.getTime())) return d;
+        if (typeof dateVal === 'string') {
+            const parts = dateVal.trim().split(/[\/\.-]/);
+            if (parts.length === 3) {
+                const day = parseInt(parts[0], 10);
+                const month = parseInt(parts[1], 10) - 1;
+                const year = parseInt(parts[2], 10);
+                if (!isNaN(day) && !isNaN(month) && !isNaN(year)) {
+                    d = new Date(year, month, day);
+                    if (!isNaN(d.getTime())) return d;
+                }
+            }
+        }
+        return null;
+    };
+
+    // Helper to check if a milestone is currently due based on surgery date
+    const isMilestoneDue = (milestoneId, diffDays) => {
+        if (milestoneId === 'Bienvenue') return true; // Welcome is always due
+        if (diffDays === null || diffDays === undefined || isNaN(diffDays)) return false;
+
+        const offsets = {
+            Bienvenue: 18,
+            J7: 7,
+            J1_PreOp: 1,
+            J1: -1,
+            J4_Satisfaction: -4,
+            ESATIS: -4
+        };
+
+        const offset = offsets[milestoneId];
+        if (offset === undefined) return false;
+
+        return diffDays <= offset;
+    };
+
     // Helper to check if a milestone is fully complete based on responses
     const isMilestoneComplete = (milestoneId) => {
         const items = getScreenItems(milestoneId);
+        if (!items || items.length === 0) return true;
         const required = items.filter(i => i.required !== false && i.type !== 'text' && i.type !== 'verbatim');
 
         const getVal = (id) => {
@@ -220,6 +262,44 @@ export default function PatientPortal({ patient: initialPatient }) {
             const val = getVal(i.id);
             return val !== undefined && val !== null && val !== '';
         });
+    };
+
+    // Helper to find the next incomplete milestone (prioritizing due milestones)
+    const getNextIncompleteMilestone = () => {
+        const surgeryDate = parseSurgeryDate(patient?.date);
+        let diffDays = null;
+        if (surgeryDate) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const surgZero = new Date(surgeryDate);
+            surgZero.setHours(0, 0, 0, 0);
+            diffDays = Math.ceil((surgZero - today) / (1000 * 60 * 60 * 24));
+        }
+
+        const milestonesSequence = [
+            { id: 'Bienvenue', route: 'bienvenue', label: 'J-18 (Bienvenue)' },
+            { id: 'J7', route: 'j7', label: 'J-7' },
+            { id: 'J1_PreOp', route: 'j1-preop', label: 'J-1' },
+            { id: 'J1', route: 'j1', label: 'J+1' },
+            { id: 'J4_Satisfaction', route: 'j4', label: 'J+4' },
+            { id: 'ESATIS', route: 'e-satis', label: 'e-Satis' }
+        ];
+
+        // 1. Check due incomplete milestones first
+        for (const m of milestonesSequence) {
+            if (isMilestoneDue(m.id, diffDays) && !isMilestoneComplete(m.id)) {
+                return m;
+            }
+        }
+
+        // 2. Check any incomplete milestone overall
+        for (const m of milestonesSequence) {
+            if (!isMilestoneComplete(m.id)) {
+                return m;
+            }
+        }
+
+        return null;
     };
 
     // Helper to find the active milestone index in the sequence
@@ -252,13 +332,10 @@ export default function PatientPortal({ patient: initialPatient }) {
     };
     
     useEffect(() => {
-        if (!patient?.date) return;
-
         const updateTimer = () => {
             const now = new Date();
-            const surgeryDate = new Date(patient.date);
+            const surgeryDate = parseSurgeryDate(patient?.date);
             
-            // Define all milestones with their offsets (days relative to surgery)
             const milestones = [
                 { id: 'Bienvenue', label: 'J-18 (Bienvenue)', offset: 18 },
                 { id: 'J7', label: 'J-7', offset: 7 },
@@ -272,25 +349,31 @@ export default function PatientPortal({ patient: initialPatient }) {
             let currentLabel = '';
             let isPastDueButIncomplete = false;
 
-            // 1. Check if any PAST or CURRENT milestone is NOT COMPLETED
             for (const m of milestones) {
-                const targetDate = new Date(surgeryDate);
-                targetDate.setHours(0, 0, 0, 0);
-                targetDate.setDate(targetDate.getDate() - m.offset);
-                targetDate.setHours(8, 30, 0, 0);
-
-                if (now >= targetDate) {
-                    // Check if this milestone is complete
-                    if (!isMilestoneComplete(m.id)) {
+                if (!surgeryDate) {
+                    if (!isMilestoneComplete('Bienvenue')) {
                         isPastDueButIncomplete = true;
-                        currentLabel = m.label;
+                        currentLabel = 'J-18 (Bienvenue)';
                         break;
                     }
                 } else {
-                    // This is the FIRST future milestone
-                    nextTarget = targetDate;
-                    currentLabel = m.label;
-                    break;
+                    const targetDate = new Date(surgeryDate);
+                    targetDate.setHours(0, 0, 0, 0);
+                    targetDate.setDate(targetDate.getDate() - m.offset);
+                    targetDate.setHours(8, 30, 0, 0);
+
+                    if (now >= targetDate) {
+                        if (!isMilestoneComplete(m.id)) {
+                            isPastDueButIncomplete = true;
+                            currentLabel = m.label;
+                            break;
+                        }
+                    } else {
+                        if (!nextTarget) {
+                            nextTarget = targetDate;
+                            currentLabel = m.label;
+                        }
+                    }
                 }
             }
 
@@ -699,32 +782,32 @@ export default function PatientPortal({ patient: initialPatient }) {
 
     // Calculate if patient is up to date based on due questionnaires
     const isUpToDate = (() => {
-        if (!patient || !responses) return false;
+        if (!patient) return false;
 
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        const surgeryDate = patient.date ? new Date(patient.date) : null;
-        if (surgeryDate) surgeryDate.setHours(0, 0, 0, 0);
-        const diffDays = surgeryDate ? Math.ceil((surgeryDate - today) / (1000 * 60 * 60 * 24)) : 999;
+        const surgeryDate = parseSurgeryDate(patient.date);
+        let diffDays = null;
+        if (surgeryDate) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const surgZero = new Date(surgeryDate);
+            surgZero.setHours(0, 0, 0, 0);
+            diffDays = Math.ceil((surgZero - today) / (1000 * 60 * 60 * 24));
+        }
 
-        const milestones = [
-            { id: 'Bienvenue', offset: 18 },
-            { id: 'J7', offset: 7 },
-            { id: 'J1_PreOp', offset: 1 },
-            { id: 'J1', offset: -1 },
-            { id: 'J4_Satisfaction', offset: -4 },
-            { id: 'ESATIS', offset: -4 }
-        ];
+        const milestoneIds = ['Bienvenue', 'J7', 'J1_PreOp', 'J1', 'J4_Satisfaction', 'ESATIS'];
 
-        // Check each step that is currently due
-        for (const milestone of milestones) {
-            if (diffDays <= milestone.offset) {
-                if (!isMilestoneComplete(milestone.id)) return false;
+        for (const mId of milestoneIds) {
+            if (isMilestoneDue(mId, diffDays)) {
+                if (!isMilestoneComplete(mId)) {
+                    return false;
+                }
             }
         }
 
         return true;
     })();
+
+    const nextIncompleteMilestone = getNextIncompleteMilestone();
 
     return (
         <div style={{ position: 'relative', minHeight: '100vh', overflow: 'hidden', backgroundColor: '#ffffff' }}>
@@ -797,51 +880,7 @@ export default function PatientPortal({ patient: initialPatient }) {
                 </div>
 
 
-                {/* Intake Form Notification Banner if not completed */}
-                {(!intakeData || !intakeData.form_completed) && (
-                    <div style={{
-                        padding: '16px 20px',
-                        marginBottom: '20px',
-                        borderRadius: '24px',
-                        background: 'linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%)',
-                        border: '1.5px solid #F59E0B',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        gap: '12px',
-                        boxShadow: '0 4px 12px rgba(245, 158, 11, 0.15)'
-                    }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                            <div style={{ fontSize: '26px', flexShrink: 0 }}>📋</div>
-                            <div>
-                                <div style={{ fontSize: '14px', fontWeight: '800', color: '#92400E' }}>
-                                    {t('Fiche de renseignements à compléter')}
-                                </div>
-                                <div style={{ fontSize: '12px', color: '#B45309', marginTop: '2px', lineHeight: 1.3 }}>
-                                    {t('Merci de remplir votre fiche médicale afin de préparer votre consultation.')}
-                                </div>
-                            </div>
-                        </div>
-                        <button
-                            onClick={() => navigate(`/fiche/${token}`)}
-                            style={{
-                                padding: '10px 16px',
-                                borderRadius: '14px',
-                                background: 'linear-gradient(135deg, #D97706, #B45309)',
-                                color: 'white',
-                                border: 'none',
-                                fontWeight: '800',
-                                fontSize: '13px',
-                                cursor: 'pointer',
-                                flexShrink: 0,
-                                boxShadow: '0 2px 8px rgba(217, 119, 6, 0.3)',
-                                whiteSpace: 'nowrap'
-                            }}
-                        >
-                            {t('Compléter')}
-                        </button>
-                    </div>
-                )}
+
 
                 {/* Main Hero Card (Premium Status Card) */}
                 <div style={{
@@ -936,10 +975,13 @@ export default function PatientPortal({ patient: initialPatient }) {
 
                         <div>
                             <p style={{ fontSize: '11px', fontWeight: '600', color: '#9ca3af', marginBottom: '2px' }}>
-                                {nextMilestoneLabel ? t('Prochaines questions dans :') : t('Parcours terminé !')}
+                                {!isUpToDate && nextIncompleteMilestone
+                                    ? t('Questionnaire à remplir :')
+                                    : (nextMilestoneLabel && timeLeft !== '00:00:00' ? t('Prochaines questions dans :') : t('Parcours terminé !'))
+                                }
                             </p>
-                            <div style={{ fontSize: timeLeft.includes('j') ? '24px' : '28px', fontWeight: '800', letterSpacing: '0.05em', color: '#4b5563' }}>
-                                {nextMilestoneLabel && timeLeft !== '00:00:00' ? timeLeft : '00:00:00'}
+                            <div style={{ fontSize: (!isUpToDate && nextIncompleteMilestone) ? '18px' : (timeLeft.includes('j') ? '24px' : '28px'), fontWeight: '800', letterSpacing: '0.05em', color: '#4b5563' }}>
+                                {!isUpToDate && nextIncompleteMilestone ? nextIncompleteMilestone.label : (nextMilestoneLabel && timeLeft !== '00:00:00' ? timeLeft : '00:00:00')}
                             </div>
                         </div>
                     </div>
@@ -972,19 +1014,10 @@ export default function PatientPortal({ patient: initialPatient }) {
                             if (isUpToDate) return;
 
                             // Smart Routing: Find the first incomplete milestone
-                            const milestones = [
-                                { id: 'Bienvenue', route: 'bienvenue' },
-                                { id: 'J7', route: 'j7' },
-                                { id: 'J1_PreOp', route: 'j1-preop' },
-                                { id: 'J1', route: 'j1' },
-                                { id: 'J4_Satisfaction', route: 'j4' },
-                                { id: 'ESATIS', route: 'e-satis' }
-                            ];
-
-                            const nextIncomplete = milestones.find(m => !isMilestoneComplete(m.id));
-                            const targetRoute = nextIncomplete ? nextIncomplete.route : 'success';
-
-                            navigate(`/patient-portal/${token}/${targetRoute}`);
+                            const target = getNextIncompleteMilestone();
+                            if (target) {
+                                navigate(`/patient-portal/${token}/${target.route}`);
+                            }
                         }}
                         onMouseOver={(e) => { if (!isUpToDate) e.currentTarget.style.transform = 'translateY(-2px)'; }}
                         onMouseOut={(e) => { if (!isUpToDate) e.currentTarget.style.transform = 'translateY(0)'; }}
@@ -995,7 +1028,7 @@ export default function PatientPortal({ patient: initialPatient }) {
                             </>
                         ) : (
                             <>
-                                {t('DÉMARRER MON QUESTIONNAIRE')} {nextMilestoneLabel ? `(${nextMilestoneLabel})` : ''}
+                                {t('DÉMARRER MON QUESTIONNAIRE')} {nextIncompleteMilestone ? `(${nextIncompleteMilestone.label})` : ''}
                             </>
                         )}
                     </button>
