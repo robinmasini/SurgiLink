@@ -169,7 +169,7 @@ export default function Patients() {
                 if (realIdsToFetch.length > 0) {
                     const [respDataRes, intakeDataRes, remindersDataRes] = await Promise.all([
                         supabase.from('pathway_responses').select('*').in('patient_id', realIdsToFetch),
-                        supabase.from('intake_form_responses').select('patient_id, id_card_recto, id_card_verso').in('patient_id', realIdsToFetch),
+                        supabase.from('intake_form_responses').select('patient_id, first_name, last_name, id_card_recto, id_card_verso').in('patient_id', realIdsToFetch),
                         supabase.from('reminder_queue').select('patient_id, screen, scheduled_for').in('patient_id', realIdsToFetch).eq('status', 'pending').order('scheduled_for', { ascending: true })
                     ]);
 
@@ -191,7 +191,7 @@ export default function Patients() {
                     if (!r) return;
                     const pName = idToName[r.patient_id];
                     [r.patient_id, String(r.patient_id)].forEach(k => {
-                        if (!intakeMap[k] || r.id_card_recto || r.id_card_verso) {
+                        if (!intakeMap[k] || r.id_card_recto || r.id_card_verso || r.first_name) {
                             intakeMap[k] = r;
                         }
                     });
@@ -200,7 +200,7 @@ export default function Patients() {
                         intakeMap[pName] = r;
                         (allPatientsData || []).forEach(p => {
                             if ((p.name || '').trim().toLowerCase() === pName) {
-                                if (!intakeMap[p.id] || r.id_card_recto || r.id_card_verso) {
+                                if (!intakeMap[p.id] || r.id_card_recto || r.id_card_verso || r.first_name) {
                                     intakeMap[p.id] = r;
                                     intakeMap[String(p.id)] = r;
                                 }
@@ -209,6 +209,18 @@ export default function Patients() {
                     }
                 });
                 setIntakeResponses(intakeMap);
+
+                const resolvedFormattedPatients = formattedPatients.map(p => {
+                    const intake = intakeMap[p.id] || intakeMap[String(p.id)];
+                    if ((!p.name || (p.name || '').trim().toLowerCase() === 'nouveau patient') && intake && (intake.first_name || intake.last_name)) {
+                        const resolvedName = [intake.first_name, intake.last_name].filter(Boolean).join(' ');
+                        if (resolvedName) {
+                            return { ...p, name: resolvedName };
+                        }
+                    }
+                    return p;
+                });
+                setAllPatients(resolvedFormattedPatients);
 
                 if (!remindersDataRes.error && remindersDataRes.data) {
                     const remindersMap = {};

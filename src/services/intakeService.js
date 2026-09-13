@@ -185,15 +185,10 @@ export async function submitIntakeForm(token, formData) {
             .select();
 
         if (patientUpdateErr || !updatedRows || updatedRows.length === 0) {
-            console.warn('[intakeService] patient update warning or missing row, performing upsert:', patientUpdateErr);
-            if (typeof patientId === 'number') {
-                await supabase.from('patients').upsert({
-                    id: patientId,
-                    ...patientUpdate,
-                    date: new Date().toISOString().split('T')[0],
-                    progress: 0,
-                    days_until: 'J-0'
-                });
+            console.warn('[intakeService] patient update warning or missing row, performing fallback update:', patientUpdateErr);
+            const numId = !isNaN(patientId) ? parseInt(patientId, 10) : null;
+            if (numId) {
+                await supabase.from('patients').update(patientUpdate).eq('id', numId);
             }
         }
 

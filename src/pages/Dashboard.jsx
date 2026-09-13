@@ -305,7 +305,7 @@ export default function Dashboard() {
 
                 const [respDataRes, intakeDataRes, settingsDataRes] = await Promise.all([
                     realIdsToFetch.length > 0 ? supabase.from('pathway_responses').select('*').in('patient_id', realIdsToFetch) : Promise.resolve({ data: [] }),
-                    realIdsToFetch.length > 0 ? supabase.from('intake_form_responses').select('patient_id, id_card_recto, id_card_verso').in('patient_id', realIdsToFetch) : Promise.resolve({ data: [] }),
+                    realIdsToFetch.length > 0 ? supabase.from('intake_form_responses').select('patient_id, first_name, last_name, id_card_recto, id_card_verso').in('patient_id', realIdsToFetch) : Promise.resolve({ data: [] }),
                     supabase.from('app_settings').select('value').eq('key', 'financial_impact_unit').maybeSingle()
                 ]);
 
@@ -328,7 +328,7 @@ export default function Dashboard() {
                         if (!r) return;
                         const pName = idToName[r.patient_id];
                         [r.patient_id, String(r.patient_id)].forEach(k => {
-                            if (!intakeMap[k] || r.id_card_recto || r.id_card_verso) {
+                            if (!intakeMap[k] || r.id_card_recto || r.id_card_verso || r.first_name) {
                                 intakeMap[k] = r;
                             }
                         });
@@ -337,7 +337,7 @@ export default function Dashboard() {
                             intakeMap[pName] = r;
                             (allPatientsData || []).forEach(p => {
                                 if ((p.name || '').trim().toLowerCase() === pName) {
-                                    if (!intakeMap[p.id] || r.id_card_recto || r.id_card_verso) {
+                                    if (!intakeMap[p.id] || r.id_card_recto || r.id_card_verso || r.first_name) {
                                         intakeMap[p.id] = r;
                                         intakeMap[String(p.id)] = r;
                                     }
@@ -350,6 +350,17 @@ export default function Dashboard() {
                     if (settingsDataRes?.data?.value) {
                         setFinancialImpactUnit(parseInt(settingsDataRes.data.value) || 2450);
                     }
+
+                    formattedPatients = formattedPatients.map(p => {
+                        const intake = intakeMap[p.id] || intakeMap[String(p.id)];
+                        if ((!p.name || (p.name || '').trim().toLowerCase() === 'nouveau patient') && intake && (intake.first_name || intake.last_name)) {
+                            const resolvedName = [intake.first_name, intake.last_name].filter(Boolean).join(' ');
+                            if (resolvedName) {
+                                return { ...p, name: resolvedName };
+                            }
+                        }
+                        return p;
+                    });
 
                     formattedPatients.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
                     setAllPatients(formattedPatients);
