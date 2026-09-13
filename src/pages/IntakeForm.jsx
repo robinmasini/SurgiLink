@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowRight, ArrowLeft, CheckCircle, Loader, AlertCircle, Camera, Image as ImageIcon, Trash2, Plus } from 'lucide-react';
 import { getIntakeByToken, submitIntakeForm } from '../services/intakeService';
+import InterventionSelect from '../components/InterventionSelect';
 import logoSurgilink from '../assets/logo_surgilink_premium_green.png';
 import logoMA from '../assets/logo-medical-alliance.png';
 import medecinImg from '../assets/medecin.png';
@@ -1281,8 +1282,11 @@ export default function IntakeForm() {
                                 </div>
                             </div>
                         ))}
-                        <Field label="Autre motif">
-                            <StyledInput value={form.consultation_other} onChange={e => setF('consultation_other', e.target.value)} placeholder="Précisez si besoin…" />
+                        <Field label="Autre motif / Intervention(s)">
+                            <InterventionSelect
+                                value={form.consultation_other}
+                                onChange={val => setF('consultation_other', val)}
+                            />
                         </Field>
                     </div>
                 );
