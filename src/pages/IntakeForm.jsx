@@ -86,7 +86,34 @@ function StyledInput({ ...props }) {
     );
 }
 
-function YesNoGroup({ label, value, onChange, yesLabel = 'Oui', noLabel = 'Non', detail, detailValue, onDetailChange, detailPlaceholder }) {
+function StyledTextarea({ rows = 3, style, ...props }) {
+    return (
+        <textarea
+            rows={rows}
+            style={{
+                width: '100%',
+                padding: '11px 14px',
+                border: '1.5px solid #E5E7EB',
+                borderRadius: '10px',
+                fontSize: '15px',
+                color: '#111827',
+                background: 'white',
+                outline: 'none',
+                boxSizing: 'border-box',
+                transition: 'border-color 0.2s',
+                fontFamily: 'inherit',
+                resize: 'vertical',
+                minHeight: '80px',
+                ...style
+            }}
+            onFocus={e => e.target.style.borderColor = 'var(--color-primary-500)'}
+            onBlur={e => e.target.style.borderColor = '#E5E7EB'}
+            {...props}
+        />
+    );
+}
+
+function YesNoGroup({ label, value, onChange, yesLabel = 'Oui', noLabel = 'Non', detail, detailValue, onDetailChange, detailPlaceholder, useTextarea = false }) {
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <span style={{ fontSize: '14px', fontWeight: '600', color: '#374151' }}>{label}</span>
@@ -114,11 +141,20 @@ function YesNoGroup({ label, value, onChange, yesLabel = 'Oui', noLabel = 'Non',
                 ))}
             </div>
             {detail && value === true && (
-                <StyledInput
-                    placeholder={detailPlaceholder || 'Précisez…'}
-                    value={detailValue || ''}
-                    onChange={e => onDetailChange(e.target.value)}
-                />
+                useTextarea ? (
+                    <StyledTextarea
+                        placeholder={detailPlaceholder || 'Précisez…'}
+                        value={detailValue || ''}
+                        onChange={e => onDetailChange(e.target.value)}
+                        rows={2}
+                    />
+                ) : (
+                    <StyledInput
+                        placeholder={detailPlaceholder || 'Précisez…'}
+                        value={detailValue || ''}
+                        onChange={e => onDetailChange(e.target.value)}
+                    />
+                )
             )}
         </div>
     );
@@ -1148,18 +1184,24 @@ export default function IntakeForm() {
                                         {ant.label}
                                     </label>
                                     {entry.checked && (
-                                        <StyledInput
+                                        <StyledTextarea
                                             style={{ marginTop: '8px' }}
                                             placeholder="Précisez (ex : hypertension traitée depuis 2018)…"
                                             value={entry.detail}
                                             onChange={e => setAntecedentDetail(ant.key, e.target.value)}
+                                            rows={3}
                                         />
                                     )}
                                 </div>
                             );
                         })}
                         <Field label="Précisions complémentaires">
-                            <StyledInput value={form.antecedents_details} onChange={e => setF('antecedents_details', e.target.value)} placeholder="Tout autre renseignement utile…" />
+                            <StyledTextarea
+                                value={form.antecedents_details}
+                                onChange={e => setF('antecedents_details', e.target.value)}
+                                placeholder="Tout autre renseignement utile…"
+                                rows={3}
+                            />
                         </Field>
                     </div>
                 );
@@ -1178,6 +1220,7 @@ export default function IntakeForm() {
                                     value={form.previous_surgery}
                                     onChange={v => setF('previous_surgery', v)}
                                     detail
+                                    useTextarea
                                     detailValue={form.previous_surgery_detail}
                                     onDetailChange={v => setF('previous_surgery_detail', v)}
                                     detailPlaceholder="Précisez (type d'opération, année)…"
@@ -1187,6 +1230,7 @@ export default function IntakeForm() {
                                     value={form.surgical_complications}
                                     onChange={v => setF('surgical_complications', v)}
                                     detail
+                                    useTextarea
                                     detailValue={form.complications_detail}
                                     onDetailChange={v => setF('complications_detail', v)}
                                     detailPlaceholder="Décrivez les complications…"
