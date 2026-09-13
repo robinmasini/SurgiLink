@@ -198,31 +198,52 @@ export default function PatientPortal({ patient: initialPatient }) {
         };
     }, [patient, initialPatient, token]);
 
-    // Helper to robustly parse surgery date
+    // Helper to robustly parse surgery date across all mobile & desktop browsers
     const parseSurgeryDate = (dateVal) => {
         if (!dateVal) return null;
         if (dateVal instanceof Date) return isNaN(dateVal.getTime()) ? null : dateVal;
-        let d = new Date(dateVal);
-        if (!isNaN(d.getTime())) return d;
-        if (typeof dateVal === 'string') {
-            const parts = dateVal.trim().split(/[\/\.-]/);
-            if (parts.length === 3) {
-                const day = parseInt(parts[0], 10);
-                const month = parseInt(parts[1], 10) - 1;
-                const year = parseInt(parts[2], 10);
-                if (!isNaN(day) && !isNaN(month) && !isNaN(year)) {
-                    d = new Date(year, month, day);
-                    if (!isNaN(d.getTime())) return d;
-                }
+        
+        const str = String(dateVal).trim();
+        if (!str) return null;
+
+        // 1. Check standard YYYY-MM-DD format (or YYYY-MM-DDTHH:mm:ss)
+        if (/^\d{4}-\d{2}-\d{2}/.test(str)) {
+            const parts = str.split('T')[0].split('-').map(n => parseInt(n, 10));
+            if (parts.length === 3 && parts[0] && parts[1] && parts[2]) {
+                return new Date(parts[0], parts[1] - 1, parts[2]);
             }
         }
-        return null;
+
+        // 2. Check DD/MM/YYYY or DD-MM-YYYY format
+        const parts = str.split(/[\/\.-]/);
+        if (parts.length === 3) {
+            if (parts[0].length === 4) {
+                // YYYY/MM/DD
+                const y = parseInt(parts[0], 10);
+                const m = parseInt(parts[1], 10) - 1;
+                const d = parseInt(parts[2], 10);
+                if (!isNaN(y) && !isNaN(m) && !isNaN(d)) return new Date(y, m, d);
+            } else {
+                // DD/MM/YYYY
+                const d = parseInt(parts[0], 10);
+                const m = parseInt(parts[1], 10) - 1;
+                const y = parseInt(parts[2], 10);
+                if (!isNaN(d) && !isNaN(m) && !isNaN(y)) return new Date(y, m, d);
+            }
+        }
+
+        const fallback = new Date(str);
+        return isNaN(fallback.getTime()) ? null : fallback;
     };
 
     // Helper to check if a milestone is currently due based on surgery date
     const isMilestoneDue = (milestoneId, diffDays) => {
         if (milestoneId === 'Bienvenue') return true; // Welcome is always due
-        if (diffDays === null || diffDays === undefined || isNaN(diffDays)) return false;
+
+        // If diffDays cannot be calculated, fallback to true so we don't falsely claim patient is up to date
+        if (diffDays === null || diffDays === undefined || isNaN(diffDays)) {
+            return true;
+        }
 
         const offsets = {
             Bienvenue: 18,
