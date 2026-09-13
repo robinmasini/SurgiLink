@@ -40,7 +40,7 @@ export default function Patients() {
     const [selectedPatientId, setSelectedPatientId] = useState(null);
     const [nextReminders, setNextReminders] = useState({});
 
-    const tabs = ['Actifs', 'J-18 (Bienvenue)', 'J-7', 'J-1', 'Jour J', 'J+1', 'J+4', 'ESATIS', 'Tous', 'Nouveaux patients', 'Fiches', 'Archivés'];
+    const tabs = ['Actifs', 'J-18 (Bienvenue)', 'J-7', 'J-1', 'Jour J', 'J+1', 'J+4', 'ESATIS', 'Tous', 'Nouveaux patients', 'Date à renseigner', 'Archivés'];
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
 
     useEffect(() => {
@@ -68,6 +68,8 @@ export default function Patients() {
             filtered = filtered.filter(p => p.status === 'intake' || (!p.date && p.status !== 'archived'));
         } else if (activeTab === 'Nouveaux patients') {
             filtered = filtered.filter(p => p.status === 'intake');
+        } else if (activeTab === 'Date à renseigner') {
+            filtered = filtered.filter(p => (!p.date || p.status === 'intake') && p.status !== 'archived');
         } else if (activeTab === 'Tous') {
             filtered = filtered.filter(p => p.status !== 'archived' && p.status !== 'intake');
         } else {

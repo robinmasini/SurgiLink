@@ -75,7 +75,7 @@ export default function Dashboard() {
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
     const [searchTerm, setSearchTerm] = useState('');
 
-    const tabs = ['Actifs', 'J-18 (Bienvenue)', 'J-7', 'J-1', 'Jour J', 'J+1', 'J+4', 'ESATIS', 'Tous', 'Nouveaux patients', 'Archivés'];
+    const tabs = ['Actifs', 'J-18 (Bienvenue)', 'J-7', 'J-1', 'Jour J', 'J+1', 'J+4', 'ESATIS', 'Tous', 'Nouveaux patients', 'Date à renseigner', 'Archivés'];
 
     useEffect(() => {
         const handleResize = () => {
@@ -140,6 +140,8 @@ export default function Dashboard() {
             filtered = filtered.filter(p => p.status !== 'archived');
         } else if (activeTab === 'Nouveaux patients') {
             filtered = filtered.filter(p => p.status === 'intake');
+        } else if (activeTab === 'Date à renseigner') {
+            filtered = filtered.filter(p => (!p.date || p.status === 'intake') && p.status !== 'archived');
         } else {
             filtered = filtered.filter(p => {
                 const daysUntil = calculateDaysUntilSurgery(p.date);
