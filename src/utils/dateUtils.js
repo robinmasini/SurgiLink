@@ -84,3 +84,36 @@ export const formatDateTimeFR = (date) => {
         return 'Date invalide';
     }
 };
+
+/**
+ * Check if a patient is in the active treatment window (between J-18 and e-Satis / J+4)
+ * @param {object|string|Date} patientOrDate - Patient object or surgery date
+ * @param {string} [status] - Optional status string
+ * @returns {boolean} True if patient is between J-18 and e-Satis
+ */
+export const isBetweenJ18AndEsatis = (patientOrDate, status) => {
+    let dateVal = patientOrDate;
+    let statusVal = status;
+
+    if (patientOrDate && typeof patientOrDate === 'object') {
+        dateVal = patientOrDate.date;
+        statusVal = patientOrDate.status;
+    }
+
+    if (statusVal === 'archived') return false;
+    if (!dateVal) return false;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const surgery = new Date(dateVal);
+    if (isNaN(surgery.getTime())) return false;
+    surgery.setHours(0, 0, 0, 0);
+
+    const diffTime = surgery - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    // J-18 is +18 days away, e-Satis (J+4) is -4 days away
+    return diffDays >= -4 && diffDays <= 18;
+};
+

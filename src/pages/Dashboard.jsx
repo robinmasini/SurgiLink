@@ -40,7 +40,7 @@ import {
 } from 'lucide-react';
 
 import { supabase } from '../lib/supabase';
-import { calculateDaysUntilSurgery } from '../utils/dateUtils';
+import { calculateDaysUntilSurgery, isBetweenJ18AndEsatis } from '../utils/dateUtils';
 import StatusBolt from '../components/StatusBolt';
 import PatientStatusBadges from '../components/PatientStatusBadges';
 import PatientDetailPanel from '../components/PatientDetailPanel';
@@ -75,7 +75,7 @@ export default function Dashboard() {
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
     const [searchTerm, setSearchTerm] = useState('');
 
-    const tabs = ['J-18', 'J-7', 'J-1', 'Jour J', 'J+1', 'J+4', 'ESATIS', 'Tous', 'Nouveaux patients', 'Archivés'];
+    const tabs = ['Actifs', 'J-18', 'J-7', 'J-1', 'Jour J', 'J+1', 'J+4', 'ESATIS', 'Tous', 'Nouveaux patients', 'Archivés'];
 
     useEffect(() => {
         const handleResize = () => {
@@ -134,6 +134,8 @@ export default function Dashboard() {
 
         if (activeTab === 'Archivés') {
             filtered = filtered.filter(p => p.status === 'archived');
+        } else if (activeTab === 'Actifs') {
+            filtered = filtered.filter(p => isBetweenJ18AndEsatis(p));
         } else if (activeTab === 'Tous') {
             filtered = filtered.filter(p => p.status !== 'archived');
         } else if (activeTab === 'Nouveaux patients') {
@@ -221,37 +223,6 @@ export default function Dashboard() {
                 ];
             }
 
-            // Calculate stats
-            const now = new Date();
-            const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay() + 1));
-            startOfWeek.setHours(0, 0, 0, 0);
-
-            const endOfWeek = new Date(startOfWeek);
-            endOfWeek.setDate(endOfWeek.getDate() + 6);
-            endOfWeek.setHours(23, 59, 59, 999);
-
-            const activeCount = allPatientsData.length;
-            const completeCount = allPatientsData.filter(p => p.progress === 100).length;
-            const requiredCount = allPatientsData.filter(p => p.status === 'alerte' || p.status === 'critique').length;
-            const weeklyCount = allPatientsData.filter(p => {
-                if (!p.date) return false;
-                const surgeryDate = new Date(p.date);
-                return surgeryDate >= startOfWeek && surgeryDate <= endOfWeek;
-            }).length;
-
-            const oneWeekAgo = new Date();
-            oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-            const recentActiveCount = allPatientsData.filter(p => new Date(p.created_at) >= oneWeekAgo).length;
-
-            if (isMounted) {
-                setStats({
-                    active: activeCount,
-                    complete: completeCount,
-                    required: requiredCount,
-                    weekly: weeklyCount,
-                    recentActive: recentActiveCount
-                });
-
                 // Deduplicate by normalized name
                 const patientGroups = {};
                 (allPatientsData || []).forEach(p => {
@@ -286,6 +257,39 @@ export default function Dashboard() {
                         const days = parseInt(p.daysUntil.replace('J', '')) || 0;
                         // J+1, J+2... means days < 0 in our calculateDaysUntilSurgery logic
                         return p.daysUntil.startsWith('J+');
+                    });
+                }
+
+                // Calculate stats for Active Patients window (J-18 to e-Satis J+4)
+                const now = new Date();
+                const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay() + 1));
+                startOfWeek.setHours(0, 0, 0, 0);
+
+                const endOfWeek = new Date(startOfWeek);
+                endOfWeek.setDate(endOfWeek.getDate() + 6);
+                endOfWeek.setHours(23, 59, 59, 999);
+
+                const activePatientsList = formattedPatients.filter(p => isBetweenJ18AndEsatis(p));
+                const activeCount = activePatientsList.length;
+                const completeCount = activePatientsList.filter(p => p.progress === 100).length;
+                const requiredCount = activePatientsList.filter(p => p.status === 'alerte' || p.status === 'critique').length;
+                const weeklyCount = formattedPatients.filter(p => {
+                    if (!p.date) return false;
+                    const surgeryDate = new Date(p.date);
+                    return surgeryDate >= startOfWeek && surgeryDate <= endOfWeek;
+                }).length;
+
+                const oneWeekAgo = new Date();
+                oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+                const recentActiveCount = activePatientsList.filter(p => new Date(p.created_at || 0) >= oneWeekAgo).length;
+
+                if (isMounted) {
+                    setStats({
+                        active: activeCount,
+                        complete: completeCount,
+                        required: requiredCount,
+                        weekly: weeklyCount,
+                        recentActive: recentActiveCount
                     });
                 }
 
@@ -639,7 +643,7 @@ export default function Dashboard() {
 
                     {/* Stats Cards Grid */}
                     <div className="stat-grid" style={{ gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)' }}>
-                        <div className="stat-card" style={{ cursor: 'pointer', transition: 'transform 0.2s' }} onClick={() => navigate('/patients')}>
+                        <div className="stat-card" style={{ cursor: 'pointer', transition: 'transform 0.2s' }} onClick={() => setActiveTab(activeTab === 'Actifs' ? 'Tous' : 'Actifs')}>
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--spacing-3)' }}>
                                 <div className="stat-card-icon" style={{ background: 'var(--color-primary-50)', marginBottom: 0 }}>
                                     <Users size={24} style={{ color: 'var(--color-primary-500)' }} />

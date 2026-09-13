@@ -19,7 +19,7 @@ import {
     CalendarClock
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import { calculateDaysUntilSurgery } from '../utils/dateUtils';
+import { calculateDaysUntilSurgery, isBetweenJ18AndEsatis } from '../utils/dateUtils';
 import StatusBolt from '../components/StatusBolt';
 import PatientStatusBadges from '../components/PatientStatusBadges';
 import PatientDetailPanel from '../components/PatientDetailPanel';
@@ -40,7 +40,7 @@ export default function Patients() {
     const [selectedPatientId, setSelectedPatientId] = useState(null);
     const [nextReminders, setNextReminders] = useState({});
 
-    const tabs = ['J-18', 'J-7', 'J-1', 'Jour J', 'J+1', 'J+4', 'ESATIS', 'Tous', 'Nouveaux patients', 'Fiches', 'Archivés'];
+    const tabs = ['Actifs', 'J-18', 'J-7', 'J-1', 'Jour J', 'J+1', 'J+4', 'ESATIS', 'Tous', 'Nouveaux patients', 'Fiches', 'Archivés'];
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
 
     useEffect(() => {
@@ -61,6 +61,8 @@ export default function Patients() {
 
         if (activeTab === 'Archivés') {
             filtered = filtered.filter(p => p.status === 'archived');
+        } else if (activeTab === 'Actifs') {
+            filtered = filtered.filter(p => isBetweenJ18AndEsatis(p));
         } else if (activeTab === 'Fiches') {
             // Patients avec fiche de renseignements en attente (pas encore d'intervention)
             filtered = filtered.filter(p => p.status === 'intake' || (!p.date && p.status !== 'archived'));
