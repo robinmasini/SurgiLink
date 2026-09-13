@@ -285,16 +285,16 @@ export default function IntakeForm() {
             if (activeToken === 'demo' || activeToken.includes('demo')) {
                 setPatient({
                     id: 'demo-patient',
-                    name: 'Marie DUPONT',
-                    phone: '0612345678',
-                    email: 'marie.dupont@example.com'
+                    name: 'Nouveau patient',
+                    phone: '',
+                    email: ''
                 });
                 setForm(prev => ({
                     ...prev,
-                    first_name: 'Marie',
-                    last_name: 'DUPONT',
-                    phone: '0612345678',
-                    email: 'marie.dupont@example.com'
+                    first_name: '',
+                    last_name: '',
+                    phone: '',
+                    email: ''
                 }));
                 setPhase('tutorial');
                 return;
@@ -308,17 +308,65 @@ export default function IntakeForm() {
             }
 
             setPatient(result.patient);
-            if (result.patient) {
-                const isNouveauPatient = result.patient.name === 'Nouveau patient';
-                const nameParts = (result.patient.name || '').split(' ');
-                setForm(prev => ({
-                    ...prev,
-                    first_name: isNouveauPatient ? '' : (nameParts[0] || ''),
-                    last_name: isNouveauPatient ? '' : (nameParts.slice(1).join(' ') || ''),
-                    phone: result.patient.phone || '',
-                    email: result.patient.email || '',
-                }));
-            }
+            
+            // Populate form fields ONLY from saved intakeResponse if it exists.
+            // If intake response is not saved yet, keep inputs empty ('') so light-gray placeholders are displayed natively.
+            const savedData = result.intakeResponse || {};
+
+            setForm(prev => ({
+                ...prev,
+                first_name: savedData.first_name || '',
+                last_name: savedData.last_name || '',
+                maiden_name: savedData.maiden_name || '',
+                birth_date: savedData.birth_date || '',
+                address: savedData.address || '',
+                postal_code: savedData.postal_code || '',
+                city: savedData.city || '',
+                phone: savedData.phone || '',
+                email: savedData.email || '',
+                mutuelle: savedData.mutuelle || '',
+                emergency_contact_name: savedData.emergency_contact_name || '',
+                emergency_contact_phone: savedData.emergency_contact_phone || '',
+                provide_cni_in_person: savedData.cni_in_person || false,
+                general_practitioner: savedData.general_practitioner || '',
+                gp_city: savedData.gp_city || '',
+                specialist: savedData.specialist || '',
+                specialist_city: savedData.specialist_city || '',
+                profession: savedData.profession || '',
+                referral_source: savedData.referral_source || [],
+                referral_other: savedData.referral_other || '',
+                height_cm: savedData.height_cm || '',
+                weight_kg: savedData.weight_kg || '',
+                has_allergies: savedData.has_allergies ?? null,
+                allergies_detail: savedData.allergies_detail || '',
+                is_smoker: savedData.is_smoker ?? null,
+                cigarettes_per_day: savedData.cigarettes_per_day || '',
+                has_treatment: savedData.has_treatment ?? null,
+                treatment_detail: savedData.treatment_detail || '',
+                consultation_reasons: savedData.consultation_reasons || [],
+                consultation_other: savedData.consultation_other || '',
+                discomfort_level: savedData.discomfort_level || '',
+                discomfort_duration: savedData.discomfort_duration || '',
+                previous_consultation: savedData.previous_consultation ?? null,
+                antecedents: savedData.antecedents || {},
+                antecedents_details: savedData.antecedents_details || '',
+                has_aesthetic_interventions: savedData.has_aesthetic_interventions ?? null,
+                aesthetic_satisfied: savedData.aesthetic_satisfied ?? null,
+                previous_surgery: savedData.previous_surgery ?? null,
+                previous_surgery_detail: savedData.previous_surgery_detail || '',
+                surgical_complications: savedData.surgical_complications ?? null,
+                complications_detail: savedData.complications_detail || '',
+                easy_hematomas: savedData.easy_hematomas ?? null,
+                keloid_scars: savedData.keloid_scars ?? null,
+                autoimmune_family: savedData.autoimmune_family ?? null,
+                autoimmune_detail: savedData.autoimmune_detail || '',
+                family_history_other: savedData.family_history_other || '',
+                id_card_recto: savedData.id_card_recto || '',
+                id_card_verso: savedData.id_card_verso || '',
+                signed_city: savedData.signed_city || '',
+                signed_date: savedData.signed_date || new Date().toISOString().split('T')[0],
+            }));
+
             if (result.intakeResponse?.form_completed) {
                 setPhase('done');
             } else {
@@ -746,20 +794,20 @@ export default function IntakeForm() {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                             <Field label="Prénom" required>
-                                <StyledInput value={form.first_name} onChange={e => setF('first_name', e.target.value)} placeholder="Marie" />
+                                <StyledInput value={form.first_name} onChange={e => setF('first_name', e.target.value)} placeholder="Ex : Jean" />
                             </Field>
                             <Field label="Nom" required>
-                                <StyledInput value={form.last_name} onChange={e => setF('last_name', e.target.value)} placeholder="DUPONT" />
+                                <StyledInput value={form.last_name} onChange={e => setF('last_name', e.target.value)} placeholder="Ex : Dupont" />
                             </Field>
                         </div>
                         <Field label="Nom de jeune fille / Homme" hint="Si différent du nom actuel">
-                            <StyledInput value={form.maiden_name} onChange={e => setF('maiden_name', e.target.value)} placeholder="Optionnel" />
+                            <StyledInput value={form.maiden_name} onChange={e => setF('maiden_name', e.target.value)} placeholder="Ex : Martin (Optionnel)" />
                         </Field>
                         <Field label="Date de naissance" required>
                             <StyledInput type="date" value={form.birth_date} onChange={e => setF('birth_date', e.target.value)} />
                         </Field>
                         <Field label="Adresse" required>
-                            <StyledInput value={form.address} onChange={e => setF('address', e.target.value)} placeholder="12 rue de la Paix" />
+                            <StyledInput value={form.address} onChange={e => setF('address', e.target.value)} placeholder="Ex : 12 rue de la Paix" />
                         </Field>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '10px' }}>
                             <Field label="Code postal" required>
