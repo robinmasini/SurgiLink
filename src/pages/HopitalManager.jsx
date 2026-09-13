@@ -913,10 +913,17 @@ Les clés doivent être exactement :
                                                     onChange={e => setFormData({ ...formData, clinicName: e.target.value })}
                                                 >
                                                     <option value="" disabled>Sélectionnez un établissement</option>
-                                                    <option value="Medical Alliance Aix en Provence">Medical Alliance Aix en Provence</option>
-                                                    <option value="Medical Alliance Marseille">Medical Alliance Marseille</option>
-                                                    <option value="Clinique de Vitrolles">Clinique de Vitrolles</option>
-                                                    <option value="Clinique Phenicia Marseille">Clinique Phénicia Marseille</option>
+                                                    {formData.stayType === 'Consultation' ? (
+                                                        <>
+                                                            <option value="Medical Alliance Aix en Provence">Medical Alliance Aix en Provence</option>
+                                                            <option value="Medical Alliance Marseille">Medical Alliance Marseille</option>
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <option value="Clinique de Vitrolles">Clinique de Vitrolles</option>
+                                                            <option value="Clinique Phenicia Marseille">Clinique Phénicia Marseille</option>
+                                                        </>
+                                                    )}
                                                 </select>
                                             </div>
                                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginTop: '10px' }}>
@@ -933,7 +940,16 @@ Les clés doivent être exactement :
                                                     <select 
                                                         className="input"
                                                         value={formData.stayType}
-                                                        onChange={e => setFormData({ ...formData, stayType: e.target.value })}
+                                                        onChange={e => {
+                                                            const newStayType = e.target.value;
+                                                            let newClinicName = formData.clinicName;
+                                                            if (newStayType === 'Consultation') {
+                                                                if (!newClinicName?.includes('Medical Alliance')) newClinicName = '';
+                                                            } else if (newStayType === 'Hospitalisation' || newStayType === 'Ambulatoire') {
+                                                                if (!newClinicName?.includes('Clinique')) newClinicName = '';
+                                                            }
+                                                            setFormData({ ...formData, stayType: newStayType, clinicName: newClinicName });
+                                                        }}
                                                     >
                                                         <option value="Consultation">Consultation</option>
                                                         <option value="Ambulatoire">Ambulatoire</option>
