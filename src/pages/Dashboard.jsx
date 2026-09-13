@@ -726,9 +726,12 @@ export default function Dashboard() {
                             marginBottom: 'var(--spacing-4)',
                             padding: '16px 20px',
                             borderRadius: '16px',
-                            boxShadow: '0 4px 12px rgba(239, 68, 68, 0.08)'
+                            boxShadow: '0 4px 12px rgba(239, 68, 68, 0.08)',
+                            maxWidth: '100%',
+                            boxSizing: 'border-box',
+                            overflow: 'hidden'
                         }}>
-                            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px' }}>
+                            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px', flexWrap: 'wrap' }}>
                                 <div style={{
                                     width: '40px',
                                     height: '40px',
@@ -742,23 +745,31 @@ export default function Dashboard() {
                                 }}>
                                     <AlertTriangle size={24} />
                                 </div>
-                                <div style={{ flex: 1 }}>
+                                <div style={{ flex: 1, minWidth: 0 }}>
                                     <h4 style={{ color: '#9B1C1C', margin: '0 0 8px 0', fontSize: '15px', fontWeight: '800' }}>
                                         {t('Alertes & Actions prioritaires')}
                                     </h4>
                                     
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%' }}>
                                         {/* Alert 1: Low J+4 Satisfaction (< 8/10) */}
                                         {lowJ4Patients.length > 0 && (
-                                            <div style={{ fontSize: '13px', color: '#9B1C1C', background: 'rgba(239, 68, 68, 0.06)', padding: '12px 14px', borderRadius: '12px', border: '1px solid rgba(239, 68, 68, 0.2)' }}>
-                                                <div style={{ fontWeight: '800', marginBottom: '6px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '6px' }}>
+                                            <div style={{
+                                                fontSize: '13px',
+                                                color: '#9B1C1C',
+                                                background: 'rgba(239, 68, 68, 0.06)',
+                                                padding: '12px 14px',
+                                                borderRadius: '12px',
+                                                border: '1px solid rgba(239, 68, 68, 0.2)',
+                                                width: '100%',
+                                                boxSizing: 'border-box'
+                                            }}>
+                                                <div style={{ fontWeight: '800', marginBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '6px' }}>
                                                     <span style={{ color: '#DC2626' }}>⚠️ Alerte Note J+4 &lt; 8/10 (Réagir avant l'enquête e-Satis) :</span>
                                                     <span className="badge badge-danger" style={{ fontSize: '11px', fontWeight: '800' }}>{lowJ4Patients.length} patient(s) à sauver</span>
                                                 </div>
-                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginTop: '8px' }}>
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px', width: '100%' }}>
                                                     {lowJ4Patients.map(p => {
                                                         const details = getLowJ4DetailsForPatient(p.id, p.name, responses);
-                                                        const lowestText = details.map(d => `${d.label}: ${d.text}`).join(' • ') || '< 8/10';
                                                         return (
                                                             <div 
                                                                 key={p.id} 
@@ -766,21 +777,46 @@ export default function Dashboard() {
                                                                 style={{ 
                                                                     cursor: 'pointer', 
                                                                     display: 'flex', 
-                                                                    alignItems: 'center', 
-                                                                    justifyContent: 'space-between',
-                                                                    padding: '8px 12px',
-                                                                    borderRadius: '8px',
+                                                                    flexDirection: 'column',
+                                                                    gap: '6px',
+                                                                    padding: '10px 14px',
+                                                                    borderRadius: '10px',
                                                                     background: 'white',
                                                                     border: '1px solid #FCA5A5',
-                                                                    transition: 'all 0.15s'
+                                                                    boxShadow: '0 1px 3px rgba(0,0,0,0.03)',
+                                                                    transition: 'all 0.15s',
+                                                                    width: '100%',
+                                                                    boxSizing: 'border-box'
                                                                 }}
                                                                 onMouseOver={e => e.currentTarget.style.background = '#FEF2F2'}
                                                                 onMouseOut={e => e.currentTarget.style.background = 'white'}
                                                             >
-                                                                <span style={{ fontWeight: '700', color: '#111827' }}>👤 {p.name} <span style={{ fontWeight: '400', fontSize: '12px', color: '#6B7280' }}>({p.operation || 'Intervention'})</span></span>
-                                                                <span style={{ fontWeight: '800', color: '#DC2626', background: '#FEE2E2', padding: '3px 10px', borderRadius: '12px', fontSize: '11px', whiteSpace: 'nowrap' }}>
-                                                                    Note : {lowestText} — Contacter le patient ➔
-                                                                </span>
+                                                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px', width: '100%' }}>
+                                                                    <span style={{ fontWeight: '700', color: '#111827', fontSize: '13px' }}>
+                                                                        👤 {p.name} <span style={{ fontWeight: '500', fontSize: '12px', color: '#6B7280' }}>({p.operation || 'Intervention'})</span>
+                                                                    </span>
+                                                                    <span style={{ fontWeight: '800', color: '#DC2626', background: '#FEE2E2', padding: '4px 10px', borderRadius: '16px', fontSize: '11px', whiteSpace: 'nowrap' }}>
+                                                                        Contacter le patient ➔
+                                                                    </span>
+                                                                </div>
+
+                                                                {/* List of Low Rating Pills */}
+                                                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '2px' }}>
+                                                                    {details.map((d, idx) => (
+                                                                        <span key={idx} style={{
+                                                                            background: '#FFF5F5',
+                                                                            color: '#B91C1C',
+                                                                            border: '1px solid #FCA5A5',
+                                                                            padding: '2px 8px',
+                                                                            borderRadius: '6px',
+                                                                            fontSize: '11px',
+                                                                            fontWeight: '700',
+                                                                            wordBreak: 'break-word'
+                                                                        }}>
+                                                                            {d.label} : <strong style={{ color: '#991B1B' }}>{d.text}</strong>
+                                                                        </span>
+                                                                    ))}
+                                                                </div>
                                                             </div>
                                                         );
                                                     })}
@@ -790,7 +826,7 @@ export default function Dashboard() {
 
                                         {/* Alert 2: Pre-Op Protocol non-validated */}
                                         {unvalidatedPreOp.length > 0 && (
-                                            <div style={{ fontSize: '13px', color: '#C53030', display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }} onClick={() => setIsAlarmsModalOpen(true)}>
+                                            <div style={{ fontSize: '13px', color: '#C53030', display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', flexWrap: 'wrap' }} onClick={() => setIsAlarmsModalOpen(true)}>
                                                 <span style={{ fontWeight: '800' }}>• Protocoles pré-op :</span>
                                                 <span>{unvalidatedPreOp.length} patient(s) n'ont pas validé leur protocole pré-opératoire (J-1 / J-0).</span>
                                             </div>

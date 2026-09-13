@@ -179,7 +179,10 @@ export const getLowJ4DetailsForPatient = (patientId, patientName, responses) => 
         }
     });
 
-    return details;
+    // Deduplicate by itemId to avoid duplicate note pills
+    const uniqueMap = new Map();
+    details.forEach(d => uniqueMap.set(d.itemId, d));
+    return Array.from(uniqueMap.values());
 };
 
 /**
