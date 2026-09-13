@@ -793,7 +793,7 @@ export default function PatientReview() {
                                         <div className="patient-date-badge">
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                                 <Calendar size={18} style={{ color: 'var(--color-primary-500)' }} />
-                                                <span style={{ fontWeight: '700' }}>{patient.date ? formatDateFR(patient.date) : 'Date non définie'}</span>
+                                                <span style={{ fontWeight: '700' }}>Date d'intervention : {patient.date ? formatDateFR(patient.date) : 'inconnue'}</span>
                                             </div>
                                             <div className="separator" style={{ width: '1px', height: '16px', background: 'var(--color-primary-100)', margin: '0 4px' }} />
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -884,6 +884,17 @@ export default function PatientReview() {
 
                                     {/* Detailed Info Grid */}
                                     <div className="patient-details-grid">
+                                        {/* Item 0: Date d'intervention */}
+                                        <div>
+                                            <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', textTransform: 'uppercase', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '600' }}>
+                                                <Calendar size={12} style={{ color: 'var(--color-primary-500)' }} />
+                                                Date d'intervention
+                                            </div>
+                                            <div style={{ fontWeight: '700', color: patient.date ? 'var(--color-gray-900)' : '#D97706', fontSize: '16px' }}>
+                                                {patient.date ? formatDateFR(patient.date) : 'inconnue'}
+                                            </div>
+                                        </div>
+
                                         {/* Item 1: Clinique */}
                                         <div>
                                             <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', textTransform: 'uppercase', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '600' }}>

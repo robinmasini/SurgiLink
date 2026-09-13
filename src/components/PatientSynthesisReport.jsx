@@ -201,7 +201,7 @@ export default function PatientSynthesisReport({
                 <div>
                     <div style={{ fontSize: '9px', color: '#888', textTransform: 'uppercase', fontWeight: '700', marginBottom: '2px' }}>Intervention & Chirurgie</div>
                     <div style={{ fontSize: '13px', fontWeight: '700', color: '#6D8C7C' }}>{patient.operation}</div>
-                    <div style={{ color: '#444' }}>Date : {patient.date ? formatDateFR(patient.date) : 'Non définie'}</div>
+                    <div style={{ color: '#444' }}>Date d'intervention : {patient.date ? formatDateFR(patient.date) : 'inconnue'}</div>
                     <div style={{ color: '#444' }}>Lieu : {patient.clinic_name || 'Clinique de Vitrolles'}</div>
                     <div style={{ fontWeight: '600', marginTop: '2px' }}>
                         Statut : <span style={{ color: patient.status === 'critique' ? '#D32F2F' : patient.status === 'ready' ? '#2E7D32' : '#E65100' }}>

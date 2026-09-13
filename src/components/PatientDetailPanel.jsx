@@ -215,7 +215,7 @@ export default function PatientDetailPanel({ patient, responses = [], onClose, o
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)', fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-500)' }}>
                         <Calendar size={14} />
-                        <span>Chirurgie le {patient.formattedDate}</span>
+                        <span>Date d'intervention : {patient.date ? (patient.formattedDate || new Date(patient.date).toLocaleDateString('fr-FR')) : 'inconnue'}</span>
                     </div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -362,8 +362,11 @@ export default function PatientDetailPanel({ patient, responses = [], onClose, o
                 </div>
 
                 <div style={{ padding: 'var(--spacing-3)', background: 'var(--color-primary-50)', borderRadius: 'var(--radius-lg)', marginBottom: 'var(--spacing-6)', border: '1px solid var(--color-primary-100)' }}>
-                    <div style={{ fontSize: '10px', color: 'var(--color-primary-500)', textTransform: 'uppercase', fontWeight: '700' }}>Intervention</div>
+                    <div style={{ fontSize: '10px', color: 'var(--color-primary-500)', textTransform: 'uppercase', fontWeight: '700' }}>Intervention & Date</div>
                     <div style={{ fontSize: 'var(--font-size-sm)', fontWeight: '700', color: 'var(--color-primary-900)' }}>{patient.operation || 'Non renseignée'}</div>
+                    <div style={{ fontSize: '12px', color: 'var(--color-gray-700)', marginTop: '4px', fontWeight: '600' }}>
+                        Date : {patient.date ? (patient.formattedDate || new Date(patient.date).toLocaleDateString('fr-FR')) : 'inconnue'}
+                    </div>
                 </div>
 
                 {/* Hospital Manager Extracted Fields */}
