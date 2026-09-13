@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { validateToken } from '../services/tokenService';
+import { validateToken, cleanPatientId } from '../services/tokenService';
 
 /**
  * Hook to resolve patient ID from either direct patientId param or token param
@@ -20,7 +20,7 @@ export function usePatientId() {
 
             // Check if we have a direct patientId
             if (params.patientId) {
-                setPatientId(params.patientId);
+                setPatientId(cleanPatientId(params.patientId));
                 setIsTokenMode(false);
                 setLoading(false);
                 return;
@@ -32,7 +32,7 @@ export function usePatientId() {
                 const validation = await validateToken(params.token);
 
                 if (validation.valid) {
-                    setPatientId(validation.patientId);
+                    setPatientId(cleanPatientId(validation.patientId));
                 } else {
                     setError(validation.error || 'Token invalide');
                 }

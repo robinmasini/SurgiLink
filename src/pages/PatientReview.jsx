@@ -48,7 +48,7 @@ import { calculateAge, calculateDaysUntilSurgery, formatDateFR, formatDateTimeFR
 import { getPatientPathwayStatus, getResponses, calculateRiskFlags, calculateGlobalProgress } from '../services/pathwayService';
 import { getRiskFlags } from '../config/pathway.config.js';
 import { getDocuments, uploadDocument, deleteDocument, downloadDocument } from '../services/documentService';
-import { generatePatientToken, getPatientTokens, revokeToken, getOrCreatePatientToken } from '../services/tokenService';
+import { generatePatientToken, getPatientTokens, revokeToken, getOrCreatePatientToken, cleanPatientId } from '../services/tokenService';
 import { generateSynthesisPDF } from '../services/pdfService';
 import PatientSynthesisReport from '../components/PatientSynthesisReport';
 import { sendManualReminder, getNextPendingReminder, getPendingReminders, sendOverrideSMS, updateReminder, sendPunctualSMS } from '../services/reminderService';
@@ -128,26 +128,51 @@ export default function PatientReview() {
     const loadPatientData = async () => {
         setIsLoading(true);
         try {
+            const cleanId = cleanPatientId(id);
+            if (!cleanId) {
+                setPatient(null);
+                return;
+            }
+
             // Fetch patient, pathway responses, intake form response, documents, and custom questions concurrently
             const [patientRes, responsesRes, intakeRes, docData, questions] = await Promise.all([
-                supabase.from('patients').select('*').eq('id', id).single(),
-                supabase.from('pathway_responses').select('screen, item_id, response, updated_at, user_id').eq('patient_id', id),
-                supabase.from('intake_form_responses').select('*').eq('patient_id', id).maybeSingle(),
-                getDocuments(parseInt(id)),
-                getCustomQuestions(id)
+                supabase.from('patients').select('*').eq('id', cleanId).maybeSingle(),
+                supabase.from('pathway_responses').select('screen, item_id, response, updated_at, user_id').eq('patient_id', cleanId),
+                supabase.from('intake_form_responses').select('*').eq('patient_id', cleanId).maybeSingle(),
+                getDocuments(cleanId),
+                getCustomQuestions(cleanId)
             ]);
 
-            if (patientRes.error) throw patientRes.error;
-            const patientData = patientRes.data;
+            let patientData = patientRes.data || null;
+            let intakeResp = intakeRes.data || null;
+
+            // Fallback: If main patient row is missing, check if intake response exists to present the new patient
+            if (!patientData && intakeResp) {
+                patientData = {
+                    id: cleanId,
+                    name: [intakeResp.first_name, intakeResp.last_name].filter(Boolean).join(' ') || 'Nouveau patient',
+                    phone: intakeResp.phone || '',
+                    email: intakeResp.email || '',
+                    birth_date: intakeResp.birth_date || null,
+                    status: 'intake',
+                    progress: 0,
+                    days_until: 'J-0'
+                };
+            }
+
+            if (!patientData) {
+                setPatient(null);
+                return;
+            }
+
             setPatient({
                 ...patientData,
                 displayProgress: patientData?.progress || 0
             });
-            setDocuments(docData);
-            setCustomQuestions(questions);
+            setDocuments(docData || []);
+            setCustomQuestions(questions || []);
 
             // Intake form fallback
-            let intakeResp = intakeRes.data;
             if (!intakeResp && patientData) {
                 if (patientData.phone) {
                     const { data: byPhone } = await supabase
@@ -239,7 +264,7 @@ export default function PatientReview() {
             else setRiskStatus('NORMAL');
 
             // Load history (unified)
-            await loadHistoryData(id);
+            await loadHistoryData(cleanId);
 
         } catch (err) {
             console.error('Error loading patient:', err);
@@ -249,26 +274,28 @@ export default function PatientReview() {
     };
 
     const loadTokenData = async () => {
-        if (!id) return;
-        const tokens = await getPatientTokens(id);
+        const pid = cleanPatientId(id);
+        if (!pid) return;
+        const tokens = await getPatientTokens(pid);
         const activeToken = tokens.find(t => t.is_active);
         setTokenData(activeToken || null);
     };
 
     const loadHistoryData = async (patientId) => {
+        const pid = cleanPatientId(patientId);
         try {
             // Load medical history
             const { data: historyData, error: historyError } = await supabase
                 .from('medical_history')
                 .select('*')
-                .eq('patient_id', patientId)
+                .eq('patient_id', pid)
                 .order('date', { ascending: false });
 
             // Load SMS logs
             const { data: smsLogs, error: smsError } = await supabase
                 .from('sms_logs')
                 .select('*')
-                .eq('patient_id', patientId)
+                .eq('patient_id', pid)
                 .order('created_at', { ascending: false });
 
             let unifiedHistory = [];
@@ -304,13 +331,14 @@ export default function PatientReview() {
     };
 
     const handleGenerateToken = async () => {
+        const pid = cleanPatientId(id);
         setIsGeneratingToken(true);
         try {
             // Revoke old tokens if any
             if (tokenData) {
                 await revokeToken(tokenData.id);
             }
-            const res = await generatePatientToken(id);
+            const res = await generatePatientToken(pid);
             if (res.success) {
                 setTokenData({
                     id: res.tokenId,
@@ -327,6 +355,7 @@ export default function PatientReview() {
     };
 
     const handleOpenPortal = async () => {
+        const pid = cleanPatientId(id);
         let currentToken = tokenData?.token;
         
         // Open the tab immediately to bypass popup blockers
@@ -334,7 +363,7 @@ export default function PatientReview() {
         
         if (!currentToken) {
             try {
-                const res = await getOrCreatePatientToken(id);
+                const res = await getOrCreatePatientToken(pid);
                 if (res.success && res.token) {
                     currentToken = res.token;
                     setTokenData({
@@ -344,11 +373,11 @@ export default function PatientReview() {
                         is_active: true
                     });
                 } else {
-                    currentToken = `p_${id}_${Date.now()}`;
+                    currentToken = `p_${pid}_${Date.now()}`;
                 }
             } catch (err) {
                 console.error('Error in handleOpenPortal:', err);
-                currentToken = `p_${id}_${Date.now()}`;
+                currentToken = `p_${pid}_${Date.now()}`;
             }
         }
         const url = `${window.location.origin}/patient-portal/${currentToken}`;

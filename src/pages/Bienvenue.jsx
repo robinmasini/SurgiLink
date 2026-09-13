@@ -8,6 +8,7 @@ import QuestionnaireFlow from '../components/pathway/QuestionnaireFlow';
 import AlertBanner from '../components/pathway/AlertBanner';
 import CompactAppointmentCard from '../components/CompactAppointmentCard';
 import { usePatientId } from '../hooks/usePatientId';
+import { cleanPatientId } from '../services/tokenService';
 import { supabase } from '../lib/supabase';
 import { calculateDaysUntilSurgery } from '../utils/dateUtils';
 
@@ -53,14 +54,15 @@ export default function Bienvenue({ patient: propPatient, token: propToken }) {
 
     const loadPatientData = async () => {
         try {
-            const queryPromise = supabase.from('patients').select('*').eq('id', resolvedPatientId).single();
+            const cleanId = cleanPatientId(resolvedPatientId);
+            const queryPromise = supabase.from('patients').select('*').eq('id', cleanId).single();
             const timeoutPromise = new Promise(resolve => setTimeout(() => resolve({ data: null }), 600));
             const { data } = await Promise.race([queryPromise, timeoutPromise]);
             if (data) {
                 setPatient(data);
             } else {
                 setPatient({
-                    id: resolvedPatientId || 'demo-patient',
+                    id: cleanId || 'demo-patient',
                     name: 'Marie DUPONT',
                     clinic_name: 'Clinique de la Paix',
                     date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
@@ -69,7 +71,7 @@ export default function Bienvenue({ patient: propPatient, token: propToken }) {
             }
         } catch (e) {
             setPatient({
-                id: resolvedPatientId || 'demo-patient',
+                id: cleanPatientId(resolvedPatientId) || 'demo-patient',
                 name: 'Marie DUPONT',
                 clinic_name: 'Clinique de la Paix',
                 date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],

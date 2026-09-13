@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabase.js';
-import { generatePatientToken, validateToken } from './tokenService.js';
+import { generatePatientToken, validateToken, cleanPatientId } from './tokenService.js';
 import { sendSMS } from './vonageService.js';
 
 /**
@@ -83,7 +83,7 @@ export async function getIntakeByToken(token) {
             return { success: false, error: validation.error || 'Lien invalide ou introuvable.' };
         }
 
-        const patientId = validation.patientId;
+        const patientId = cleanPatientId(validation.patientId);
 
         if (patientId === 'demo-patient') {
             return {
@@ -93,26 +93,45 @@ export async function getIntakeByToken(token) {
             };
         }
 
-        // 2. Fetch patient
-        const { data: patient, error: patientError } = await supabase
-            .from('patients')
-            .select('*')
-            .eq('id', patientId)
-            .maybeSingle();
+        // 2. Fetch patient from DB
+        let patient = null;
+        try {
+            const { data, error: patientError } = await supabase
+                .from('patients')
+                .select('*')
+                .eq('id', patientId)
+                .maybeSingle();
 
-        if (patientError || !patient) {
-            const cleanToken = (token || '').trim().toLowerCase();
-            const isDemo = cleanToken === 'demo' || cleanToken.includes('demo') || cleanToken.startsWith('test') || cleanToken === 'patient';
-            if (isDemo) return { success: true, patient: { id: 'demo-patient', name: 'Nouveau patient' }, intakeResponse: null };
-            return { success: false, error: 'Patient introuvable.' };
+            if (!patientError && data) {
+                patient = data;
+            }
+        } catch (e) {
+            console.warn('[getIntakeByToken] Patient fetch warning:', e);
         }
 
         // 3. Fetch existing intake response (if any)
-        const { data: intakeResponse } = await supabase
-            .from('intake_form_responses')
-            .select('*')
-            .eq('patient_id', patientId)
-            .maybeSingle();
+        let intakeResponse = null;
+        try {
+            const { data } = await supabase
+                .from('intake_form_responses')
+                .select('*')
+                .eq('patient_id', patientId)
+                .maybeSingle();
+            intakeResponse = data || null;
+        } catch (e) {
+            console.warn('[getIntakeByToken] Intake response fetch warning:', e);
+        }
+
+        // Fallback for new intake patient: if patient record is not accessible to unauthenticated query,
+        // construct lightweight patient object so patient can fill intake form cleanly.
+        if (!patient) {
+            patient = {
+                id: patientId,
+                name: intakeResponse?.first_name ? `${intakeResponse.first_name} ${intakeResponse.last_name || ''}`.trim() : 'Nouveau patient',
+                status: 'intake',
+                phone: intakeResponse?.phone || ''
+            };
+        }
 
         return { success: true, patient, intakeResponse: intakeResponse || null };
     } catch (err) {
@@ -140,7 +159,7 @@ export async function submitIntakeForm(token, formData) {
             return { success: false, error: validation.error || 'Token invalide.' };
         }
 
-        const patientId = validation.patientId;
+        const patientId = cleanPatientId(validation.patientId);
         if (patientId === 'demo-patient') {
             return { success: true };
         }
@@ -159,9 +178,23 @@ export async function submitIntakeForm(token, formData) {
             status: 'pending', // Graduate from 'intake' to normal patient
         };
 
-        const { error: patientUpdateErr } = await supabase.from('patients').update(patientUpdate).eq('id', patientId);
-        if (patientUpdateErr) {
-            console.warn('[intakeService] patient update warning:', patientUpdateErr);
+        const { data: updatedRows, error: patientUpdateErr } = await supabase
+            .from('patients')
+            .update(patientUpdate)
+            .eq('id', patientId)
+            .select();
+
+        if (patientUpdateErr || !updatedRows || updatedRows.length === 0) {
+            console.warn('[intakeService] patient update warning or missing row, performing upsert:', patientUpdateErr);
+            if (typeof patientId === 'number') {
+                await supabase.from('patients').upsert({
+                    id: patientId,
+                    ...patientUpdate,
+                    date: new Date().toISOString().split('T')[0],
+                    progress: 0,
+                    days_until: 'J-0'
+                });
+            }
         }
 
         // 3. Upsert intake_form_responses

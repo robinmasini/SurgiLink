@@ -2,6 +2,7 @@ import { Link, useParams } from 'react-router-dom';
 import { CheckCircle, ArrowLeft, Trophy, Loader2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { usePatientId } from '../hooks/usePatientId';
+import { cleanPatientId } from '../services/tokenService';
 import { supabase } from '../lib/supabase';
 import { useTranslation } from 'react-i18next';
 
@@ -13,7 +14,7 @@ export default function PatientSuccess({ patient: propPatient }) {
     const [progress, setProgress] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    const resolvedPatientId = propPatient?.id || hookPatientId;
+    const resolvedPatientId = cleanPatientId(propPatient?.id || hookPatientId);
 
     useEffect(() => {
         if (resolvedPatientId) {
@@ -28,7 +29,7 @@ export default function PatientSuccess({ patient: propPatient }) {
                 .from('patients')
                 .select('progress, status')
                 .eq('id', resolvedPatientId)
-                .single();
+                .maybeSingle();
 
             if (error) throw error;
             if (data) {

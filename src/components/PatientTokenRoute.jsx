@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { validateToken } from '../services/tokenService';
+import { validateToken, cleanPatientId } from '../services/tokenService';
 import { Loader, AlertCircle } from 'lucide-react';
 import LanguageSelector from './LanguageSelector';
 
@@ -28,26 +28,43 @@ export default function PatientTokenRoute({ children }) {
                     return;
                 }
 
+                const pid = cleanPatientId(validation.patientId);
+
                 // 2. Load patient
-                let patientData = {
-                    id: validation.patientId || 'demo-patient',
-                    name: 'Marie DUPONT',
-                    status: 'pending',
-                    progress: 50,
-                    days_until: 'J-7'
-                };
+                let patientData = null;
 
                 try {
                     const queryPromise = supabase
                         .from('patients')
                         .select('*')
-                        .eq('id', validation.patientId)
-                        .single();
-                    const timeoutPromise = new Promise(resolve => setTimeout(() => resolve({ data: null }), 1200));
+                        .eq('id', pid)
+                        .maybeSingle();
+                    const timeoutPromise = new Promise(resolve => setTimeout(() => resolve({ data: null }), 1500));
                     const res = await Promise.race([queryPromise, timeoutPromise]);
                     if (res?.data) patientData = res.data;
                 } catch (e) {
                     console.log('[TokenRoute] Using fallback patient data');
+                }
+
+                // If patient object is not directly available, check if intake response exists
+                if (!patientData) {
+                    let intakeResp = null;
+                    try {
+                        const { data } = await supabase
+                            .from('intake_form_responses')
+                            .select('*')
+                            .eq('patient_id', pid)
+                            .maybeSingle();
+                        intakeResp = data;
+                    } catch (e) {}
+
+                    patientData = {
+                        id: pid || 'demo-patient',
+                        name: intakeResp?.first_name ? `${intakeResp.first_name} ${intakeResp.last_name || ''}`.trim() : 'Nouveau patient',
+                        status: intakeResp?.form_completed ? 'pending' : 'intake',
+                        progress: 0,
+                        days_until: 'J-0'
+                    };
                 }
 
                 console.log('[TokenRoute] Data:', patientData);

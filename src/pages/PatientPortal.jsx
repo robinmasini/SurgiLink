@@ -469,18 +469,48 @@ export default function PatientPortal({ patient: initialPatient }) {
         try {
             const validation = await validateToken(token);
             if (!validation.valid) {
-                setError(validation.error || 'Lien invalid');
+                setError(validation.error || 'Lien invalide');
                 setLoading(false);
                 return;
             }
 
-            const { data: patientData, error: patientError } = await supabase
-                .from('patients')
-                .select('*')
-                .eq('id', validation.patientId)
-                .single();
+            const pid = cleanPatientId(validation.patientId);
 
-            if (patientError) throw patientError;
+            let patientData = null;
+            try {
+                const { data, error: patientError } = await supabase
+                    .from('patients')
+                    .select('*')
+                    .eq('id', pid)
+                    .maybeSingle();
+
+                if (!patientError && data) {
+                    patientData = data;
+                }
+            } catch (e) {
+                console.warn('[PatientPortal] Patient query warning:', e);
+            }
+
+            if (!patientData) {
+                let intakeResp = null;
+                try {
+                    const { data } = await supabase
+                        .from('intake_form_responses')
+                        .select('*')
+                        .eq('patient_id', pid)
+                        .maybeSingle();
+                    intakeResp = data;
+                } catch (e) {}
+
+                patientData = {
+                    id: pid || 'demo-patient',
+                    name: intakeResp?.first_name ? `${intakeResp.first_name} ${intakeResp.last_name || ''}`.trim() : 'Nouveau patient',
+                    status: 'pending',
+                    progress: 0,
+                    days_until: 'J-0',
+                    date: new Date().toISOString().split('T')[0]
+                };
+            }
 
             // Check onboarding completion before showing portal
             const storageKey = `onboarding_completed_${patientData.id}`;
