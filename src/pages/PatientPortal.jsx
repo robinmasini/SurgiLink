@@ -246,9 +246,18 @@ export default function PatientPortal({ patient: initialPatient }) {
         const required = items.filter(i => i.required !== false && i.type !== 'text' && i.type !== 'verbatim');
 
         const getVal = (id) => {
-            if (responses[id] !== undefined && responses[id] !== null) return responses[id];
+            // Strictly check screen-scoped response keys first to prevent cross-screen collisions
             if (responses[`${milestoneId}:${id}`] !== undefined && responses[`${milestoneId}:${id}`] !== null) return responses[`${milestoneId}:${id}`];
             if (responses[`${milestoneId.toLowerCase()}:${id}`] !== undefined && responses[`${milestoneId.toLowerCase()}:${id}`] !== null) return responses[`${milestoneId.toLowerCase()}:${id}`];
+            if (milestoneId.toLowerCase() === 'j1_preop' || milestoneId.toLowerCase() === 'j1preop') {
+                if (responses[`J1_PreOp:${id}`] !== undefined && responses[`J1_PreOp:${id}`] !== null) return responses[`J1_PreOp:${id}`];
+                if (responses[`j1preop:${id}`] !== undefined && responses[`j1preop:${id}`] !== null) return responses[`j1preop:${id}`];
+                if (responses[`j1_preop:${id}`] !== undefined && responses[`j1_preop:${id}`] !== null) return responses[`j1_preop:${id}`];
+            }
+            if (milestoneId.toLowerCase() === 'j4_satisfaction' || milestoneId.toLowerCase() === 'j4') {
+                if (responses[`J4_Satisfaction:${id}`] !== undefined && responses[`J4_Satisfaction:${id}`] !== null) return responses[`J4_Satisfaction:${id}`];
+                if (responses[`j4:${id}`] !== undefined && responses[`j4:${id}`] !== null) return responses[`j4:${id}`];
+            }
             return undefined;
         };
 
