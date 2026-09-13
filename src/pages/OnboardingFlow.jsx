@@ -46,17 +46,16 @@ export default function OnboardingFlow() {
 
                 if (patientError) throw patientError;
                 
-                // If onboarding is already completed (DB), skip to portal
+                // If onboarding is already completed (DB or localStorage), skip to portal
                 const storageKey = `onboarding_completed_${validation.patientId}`;
-                
-                if (patientData.onboarding_completed_at || patientData.last_consulted_at) {
-                    console.log('-> Onboarding already done (DB), skipping');
+                const storageKeyToken = `onboarding_completed_${token}`;
+                const isLocalOnboarded = localStorage.getItem(storageKey) === 'true' || localStorage.getItem(storageKeyToken) === 'true';
+
+                if (patientData.onboarding_completed_at || patientData.last_consulted_at || isLocalOnboarded) {
+                    console.log('-> Onboarding already done, skipping');
                     navigate(`/patient-portal/${token}`);
                     return;
                 }
-                
-                // If we get here, DB says it's not completed. We should clear local storage to fix any sync issues.
-                localStorage.removeItem(storageKey);
 
                 setPatient(patientData);
             } catch (err) {
@@ -76,24 +75,28 @@ export default function OnboardingFlow() {
 
     const handleComplete = async () => {
         try {
+            const pId = patient?.id || 'demo-patient';
             // Set local storage as fallback
-            localStorage.setItem(`onboarding_completed_${patient.id}`, 'true');
+            localStorage.setItem(`onboarding_completed_${pId}`, 'true');
+            localStorage.setItem(`onboarding_completed_${token}`, 'true');
 
             const nowIso = new Date().toISOString();
 
-            // Update patient to mark last_consulted_at AND onboarding_completed_at in DB
-            const { error: updateError } = await supabase
-                .from('patients')
-                .update({ 
-                    last_consulted_at: nowIso,
-                    onboarding_completed_at: nowIso
-                })
-                .eq('id', patient.id);
+            if (pId !== 'demo-patient') {
+                // Update patient to mark last_consulted_at AND onboarding_completed_at in DB
+                const { error: updateError } = await supabase
+                    .from('patients')
+                    .update({ 
+                        last_consulted_at: nowIso,
+                        onboarding_completed_at: nowIso
+                    })
+                    .eq('id', pId);
 
-            if (updateError) console.error('Error updating patient onboarding:', updateError);
+                if (updateError) console.error('Error updating patient onboarding:', updateError);
 
-            // Trigger progress calculation
-            await calculateGlobalProgress(patient.id);
+                // Trigger progress calculation
+                await calculateGlobalProgress(pId);
+            }
 
             console.log('-> Onboarding complete, navigating to Portal');
             navigate(`/patient-portal/${token}`);

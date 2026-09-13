@@ -435,8 +435,13 @@ export default function IntakeForm() {
                     signed_date: savedData.signed_date || new Date().toISOString().split('T')[0],
                 }));
 
+                const tutorialSeen = localStorage.getItem(`intake_tutorial_seen_${activeToken}`) === 'true' ||
+                    (result.patient?.id && localStorage.getItem(`intake_tutorial_seen_${result.patient.id}`) === 'true');
+
                 if (result.intakeResponse?.form_completed) {
                     setPhase('done');
+                } else if (tutorialSeen) {
+                    setPhase('form');
                 } else {
                     setPhase('tutorial');
                 }
@@ -764,7 +769,14 @@ export default function IntakeForm() {
                     display: 'flex', justifyContent: 'center', zIndex: 50
                 }}>
                     <button
-                        onClick={() => setPhase('form')}
+                        onClick={() => {
+                            const activeToken = token || params.token || params.patientId || 'demo';
+                            localStorage.setItem(`intake_tutorial_seen_${activeToken}`, 'true');
+                            if (patient?.id) {
+                                localStorage.setItem(`intake_tutorial_seen_${patient.id}`, 'true');
+                            }
+                            setPhase('form');
+                        }}
                         style={{
                             width: '100%', maxWidth: '460px',
                             height: '56px',

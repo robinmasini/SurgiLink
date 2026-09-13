@@ -514,7 +514,8 @@ export default function PatientPortal({ patient: initialPatient }) {
 
             // Check onboarding completion before showing portal
             const storageKey = `onboarding_completed_${patientData.id}`;
-            const localOnboarded = localStorage.getItem(storageKey) === 'true';
+            const storageKeyToken = `onboarding_completed_${token}`;
+            const localOnboarded = localStorage.getItem(storageKey) === 'true' || localStorage.getItem(storageKeyToken) === 'true';
             const consultedOnboarded = !!(patientData.last_consulted_at || patientData.onboarding_completed_at);
 
             const { data: userResponses } = await supabase
@@ -793,9 +794,54 @@ export default function PatientPortal({ patient: initialPatient }) {
                             }} 
                         />
                     </div>
-
-
                 </div>
+
+
+                {/* Intake Form Notification Banner if not completed */}
+                {(!intakeData || !intakeData.form_completed) && (
+                    <div style={{
+                        padding: '16px 20px',
+                        marginBottom: '20px',
+                        borderRadius: '24px',
+                        background: 'linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%)',
+                        border: '1.5px solid #F59E0B',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        gap: '12px',
+                        boxShadow: '0 4px 12px rgba(245, 158, 11, 0.15)'
+                    }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <div style={{ fontSize: '26px', flexShrink: 0 }}>📋</div>
+                            <div>
+                                <div style={{ fontSize: '14px', fontWeight: '800', color: '#92400E' }}>
+                                    {t('Fiche de renseignements à compléter')}
+                                </div>
+                                <div style={{ fontSize: '12px', color: '#B45309', marginTop: '2px', lineHeight: 1.3 }}>
+                                    {t('Merci de remplir votre fiche médicale afin de préparer votre consultation.')}
+                                </div>
+                            </div>
+                        </div>
+                        <button
+                            onClick={() => navigate(`/fiche/${token}`)}
+                            style={{
+                                padding: '10px 16px',
+                                borderRadius: '14px',
+                                background: 'linear-gradient(135deg, #D97706, #B45309)',
+                                color: 'white',
+                                border: 'none',
+                                fontWeight: '800',
+                                fontSize: '13px',
+                                cursor: 'pointer',
+                                flexShrink: 0,
+                                boxShadow: '0 2px 8px rgba(217, 119, 6, 0.3)',
+                                whiteSpace: 'nowrap'
+                            }}
+                        >
+                            {t('Compléter')}
+                        </button>
+                    </div>
+                )}
 
                 {/* Main Hero Card (Premium Status Card) */}
                 <div style={{
