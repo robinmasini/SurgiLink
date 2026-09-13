@@ -365,7 +365,7 @@ export default function QuestionsPreviewModal({ isOpen, onClose }) {
                                 },
                                 {
                                     num: '5', title: 'Motif de consultation', icon: '💉',
-                                    fields: ['Actes Visage : Botox, Acide Hyaluronique, Peeling, Paupières, Lifting, Rhinoplastie', 'Actes Poitrine : Prothèses mammaires, Ptose mammaire', 'Actes Intimes : Nymphoplastie, Pénoplastie, Éjaculation Précoce', 'Autre motif (texte libre)']
+                                    fields: ['Actes Visage : Botox, Acide Hyaluronique, Peeling, Paupières, Lifting, Rhinoplastie', 'Actes Poitrine : Prothèses mammaires, Ptose mammaire', 'Actes Intimes : Nymphoplastie, Pénoplastie, Éjaculation Précoce', 'Autre motif : Menu déroulant complet d\'interventions (Visage, Poitrine, Silhouette, Intime...)']
                                 },
                                 {
                                     num: '6', title: 'Ressenti esthétique', icon: '🪞',
