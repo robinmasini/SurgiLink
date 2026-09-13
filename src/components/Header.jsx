@@ -55,7 +55,7 @@ export default function Header({ title, subtitle, actions, hideTitleMobile = fal
                         }}
                     >
                         <ClipboardList size={16} />
-                        <span>{t('Aperçu Questionnaire')}</span>
+                        <span>{t('Aperçu Questionnaires')}</span>
                     </button>
                     <LanguageSelector />
                     {actions}
@@ -103,7 +103,7 @@ export default function Header({ title, subtitle, actions, hideTitleMobile = fal
                     }}
                 >
                     <ClipboardList size={16} />
-                    <span>{t('Aperçu Questionnaire')}</span>
+                    <span>{t('Aperçu Questionnaires')}</span>
                 </button>
             )}
 

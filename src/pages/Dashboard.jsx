@@ -633,7 +633,7 @@ export default function Dashboard() {
                                 }}
                             >
                                 <Clipboard size={16} />
-                                <span>{t('Aperçu Questionnaire')}</span>
+                                <span>{t('Aperçu Questionnaires')}</span>
                             </button>
 
                             <button
