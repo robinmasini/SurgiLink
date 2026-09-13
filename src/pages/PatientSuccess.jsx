@@ -16,11 +16,51 @@ export default function PatientSuccess({ patient: propPatient }) {
 
     const resolvedPatientId = cleanPatientId(propPatient?.id || hookPatientId);
 
+    const [nextMilestone, setNextMilestone] = useState(null);
+
     useEffect(() => {
         if (resolvedPatientId) {
             loadProgress();
+            checkNextMilestone();
         }
     }, [resolvedPatientId]);
+
+    const checkNextMilestone = async () => {
+        try {
+            const milestonesSequence = [
+                { id: 'Bienvenue', route: 'bienvenue', label: 'J-18 (Bienvenue)' },
+                { id: 'J7', route: 'j7', label: 'J-7' },
+                { id: 'J1_PreOp', route: 'j1-preop', label: 'J-1' },
+                { id: 'J1', route: 'j1', label: 'J+1' },
+                { id: 'J4_Satisfaction', route: 'j4', label: 'J+4' },
+                { id: 'ESATIS', route: 'e-satis', label: 'e-Satis' }
+            ];
+
+            const { data: respData } = await supabase
+                .from('pathway_responses')
+                .select('screen, item_id')
+                .eq('patient_id', resolvedPatientId);
+
+            const completedScreens = new Set();
+            (respData || []).forEach(r => {
+                if (r.screen) completedScreens.add(r.screen.toLowerCase());
+            });
+
+            // Also check LocalStorage completion markers
+            milestonesSequence.forEach(m => {
+                const storageKey = `surgilink_completed_${resolvedPatientId}_${m.id}`;
+                const storageKeyLower = `surgilink_completed_${resolvedPatientId}_${m.id.toLowerCase()}`;
+                if (localStorage.getItem(storageKey) === 'true' || localStorage.getItem(storageKeyLower) === 'true') {
+                    completedScreens.add(m.id.toLowerCase());
+                }
+            });
+
+            const next = milestonesSequence.find(m => !completedScreens.has(m.id.toLowerCase()));
+            setNextMilestone(next || null);
+        } catch (e) {
+            console.warn('Error checking next milestone:', e);
+        }
+    };
 
     const loadProgress = async () => {
         try {
@@ -120,22 +160,48 @@ export default function PatientSuccess({ patient: propPatient }) {
                     </div>
                 )}
 
+                {token && !isComplete && nextMilestone && (
+                    <Link
+                        to={`/patient-portal/${token}/${nextMilestone.route}`}
+                        className="btn btn-primary"
+                        style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            padding: '18px 32px',
+                            borderRadius: '16px',
+                            fontWeight: '800',
+                            fontSize: '16px',
+                            width: '100%',
+                            justifyContent: 'center',
+                            marginBottom: '12px',
+                            background: 'var(--grad-premium-purple)',
+                            color: 'white',
+                            boxShadow: '0 10px 15px -3px rgba(var(--color-primary-rgb), 0.3)'
+                        }}
+                    >
+                        {t('CONTINUER AVEC LE QUESTIONNAIRE')} ({nextMilestone.label})
+                    </Link>
+                )}
+
                 {token && (
                     <Link
                         to={`/patient-portal/${token}`}
-                        className="btn btn-primary"
+                        className="btn btn-secondary"
                         style={{
                             display: 'inline-flex',
                             alignItems: 'center',
                             gap: '8px',
                             padding: '16px 32px',
                             borderRadius: '16px',
-                            fontWeight: '800',
-                            fontSize: '16px',
+                            fontWeight: '700',
+                            fontSize: '15px',
                             width: '100%',
                             justifyContent: 'center',
                             marginBottom: 'var(--spacing-6)',
-                            boxShadow: '0 10px 15px -3px rgba(var(--color-primary-rgb), 0.3)'
+                            background: '#f3f4f6',
+                            color: '#4b5563',
+                            border: '1px solid #e5e7eb'
                         }}
                     >
                         <ArrowLeft size={18} />

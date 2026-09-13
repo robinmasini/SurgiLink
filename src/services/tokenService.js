@@ -292,25 +292,6 @@ export async function validateToken(token) {
             return { valid: true, patientId: 'demo-patient' };
         }
 
-        // 5. Fallback for authenticated staff testing
-        try {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (session?.user) {
-                const { data: latestPatient } = await supabase
-                    .from('patients')
-                    .select('id')
-                    .order('created_at', { ascending: false })
-                    .limit(1)
-                    .maybeSingle();
-
-                if (latestPatient) {
-                    return { valid: true, patientId: cleanPatientId(latestPatient.id) };
-                }
-            }
-        } catch (e) {
-            console.warn('[validateToken] Auth fallback check error:', e);
-        }
-
         return { valid: false, error: 'Token invalide ou introuvable' };
     } catch (err) {
         console.error('Error validating token:', err);
@@ -320,7 +301,7 @@ export async function validateToken(token) {
         if (isDemo) {
             return { valid: true, patientId: 'demo-patient' };
         }
-        return { valid: true, patientId: 'demo-patient' };
+        return { valid: false, error: 'Erreur de validation du token' };
     }
 }
 

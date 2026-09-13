@@ -241,6 +241,23 @@ export default function PatientPortal({ patient: initialPatient }) {
 
     // Helper to check if a milestone is fully complete based on responses
     const isMilestoneComplete = (milestoneId) => {
+        if (!milestoneId) return false;
+
+        // 1. Check LocalStorage explicit completion marker
+        if (patient?.id) {
+            const storageKey = `surgilink_completed_${patient.id}_${milestoneId}`;
+            const storageKeyLower = `surgilink_completed_${patient.id}_${milestoneId.toLowerCase()}`;
+            if (localStorage.getItem(storageKey) === 'true' || localStorage.getItem(storageKeyLower) === 'true') {
+                return true;
+            }
+        }
+
+        // 2. Check _screen_completed marker in responses map
+        if (responses[`${milestoneId}:_screen_completed`] === true ||
+            responses[`${milestoneId.toLowerCase()}:_screen_completed`] === true) {
+            return true;
+        }
+
         const items = getScreenItems(milestoneId);
         if (!items || items.length === 0) return true;
         const required = items.filter(i => i.required !== false && i.type !== 'text' && i.type !== 'verbatim');
@@ -473,27 +490,52 @@ export default function PatientPortal({ patient: initialPatient }) {
 
     const loadPatientResponses = async (patientId) => {
         try {
+            const aggregated = {};
+            const nested = {
+                Bienvenue: {},
+                J7: {},
+                J2: {},
+                J1_PreOp: {},
+                J1: {},
+                J4_Satisfaction: {},
+                ESATIS: {}
+            };
+            const meta = {};
+
+            // 1. Merge LocalStorage responses first
+            if (patientId) {
+                try {
+                    const prefix = `surgilink_resp_${patientId}_`;
+                    for (let i = 0; i < localStorage.length; i++) {
+                        const key = localStorage.key(i);
+                        if (key && key.startsWith(prefix)) {
+                            const rest = key.substring(prefix.length);
+                            const firstUnderscore = rest.indexOf('_');
+                            if (firstUnderscore > 0) {
+                                const screen = rest.substring(0, firstUnderscore);
+                                const itemId = rest.substring(firstUnderscore + 1);
+                                const raw = localStorage.getItem(key);
+                                if (raw) {
+                                    const parsed = JSON.parse(raw);
+                                    if (parsed?.value !== undefined) {
+                                        aggregated[itemId] = parsed.value;
+                                        aggregated[`${screen}:${itemId}`] = parsed.value;
+                                        aggregated[`${screen.toLowerCase()}:${itemId}`] = parsed.value;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } catch (e) {}
+            }
+
+            // 2. Query Supabase and merge over LocalStorage
             const { data, error } = await supabase
                 .from('pathway_responses')
                 .select('screen, item_id, response, updated_at, user_id')
                 .eq('patient_id', patientId);
 
             if (!error && data) {
-                // Flat map for portal UI (badge logic, etc.)
-                const aggregated = {};
-                // Nested map for PDF report (grouped by screen)
-                const nested = {
-                    Bienvenue: {},
-                    J7: {},
-                    J2: {},
-                    J1_PreOp: {},
-                    J1: {},
-                    J4_Satisfaction: {},
-                    ESATIS: {}
-                };
-                // Meta map for PDF timestamps
-                const meta = {};
-                
                 data.forEach(row => {
                     const value = row.response?.value;
                     const itemId = row.item_id;
@@ -527,10 +569,11 @@ export default function PatientPortal({ patient: initialPatient }) {
                     if (itemId === 'recommendation') aggregated['recommandation'] = value;
                     else if (itemId === 'recommandation') aggregated['recommendation'] = value;
                 });
-                setResponses(aggregated);
-                setClinicalResponses(nested);
-                setResponsesMeta(meta);
             }
+
+            setResponses(aggregated);
+            setClinicalResponses(nested);
+            setResponsesMeta(meta);
         } catch (err) {
             console.error('Error loading responses:', err);
         }
