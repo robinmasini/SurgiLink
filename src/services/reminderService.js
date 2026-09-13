@@ -1,6 +1,7 @@
 import { supabase } from '../lib/supabase.js';
 import { sendSMS, canSendReminder } from './vonageService.js';
 import { getIncompleteItemsWithReminders } from './pathwayService.js';
+import { getOrCreatePatientToken } from './tokenService.js';
 
 /**
  * Reminder Service
@@ -142,19 +143,18 @@ export async function processPendingReminders(supabaseClient = null) {
                 return mapping[screen] || '';
             };
 
-            // Fetch token
-            const { data: tokenData } = await db
-                .from('patient_review_tokens')
-                .select('token')
-                .eq('patient_id', patient.id)
-                .eq('is_active', true)
-                .order('created_at', { ascending: false })
-                .limit(1)
-                .maybeSingle();
+            // Fetch token or auto-generate
+            let token = null;
+            try {
+                const tokenRes = await getOrCreatePatientToken(patient.id);
+                token = tokenRes?.token;
+            } catch (e) {
+                console.warn('Error getting token for pending reminder:', e);
+            }
+            if (!token) token = `p_${patient.id}`;
 
-            const token = tokenData?.token;
             const screenPath = getScreenPath(reminder.screen);
-            const baseUrl = `https://surgilink.eu/patient-portal/${token || ''}`;
+            const baseUrl = `https://surgilink.eu/patient-portal/${token}`;
             const directLink = baseUrl; // User requested to always land on portal first
 
             const variables = {
@@ -245,18 +245,17 @@ export async function sendManualReminder(patientId, screen, itemId, templateKey,
             return mapping[screen] || '';
         };
 
-        const { data: tokenData } = await supabase
-            .from('patient_review_tokens')
-            .select('token')
-            .eq('patient_id', patientId)
-            .eq('is_active', true)
-            .order('created_at', { ascending: false })
-            .limit(1)
-            .maybeSingle();
+        let token = null;
+        try {
+            const tokenRes = await getOrCreatePatientToken(patientId);
+            token = tokenRes?.token;
+        } catch (e) {
+            console.warn('Error getting token for manual reminder:', e);
+        }
+        if (!token) token = `p_${patientId}`;
 
-        const token = tokenData?.token;
         const screenPath = getScreenPath(screen);
-        const baseUrl = `https://surgilink.eu/patient-portal/${token || ''}`;
+        const baseUrl = `https://surgilink.eu/patient-portal/${token}`;
         const directLink = baseUrl; // User requested to always land on portal first
 
 

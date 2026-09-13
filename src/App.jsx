@@ -114,6 +114,8 @@ function App() {
 
           <Route path="/patient-portal/:token/onboarding" element={<OnboardingFlow />} />
           <Route path="/patient-portal/:token" element={<PatientTokenRoute><PatientPortal /></PatientTokenRoute>} />
+          <Route path="/patient-portal" element={<PatientTokenRoute><PatientPortal /></PatientTokenRoute>} />
+          <Route path="/patient-portal/" element={<PatientTokenRoute><PatientPortal /></PatientTokenRoute>} />
           <Route path="/patient-portal/:token/bienvenue" element={<PatientTokenRoute><Bienvenue /></PatientTokenRoute>} />
           <Route path="/patient-portal/:token/j7" element={<PatientTokenRoute><PatientJ7 /></PatientTokenRoute>} />
           <Route path="/patient-portal/:token/j4" element={<PatientTokenRoute><PatientJ4 /></PatientTokenRoute>} />

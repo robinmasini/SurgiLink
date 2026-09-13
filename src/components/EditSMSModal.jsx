@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { X, Send, AlertCircle, Loader, Calendar, Clock, Save } from 'lucide-react';
 import { smsTemplates, interpolateTemplate } from '../config/smsTemplates';
+import { getOrCreatePatientToken } from '../services/tokenService';
 
 export default function EditSMSModal({ isOpen, onClose, patient, reminder, onSend, onUpdate }) {
     const [message, setMessage] = useState('');
@@ -10,51 +11,61 @@ export default function EditSMSModal({ isOpen, onClose, patient, reminder, onSen
 
     useEffect(() => {
         if (reminder && patient) {
-            // Initial message: use custom if exists, otherwise interpolate template
-            if (reminder.custom_message) {
-                setMessage(reminder.custom_message);
-            } else {
-                try {
-                    const getScreenPath = (screen) => {
-                        const mapping = {
-                            'J-7': 'j7',
-                            'J-1': 'j1-preop',
-                            'J-J': '',
-                            'J+1': 'j1',
-                            'J+4': 'j4',
-                            'E-SATIS': 'e-satis',
-                            'Bienvenue': ''
-                        };
-                        return mapping[screen] || '';
-                    };
+            let isSubscribed = true;
 
-                    const screenPath = getScreenPath(reminder.screen);
-                    const baseUrl = `https://surgilink.eu/patient-portal/${patient.token || ''}`;
-                    const directLink = screenPath ? `${baseUrl}/${screenPath}` : baseUrl;
-
-                    const variables = {
-                        first_name: patient.name?.split(' ')[0] || 'Patient',
-                        procedure_date: patient.date || 'bientôt',
-                        arrival_time: patient.surgery_time || 'Non communiquée',
-                        clinic_name: 'SurgiLink',
-                        clinic_phone: '01 44 44 44 44',
-                        checklist_link: directLink,
-                        consignes_link: directLink,
-                        esatis_link: directLink,
-                        item_name: reminder.item_id ? reminder.item_id.replace(/_/g, ' ') : ''
-                    };
-                    const interpolated = interpolateTemplate(reminder.template_key, variables);
-                    setMessage(interpolated);
-                } catch (err) {
-                    console.error('Error preparing SMS preview:', err);
-                    setMessage('');
+            const init = async () => {
+                let token = patient.token;
+                if (!token && patient.id) {
+                    try {
+                        const tokenRes = await getOrCreatePatientToken(patient.id);
+                        token = tokenRes?.token || `p_${patient.id}`;
+                    } catch (e) {
+                        console.error('Error fetching token for EditSMSModal:', e);
+                        token = `p_${patient.id}`;
+                    }
                 }
-            }
+                if (!token) token = patient.id ? `p_${patient.id}` : 'demo-patient';
 
-            // Initial date/time
-            const dateObj = new Date(reminder.scheduled_for);
-            setScheduledDate(dateObj.toISOString().split('T')[0]);
-            setScheduledTime(dateObj.toTimeString().substring(0, 5));
+                if (!isSubscribed) return;
+
+                if (reminder.custom_message) {
+                    setMessage(reminder.custom_message);
+                } else {
+                    try {
+                        const baseUrl = `https://surgilink.eu/patient-portal/${token}`;
+                        const directLink = baseUrl;
+
+                        const variables = {
+                            first_name: patient.name?.split(' ')[0] || 'Patient',
+                            procedure_date: patient.date || 'bientôt',
+                            arrival_time: patient.surgery_time || 'Non communiquée',
+                            clinic_name: 'SurgiLink',
+                            clinic_phone: '01 44 44 44 44',
+                            checklist_link: directLink,
+                            consignes_link: directLink,
+                            esatis_link: directLink,
+                            item_name: reminder.item_id ? reminder.item_id.replace(/_/g, ' ') : ''
+                        };
+                        const interpolated = interpolateTemplate(reminder.template_key, variables);
+                        setMessage(interpolated);
+                    } catch (err) {
+                        console.error('Error preparing SMS preview:', err);
+                        setMessage('');
+                    }
+                }
+
+                if (reminder.scheduled_for) {
+                    const dateObj = new Date(reminder.scheduled_for);
+                    setScheduledDate(dateObj.toISOString().split('T')[0]);
+                    setScheduledTime(dateObj.toTimeString().substring(0, 5));
+                }
+            };
+
+            init();
+
+            return () => {
+                isSubscribed = false;
+            };
         }
     }, [reminder, patient]);
 
