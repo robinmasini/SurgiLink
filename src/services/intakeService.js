@@ -186,8 +186,11 @@ export async function submitIntakeForm(token, formData) {
             // Section 2 — Médecins
             general_practitioner: formData.general_practitioner || null,
             gp_city: formData.gp_city || null,
-            specialist: formData.specialist || null,
-            specialist_city: formData.specialist_city || null,
+            specialist: formData.specialists && formData.specialists.length > 0 
+                ? formData.specialists.map(s => s.name?.trim() ? `${s.name.trim()}${s.city?.trim() ? ` (${s.city.trim()})` : ''}` : '').filter(Boolean).join(' ; ')
+                : (formData.specialist || null),
+            specialist_city: formData.specialists && formData.specialists[0] ? (formData.specialists[0].city || null) : (formData.specialist_city || null),
+            specialists: formData.specialists || null,
 
             // Section 3 — Situation générale
             profession: formData.profession || null,

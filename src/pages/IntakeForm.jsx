@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowRight, ArrowLeft, CheckCircle, Loader, AlertCircle, Camera, Image as ImageIcon } from 'lucide-react';
+import { ArrowRight, ArrowLeft, CheckCircle, Loader, AlertCircle, Camera, Image as ImageIcon, Trash2, Plus } from 'lucide-react';
 import { getIntakeByToken, submitIntakeForm } from '../services/intakeService';
 import logoSurgilink from '../assets/logo_surgilink_premium_green.png';
 import logoMA from '../assets/logo-medical-alliance.png';
@@ -183,6 +183,7 @@ export default function IntakeForm() {
         provide_cni_in_person: false,
         // Section 2
         general_practitioner: '', gp_city: '', specialist: '', specialist_city: '',
+        specialists: [{ name: '', city: '' }],
         // Section 3
         profession: '', referral_source: [], referral_other: '',
         // Section 4
@@ -208,6 +209,49 @@ export default function IntakeForm() {
     });
 
     const setF = useCallback((key, val) => setForm(prev => ({ ...prev, [key]: val })), []);
+
+    const updateSpecialist = (index, field, val) => {
+        setForm(prev => {
+            const current = [...(prev.specialists || [{ name: '', city: '' }])];
+            if (!current[index]) current[index] = { name: '', city: '' };
+            current[index] = { ...current[index], [field]: val };
+            const firstName = current[0]?.name || '';
+            const firstCity = current[0]?.city || '';
+            return {
+                ...prev,
+                specialists: current,
+                specialist: firstName,
+                specialist_city: firstCity
+            };
+        });
+    };
+
+    const addSpecialist = () => {
+        setForm(prev => {
+            const current = [...(prev.specialists || [{ name: '', city: '' }])];
+            current.push({ name: '', city: '' });
+            return { ...prev, specialists: current };
+        });
+    };
+
+    const removeSpecialist = (index) => {
+        setForm(prev => {
+            const current = [...(prev.specialists || [{ name: '', city: '' }])];
+            if (current.length <= 1) {
+                current[0] = { name: '', city: '' };
+            } else {
+                current.splice(index, 1);
+            }
+            const firstName = current[0]?.name || '';
+            const firstCity = current[0]?.city || '';
+            return {
+                ...prev,
+                specialists: current,
+                specialist: firstName,
+                specialist_city: firstCity
+            };
+        });
+    };
 
     const handlePhoneChange = (key, val) => {
         if (!val || val === '+33' || val === '+33 ') {
@@ -311,7 +355,14 @@ export default function IntakeForm() {
             
             // Populate form fields ONLY from saved intakeResponse if it exists.
             // If intake response is not saved yet, keep inputs empty ('') so light-gray placeholders are displayed natively.
-            const savedData = result.intakeResponse || {};
+            let initialSpecialists = savedData.specialists;
+            if (!Array.isArray(initialSpecialists) || initialSpecialists.length === 0) {
+                if (savedData.specialist || savedData.specialist_city) {
+                    initialSpecialists = [{ name: savedData.specialist || '', city: savedData.specialist_city || '' }];
+                } else {
+                    initialSpecialists = [{ name: '', city: '' }];
+                }
+            }
 
             setForm(prev => ({
                 ...prev,
@@ -332,6 +383,7 @@ export default function IntakeForm() {
                 gp_city: savedData.gp_city || '',
                 specialist: savedData.specialist || '',
                 specialist_city: savedData.specialist_city || '',
+                specialists: initialSpecialists,
                 profession: savedData.profession || '',
                 referral_source: savedData.referral_source || [],
                 referral_other: savedData.referral_other || '',
@@ -1011,29 +1063,103 @@ export default function IntakeForm() {
 
             /* ── Step 2: Médecins référents ── */
             case 2:
+                const specialistsList = form.specialists && form.specialists.length > 0 ? form.specialists : [{ name: form.specialist || '', city: form.specialist_city || '' }];
                 return (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                         <div style={{ background: '#F9FAFB', borderRadius: '14px', padding: '14px', border: '1px solid #F3F4F6' }}>
                             <p style={{ margin: '0 0 12px', fontSize: '12px', fontWeight: '700', color: '#374151', textTransform: 'uppercase' }}>Médecin traitant</p>
-                            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '10px' }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '2fr 1fr', gap: '10px' }}>
                                 <Field label="Nom et Prénom (Dr.)" required hint="Merci de saisir le NOM et le PRÉNOM">
-                                    <StyledInput value={form.general_practitioner} onChange={e => setF('general_practitioner', e.target.value)} placeholder="ex: Dr. DAUMAS Marie-Laure" />
+                                    <StyledInput value={form.general_practitioner} onChange={e => setF('general_practitioner', e.target.value)} placeholder="Ex : Dr. Daumas Marie-Laure" />
                                 </Field>
                                 <Field label="Ville">
-                                    <StyledInput value={form.gp_city} onChange={e => setF('gp_city', e.target.value)} placeholder="Marseille" />
+                                    <StyledInput value={form.gp_city} onChange={e => setF('gp_city', e.target.value)} placeholder="Ex : Marseille" />
                                 </Field>
                             </div>
                         </div>
-                        <div style={{ background: '#F9FAFB', borderRadius: '14px', padding: '14px', border: '1px solid #F3F4F6' }}>
-                            <p style={{ margin: '0 0 12px', fontSize: '12px', fontWeight: '700', color: '#374151', textTransform: 'uppercase' }}>Spécialiste suivi (le cas échéant)</p>
-                            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '10px' }}>
-                                <Field label="Dr.">
-                                    <StyledInput value={form.specialist} onChange={e => setF('specialist', e.target.value)} placeholder="Nom du spécialiste" />
-                                </Field>
-                                <Field label="Ville">
-                                    <StyledInput value={form.specialist_city} onChange={e => setF('specialist_city', e.target.value)} placeholder="Lyon" />
-                                </Field>
+
+                        <div style={{ background: '#F9FAFB', borderRadius: '14px', padding: '14px', border: '1px solid #F3F4F6', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <p style={{ margin: 0, fontSize: '12px', fontWeight: '700', color: '#374151', textTransform: 'uppercase' }}>
+                                    Spécialiste(s) suivi(s) (le cas échéant)
+                                </p>
                             </div>
+
+                            {specialistsList.map((spec, idx) => (
+                                <div key={idx} style={{
+                                    padding: idx > 0 ? '12px' : '0',
+                                    background: idx > 0 ? 'white' : 'transparent',
+                                    borderRadius: idx > 0 ? '10px' : '0',
+                                    border: idx > 0 ? '1px solid #E5E7EB' : 'none',
+                                    position: 'relative'
+                                }}>
+                                    {idx > 0 && (
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                                            <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--color-primary-600)' }}>
+                                                Spécialiste #{idx + 1}
+                                            </span>
+                                            <button
+                                                type="button"
+                                                onClick={() => removeSpecialist(idx)}
+                                                style={{
+                                                    background: 'none',
+                                                    border: 'none',
+                                                    color: '#EF4444',
+                                                    cursor: 'pointer',
+                                                    fontSize: '11px',
+                                                    fontWeight: '700',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: '4px'
+                                                }}
+                                            >
+                                                <Trash2 size={13} /> Supprimer
+                                            </button>
+                                        </div>
+                                    )}
+                                    <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '2fr 1fr', gap: '10px' }}>
+                                        <Field label={idx === 0 ? "Dr." : "Nom du Dr."}>
+                                            <StyledInput
+                                                value={spec.name || ''}
+                                                onChange={e => updateSpecialist(idx, 'name', e.target.value)}
+                                                placeholder={idx === 0 ? "Ex : Dr. Martin (Cardiologue, etc.)" : "Ex : Dr. Dupont"}
+                                            />
+                                        </Field>
+                                        <Field label="Ville">
+                                            <StyledInput
+                                                value={spec.city || ''}
+                                                onChange={e => updateSpecialist(idx, 'city', e.target.value)}
+                                                placeholder="Ex : Lyon"
+                                            />
+                                        </Field>
+                                    </div>
+                                </div>
+                            ))}
+
+                            <button
+                                type="button"
+                                onClick={addSpecialist}
+                                style={{
+                                    marginTop: '4px',
+                                    padding: '11px 16px',
+                                    borderRadius: '12px',
+                                    border: '1.5px dashed var(--color-primary-300)',
+                                    background: 'rgba(var(--color-primary-rgb), 0.04)',
+                                    color: 'var(--color-primary-600)',
+                                    fontWeight: '700',
+                                    fontSize: '13px',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: '8px',
+                                    transition: 'all 0.15s'
+                                }}
+                                onMouseOver={e => e.currentTarget.style.background = 'rgba(var(--color-primary-rgb), 0.08)'}
+                                onMouseOut={e => e.currentTarget.style.background = 'rgba(var(--color-primary-rgb), 0.04)'}
+                            >
+                                <Plus size={16} /> Ajouter un autre spécialiste
+                            </button>
                         </div>
                     </div>
                 );
