@@ -721,16 +721,29 @@ export default function PatientPortal({ patient: initialPatient }) {
 
         } catch (err) {
             console.error('Error loading patient data:', err);
-            setPatient({
-                id: 'demo-patient',
-                name: 'Christophe DUPONT',
-                status: 'pending',
-                progress: 60,
-                days_until: 'J-7',
-                date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-                clinic_name: 'Clinique de la Paix',
-                operation: 'Chirurgie plastique'
-            });
+            if (pid) {
+                setPatient({
+                    id: pid,
+                    name: 'Patient',
+                    status: 'pending',
+                    progress: 0,
+                    days_until: 'J-0',
+                    date: new Date().toISOString().split('T')[0]
+                });
+                loadMedicalHistory(pid);
+                loadDocuments(pid);
+            } else {
+                setPatient({
+                    id: 'demo-patient',
+                    name: 'Christophe DUPONT',
+                    status: 'pending',
+                    progress: 60,
+                    days_until: 'J-7',
+                    date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                    clinic_name: 'Clinique de la Paix',
+                    operation: 'Chirurgie plastique'
+                });
+            }
             setLoading(false);
         }
     };
