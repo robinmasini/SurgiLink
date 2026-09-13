@@ -175,6 +175,27 @@ export default function PatientStatusBadges({ responses = [], daysUntil = '', pa
         }
     }
 
+    // Check for Low J+4 Rating (< 8/10)
+    const hasLowJ4Rating = responses.some(r => {
+        const screen = (r?.screen || '').toLowerCase();
+        if (screen === 'j4_satisfaction' || screen === 'j4' || screen === 'j+4') {
+            const val = r?.response?.value;
+            if (val === undefined || val === null || val === '') return false;
+            const num = Number(val);
+            if (!isNaN(num) && num > 0 && num < 8) return true;
+            if (typeof val === 'string') {
+                const match = val.match(/^(\d+)(?:\/10)?$/);
+                if (match && parseInt(match[1], 10) < 8) return true;
+                if (val === 'Plutôt non' || val === 'Non') return true;
+            }
+        }
+        return false;
+    });
+
+    if (hasLowJ4Rating) {
+        badges.push({ label: 'Alerte J+4 (note < 8)', color: 'danger' });
+    }
+
     if (patientStatus === 'ready' && isDateSet && !isPreOp && !isPostOp) {
         badges.push({ label: 'Traité ✓', color: 'success' });
     }

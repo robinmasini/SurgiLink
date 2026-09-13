@@ -117,3 +117,85 @@ export const isBetweenJ18AndEsatis = (patientOrDate, status) => {
     return diffDays >= -4 && diffDays <= 18;
 };
 
+/**
+ * Extract low ratings (< 8/10 or negative recommendation) for a patient from response list or map
+ * @param {string|number} patientId - Patient ID
+ * @param {string} patientName - Patient Name
+ * @param {Object} responses - Map of patient responses (by ID or name)
+ * @returns {Array} List of low rating items { itemId, label, note, text }
+ */
+export const getLowJ4DetailsForPatient = (patientId, patientName, responses) => {
+    if (!responses) return [];
+
+    const pResps = responses[patientId] || responses[String(patientId)] || responses[(patientName || '').trim().toLowerCase()] || [];
+    if (!Array.isArray(pResps) || pResps.length === 0) return [];
+
+    const details = [];
+    const itemLabels = {
+        accueil_qualite: "Accueil & Courtoisie",
+        soins_qualite: "Qualité des soins",
+        medecins_ecoute: "Écoute des médecins",
+        confort_chambre: "Confort chambre",
+        confort_repas: "Qualité repas",
+        recommandation: "Recommandation"
+    };
+
+    pResps.forEach(r => {
+        const screen = (r.screen || '').toLowerCase();
+        const isJ4 = screen === 'j4_satisfaction' || screen === 'j4' || screen === 'j+4';
+        if (!isJ4) return;
+
+        const val = r.response?.value;
+        if (val === undefined || val === null || val === '') return;
+
+        const num = Number(val);
+        if (!isNaN(num) && num > 0 && num < 8) {
+            details.push({
+                itemId: r.item_id,
+                label: itemLabels[r.item_id] || r.item_id,
+                note: num,
+                text: `${num}/10`
+            });
+        } else if (typeof val === 'string') {
+            const match = val.match(/^(\d+)(?:\/10)?$/);
+            if (match) {
+                const parsed = parseInt(match[1], 10);
+                if (parsed > 0 && parsed < 8) {
+                    details.push({
+                        itemId: r.item_id,
+                        label: itemLabels[r.item_id] || r.item_id,
+                        note: parsed,
+                        text: `${parsed}/10`
+                    });
+                }
+            } else if (val === 'Plutôt non' || val === 'Non') {
+                details.push({
+                    itemId: r.item_id,
+                    label: itemLabels[r.item_id] || r.item_id,
+                    note: 0,
+                    text: val
+                });
+            }
+        }
+    });
+
+    return details;
+};
+
+/**
+ * Filter patients who submitted a J+4 satisfaction rating under 8/10
+ * @param {Array} patients - List of patient objects
+ * @param {Object} responses - Map of patient responses
+ * @returns {Array} List of patients with low J+4 ratings
+ */
+export const getPatientsWithLowJ4Rating = (patients, responses) => {
+    if (!patients || !Array.isArray(patients) || !responses) return [];
+
+    return patients.filter(p => {
+        if (p.status === 'archived') return false;
+        const details = getLowJ4DetailsForPatient(p.id, p.name, responses);
+        return details.length > 0;
+    });
+};
+
+

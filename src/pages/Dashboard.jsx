@@ -40,7 +40,7 @@ import {
 } from 'lucide-react';
 
 import { supabase } from '../lib/supabase';
-import { calculateDaysUntilSurgery, isBetweenJ18AndEsatis } from '../utils/dateUtils';
+import { calculateDaysUntilSurgery, isBetweenJ18AndEsatis, getPatientsWithLowJ4Rating, getLowJ4DetailsForPatient } from '../utils/dateUtils';
 import StatusBolt from '../components/StatusBolt';
 import PatientStatusBadges from '../components/PatientStatusBadges';
 import PatientDetailPanel from '../components/PatientDetailPanel';
@@ -712,17 +712,23 @@ export default function Dashboard() {
                     </div>
                 </div>
 
-                {/* Risk Assessment Section - New */}
-                {allPatients.filter(p => (p.daysUntil === 'J-1' || p.daysUntil === 'J-0') && p.status !== 'ready').length > 0 && (
-                    <div className="card fade-in" style={{
-                        background: 'linear-gradient(135deg, #FFF5F5 0%, #FFF 100%)',
-                        border: '1px solid #FEB2B2',
-                        marginBottom: 'var(--spacing-4)',
-                        padding: 'var(--spacing-4)',
-                        cursor: 'pointer'
-                    }} onClick={() => setIsAlarmsModalOpen(true)}>
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)' }}>
+                {/* Risk Assessment & Low J+4 Rating Section */}
+                {(() => {
+                    const unvalidatedPreOp = allPatients.filter(p => (p.daysUntil === 'J-1' || p.daysUntil === 'J-0') && p.status !== 'ready' && p.status !== 'archived');
+                    const lowJ4Patients = getPatientsWithLowJ4Rating(allPatients, responses);
+
+                    if (unvalidatedPreOp.length === 0 && lowJ4Patients.length === 0) return null;
+
+                    return (
+                        <div className="card fade-in" style={{
+                            background: 'linear-gradient(135deg, #FFF5F5 0%, #FFF 100%)',
+                            border: '1px solid #FEB2B2',
+                            marginBottom: 'var(--spacing-4)',
+                            padding: '16px 20px',
+                            borderRadius: '16px',
+                            boxShadow: '0 4px 12px rgba(239, 68, 68, 0.08)'
+                        }}>
+                            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px' }}>
                                 <div style={{
                                     width: '40px',
                                     height: '40px',
@@ -731,20 +737,70 @@ export default function Dashboard() {
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                    color: '#EF4444'
+                                    color: '#EF4444',
+                                    flexShrink: 0
                                 }}>
                                     <AlertTriangle size={24} />
                                 </div>
-                                <div>
-                                    <h4 style={{ color: '#9B1C1C', marginBottom: '2px' }}>{t('Alerte : Créneaux à risque détectés')}</h4>
-                                    <p style={{ fontSize: 'var(--font-size-sm)', color: '#C53030' }}>
-                                        {allPatients.filter(p => (p.daysUntil === 'J-1' || p.daysUntil === 'J-0') && p.status !== 'ready').length} {t("patients n'ont pas validé leur protocole pré-opératoire.")}
-                                    </p>
+                                <div style={{ flex: 1 }}>
+                                    <h4 style={{ color: '#9B1C1C', margin: '0 0 8px 0', fontSize: '15px', fontWeight: '800' }}>
+                                        {t('Alertes & Actions prioritaires')}
+                                    </h4>
+                                    
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                        {/* Alert 1: Low J+4 Satisfaction (< 8/10) */}
+                                        {lowJ4Patients.length > 0 && (
+                                            <div style={{ fontSize: '13px', color: '#9B1C1C', background: 'rgba(239, 68, 68, 0.06)', padding: '12px 14px', borderRadius: '12px', border: '1px solid rgba(239, 68, 68, 0.2)' }}>
+                                                <div style={{ fontWeight: '800', marginBottom: '6px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '6px' }}>
+                                                    <span style={{ color: '#DC2626' }}>⚠️ Alerte Note J+4 &lt; 8/10 (Réagir avant l'enquête e-Satis) :</span>
+                                                    <span className="badge badge-danger" style={{ fontSize: '11px', fontWeight: '800' }}>{lowJ4Patients.length} patient(s) à sauver</span>
+                                                </div>
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginTop: '8px' }}>
+                                                    {lowJ4Patients.map(p => {
+                                                        const details = getLowJ4DetailsForPatient(p.id, p.name, responses);
+                                                        const lowestText = details.map(d => `${d.label}: ${d.text}`).join(' • ') || '< 8/10';
+                                                        return (
+                                                            <div 
+                                                                key={p.id} 
+                                                                onClick={(e) => { e.stopPropagation(); setSelectedPatientId(p.id); }}
+                                                                style={{ 
+                                                                    cursor: 'pointer', 
+                                                                    display: 'flex', 
+                                                                    alignItems: 'center', 
+                                                                    justifyContent: 'space-between',
+                                                                    padding: '8px 12px',
+                                                                    borderRadius: '8px',
+                                                                    background: 'white',
+                                                                    border: '1px solid #FCA5A5',
+                                                                    transition: 'all 0.15s'
+                                                                }}
+                                                                onMouseOver={e => e.currentTarget.style.background = '#FEF2F2'}
+                                                                onMouseOut={e => e.currentTarget.style.background = 'white'}
+                                                            >
+                                                                <span style={{ fontWeight: '700', color: '#111827' }}>👤 {p.name} <span style={{ fontWeight: '400', fontSize: '12px', color: '#6B7280' }}>({p.operation || 'Intervention'})</span></span>
+                                                                <span style={{ fontWeight: '800', color: '#DC2626', background: '#FEE2E2', padding: '3px 10px', borderRadius: '12px', fontSize: '11px', whiteSpace: 'nowrap' }}>
+                                                                    Note : {lowestText} — Contacter le patient ➔
+                                                                </span>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* Alert 2: Pre-Op Protocol non-validated */}
+                                        {unvalidatedPreOp.length > 0 && (
+                                            <div style={{ fontSize: '13px', color: '#C53030', display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }} onClick={() => setIsAlarmsModalOpen(true)}>
+                                                <span style={{ fontWeight: '800' }}>• Protocoles pré-op :</span>
+                                                <span>{unvalidatedPreOp.length} patient(s) n'ont pas validé leur protocole pré-opératoire (J-1 / J-0).</span>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                )}
+                    );
+                })()}
 
                 {/* Main Action Bar & Risk Banner */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-4)' }}>
