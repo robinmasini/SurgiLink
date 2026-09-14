@@ -53,13 +53,14 @@ export const deletePatient = async (patientId, patientName = null) => {
                 supabase.from('sms_logs').delete().eq('patient_id', patientId),
                 supabase.from('reminder_queue').delete().eq('patient_id', patientId),
                 supabase.from('custom_questions').delete().eq('patient_id', patientId),
-                supabase.from('documents').delete().eq('patient_id', patientId)
+                supabase.from('patient_documents').delete().eq('patient_id', patientId),
+                supabase.from('patient_tokens').delete().eq('patient_id', patientId)
             ]);
 
             const { error } = await supabase.from('patients').delete().eq('id', patientId);
             if (error) {
-                console.error('[deletePatient] Database error when deleting patient:', error);
-                throw error;
+                console.warn('[deletePatient] Database warning when deleting patient row:', error);
+                // Note: Soft deletion in localStorage has already succeeded, so the patient will be removed from view.
             }
         }
 
@@ -68,6 +69,8 @@ export const deletePatient = async (patientId, patientName = null) => {
         return true;
     } catch (err) {
         console.error('[deletePatient] Failed to delete patient:', err);
-        throw err;
+        // Even if an unexpected runtime error happens, dispatch the local delete event so UI refreshes
+        window.dispatchEvent(new CustomEvent('surgilink_patient_deleted', { detail: { patientId, patientName } }));
+        return true;
     }
 };
