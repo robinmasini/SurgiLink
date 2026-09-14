@@ -12,6 +12,7 @@ import AddPatientModal from '../components/AddPatientModal';
 import ClinicAppointmentCard from '../components/ClinicAppointmentCard';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { deletePatient } from '../services/patientService';
 import {
     Calendar,
     User,
@@ -610,23 +611,17 @@ export default function PatientReview() {
 
 
     const handleDeletePatient = async () => {
-        if (!confirm(`Êtes-vous sûr de vouloir supprimer le patient ${patient.name} ? Cette action est irréversible.`)) {
+        if (!confirm(`Êtes-vous sûr de vouloir supprimer le patient ${patient?.name || ''} ? Cette action est irréversible.`)) {
             return;
         }
 
         try {
-            const { error } = await supabase
-                .from('patients')
-                .delete()
-                .eq('id', id);
-
-            if (error) throw error;
-
+            await deletePatient(id, patient?.name);
             alert('Patient supprimé avec succès');
             navigate('/patients');
         } catch (err) {
             console.error('Error deleting patient:', err);
-            alert(`Erreur: ${err.message}`);
+            alert(`Erreur: ${err.message || 'Une erreur est survenue lors de la suppression du patient.'}`);
         }
     };
 

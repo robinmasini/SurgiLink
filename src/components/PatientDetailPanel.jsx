@@ -20,6 +20,7 @@ import PatientStatusBadges from './PatientStatusBadges';
 import { generatePatientToken, getOrCreatePatientToken } from '../services/tokenService';
 import EditPatientModal from './EditPatientModal';
 import CNIUploaderModal from './CNIUploaderModal';
+import { deletePatient } from '../services/patientService';
 
 
 const STYLES = {
@@ -180,13 +181,7 @@ export default function PatientDetailPanel({ patient, responses = [], onClose, o
         }
 
         try {
-            const { error } = await supabase
-                .from('patients')
-                .delete()
-                .eq('id', patient.id);
-
-            if (error) throw error;
-
+            await deletePatient(patient.id, patient.name);
             alert('Patient supprimé avec succès.');
             onClose();
             window.location.reload();

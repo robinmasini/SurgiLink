@@ -24,6 +24,7 @@ import StatusBolt from '../components/StatusBolt';
 import PatientStatusBadges from '../components/PatientStatusBadges';
 import PatientDetailPanel from '../components/PatientDetailPanel';
 import { consolidateDuplicatePatients, calculateGlobalProgress } from '../services/pathwayService';
+import { getDeletedDemoPatients } from '../services/patientService';
 
 export default function Patients() {
     const { t } = useTranslation();
@@ -49,7 +50,16 @@ export default function Patients() {
         };
         window.addEventListener('resize', handleResize);
         loadPatients();
-        return () => window.removeEventListener('resize', handleResize);
+
+        const handlePatientDeleted = () => {
+            loadPatients();
+        };
+        window.addEventListener('surgilink_patient_deleted', handlePatientDeleted);
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+            window.removeEventListener('surgilink_patient_deleted', handlePatientDeleted);
+        };
     }, []);
 
     useEffect(() => {
@@ -123,6 +133,18 @@ export default function Patients() {
                     { id: 'demo-p3', name: 'Sophie LEROY', date: d3, operation: 'Blépharoplastie', status: 'intake', progress: 20, phone: '0655443322', created_at: new Date().toISOString() }
                 ];
             }
+
+            // Filter out deleted demo / stored patients
+            const deletedList = getDeletedDemoPatients().map(s => String(s).trim().toLowerCase());
+            allPatientsData = (allPatientsData || []).filter(p => {
+                if (!p) return false;
+                const pIdStr = String(p.id).trim().toLowerCase();
+                const pNameStr = (p.name || '').trim().toLowerCase();
+                if (deletedList.includes(pIdStr)) return false;
+                if (deletedList.includes(pNameStr)) return false;
+                if (deletedList.some(d => d.length > 3 && pNameStr.includes(d))) return false;
+                return true;
+            });
 
             // Group by normalized name to deduplicate and keep the most complete/active intervention
             const patientGroups = {};
