@@ -234,6 +234,59 @@ a:hover {
   color: var(--color-primary-600);
 }
 
+/* Interactive Elements & Global Pointer Cursor */
+button,
+a,
+select,
+summary,
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+input[type="checkbox"],
+input[type="radio"],
+[role="button"],
+[onClick],
+[onclick],
+.btn,
+.stat-card,
+.table-row-hover,
+.table-row-clickable,
+tbody tr,
+.tab,
+.tabs button,
+.sidebar-item,
+.sidebar-logout-btn,
+.patient-card,
+.infoCard {
+  cursor: pointer;
+}
+
+button:disabled,
+input:disabled,
+select:disabled,
+.btn:disabled,
+[disabled] {
+  cursor: not-allowed !important;
+}
+
+/* Hover effects for interactive table rows */
+.table-row-hover,
+tbody tr[onClick],
+tbody tr {
+  cursor: pointer;
+  transition: background-color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.table-row-hover:hover,
+tbody tr:hover {
+  background-color: var(--color-primary-50) !important;
+}
+
+.table-row-hover:hover td,
+tbody tr:hover td {
+  cursor: pointer !important;
+}
+
 /* Button Styles */
 .btn {
   display: inline-flex;
