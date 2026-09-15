@@ -8,7 +8,7 @@ import CompactAppointmentCard from '../components/CompactAppointmentCard';
 import { usePatientId } from '../hooks/usePatientId';
 import { cleanPatientId } from '../services/tokenService';
 import { supabase } from '../lib/supabase';
-import { calculateDaysUntilSurgery } from '../utils/dateUtils';
+import { calculateDaysUntilSurgery, isMilestoneDue } from '../utils/dateUtils';
 import { useTranslation } from 'react-i18next';
 
 
@@ -134,20 +134,10 @@ export default function PatientJ4({ patient: propPatient, token: propToken }) {
         );
     }
 
-    // Check timeline due guard: J+4 is only accessible when diffDays <= -4
-    const surgeryDate = patient?.date ? new Date(patient.date) : null;
-    let isNotYetDue = false;
-    if (surgeryDate && !isNaN(surgeryDate.getTime())) {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        surgeryDate.setHours(0, 0, 0, 0);
-        const diffDays = Math.ceil((surgeryDate - today) / (1000 * 60 * 60 * 24));
-        if (diffDays > -4) {
-            isNotYetDue = true;
-        }
-    }
+    // Check timeline due guard: J+4 is only accessible when isMilestoneDue('J4_Satisfaction', patient?.date) is true
+    const isDue = isMilestoneDue('J4_Satisfaction', patient?.date);
 
-    if (isNotYetDue) {
+    if (!isDue) {
         return (
             <div className="patient-view" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', padding: '24px' }}>
                 <div className="card" style={{ maxWidth: '500px', textAlign: 'center', padding: '32px', borderRadius: '24px', background: '#f9fafb', border: '1px solid #e5e7eb' }}>

@@ -118,6 +118,80 @@ export const isBetweenJ18AndEsatis = (patientOrDate, status) => {
 };
 
 /**
+ * Robustly parse surgery date across formats
+ * @param {string|Date} dateVal 
+ * @returns {Date|null}
+ */
+export const parseSurgeryDate = (dateVal) => {
+    if (!dateVal) return null;
+    if (dateVal instanceof Date) return isNaN(dateVal.getTime()) ? null : dateVal;
+    
+    const str = String(dateVal).trim();
+    if (!str) return null;
+
+    if (/^\d{4}-\d{2}-\d{2}/.test(str)) {
+        const parts = str.split('T')[0].split('-').map(n => parseInt(n, 10));
+        if (parts.length === 3 && parts[0] && parts[1] && parts[2]) {
+            return new Date(parts[0], parts[1] - 1, parts[2]);
+        }
+    }
+
+    const parts = str.split(/[\/\.-]/);
+    if (parts.length === 3) {
+        if (parts[0].length === 4) {
+            const y = parseInt(parts[0], 10);
+            const m = parseInt(parts[1], 10) - 1;
+            const d = parseInt(parts[2], 10);
+            if (!isNaN(y) && !isNaN(m) && !isNaN(d)) return new Date(y, m, d);
+        } else {
+            const d = parseInt(parts[0], 10);
+            const m = parseInt(parts[1], 10) - 1;
+            const y = parseInt(parts[2], 10);
+            if (!isNaN(d) && !isNaN(m) && !isNaN(y)) return new Date(y, m, d);
+        }
+    }
+
+    const fallback = new Date(str);
+    return isNaN(fallback.getTime()) ? null : fallback;
+};
+
+/**
+ * Check if a milestone is due / accessible based on surgery date
+ * @param {string} milestoneId - Bienvenue, J7, J1_PreOp, J1, J4_Satisfaction, ESATIS
+ * @param {string|Date} surgeryDate - Surgery date
+ * @returns {boolean} True if milestone is due/unlocked
+ */
+export const isMilestoneDue = (milestoneId, surgeryDate) => {
+    if (milestoneId === 'Bienvenue' || milestoneId === 'fiche') return true;
+
+    const surgDateObj = parseSurgeryDate(surgeryDate);
+    if (!surgDateObj) return false;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const surgZero = new Date(surgDateObj);
+    surgZero.setHours(0, 0, 0, 0);
+
+    const diffDays = Math.ceil((surgZero - today) / (1000 * 60 * 60 * 24));
+
+    const offsets = {
+        Bienvenue: 18,
+        J7: 7,
+        J1_PreOp: 1,
+        J1: -1,
+        J4_Satisfaction: -4,
+        ESATIS: -4
+    };
+
+    const offset = offsets[milestoneId];
+    if (offset === undefined) return false;
+
+    return diffDays <= offset;
+};
+
+
+/**
  * Extract low ratings (< 8/10 or negative recommendation) for a patient from response list or map
  * @param {string|number} patientId - Patient ID
  * @param {string} patientName - Patient Name
@@ -145,17 +219,24 @@ export const getLowJ4DetailsForPatient = (patientId, patientName, responses) => 
         const isJ4 = screen === 'j4_satisfaction' || screen === 'j4' || screen === 'j+4';
         if (!isJ4) return;
 
+        // Skip internal metadata items like _screen_completed
+        if (!r.item_id || r.item_id === '_screen_completed' || r.item_id.startsWith('_')) return;
+
         const val = r.response?.value;
         if (val === undefined || val === null || val === '') return;
 
-        const num = Number(val);
-        if (!isNaN(num) && num > 0 && num < 8) {
-            details.push({
-                itemId: r.item_id,
-                label: itemLabels[r.item_id] || r.item_id,
-                note: num,
-                text: `${num}/10`
-            });
+        // Skip boolean values (e.g. true/false) which JS Number() converts to 1/0
+        if (typeof val === 'boolean') return;
+
+        if (typeof val === 'number') {
+            if (val > 0 && val < 8) {
+                details.push({
+                    itemId: r.item_id,
+                    label: itemLabels[r.item_id] || r.item_id,
+                    note: val,
+                    text: `${val}/10`
+                });
+            }
         } else if (typeof val === 'string') {
             const match = val.match(/^(\d+)(?:\/10)?$/);
             if (match) {
