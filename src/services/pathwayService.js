@@ -1,5 +1,6 @@
 import { supabase } from '../lib/supabase.js';
 import { getScreenItems, getRiskFlags } from '../config/pathway.config.js';
+import { parseSurgeryDate } from '../utils/dateUtils.js';
 
 /**
  * Pathway Service
@@ -178,7 +179,7 @@ export async function calculateGlobalProgress(patientId) {
         // Zero out times to match PatientPortal.jsx exactly and avoid timezone edge cases
         const todayForDiff = new Date();
         todayForDiff.setHours(0, 0, 0, 0);
-        const surgeryDateForDiff = patient.date ? new Date(patient.date) : null;
+        const surgeryDateForDiff = patient.date ? parseSurgeryDate(patient.date) : null;
         if (surgeryDateForDiff) surgeryDateForDiff.setHours(0, 0, 0, 0);
         
         const hoursSinceCreation = (now - createdAt) / (1000 * 60 * 60);
