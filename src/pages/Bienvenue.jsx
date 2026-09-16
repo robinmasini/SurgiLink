@@ -39,44 +39,31 @@ export default function Bienvenue({ patient: propPatient, token: propToken }) {
                     id: 'demo-patient',
                     name: 'Marie DUPONT',
                     clinic_name: 'Clinique de la Paix',
-                    date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                    date: new Date().toISOString().split('T')[0],
                     surgery_time: '08:30'
                 });
                 setLoading(false);
             } else {
                 loadResponses();
-                if (!propPatient) loadPatientData();
+                if (!propPatient || !propPatient.date) loadPatientData();
             }
         } else {
             setLoading(false);
         }
-    }, [resolvedPatientId]);
+    }, [resolvedPatientId, propPatient]);
 
     const loadPatientData = async () => {
         try {
             const cleanId = cleanPatientId(resolvedPatientId);
-            const queryPromise = supabase.from('patients').select('*').eq('id', cleanId).single();
-            const timeoutPromise = new Promise(resolve => setTimeout(() => resolve({ data: null }), 600));
-            const { data } = await Promise.race([queryPromise, timeoutPromise]);
+            if (!cleanId) return;
+            const { data } = await supabase.from('patients').select('*').eq('id', cleanId).maybeSingle();
             if (data) {
                 setPatient(data);
-            } else {
-                setPatient({
-                    id: cleanId || 'demo-patient',
-                    name: 'Marie DUPONT',
-                    clinic_name: 'Clinique de la Paix',
-                    date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-                    surgery_time: '08:30'
-                });
+            } else if (propPatient) {
+                setPatient(propPatient);
             }
         } catch (e) {
-            setPatient({
-                id: cleanPatientId(resolvedPatientId) || 'demo-patient',
-                name: 'Marie DUPONT',
-                clinic_name: 'Clinique de la Paix',
-                date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-                surgery_time: '08:30'
-            });
+            if (propPatient) setPatient(propPatient);
         }
     };
 

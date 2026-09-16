@@ -41,18 +41,18 @@ export default function PatientJ1({ patient: propPatient, token: propToken }) {
                     id: 'demo-patient',
                     name: 'Marie DUPONT',
                     clinic_name: 'Clinique de la Paix',
-                    date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                    date: new Date().toISOString().split('T')[0],
                     surgery_time: '08:30'
                 });
                 setLoading(false);
             } else {
                 loadResponses();
-                if (!propPatient) loadPatientData();
+                if (!propPatient || !propPatient.date) loadPatientData();
             }
         } else {
             setLoading(false);
         }
-    }, [resolvedPatientId]);
+    }, [resolvedPatientId, propPatient]);
 
     useEffect(() => {
         calculateAlerts();
@@ -61,28 +61,15 @@ export default function PatientJ1({ patient: propPatient, token: propToken }) {
     const loadPatientData = async () => {
         try {
             const cleanId = cleanPatientId(resolvedPatientId);
-            const queryPromise = supabase.from('patients').select('*').eq('id', cleanId).single();
-            const timeoutPromise = new Promise(resolve => setTimeout(() => resolve({ data: null }), 600));
-            const { data } = await Promise.race([queryPromise, timeoutPromise]);
+            if (!cleanId) return;
+            const { data } = await supabase.from('patients').select('*').eq('id', cleanId).maybeSingle();
             if (data) {
                 setPatient(data);
-            } else {
-                setPatient({
-                    id: cleanId || 'demo-patient',
-                    name: 'Marie DUPONT',
-                    clinic_name: 'Clinique de la Paix',
-                    date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-                    surgery_time: '08:30'
-                });
+            } else if (propPatient) {
+                setPatient(propPatient);
             }
         } catch (e) {
-            setPatient({
-                id: cleanPatientId(resolvedPatientId) || 'demo-patient',
-                name: 'Marie DUPONT',
-                clinic_name: 'Clinique de la Paix',
-                date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-                surgery_time: '08:30'
-            });
+            if (propPatient) setPatient(propPatient);
         }
     };
 
@@ -180,31 +167,7 @@ export default function PatientJ1({ patient: propPatient, token: propToken }) {
         );
     }
 
-    // Check timeline due guard: J+1 is only accessible when isMilestoneDue('J1', patient?.date) is true
-    const isDue = isMilestoneDue('J1', patient?.date);
 
-    if (!isDue) {
-        return (
-            <div className="patient-view" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', padding: '24px' }}>
-                <div className="card" style={{ maxWidth: '500px', textAlign: 'center', padding: '32px', borderRadius: '24px', background: '#f9fafb', border: '1px solid #e5e7eb' }}>
-                    <AlertCircle size={48} style={{ margin: '0 auto 16px', color: 'var(--color-primary-500)' }} />
-                    <h3 style={{ fontSize: '20px', fontWeight: '700', marginBottom: '12px', color: '#1f2937' }}>
-                        {t('Questionnaire pas encore disponible')}
-                    </h3>
-                    <p style={{ color: '#4b5563', fontSize: '15px', lineHeight: '1.5', marginBottom: '24px' }}>
-                        {t("Ce questionnaire de suivi J+1 sera disponible le lendemain de votre intervention. Tous vos questionnaires dus sont actuellement à jour !")}
-                    </p>
-                    <button
-                        onClick={() => navigate(token ? `/patient-portal/${token}` : '/')}
-                        className="btn btn-primary"
-                        style={{ width: '100%', padding: '16px', borderRadius: '16px', fontWeight: '800' }}
-                    >
-                        {t('Retour au portail')}
-                    </button>
-                </div>
-            </div>
-        );
-    }
 
     return (
         <div className="patient-view">

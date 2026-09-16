@@ -165,7 +165,7 @@ export const isMilestoneDue = (milestoneId, surgeryDate) => {
     if (milestoneId === 'Bienvenue' || milestoneId === 'fiche') return true;
 
     const surgDateObj = parseSurgeryDate(surgeryDate);
-    if (!surgDateObj) return false;
+    if (!surgDateObj) return true;
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);

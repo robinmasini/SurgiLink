@@ -39,7 +39,7 @@ export default function PatientTokenRoute({ children }) {
                         .select('*')
                         .eq('id', pid)
                         .maybeSingle();
-                    const timeoutPromise = new Promise(resolve => setTimeout(() => resolve({ data: null }), 1500));
+                    const timeoutPromise = new Promise(resolve => setTimeout(() => resolve({ data: null }), 5000));
                     const res = await Promise.race([queryPromise, timeoutPromise]);
                     if (res?.data) patientData = res.data;
                 } catch (e) {
@@ -63,7 +63,8 @@ export default function PatientTokenRoute({ children }) {
                         name: intakeResp?.first_name ? `${intakeResp.first_name} ${intakeResp.last_name || ''}`.trim() : 'Nouveau patient',
                         status: intakeResp?.form_completed ? 'pending' : 'intake',
                         progress: 0,
-                        days_until: 'J-0'
+                        days_until: 'J-0',
+                        date: null
                     };
                 }
 
