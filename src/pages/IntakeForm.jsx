@@ -464,13 +464,14 @@ export default function IntakeForm() {
                     !form.last_name?.trim() ||
                     !form.birth_date ||
                     !form.phone?.trim() ||
+                    !form.email?.trim() ||
                     !form.address?.trim() ||
                     !form.postal_code?.trim() ||
                     !form.city?.trim() ||
                     !form.emergency_contact_name?.trim() ||
                     !form.emergency_contact_phone?.trim()
                 ) {
-                    error = 'Veuillez remplir tous les champs obligatoires (prénom, nom, date de naissance, adresse, code postal, ville, téléphone, personne à prévenir).';
+                    error = 'Veuillez remplir tous les champs obligatoires (prénom, nom, date de naissance, adresse, code postal, ville, téléphone, email, personne à prévenir).';
                 }
                 break;
             case 2:
@@ -907,7 +908,7 @@ export default function IntakeForm() {
                             <Field label="Téléphone" required>
                                 <StyledInput type="tel" value={form.phone} onChange={e => handlePhoneChange('phone', e.target.value)} placeholder="Ex : +33 6 12 34 56 78" />
                             </Field>
-                            <Field label="Email">
+                            <Field label="Email" required>
                                 <StyledInput type="email" value={form.email} onChange={e => setF('email', e.target.value)} placeholder="Ex : jean.dupont@exemple.fr" />
                             </Field>
                         </div>
