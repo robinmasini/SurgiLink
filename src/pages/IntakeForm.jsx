@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowRight, ArrowLeft, CheckCircle, Loader, AlertCircle, Camera, Image as ImageIcon, Trash2, Plus } from 'lucide-react';
 import { getIntakeByToken, submitIntakeForm } from '../services/intakeService';
 import InterventionSelect from '../components/InterventionSelect';
+import BirthDatePicker from '../components/BirthDatePicker';
 import logoSurgilink from '../assets/logo_surgilink_premium_green.png';
 import logoMA from '../assets/logo-medical-alliance.png';
 import medecinImg from '../assets/medecin.png';
@@ -889,7 +890,7 @@ export default function IntakeForm() {
                             <StyledInput value={form.maiden_name} onChange={e => setF('maiden_name', e.target.value)} placeholder="Ex : Martin (Optionnel)" />
                         </Field>
                         <Field label="Date de naissance" required>
-                            <StyledInput type="date" value={form.birth_date} onChange={e => setF('birth_date', e.target.value)} />
+                            <BirthDatePicker value={form.birth_date} onChange={val => setF('birth_date', val)} />
                         </Field>
                         <Field label="Adresse" required>
                             <StyledInput value={form.address} onChange={e => setF('address', e.target.value)} placeholder="Ex : 12 rue de la Paix" />

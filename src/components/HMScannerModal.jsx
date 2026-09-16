@@ -19,6 +19,7 @@ import { supabase } from '../lib/supabase';
 import { scheduleTimeBasedReminders } from '../services/reminderService';
 import { generatePatientToken } from '../services/tokenService';
 import PhoneInput from './PhoneInput';
+import BirthDatePicker from './BirthDatePicker';
 import hmIcon from '../assets/hm-icon.png';
 import doctolibLogo from '../assets/doctolib-bleu.png';
 
@@ -871,12 +872,9 @@ Les clés doivent être exactement :
                                     </div>
                                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginTop: '10px' }}>
                                         <div>
-                                            <label className="form-label-scan">Date de naissance</label>
-                                            <input 
-                                                type="date"
-                                                className="input" 
+                                            <BirthDatePicker 
                                                 value={formData.birthDate} 
-                                                onChange={e => setFormData({ ...formData, birthDate: e.target.value })} 
+                                                onChange={val => setFormData({ ...formData, birthDate: val })} 
                                             />
                                         </div>
                                         <div>

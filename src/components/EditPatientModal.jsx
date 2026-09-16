@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Edit2, X, User, Clipboard, Mail, Phone, MapPin, Calendar, Clock } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import PhoneInput from './PhoneInput';
+import BirthDatePicker from './BirthDatePicker';
 import InterventionSelect from './InterventionSelect';
 import { scheduleTimeBasedReminders } from '../services/reminderService';
 
@@ -238,12 +239,9 @@ export default function EditPatientModal({ isOpen, onClose, patient, onPatientUp
                         </div>
 
                         <div>
-                            <label style={{ display: 'block', fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-500)', marginBottom: '4px', textTransform: 'uppercase' }}>Date de Naissance</label>
-                            <input
-                                type="date"
-                                className="input"
+                            <BirthDatePicker
                                 value={formData.birthDate}
-                                onChange={(e) => setFormData({ ...formData, birthDate: e.target.value })}
+                                onChange={(val) => setFormData({ ...formData, birthDate: val })}
                             />
                         </div>
 

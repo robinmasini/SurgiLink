@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import PhoneInput from './PhoneInput';
+import BirthDatePicker from './BirthDatePicker';
 import InterventionSelect from './InterventionSelect';
 import { scheduleTimeBasedReminders } from '../services/reminderService';
 import { generatePatientToken } from '../services/tokenService';
@@ -929,17 +930,11 @@ Les clés doivent être exactement :
 
                                     <div>
                                         <label className="form-label-add">Date de Naissance</label>
-                                        <div style={{ position: 'relative' }}>
-                                            <Calendar size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-gray-400)', zIndex: 1 }} />
-                                            <input
-                                                type="date"
-                                                className="input"
-                                                style={{ paddingLeft: '40px', opacity: isExistingPatient ? 0.6 : 1 }}
-                                                value={formData.birthDate}
-                                                onChange={(e) => setFormData({ ...formData, birthDate: e.target.value })}
-                                                disabled={isExistingPatient}
-                                            />
-                                        </div>
+                                        <BirthDatePicker
+                                            value={formData.birthDate}
+                                            onChange={(val) => setFormData({ ...formData, birthDate: val })}
+                                            disabled={isExistingPatient}
+                                        />
                                     </div>
 
                                     <div className="grid-2">
