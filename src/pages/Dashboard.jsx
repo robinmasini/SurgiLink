@@ -196,7 +196,7 @@ export default function Dashboard() {
             }
 
             let curProfile = null;
-            if (!isDemoMode && session.user?.id) {
+            if (session?.user?.id) {
                 try {
                     const res = await supabase.from('profiles').select('*').eq('id', session.user.id).maybeSingle();
                     curProfile = res?.data || null;
@@ -207,20 +207,17 @@ export default function Dashboard() {
             const practitionerId = curProfile?.practitioner_id || (userRole === 'nurse' ? 'c512fc61-e751-4ea3-872e-8a04fee4da12' : session.user?.id);
 
             let allPatientsData = [];
-            if (!isDemoMode && session.user?.id) {
-                try {
-                    let query = supabase.from('patients').select('*');
-                    if (userRole === 'nurse') {
-                        query = query.eq('user_id', practitionerId);
-                    } else {
-                        query = query.eq('user_id', session.user.id);
-                    }
-                    const res = await query;
-                    allPatientsData = (res && res.data) ? res.data : [];
-                } catch (e) {
-                    console.warn('Patients fetch error:', e);
+            try {
+                let query = supabase.from('patients').select('*').order('created_at', { ascending: false });
+                if (userRole === 'nurse' && practitionerId) {
+                    query = query.eq('user_id', practitionerId);
                 }
+                const res = await query;
+                allPatientsData = (res && res.data && res.data.length > 0) ? res.data : [];
+            } catch (e) {
+                console.warn('Patients fetch error:', e);
             }
+
 
             if (!allPatientsData || allPatientsData.length === 0) {
                 const now = new Date();
