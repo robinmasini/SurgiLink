@@ -54,43 +54,49 @@ export default function Sidebar() {
         }
         let isMounted = true;
         try {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (session && isMounted) {
-                const { data, error } = await supabase
-                    .from('profiles')
-                    .select('*')
-                    .eq('id', session.user.id)
-                    .single();
+            let session = null;
+            try {
+                const { data } = await supabase.auth.getSession();
+                session = data?.session;
+            } catch (e) {}
 
-                if (isMounted) {
-                    let prof = null;
-                    if (!error && data) {
-                        prof = data;
-                    } else {
-                        // Fallback based on email if profile not in table
-                        const email = session.user.email?.toLowerCase() || '';
-                        if (email.includes('infirmier') || email.includes('nurse')) {
-                            prof = {
-                                full_name: 'Dr. Christophe DESOUCHES',
-                                role: 'nurse',
-                                practitioner_id: 'c512fc61-e751-4ea3-872e-8a04fee4da12'
-                            };
-                        } else {
-                            prof = {
-                                full_name: 'Dr. Christophe DESOUCHES',
-                                role: 'practitioner'
-                            };
-                        }
-                    }
-                    cachedSidebarProfile = prof;
-                    setProfile(prof);
+            if (!session) {
+                const demoSessionStr = localStorage.getItem('surgilink_demo_session');
+                if (demoSessionStr) {
+                    try {
+                        const parsed = JSON.parse(demoSessionStr);
+                        session = { user: parsed.user, role: parsed.role };
+                    } catch (e) {}
                 }
+            }
+
+            let prof = null;
+            if (session?.user?.id && isMounted) {
+                try {
+                    const { data } = await supabase.from('profiles').select('*').eq('id', session.user.id).maybeSingle();
+                    if (data) prof = data;
+                } catch (e) {}
+            }
+
+            if (!prof && isMounted) {
+                const email = (session?.user?.email || '').toLowerCase();
+                const isNurse = email.includes('infirmier') || email.includes('nurse') || session?.role === 'nurse';
+                prof = {
+                    full_name: 'Dr. Christophe DESOUCHES',
+                    role: isNurse ? 'nurse' : 'practitioner',
+                    practitioner_id: isNurse ? 'c512fc61-e751-4ea3-872e-8a04fee4da12' : (session?.user?.id || 'c512fc61-e751-4ea3-872e-8a04fee4da12')
+                };
+            }
+
+            if (isMounted && prof) {
+                cachedSidebarProfile = prof;
+                setProfile(prof);
             }
         } catch (err) {
             console.error('Error loading profile:', err);
         }
-        return () => { isMounted = false; };
     };
+
 
     if (isMobile) return null;
 
