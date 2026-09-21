@@ -33,9 +33,7 @@ export async function createIntakePatient(phone, firstName = null, lastName = nu
                 phone: phone,
                 status: 'intake',
                 progress: 0,
-                days_until: 'J-0',
-                // If userId is known, link to practitioner for RLS
-                ...(userId ? { user_id: userId } : {})
+                user_id: userId || 'c512fc61-e751-4ea3-872e-8a04fee4da12'
             }])
             .select()
             .single();

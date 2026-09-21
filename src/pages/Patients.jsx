@@ -81,7 +81,7 @@ export default function Patients() {
         } else if (activeTab === 'Date à renseigner') {
             filtered = filtered.filter(p => (!p.date || p.status === 'intake') && p.status !== 'archived');
         } else if (activeTab === 'Tous') {
-            filtered = filtered.filter(p => p.status !== 'archived' && p.status !== 'intake');
+            filtered = filtered.filter(p => p.status !== 'archived');
         } else {
             filtered = filtered.filter(p => p.status !== 'intake').filter(p => {
                 const daysUntil = calculateDaysUntilSurgery(p.date);
@@ -115,7 +115,7 @@ export default function Patients() {
                 const res = await supabase
                     .from('patients')
                     .select('*')
-                    .order('date', { ascending: false });
+                    .order('created_at', { ascending: false });
                 allPatientsData = (res && res.data) ? res.data : [];
             } catch (e) {
                 console.warn('Patients fetch error:', e);

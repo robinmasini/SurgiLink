@@ -414,6 +414,8 @@ Les clés doivent être exactement :
         setIsSaving(true);
         try {
             const fullName = `${formData.firstName.trim()} ${formData.lastName.trim()}`;
+            const { data: { session } } = await supabase.auth.getSession();
+            const currentUserId = session?.user?.id || 'c512fc61-e751-4ea3-872e-8a04fee4da12';
             
             const { data, error } = await supabase
                 .from('patients')
@@ -432,6 +434,7 @@ Les clés doivent être exactement :
                         status: 'pending',
                         progress: 0,
                         days_until: 'J-0',
+                        user_id: currentUserId,
                         
                         ipp: formData.ipp,
                         stay_number: formData.stayNumber,

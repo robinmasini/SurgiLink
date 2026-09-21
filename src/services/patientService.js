@@ -51,7 +51,6 @@ export const deletePatient = async (patientId, patientName = null) => {
         }
 
         // 2. If it's a database patient record (not demo-p*), execute cascaded deletion across all child tables
-        const isDemo = String(patientId).startsWith('demo-');
         if (!isDemo && patientId) {
             console.log(`[deletePatient] Cleaning up child table dependencies for patient ${patientId}...`);
             

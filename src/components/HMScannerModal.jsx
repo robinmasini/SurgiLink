@@ -407,6 +407,9 @@ Les clés doivent être exactement :
                 existingPatient = byName[0];
             }
 
+            const { data: { session } } = await supabase.auth.getSession();
+            const currentUserId = session?.user?.id || 'c512fc61-e751-4ea3-872e-8a04fee4da12';
+
             const patientPayload = {
                 name: fullName,
                 operation: formData.operation,
@@ -421,6 +424,7 @@ Les clés doivent être exactement :
                 status: 'pending',
                 progress: 0,
                 days_until: 'J-0',
+                user_id: currentUserId,
                 
                 // DPI fields
                 ipp: formData.ipp || existingPatient?.ipp || '',

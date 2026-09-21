@@ -210,7 +210,7 @@ export default function Dashboard() {
             try {
                 let query = supabase.from('patients').select('*').order('created_at', { ascending: false });
                 if (userRole === 'nurse' && practitionerId) {
-                    query = query.eq('user_id', practitionerId);
+                    query = query.or(`user_id.eq.${practitionerId},user_id.is.null`);
                 }
                 const res = await query;
                 allPatientsData = (res && res.data && res.data.length > 0) ? res.data : [];
