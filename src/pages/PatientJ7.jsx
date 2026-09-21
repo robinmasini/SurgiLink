@@ -194,23 +194,6 @@ export default function PatientJ7({ patient: propPatient, token: propToken }) {
                     />
                 )}
 
-                {/* Intro Text */}
-                <div style={{
-                    background: 'var(--color-primary-50)',
-                    padding: 'var(--spacing-4)',
-                    borderRadius: 'var(--radius-lg)',
-                    marginBottom: 'var(--spacing-6)',
-                    fontSize: '14px',
-                    lineHeight: '1.5',
-                    color: 'var(--color-primary-900)',
-                    border: '1px solid var(--color-primary-100)'
-                }}>
-                    <strong>{t('Afin de préparer au mieux votre intervention')}</strong>{t(' en chirurgie ambulatoire et de garantir votre sécurité, merci de répondre à ce rapide questionnaire.')}
-                    <br /><br />
-                    {t('N\'hésitez surtout pas à cocher "Non", cela ne veut pas dire que votre opération sera annulée. Si vous cochez "Non", l\'équipe de la clinique vous rappellera pour trouver une solution adaptée à votre situation.')}
-                </div>
-
-
                 {/* Questionnaire Flow */}
                 <QuestionnaireFlow
                     config={config}
@@ -221,6 +204,22 @@ export default function PatientJ7({ patient: propPatient, token: propToken }) {
                     screen="J7"
                     patientId={resolvedPatientId}
                 />
+
+                {/* Intro Text */}
+                <div style={{
+                    background: 'var(--color-primary-50)',
+                    padding: 'var(--spacing-4)',
+                    borderRadius: 'var(--radius-lg)',
+                    marginTop: 'var(--spacing-6)',
+                    fontSize: '14px',
+                    lineHeight: '1.5',
+                    color: 'var(--color-primary-900)',
+                    border: '1px solid var(--color-primary-100)'
+                }}>
+                    <strong>{t('Afin de préparer au mieux votre intervention')}</strong>{t(' en chirurgie ambulatoire et de garantir votre sécurité, merci de répondre à ce rapide questionnaire.')}
+                    <br /><br />
+                    {t('N\'hésitez surtout pas à cocher "Non", cela ne veut pas dire que votre opération sera annulée. Si vous cochez "Non", l\'équipe de la clinique vous rappellera pour trouver une solution adaptée à votre situation.')}
+                </div>
             </div>
         </div>
     );

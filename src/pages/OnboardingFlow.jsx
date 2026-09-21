@@ -213,13 +213,13 @@ export default function OnboardingFlow() {
                                 zIndex: 5
                             }}>
                                 <h1 className="onboarding-title" style={{ 
-                                    fontSize: isMobile ? '1.6rem' : '2.0rem', 
+                                    fontSize: isMobile ? '1.5rem' : '2.0rem', 
                                     fontWeight: '700', 
                                     marginBottom: '8px', 
-                                    lineHeight: '1.25',
+                                    lineHeight: '1.2',
                                     color: '#1f2937'
                                 }}>
-                                    Bienvenue <span style={{ fontWeight: '400' }}>dans SurgiLink !</span>
+                                    Bienvenue <span style={{ fontWeight: '400', whiteSpace: 'nowrap' }}>dans SurgiLink&nbsp;!</span>
                                 </h1>
                                 <p className="onboarding-subtitle" style={{ 
                                     fontSize: isMobile ? '1.0rem' : '1.15rem', 

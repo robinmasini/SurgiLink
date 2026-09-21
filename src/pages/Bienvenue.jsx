@@ -154,19 +154,6 @@ export default function Bienvenue({ patient: propPatient, token: propToken }) {
                     />
                 )}
 
-                <div style={{
-                    background: 'var(--color-primary-50)',
-                    padding: 'var(--spacing-4)',
-                    borderRadius: 'var(--radius-lg)',
-                    marginBottom: 'var(--spacing-6)',
-                    fontSize: '14px',
-                    lineHeight: '1.5',
-                    color: 'var(--color-primary-900)',
-                    border: '1px solid var(--color-primary-100)'
-                }}>
-                    <strong>{t('Bienvenue sur votre portail SurgiLink.')}</strong> {t('Nous sommes ravis de vous accompagner dans votre parcours de soins. Merci de confirmer que vous avez bien accès à tous vos outils.')}
-                </div>
-
                 <QuestionnaireFlow
                     config={config}
                     responses={responses}
@@ -176,6 +163,19 @@ export default function Bienvenue({ patient: propPatient, token: propToken }) {
                     screen="Bienvenue"
                     patientId={resolvedPatientId}
                 />
+
+                <div style={{
+                    background: 'var(--color-primary-50)',
+                    padding: 'var(--spacing-4)',
+                    borderRadius: 'var(--radius-lg)',
+                    marginTop: 'var(--spacing-6)',
+                    fontSize: '14px',
+                    lineHeight: '1.5',
+                    color: 'var(--color-primary-900)',
+                    border: '1px solid var(--color-primary-100)'
+                }}>
+                    <strong>{t('Bienvenue sur votre portail SurgiLink.')}</strong> {t('Nous sommes ravis de vous accompagner dans votre parcours de soins. Merci de confirmer que vous avez bien accès à tous vos outils.')}
+                </div>
             </div>
         </div>
     );

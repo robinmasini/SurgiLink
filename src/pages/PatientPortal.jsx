@@ -1107,7 +1107,7 @@ export default function PatientPortal({ patient: initialPatient }) {
                             </>
                         ) : (
                             <>
-                                {t('DÉMARRER MON QUESTIONNAIRE')} {nextIncompleteMilestone ? `(${nextIncompleteMilestone.label})` : ''}
+                                {t('DÉMARRER MON QUESTIONNAIRE')} {nextIncompleteMilestone ? `(${nextIncompleteMilestone.label.replace(/\((.*?)\)/, '$1')})` : ''}
                             </>
                         )}
                     </button>

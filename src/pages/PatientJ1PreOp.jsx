@@ -150,12 +150,6 @@ export default function PatientJ1PreOp({ patient: propPatient, token: propToken 
                     />
                 )}
 
-                <AlertBanner
-                    type="warning"
-                    title={t("Ce soir : dernières préparations")}
-                    message={t("Effectuez votre douche antiseptique et l'épilation ce soir. Préparez votre sac pour demain matin.")}
-                />
-
                 {/* Questionnaire Flow */}
                 <QuestionnaireFlow
                     config={config}
@@ -166,6 +160,14 @@ export default function PatientJ1PreOp({ patient: propPatient, token: propToken 
                     screen="J1_PreOp"
                     patientId={resolvedPatientId}
                 />
+
+                <div style={{ marginTop: 'var(--spacing-6)' }}>
+                    <AlertBanner
+                        type="warning"
+                        title={t("Ce soir : dernières préparations")}
+                        message={t("Effectuez votre douche antiseptique et l'épilation ce soir. Préparez votre sac pour demain matin.")}
+                    />
+                </div>
             </div>
         </div>
     );

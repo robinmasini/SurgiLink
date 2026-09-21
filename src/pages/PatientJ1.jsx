@@ -190,17 +190,9 @@ export default function PatientJ1({ patient: propPatient, token: propToken }) {
                     />
                 )}
 
-                {/* Title */}
-                <div style={{ marginBottom: 'var(--spacing-6)' }}>
-                    <h3 style={{ fontSize: 'var(--font-size-2xl)', fontWeight: 'var(--font-weight-bold)', marginBottom: 'var(--spacing-2)' }}>
-                        {t(config.title)}
-                    </h3>
-                    <p style={{ color: 'var(--color-gray-600)' }}>{t(config.subtitle)}</p>
-                </div>
-
                 {/* Hard Alerts - CRITICAL */}
                 {alerts.hard.length > 0 && (
-                    <div style={{ marginBottom: 'var(--spacing-6)' }}>
+                    <div style={{ marginBottom: 'var(--spacing-4)' }}>
                         {alerts.hard.map((alert, index) => (
                             <div key={index} style={{ marginBottom: 'var(--spacing-4)' }}>
                                 <AlertBanner
@@ -210,17 +202,6 @@ export default function PatientJ1({ patient: propPatient, token: propToken }) {
                                 />
                             </div>
                         ))}
-                    </div>
-                )}
-
-                {/* Soft Alerts */}
-                {alerts.soft.length > 0 && (
-                    <div style={{ marginBottom: 'var(--spacing-6)' }}>
-                        <AlertBanner
-                            type="warning"
-                            title={t("Points d'attention")}
-                            message={`${alerts.soft.length} ${t('élément(s) nécessitent un suivi')} : ${alerts.soft.map(a => t(a.label)).join(', ')}`}
-                        />
                     </div>
                 )}
 
@@ -234,6 +215,17 @@ export default function PatientJ1({ patient: propPatient, token: propToken }) {
                     screen="J1"
                     patientId={resolvedPatientId}
                 />
+
+                {/* Soft Alerts */}
+                {alerts.soft.length > 0 && (
+                    <div style={{ marginTop: 'var(--spacing-6)' }}>
+                        <AlertBanner
+                            type="warning"
+                            title={t("Points d'attention")}
+                            message={`${alerts.soft.length} ${t('élément(s) nécessitent un suivi')} : ${alerts.soft.map(a => t(a.label)).join(', ')}`}
+                        />
+                    </div>
+                )}
             </div>
         </div>
     );
