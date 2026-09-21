@@ -24,7 +24,7 @@ import { scheduleTimeBasedReminders } from '../services/reminderService';
 import { generatePatientToken } from '../services/tokenService';
 import hmIcon from '../assets/hm-icon.png';
 
-export default function AddPatientModal({ isOpen, onClose, onSuccess, prefilledPatient = null }) {
+export default function AddPatientModal({ isOpen, onClose, onSuccess, onPatientAdded, prefilledPatient = null }) {
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -479,6 +479,9 @@ Les clés doivent être exactement :
                     ? safeISOString(`${formData.date}T${formData.surgeryTime}`)
                     : (existingPatient?.admission_datetime || null));
 
+            const { data: { session } } = await supabase.auth.getSession();
+            const currentUserId = session?.user?.id || null;
+
             const patientPayload = {
                 name: fullName,
                 operation: formData.operation,
@@ -493,6 +496,7 @@ Les clés doivent être exactement :
                 status: 'pending',
                 progress: 0,
                 days_until: 'J-0',
+                ...(currentUserId ? { user_id: currentUserId } : {}),
                 
                 // DPI fields
                 ipp: formData.ipp || existingPatient?.ipp || '',
@@ -540,7 +544,8 @@ Les clés doivent être exactement :
             }
 
             alert(`Patient ${fullName} ${existingPatient ? 'mis à jour' : 'enregistré'} avec succès !`);
-            if (onSuccess) onSuccess({ ...savedPatient, token });
+            const callback = onSuccess || onPatientAdded;
+            if (callback) callback({ ...savedPatient, token });
             onClose();
         } catch (err) {
             console.error('Save error details:', err);
