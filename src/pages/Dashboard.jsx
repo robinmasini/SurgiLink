@@ -232,10 +232,12 @@ export default function Dashboard() {
                 ];
             }
 
-            // Filter out deleted demo / stored patients (exact ID or exact name match)
+            // Filter out deleted demo patients ONLY (never filter out real database patients)
             const deletedList = getDeletedDemoPatients().map(s => String(s).trim().toLowerCase());
             allPatientsData = (allPatientsData || []).filter(p => {
                 if (!p) return false;
+                const isDemo = String(p.id).startsWith('demo-');
+                if (!isDemo) return true; // Real database patients are never filtered by localStorage
                 const pIdStr = String(p.id).trim().toLowerCase();
                 const pNameStr = (p.name || '').trim().toLowerCase();
                 if (deletedList.includes(pIdStr)) return false;

@@ -8,7 +8,14 @@ export const getDeletedDemoPatients = () => {
         if (stored) {
             const parsed = JSON.parse(stored);
             if (Array.isArray(parsed)) {
-                list = Array.from(new Set([...list, ...parsed]));
+                // Keep ONLY demo- prefixed items or initial demo names to avoid hiding real database patients
+                const demoOnly = parsed.filter(item => {
+                    const str = String(item).toLowerCase().trim();
+                    return str.startsWith('demo-') || ['marie dupont', 'jean martin', 'sophie leroy'].includes(str);
+                });
+                list = Array.from(new Set([...list, ...demoOnly]));
+                // Automatically clean up stale real patient entries from localStorage
+                localStorage.setItem('surgilink_deleted_demo_patients', JSON.stringify(demoOnly));
             }
         }
     } catch (e) {
@@ -21,24 +28,27 @@ export const deletePatient = async (patientId, patientName = null) => {
     try {
         console.log(`[deletePatient] Deleting patient ID: ${patientId}, Name: ${patientName}`);
 
-        // 1. Store deleted patient ID and normalized name in localStorage
-        const deletedDemo = getDeletedDemoPatients();
-        if (patientId) deletedDemo.push(String(patientId));
-        if (patientName) deletedDemo.push(patientName.trim().toLowerCase());
+        const isDemo = String(patientId).startsWith('demo-');
+        if (isDemo) {
+            // 1. Store deleted demo patient ID and name in localStorage
+            const deletedDemo = getDeletedDemoPatients();
+            if (patientId) deletedDemo.push(String(patientId));
+            if (patientName) deletedDemo.push(patientName.trim().toLowerCase());
 
-        // Always pair demo IDs with demo names
-        if (patientId === 'demo-p1' || (patientName && patientName.toLowerCase().includes('dupont'))) {
-            deletedDemo.push('demo-p1', 'marie dupont');
-        }
-        if (patientId === 'demo-p2' || (patientName && patientName.toLowerCase().includes('martin'))) {
-            deletedDemo.push('demo-p2', 'jean martin');
-        }
-        if (patientId === 'demo-p3' || (patientName && patientName.toLowerCase().includes('leroy'))) {
-            deletedDemo.push('demo-p3', 'sophie leroy');
-        }
+            // Always pair demo IDs with demo names
+            if (patientId === 'demo-p1' || (patientName && patientName.toLowerCase().includes('dupont'))) {
+                deletedDemo.push('demo-p1', 'marie dupont');
+            }
+            if (patientId === 'demo-p2' || (patientName && patientName.toLowerCase().includes('martin'))) {
+                deletedDemo.push('demo-p2', 'jean martin');
+            }
+            if (patientId === 'demo-p3' || (patientName && patientName.toLowerCase().includes('leroy'))) {
+                deletedDemo.push('demo-p3', 'sophie leroy');
+            }
 
-        const uniqueDeleted = Array.from(new Set(deletedDemo));
-        localStorage.setItem('surgilink_deleted_demo_patients', JSON.stringify(uniqueDeleted));
+            const uniqueDeleted = Array.from(new Set(deletedDemo));
+            localStorage.setItem('surgilink_deleted_demo_patients', JSON.stringify(uniqueDeleted));
+        }
 
         // 2. If it's a database patient record (not demo-p*), execute cascaded deletion across all child tables
         const isDemo = String(patientId).startsWith('demo-');
