@@ -134,7 +134,7 @@ export default function Patients() {
                 ];
             }
 
-            // Filter out deleted demo / stored patients
+            // Filter out deleted demo / stored patients (exact ID or exact name match)
             const deletedList = getDeletedDemoPatients().map(s => String(s).trim().toLowerCase());
             allPatientsData = (allPatientsData || []).filter(p => {
                 if (!p) return false;
@@ -142,7 +142,6 @@ export default function Patients() {
                 const pNameStr = (p.name || '').trim().toLowerCase();
                 if (deletedList.includes(pIdStr)) return false;
                 if (deletedList.includes(pNameStr)) return false;
-                if (deletedList.some(d => d.length > 3 && pNameStr.includes(d))) return false;
                 return true;
             });
 
