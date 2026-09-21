@@ -213,16 +213,16 @@ export default function OnboardingFlow() {
                                 zIndex: 5
                             }}>
                                 <h1 className="onboarding-title" style={{ 
-                                    fontSize: isMobile ? '1.4rem' : '1.85rem', 
+                                    fontSize: isMobile ? '1.6rem' : '2.0rem', 
                                     fontWeight: '700', 
-                                    marginBottom: '6px', 
-                                    lineHeight: '1.2',
+                                    marginBottom: '8px', 
+                                    lineHeight: '1.25',
                                     color: '#1f2937'
                                 }}>
                                     Bienvenue <span style={{ fontWeight: '400' }}>dans SurgiLink !</span>
                                 </h1>
                                 <p className="onboarding-subtitle" style={{ 
-                                    fontSize: isMobile ? '0.85rem' : '1.0rem', 
+                                    fontSize: isMobile ? '1.0rem' : '1.15rem', 
                                     fontWeight: '500',
                                     color: '#6b7280'
                                 }}>
@@ -262,7 +262,7 @@ export default function OnboardingFlow() {
                                     maxWidth: '280px',
                                     height: '50px', 
                                     borderRadius: '30px',
-                                    fontSize: '1.05rem',
+                                    fontSize: '1.1rem',
                                     fontWeight: '800',
                                     display: 'flex',
                                     alignItems: 'center',
@@ -322,18 +322,18 @@ export default function OnboardingFlow() {
                                 paddingRight: '4px'
                             }}>
                                 <h2 style={{ 
-                                    fontSize: isMobile ? '1.15rem' : '1.35rem', 
+                                    fontSize: isMobile ? '1.3rem' : '1.55rem', 
                                     fontWeight: '700', 
                                     color: '#1f2937',
-                                    lineHeight: 1.25,
+                                    lineHeight: 1.3,
                                     margin: 0
                                 }}>
-                                    Tout au long de votre opération, nous restons à vos côtés !
+                                    Tout au long de votre intervention, nous restons à vos côtés !
                                 </h2>
 
                                 <div className="info-badge" style={{ 
                                     background: '#f9fafb', 
-                                    padding: '6px 12px', 
+                                    padding: '8px 14px', 
                                     borderRadius: '12px', 
                                     display: 'flex', 
                                     alignItems: 'center', 
@@ -342,24 +342,24 @@ export default function OnboardingFlow() {
                                     boxShadow: '0 2px 4px rgba(0,0,0,0.02)',
                                     alignSelf: 'flex-start'
                                 }}>
-                                    <img src={smsImg} alt="SMS" style={{ height: '22px' }} />
-                                    <span style={{ fontWeight: '600', color: '#374151', fontSize: '13px' }}>Suivi SMS : Questionnaires</span>
+                                    <img src={smsImg} alt="SMS" style={{ height: '24px' }} />
+                                    <span style={{ fontWeight: '600', color: '#374151', fontSize: '15px' }}>Suivi SMS : Questionnaires</span>
                                 </div>
 
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? '16px' : '22px', padding: isMobile ? '0 4px' : '0 8px' }}>
-                                    <p style={{ fontSize: '0.85rem', lineHeight: '1.45', opacity: 0.9, margin: 0 }}>
+                                    <p style={{ fontSize: isMobile ? '0.98rem' : '1.05rem', lineHeight: '1.5', opacity: 0.95, margin: 0 }}>
                                         SurgiLink est un assistant de suivi chirurgical qui va vous accompagner avant et après votre intervention.
                                     </p>
 
-                                    <p style={{ fontSize: '0.85rem', lineHeight: '1.45', opacity: 0.9, margin: 0 }}>
+                                    <p style={{ fontSize: isMobile ? '0.98rem' : '1.05rem', lineHeight: '1.5', opacity: 0.95, margin: 0 }}>
                                         💬 Vous recevrez des SMS à chaque étape clé <strong>(J-18 (Bienvenue), J-7, J-1, etc.)</strong>, afin de vous accompagner sereinement.
                                     </p>
 
-                                    <p style={{ fontSize: '0.85rem', lineHeight: '1.45', opacity: 0.9, margin: 0 }}>
+                                    <p style={{ fontSize: isMobile ? '0.98rem' : '1.05rem', lineHeight: '1.5', opacity: 0.95, margin: 0 }}>
                                         ⚠️ Il est essentiel de bien les consulter et de <strong>répondre au questionnaire via le lien qui vous sera envoyé dans le message</strong> : Cela ne vous prendra que quelques petites secondes !
                                     </p>
 
-                                    <p style={{ fontSize: '0.85rem', lineHeight: '1.45', opacity: 0.9, margin: 0 }}>
+                                    <p style={{ fontSize: isMobile ? '0.98rem' : '1.05rem', lineHeight: '1.5', opacity: 0.95, margin: 0 }}>
                                         Avec nous, vous êtes accompagné(e) <strong>avec clarté et sérénité tout au long de votre parcours de soins !</strong>
                                     </p>
                                 </div>
@@ -367,7 +367,7 @@ export default function OnboardingFlow() {
                                 <div className="timeline-container" style={{ position: 'relative', marginTop: '6px', marginBottom: '4px' }}>
                                     <div className="timeline-line" style={{ 
                                         position: 'absolute', 
-                                        top: isMobile ? '12px' : '18px', 
+                                        top: isMobile ? '14px' : '20px', 
                                         left: '0', 
                                         right: '0', 
                                         height: '2px', 
@@ -376,15 +376,15 @@ export default function OnboardingFlow() {
                                     }} />
                                     <div className="timeline-items" style={{ display: 'flex', justifyContent: 'space-between', position: 'relative', zIndex: 1, padding: '0 5px' }}>
                                         {['J-18 (Bienvenue)', 'J-7', 'J-1', 'J+1', 'J+4', 'ESATIS'].map((day) => (
-                                            <div key={day} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
+                                            <div key={day} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
                                                 <div style={{ 
-                                                    width: isMobile ? '10px' : '16px', 
-                                                    height: isMobile ? '10px' : '16px', 
+                                                    width: isMobile ? '12px' : '16px', 
+                                                    height: isMobile ? '12px' : '16px', 
                                                     borderRadius: '50%', 
                                                     background: '#ffffff',
                                                     border: '2px solid #e5e7eb'
                                                 }} />
-                                                <span style={{ fontSize: '0.6rem', fontWeight: '600', color: '#6b7280' }}>{day}</span>
+                                                <span style={{ fontSize: isMobile ? '0.72rem' : '0.8rem', fontWeight: '600', color: '#6b7280' }}>{day}</span>
                                             </div>
                                         ))}
                                     </div>
@@ -401,7 +401,7 @@ export default function OnboardingFlow() {
                                     maxWidth: '280px',
                                     height: '50px', 
                                     borderRadius: '30px',
-                                    fontSize: '1.05rem',
+                                    fontSize: '1.1rem',
                                     fontWeight: '800',
                                     display: 'flex',
                                     alignItems: 'center',

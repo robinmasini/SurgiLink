@@ -713,13 +713,13 @@ export default function IntakeForm() {
                         {/* Zone texte élargie pour 3 lignes */}
                         <div style={{ padding: '26px 10px 26px 24px', width: '63%', flexShrink: 0, zIndex: 2, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '12px' }}>
                             {/* Texte principal — 3 lignes forcées */}
-                            <p style={{ margin: 0, fontSize: isMobile ? '16px' : '18px', color: '#111827', lineHeight: 1.55, fontFamily: 'var(--font-family)', fontWeight: '600' }}>
+                            <p style={{ margin: 0, fontSize: isMobile ? '18px' : '20px', color: '#111827', lineHeight: 1.5, fontFamily: 'var(--font-family)', fontWeight: '600' }}>
                                 Répondez à la<br />
                                 <span style={{ color: 'var(--color-primary-700)', fontWeight: '800' }}>Fiche de renseignements</span><br />
                                 pour préparer votre consultation
                             </p>
                             {/* Texte secondaire */}
-                            <p style={{ margin: 0, fontSize: '12px', color: 'var(--color-primary-700)', lineHeight: 1.6, fontFamily: 'var(--font-family)', fontWeight: '400', opacity: 0.85 }}>
+                            <p style={{ margin: 0, fontSize: '14px', color: 'var(--color-primary-700)', lineHeight: 1.6, fontFamily: 'var(--font-family)', fontWeight: '400', opacity: 0.9 }}>
                                 <strong style={{ fontWeight: '600' }}>Avant votre consultation</strong>, merci de compléter cette fiche afin de mieux préparer votre prise en charge.
                             </p>
                         </div>
@@ -749,14 +749,14 @@ export default function IntakeForm() {
                         ].map((item, i) => (
                             <div key={i} style={{
                                 display: 'flex', alignItems: 'center', gap: '12px',
-                                padding: '11px 14px',
+                                padding: '12px 16px',
                                 background: '#F9FAFB',
                                 borderRadius: '12px',
                                 border: '1px solid #F3F4F6',
-                                fontSize: '13px', color: '#374151', fontWeight: '500',
+                                fontSize: '15px', color: '#374151', fontWeight: '500',
                                 fontFamily: 'var(--font-family)'
                             }}>
-                                <span style={{ fontSize: '18px', flexShrink: 0 }}>{item.icon}</span>
+                                <span style={{ fontSize: '20px', flexShrink: 0 }}>{item.icon}</span>
                                 <span>{item.text}</span>
                             </div>
                         ))}
