@@ -2176,6 +2176,7 @@ export default function PatientReview() {
             <QuestionsPreviewModal
                 isOpen={isQuestionsModalOpen}
                 onClose={() => setIsQuestionsModalOpen(false)}
+                initialTab="J1"
             />
             {/* Image Viewer Modal */}
             {selectedImage && (

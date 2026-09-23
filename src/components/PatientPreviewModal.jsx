@@ -19,20 +19,38 @@ export default function PatientPreviewModal({ isOpen, onClose, patient, onRespon
     const [activeTab, setActiveTab] = useState('J7');
 
     useEffect(() => {
-        if (isOpen && initialScreen) {
-            // Map common labels to the key if needed
+        if (isOpen) {
             const mapping = {
                 'Bienvenue': 'Bienvenue',
+                'j-18': 'Bienvenue',
                 'J-18': 'Bienvenue',
+                'J7': 'J7',
+                'j7': 'J7',
                 'J-7': 'J7',
+                'j-7': 'J7',
+                'J1_PreOp': 'J1_PreOp',
+                'j1_preop': 'J1_PreOp',
+                'j1-preop': 'J1_PreOp',
                 'J-1': 'J1_PreOp',
+                'j-1': 'J1_PreOp',
+                'J1': 'J1',
+                'j1': 'J1',
                 'J+1': 'J1',
+                'j+1': 'J1',
+                'J4_Satisfaction': 'J4_Satisfaction',
+                'j4': 'J4_Satisfaction',
                 'J+4': 'J4_Satisfaction',
-                'E-SATIS': 'ESATIS'
+                'j+4': 'J4_Satisfaction',
+                'ESATIS': 'ESATIS',
+                'esatis': 'ESATIS',
+                'E-SATIS': 'ESATIS',
+                'e-satis': 'ESATIS'
             };
-            const target = mapping[initialScreen] || initialScreen;
+            const target = mapping[initialScreen] || mapping[initialScreen?.toLowerCase()] || initialScreen || 'J1';
             if (ALL_TABS.some(t => t.key === target)) {
                 setActiveTab(target);
+            } else {
+                setActiveTab('J1');
             }
         }
     }, [isOpen, initialScreen]);

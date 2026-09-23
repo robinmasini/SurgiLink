@@ -10,20 +10,10 @@ import {
 import { useTranslation } from 'react-i18next';
 import { pathwayConfig } from '../config/pathway.config';
 
-export default function QuestionsPreviewModal({ isOpen, onClose }) {
+export default function QuestionsPreviewModal({ isOpen, onClose, initialTab = 'J1' }) {
     const { t } = useTranslation();
-    const [activeTab, setActiveTab] = useState('Intake'); // Fiche de renseignements first
+    const [activeTab, setActiveTab] = useState(initialTab || 'J1');
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-
-    useEffect(() => {
-        const handleResize = () => {
-            setIsMobile(window.innerWidth <= 768);
-        };
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
-
-    if (!isOpen) return null;
 
     const tabs = [
         { key: 'Intake', label: 'Fiche patient', icon: '📝', subtitle: 'Avant tout' },
@@ -34,6 +24,52 @@ export default function QuestionsPreviewModal({ isOpen, onClose }) {
         { key: 'J4_Satisfaction', label: 'Satisfaction (J+4)', icon: '⭐', subtitle: 'Enquête clinique' },
         { key: 'ESATIS', label: 'e-Satis', icon: '📊', subtitle: 'Enquête nationale' },
     ];
+
+    useEffect(() => {
+        if (isOpen) {
+            const normalizedMap = {
+                'Intake': 'Intake',
+                'fiche': 'Intake',
+                'Bienvenue': 'Bienvenue',
+                'j-18': 'Bienvenue',
+                'J-18': 'Bienvenue',
+                'j7': 'J7',
+                'J7': 'J7',
+                'j-7': 'J7',
+                'J-7': 'J7',
+                'j1_preop': 'J1_PreOp',
+                'j1-preop': 'J1_PreOp',
+                'J1_PreOp': 'J1_PreOp',
+                'j-1': 'J1_PreOp',
+                'J-1': 'J1_PreOp',
+                'j1': 'J1',
+                'J1': 'J1',
+                'j+1': 'J1',
+                'J+1': 'J1',
+                'j4': 'J4_Satisfaction',
+                'j+4': 'J4_Satisfaction',
+                'J4': 'J4_Satisfaction',
+                'J4_Satisfaction': 'J4_Satisfaction',
+                'esatis': 'ESATIS',
+                'e-satis': 'ESATIS',
+                'ESATIS': 'ESATIS'
+            };
+            const target = normalizedMap[initialTab] || initialTab || 'J1';
+            if (tabs.some(t => t.key === target)) {
+                setActiveTab(target);
+            }
+        }
+    }, [isOpen, initialTab]);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= 768);
+        };
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    if (!isOpen) return null;
 
     const currentScreenConfig = pathwayConfig[activeTab];
 
@@ -308,13 +344,17 @@ export default function QuestionsPreviewModal({ isOpen, onClose }) {
                             >
                                 <span 
                                     style={{ 
-                                        fontSize: isMobile ? '20px' : '26px', 
+                                        fontSize: isMobile ? '18px' : '22px', 
+                                        marginBottom: '2px',
                                         transition: 'transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
                                     }}
-                                    onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.25)'}
+                                    onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.2)'}
                                     onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
                                 >
                                     {tab.icon}
+                                </span>
+                                <span style={{ fontSize: isMobile ? '10px' : '12px', fontWeight: '700', whiteSpace: 'nowrap' }}>
+                                    {t(tab.label)}
                                 </span>
                             </div>
                         );
