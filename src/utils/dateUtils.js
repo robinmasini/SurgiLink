@@ -192,7 +192,7 @@ export const isMilestoneDue = (milestoneId, surgeryDate) => {
 
 
 /**
- * Extract low ratings (< 8/10 or negative recommendation) for a patient from response list or map
+ * Extract low ratings (< 7/10 or negative recommendation) for a patient from response list or map
  * @param {string|number} patientId - Patient ID
  * @param {string} patientName - Patient Name
  * @param {Object} responses - Map of patient responses (by ID or name)
@@ -229,7 +229,7 @@ export const getLowJ4DetailsForPatient = (patientId, patientName, responses) => 
         if (typeof val === 'boolean') return;
 
         if (typeof val === 'number') {
-            if (val > 0 && val < 8) {
+            if (val > 0 && val < 7) {
                 details.push({
                     itemId: r.item_id,
                     label: itemLabels[r.item_id] || r.item_id,
@@ -241,7 +241,7 @@ export const getLowJ4DetailsForPatient = (patientId, patientName, responses) => 
             const match = val.match(/^(\d+)(?:\/10)?$/);
             if (match) {
                 const parsed = parseInt(match[1], 10);
-                if (parsed > 0 && parsed < 8) {
+                if (parsed > 0 && parsed < 7) {
                     details.push({
                         itemId: r.item_id,
                         label: itemLabels[r.item_id] || r.item_id,
@@ -267,7 +267,7 @@ export const getLowJ4DetailsForPatient = (patientId, patientName, responses) => 
 };
 
 /**
- * Filter patients who submitted a J+4 satisfaction rating under 8/10
+ * Filter patients who submitted a J+4 satisfaction rating under 7/10
  * @param {Array} patients - List of patient objects
  * @param {Object} responses - Map of patient responses
  * @returns {Array} List of patients with low J+4 ratings

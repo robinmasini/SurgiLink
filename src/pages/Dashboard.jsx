@@ -790,7 +790,7 @@ export default function Dashboard() {
                                     </h4>
                                     
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%' }}>
-                                        {/* Alert 1: Low J+4 Satisfaction (< 8/10) */}
+                                        {/* Alert 1: Low J+4 Satisfaction (< 7/10) */}
                                         {lowJ4Patients.length > 0 && (
                                             <div style={{
                                                 fontSize: '13px',
@@ -803,7 +803,7 @@ export default function Dashboard() {
                                                 boxSizing: 'border-box'
                                             }}>
                                                 <div style={{ fontWeight: '800', marginBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '6px' }}>
-                                                    <span style={{ color: '#DC2626' }}>⚠️ Alerte Note J+4 &lt; 8/10 (Réagir avant l'enquête e-Satis) :</span>
+                                                    <span style={{ color: '#DC2626' }}>⚠️ Alerte Note J+4 &lt; 7/10 (Réagir avant l'enquête e-Satis) :</span>
                                                     <span className="badge badge-danger" style={{ fontSize: '11px', fontWeight: '800' }}>{lowJ4Patients.length} patient(s) à sauver</span>
                                                 </div>
                                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px', width: '100%' }}>
