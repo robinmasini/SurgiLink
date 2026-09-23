@@ -175,7 +175,7 @@ export default function PatientStatusBadges({ responses = [], daysUntil = '', pa
 
         let hasJ1Alert = false;
 
-        if (!isNaN(j1Pain) && j1Pain >= 8) {
+        if (!isNaN(j1Pain) && j1Pain >= 7) {
             badges.push({ label: `Douleur forte (${j1Pain}/10)`, color: 'danger' });
             hasJ1Alert = true;
         }

@@ -118,8 +118,8 @@ export const pathwayConfig = {
                         type: "slider_0_10",
                         label: "1. Votre douleur est à combien sur 10 ?",
                         required: true,
-                        risk_flag_rule: { type: "soft", condition: "gte_8" },
-                        why: "Une douleur égale ou supérieure à 8/10 nécessite d'adapter le traitement antalgique."
+                        risk_flag_rule: { type: "soft", condition: "gte_7" },
+                        why: "Une douleur égale ou supérieure à 7/10 nécessite d'adapter le traitement antalgique."
                     },
                     {
                         id: "bleeding_swelling",
@@ -309,9 +309,9 @@ export function getRiskFlags(screen, responses) {
         // Check condition
         if (rule.condition === 'yes' && (response === true || response === 'Oui' || response === 'oui')) flagged = true;
         if (rule.condition === 'no' && (response === false || response === 'Non' || response === 'non')) flagged = true;
-        if (rule.condition === 'gte_8') {
+        if (rule.condition === 'gte_7' || rule.condition === 'gte_8') {
             const num = Number(response);
-            if (!isNaN(num) && num >= 8) flagged = true;
+            if (!isNaN(num) && num >= 7) flagged = true;
         }
 
         if (flagged) {

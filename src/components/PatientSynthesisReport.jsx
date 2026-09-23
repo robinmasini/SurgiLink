@@ -362,7 +362,7 @@ export default function PatientSynthesisReport({
 
                                             const isRisk = (item.risk_flag_rule?.condition === 'yes' && (val === true || val === 'Oui')) ||
                                                            (item.risk_flag_rule?.condition === 'no' && (val === false || val === 'Non')) ||
-                                                           (item.risk_flag_rule?.condition === 'gte_8' && Number(val) >= 8);
+                                                           ((item.risk_flag_rule?.condition === 'gte_7' || item.risk_flag_rule?.condition === 'gte_8') && Number(val) >= 7);
 
                                             const meta = formatMeta(screenKey, item.id);
 

@@ -591,7 +591,7 @@ export default function QuestionsPreviewModal({ isOpen, onClose, initialTab = 'J
                                                                 </strong>{' '}
                                                                 Une réponse{' '}
                                                                 <span style={{ fontWeight: '800', textDecoration: 'underline' }}>
-                                                                    {item.risk_flag_rule.condition === 'no' ? 'NON' : item.risk_flag_rule.condition === 'gte_8' ? '≥ 8/10' : 'OUI'}
+                                                                    {item.risk_flag_rule.condition === 'no' ? 'NON' : (item.risk_flag_rule.condition === 'gte_7' || item.risk_flag_rule.condition === 'gte_8') ? '≥ 7/10' : 'OUI'}
                                                                 </span>{' '}
                                                                 déclenchera un statut d'alerte{' '}
                                                                 <span style={{ fontWeight: '800' }}>

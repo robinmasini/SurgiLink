@@ -95,9 +95,9 @@ export default function PatientJ1({ patient: propPatient, token: propToken }) {
             let flagged = false;
             if (rule.condition === 'yes' && (response === true || response === 'Oui' || response === 'oui')) flagged = true;
             if (rule.condition === 'no' && (response === false || response === 'Non' || response === 'non')) flagged = true;
-            if (rule.condition === 'gte_8') {
+            if (rule.condition === 'gte_7' || rule.condition === 'gte_8') {
                 const num = Number(response);
-                if (!isNaN(num) && num >= 8) flagged = true;
+                if (!isNaN(num) && num >= 7) flagged = true;
             }
 
             if (flagged) {

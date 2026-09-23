@@ -1579,7 +1579,7 @@ export default function PatientReview() {
                                     }).map(item => {
                                         const rawVal = clinicalResponses.J1?.[item.id];
                                         const isAnswered = rawVal !== undefined && rawVal !== null && rawVal !== '';
-                                        const isAlert = (item.alertOnYes && (rawVal === true || rawVal === 'Oui')) || (item.isPain && Number(rawVal) >= 8);
+                                        const isAlert = (item.alertOnYes && (rawVal === true || rawVal === 'Oui')) || (item.isPain && Number(rawVal) >= 7);
 
                                         return (
                                             <div key={item.id} className="card" style={{
