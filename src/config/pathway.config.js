@@ -105,6 +105,8 @@ export const pathwayConfig = {
     J1: {
         title: "Suivi post-opératoire J+1",
         subtitle: "Votre récupération",
+        intro_text: "Bonjour, avant notre appel, pouvez-vous répondre à ces questions ?",
+        warning_notice: "L’infirmier vous appellera dans tous les cas. En cas d’essoufflement, de douleur thoracique ou de malaise, appelez immédiatement le 15 ou le 112",
         sections: [
             {
                 id: "postop_status",
@@ -112,11 +114,53 @@ export const pathwayConfig = {
                 title: "État de santé",
                 items: [
                     {
-                        id: "nausea_check",
-                        type: "yes_no",
-                        label: "Comment vous sentez-vous depuis votre opération ? Tout se passe-t-il bien ?",
+                        id: "pain_scale",
+                        type: "slider_0_10",
+                        label: "1. Votre douleur est à combien sur 10 ?",
                         required: true,
-                        risk_flag_rule: { type: "soft", condition: "no" }
+                        risk_flag_rule: { type: "soft", condition: "gte_8" },
+                        why: "Une douleur égale ou supérieure à 8/10 nécessite d'adapter le traitement antalgique."
+                    },
+                    {
+                        id: "bleeding_swelling",
+                        type: "yes_no",
+                        label: "2. Avez-vous un saignement ou un gonflement qui augmente rapidement ?",
+                        required: true,
+                        risk_flag_rule: { type: "hard", condition: "yes" },
+                        why: "Un saignement actif ou un hématome extensif nécessite un contrôle médical rapide."
+                    },
+                    {
+                        id: "fever_vomiting",
+                        type: "yes_no",
+                        label: "3. Avez-vous de la fièvre ou des vomissements répétés ?",
+                        required: true,
+                        risk_flag_rule: { type: "hard", condition: "yes" },
+                        why: "La fièvre et les vomissements répétés peuvent signaler une complication ou intolérance médicamenteuse."
+                    },
+                    {
+                        id: "calf_pain_swelling",
+                        type: "yes_no",
+                        label: "4. Avez-vous une douleur ou un gonflement d’un mollet ?",
+                        required: true,
+                        risk_flag_rule: { type: "hard", condition: "yes" },
+                        why: "Une douleur localisée au mollet impose d'écarter un début de phlébite."
+                    },
+                    {
+                        id: "shortness_breath_chest_pain_fainting",
+                        type: "yes_no",
+                        label: "5. Avez-vous un essoufflement, une douleur dans la poitrine ou fait un malaise ?",
+                        required: true,
+                        risk_flag_rule: { type: "hard", condition: "yes" },
+                        action: "Appelez immédiatement le 15 ou le 112 !",
+                        why: "Douleur thoracique, essoufflement ou malaise constituent une urgence vitale."
+                    },
+                    {
+                        id: "other_concerns",
+                        type: "textarea",
+                        label: "Une autre inquiétude ?",
+                        multiline: true,
+                        required: false,
+                        placeholder: "Saisissez votre réponse ici..."
                     }
                 ]
             }
@@ -254,14 +298,21 @@ export function getRiskFlags(screen, responses) {
     items.forEach(item => {
         if (!item.risk_flag_rule) return;
 
-        const response = responses[item.id];
+        const rawVal = responses[item.id];
+        const response = (typeof rawVal === 'object' && rawVal !== null && 'main' in rawVal)
+            ? rawVal.main
+            : rawVal;
         const rule = item.risk_flag_rule;
 
         let flagged = false;
 
         // Check condition
-        if (rule.condition === 'yes' && response === true) flagged = true;
-        if (rule.condition === 'no' && response === false) flagged = true;
+        if (rule.condition === 'yes' && (response === true || response === 'Oui' || response === 'oui')) flagged = true;
+        if (rule.condition === 'no' && (response === false || response === 'Non' || response === 'non')) flagged = true;
+        if (rule.condition === 'gte_8') {
+            const num = Number(response);
+            if (!isNaN(num) && num >= 8) flagged = true;
+        }
 
         if (flagged) {
             if (rule.type === 'hard') {

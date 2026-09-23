@@ -93,15 +93,19 @@ export default function PatientJ1({ patient: propPatient, token: propToken }) {
             const rule = item.risk_flag_rule;
 
             let flagged = false;
-            if (rule.condition === 'yes' && response === true) flagged = true;
-            if (rule.condition === 'no' && response === false) flagged = true;
+            if (rule.condition === 'yes' && (response === true || response === 'Oui' || response === 'oui')) flagged = true;
+            if (rule.condition === 'no' && (response === false || response === 'Non' || response === 'non')) flagged = true;
+            if (rule.condition === 'gte_8') {
+                const num = Number(response);
+                if (!isNaN(num) && num >= 8) flagged = true;
+            }
 
             if (flagged) {
                 if (rule.type === 'hard') {
                     hardAlerts.push({
                         itemId: item.id,
                         label: item.label,
-                        action: item.action || 'Consulter un médecin immédiatement'
+                        action: item.action || 'Consulter un médecin immédiatement ou composer le 15 / 112'
                     });
                 } else {
                     softAlerts.push({
@@ -167,8 +171,6 @@ export default function PatientJ1({ patient: propPatient, token: propToken }) {
         );
     }
 
-
-
     return (
         <div className="patient-view">
             {/* Header */}
@@ -189,6 +191,24 @@ export default function PatientJ1({ patient: propPatient, token: propToken }) {
                         style={{ justifyContent: 'center', marginBottom: 'var(--spacing-6)' }}
                     />
                 )}
+
+                {/* Message J+1 Banner */}
+                <div style={{
+                    background: 'white',
+                    padding: 'var(--spacing-4) var(--spacing-5)',
+                    borderRadius: 'var(--radius-xl)',
+                    border: '1px solid var(--color-primary-100)',
+                    boxShadow: 'var(--shadow-sm)',
+                    marginBottom: 'var(--spacing-6)',
+                    textAlign: 'center'
+                }}>
+                    <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: '800', color: 'var(--color-primary-600)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>
+                        Message J+1 au patient
+                    </div>
+                    <div style={{ fontSize: 'var(--font-size-base)', color: 'var(--color-gray-800)', fontWeight: '600' }}>
+                        {t(config.intro_text || 'Bonjour, avant notre appel, pouvez-vous répondre à ces questions ?')}
+                    </div>
+                </div>
 
                 {/* Hard Alerts - CRITICAL */}
                 {alerts.hard.length > 0 && (
@@ -215,6 +235,21 @@ export default function PatientJ1({ patient: propPatient, token: propToken }) {
                     screen="J1"
                     patientId={resolvedPatientId}
                 />
+
+                {/* Bottom Emergency Banner */}
+                <div style={{
+                    marginTop: 'var(--spacing-6)',
+                    padding: 'var(--spacing-4) var(--spacing-5)',
+                    borderRadius: 'var(--radius-xl)',
+                    background: '#FFF5F5',
+                    border: '1px solid #FED7D7',
+                    color: '#9B2C2C',
+                    fontSize: 'var(--font-size-sm)',
+                    lineHeight: '1.5',
+                    textAlign: 'center'
+                }}>
+                    L’infirmier vous appellera dans tous les cas. <strong>En cas d’essoufflement, de douleur thoracique ou de malaise, appelez immédiatement le 15 ou le 112</strong>
+                </div>
 
                 {/* Soft Alerts */}
                 {alerts.soft.length > 0 && (

@@ -166,14 +166,50 @@ export default function PatientStatusBadges({ responses = [], daysUntil = '', pa
 
     // POST-OP LOGIC (J+1 onwards)
     if (isPostOp) {
-        const j1Nausea = responseMap['J1:nausea_check'];
+        const j1Pain = Number(responseMap['J1:pain_scale']);
+        const j1Bleeding = responseMap['J1:bleeding_swelling'];
+        const j1Fever = responseMap['J1:fever_vomiting'];
+        const j1Calf = responseMap['J1:calf_pain_swelling'];
+        const j1Shortness = responseMap['J1:shortness_breath_chest_pain_fainting'];
+        const j1Other = responseMap['J1:other_concerns'];
 
-        if (j1Nausea === false) {
-            badges.push({ label: 'Nausées signalées', color: 'orange' });
+        let hasJ1Alert = false;
+
+        if (!isNaN(j1Pain) && j1Pain >= 8) {
+            badges.push({ label: `Douleur forte (${j1Pain}/10)`, color: 'danger' });
+            hasJ1Alert = true;
+        }
+        if (j1Bleeding === true || j1Bleeding === 'Oui') {
+            badges.push({ label: 'Saignement / Gonflement', color: 'danger' });
+            hasJ1Alert = true;
+        }
+        if (j1Fever === true || j1Fever === 'Oui') {
+            badges.push({ label: 'Fièvre / Vomissements', color: 'danger' });
+            hasJ1Alert = true;
+        }
+        if (j1Calf === true || j1Calf === 'Oui') {
+            badges.push({ label: 'Douleur / Gonflement mollet', color: 'danger' });
+            hasJ1Alert = true;
+        }
+        if (j1Shortness === true || j1Shortness === 'Oui') {
+            badges.push({ label: 'Essoufflement / Douleur poitrine', color: 'danger' });
+            hasJ1Alert = true;
+        }
+        if (j1Other && String(j1Other).trim().length > 0) {
+            badges.push({ label: 'Inquiétude signalée', color: 'orange' });
         }
 
-        if (hasAnyResponse && j1Nausea === true && patientStatus === 'ready') {
-            badges.push({ label: 'Pas de complications ✓', color: 'success' });
+        // Backward compatibility fallback for legacy 'nausea_check' responses
+        const legacyNausea = responseMap['J1:nausea_check'];
+        if (legacyNausea === false) {
+            badges.push({ label: 'Nausées signalées', color: 'orange' });
+            hasJ1Alert = true;
+        }
+
+        const isJ1Answered = [j1Pain, j1Bleeding, j1Fever, j1Calf, j1Shortness, legacyNausea].some(v => v !== undefined && v !== null && !Number.isNaN(v));
+
+        if (isJ1Answered && !hasJ1Alert) {
+            badges.push({ label: 'Suivi J+1 sans complication ✓', color: 'success' });
         }
     }
 

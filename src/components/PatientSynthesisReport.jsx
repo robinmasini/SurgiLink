@@ -360,13 +360,22 @@ export default function PatientSynthesisReport({
                                             let displayVal = val;
                                             if (typeof val === 'boolean') displayVal = val ? 'Oui' : 'Non';
 
+                                            const isRisk = (item.risk_flag_rule?.condition === 'yes' && (val === true || val === 'Oui')) ||
+                                                           (item.risk_flag_rule?.condition === 'no' && (val === false || val === 'Non')) ||
+                                                           (item.risk_flag_rule?.condition === 'gte_8' && Number(val) >= 8);
+
                                             const meta = formatMeta(screenKey, item.id);
 
                                             return (
-                                                <tr key={item.id} style={{ borderBottom: '1px solid #F0F0F0' }}>
-                                                    <td style={tdLabelStyle}>{item.label}</td>
+                                                <tr key={item.id} style={{ borderBottom: '1px solid #F0F0F0', background: isRisk ? '#FFF5F5' : 'transparent' }}>
+                                                    <td style={{ ...tdLabelStyle, color: isRisk ? '#C53030' : '#555', fontWeight: isRisk ? '700' : 'normal' }}>
+                                                        {isRisk && <span style={{ color: '#E53E3E', marginRight: '4px' }}>🚨</span>}
+                                                        {item.label}
+                                                    </td>
                                                     <td style={tdValueStyle}>
-                                                        <div>{String(displayVal)}</div>
+                                                        <div style={{ color: isRisk ? '#C53030' : '#1A1A1A', fontWeight: isRisk ? '800' : '600' }}>
+                                                            {String(displayVal)}{item.type === 'slider_0_10' ? '/10' : ''}{isRisk ? ' (ALERTE)' : ''}
+                                                        </div>
                                                         {meta && (
                                                             <div style={metaStyle}>
                                                                 {meta.dateStr} · {meta.author}

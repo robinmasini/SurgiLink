@@ -1566,22 +1566,47 @@ export default function PatientReview() {
                                 </div>
                                 <div className="grid-3" style={{ gap: 'var(--spacing-4)' }}>
                                     {[
-                                        { id: 'nausea_check', label: 'Nausées/Vomiss.' }
-                                    ].map(item => (
-                                        <div key={item.id} className="card" style={{ padding: 'var(--spacing-4)', background: 'rgba(255,255,255,0.4)', border: '1px solid var(--color-gray-100)' }}>
-                                            <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-gray-500)', marginBottom: '4px' }}>{item.label}</div>
-                                            <div style={{ fontWeight: 'var(--font-weight-semibold)', color: clinicalResponses.J1?.[item.id] !== undefined ? 'var(--color-primary-600)' : 'var(--color-gray-300)', fontStyle: clinicalResponses.J1?.[item.id] === undefined ? 'italic' : 'normal' }}>
-                                                {clinicalResponses.J1?.[item.id] === true ? 'OUI' : 
-                                                 clinicalResponses.J1?.[item.id] === false ? 'NON' : 
-                                                 (clinicalResponses.J1?.[item.id] !== undefined && clinicalResponses.J1?.[item.id] !== null ? clinicalResponses.J1?.[item.id] : 'Non renseigné')}
-                                            </div>
-                                            {responsesMeta.J1?.[item.id]?.updated_at && (
-                                                <div style={{ fontSize: '9px', color: 'var(--color-gray-400)', marginTop: '4px', fontStyle: 'italic' }}>
-                                                    le {new Date(responsesMeta.J1[item.id].updated_at).toLocaleDateString('fr-FR')} à {new Date(responsesMeta.J1[item.id].updated_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                                        { id: 'pain_scale', label: 'Douleur /10', isPain: true },
+                                        { id: 'bleeding_swelling', label: 'Saignement / Gonflement', alertOnYes: true },
+                                        { id: 'fever_vomiting', label: 'Fièvre / Vomissements', alertOnYes: true },
+                                        { id: 'calf_pain_swelling', label: 'Douleur / Gonflement mollet', alertOnYes: true },
+                                        { id: 'shortness_breath_chest_pain_fainting', label: 'Essoufflement / Malaise', alertOnYes: true },
+                                        { id: 'other_concerns', label: 'Autre inquiétude', isText: true },
+                                        { id: 'nausea_check', label: 'Nausées (Legacy)' }
+                                    ].filter(item => {
+                                        if (item.id === 'nausea_check' && clinicalResponses.J1?.pain_scale !== undefined) return false;
+                                        return true;
+                                    }).map(item => {
+                                        const rawVal = clinicalResponses.J1?.[item.id];
+                                        const isAnswered = rawVal !== undefined && rawVal !== null && rawVal !== '';
+                                        const isAlert = (item.alertOnYes && (rawVal === true || rawVal === 'Oui')) || (item.isPain && Number(rawVal) >= 8);
+
+                                        return (
+                                            <div key={item.id} className="card" style={{
+                                                padding: 'var(--spacing-4)',
+                                                background: isAlert ? '#FFF5F5' : 'rgba(255,255,255,0.4)',
+                                                border: isAlert ? '1px solid #FEB2B2' : '1px solid var(--color-gray-100)'
+                                            }}>
+                                                <div style={{ fontSize: 'var(--font-size-xs)', color: isAlert ? '#C53030' : 'var(--color-gray-500)', marginBottom: '4px', fontWeight: isAlert ? '700' : 'normal' }}>
+                                                    {isAlert && '🚨 '}{item.label}
                                                 </div>
-                                            )}
-                                        </div>
-                                    ))}
+                                                <div style={{
+                                                    fontWeight: 'var(--font-weight-semibold)',
+                                                    color: isAlert ? '#C53030' : (isAnswered ? 'var(--color-primary-600)' : 'var(--color-gray-300)'),
+                                                    fontStyle: !isAnswered ? 'italic' : 'normal'
+                                                }}>
+                                                    {rawVal === true ? 'OUI' : 
+                                                     rawVal === false ? 'NON' : 
+                                                     (isAnswered ? (item.isPain ? `${rawVal}/10` : rawVal) : 'Non renseigné')}
+                                                </div>
+                                                {responsesMeta.J1?.[item.id]?.updated_at && (
+                                                    <div style={{ fontSize: '9px', color: 'var(--color-gray-400)', marginTop: '4px', fontStyle: 'italic' }}>
+                                                        le {new Date(responsesMeta.J1[item.id].updated_at).toLocaleDateString('fr-FR')} à {new Date(responsesMeta.J1[item.id].updated_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
                                 </div>
                             </div>
 

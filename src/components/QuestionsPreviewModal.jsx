@@ -437,6 +437,11 @@ export default function QuestionsPreviewModal({ isOpen, onClose }) {
                                         {t(currentScreenConfig.intro_text)}
                                     </p>
                                 )}
+                                {currentScreenConfig.warning_notice && (
+                                    <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: '600', color: '#9B2C2C', background: '#FFF5F5', border: '1px solid #FED7D7', padding: '10px 14px', borderRadius: '8px', marginTop: '8px', lineHeight: '1.4' }}>
+                                        ⚠️ {t(currentScreenConfig.warning_notice)}
+                                    </div>
+                                )}
                             </div>
 
                             {/* List of Sections & Questions */}
@@ -546,7 +551,7 @@ export default function QuestionsPreviewModal({ isOpen, onClose }) {
                                                                 </strong>{' '}
                                                                 Une réponse{' '}
                                                                 <span style={{ fontWeight: '800', textDecoration: 'underline' }}>
-                                                                    {item.risk_flag_rule.condition === 'no' ? 'NON' : 'OUI'}
+                                                                    {item.risk_flag_rule.condition === 'no' ? 'NON' : item.risk_flag_rule.condition === 'gte_8' ? '≥ 8/10' : 'OUI'}
                                                                 </span>{' '}
                                                                 déclenchera un statut d'alerte{' '}
                                                                 <span style={{ fontWeight: '800' }}>
