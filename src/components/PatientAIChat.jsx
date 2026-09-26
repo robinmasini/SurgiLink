@@ -335,11 +335,11 @@ export default function PatientAIChat({ patient = {}, token = '' }) {
 
     // Quick suggestion pills - adapted by procedure type
     const suggestionPills = [
-        { label: "M'emmener / Transport", icon: <Car size={13} color="#BBAB68" />, query: "Je ne peux pas me faire emmener, comment faire ?" },
-        { label: isBotox ? "Consignes Botox" : "Consignes de douche", icon: isBotox ? <Syringe size={13} color="#BBAB68" /> : <Droplets size={13} color="#BBAB68" />, query: isBotox ? "Quelles sont les consignes après mes injections de Botox ?" : "Quelles sont les consignes pour la douche la veille et le matin ?" },
-        { label: "Règles de jeûne", icon: <Utensils size={13} color="#BBAB68" />, query: "Dois-je être à jeun pour mon intervention ?" },
-        { label: "Accès & parking", icon: <MapPin size={13} color="#BBAB68" />, query: "Où se trouve la clinique et comment s'y rendre ?" },
-        { label: "Gérer la douleur", icon: <ShieldCheck size={13} color="#BBAB68" />, query: "Que faire en cas de douleur après l'intervention ?" }
+        { label: "M'emmener / Transport", icon: <Car size={13} color="#D2C589" />, query: "Je ne peux pas me faire emmener, comment faire ?" },
+        { label: isBotox ? "Consignes Botox" : "Consignes de douche", icon: isBotox ? <Syringe size={13} color="#D2C589" /> : <Droplets size={13} color="#D2C589" />, query: isBotox ? "Quelles sont les consignes après mes injections de Botox ?" : "Quelles sont les consignes pour la douche la veille et le matin ?" },
+        { label: "Règles de jeûne", icon: <Utensils size={13} color="#D2C589" />, query: "Dois-je être à jeun pour mon intervention ?" },
+        { label: "Accès & parking", icon: <MapPin size={13} color="#D2C589" />, query: "Où se trouve la clinique et comment s'y rendre ?" },
+        { label: "Gérer la douleur", icon: <ShieldCheck size={13} color="#D2C589" />, query: "Que faire en cas de douleur après l'intervention ?" }
     ];
 
     return (
@@ -358,7 +358,7 @@ export default function PatientAIChat({ patient = {}, token = '' }) {
                 onClick={() => setIsCollapsed(!isCollapsed)}
                 style={{
                     padding: '16px 20px',
-                    background: '#BBAB68',
+                    background: '#D2C589',
                     color: 'white',
                     display: 'flex',
                     alignItems: 'center',
@@ -479,7 +479,7 @@ export default function PatientAIChat({ patient = {}, token = '' }) {
                                 onMouseOver={(e) => {
                                     e.currentTarget.style.background = '#E6DFC5';
                                     e.currentTarget.style.color = '#4E4620';
-                                    e.currentTarget.style.borderColor = '#BBAB68';
+                                    e.currentTarget.style.borderColor = '#D2C589';
                                 }}
                                 onMouseOut={(e) => {
                                     e.currentTarget.style.background = '#F5F2E4';
@@ -528,7 +528,7 @@ export default function PatientAIChat({ patient = {}, token = '' }) {
                                                 width: '28px',
                                                 height: '28px',
                                                 borderRadius: '50%',
-                                                background: '#BBAB68',
+                                                background: '#D2C589',
                                                 display: 'flex',
                                                 alignItems: 'center',
                                                 justifyContent: 'center',
@@ -544,7 +544,7 @@ export default function PatientAIChat({ patient = {}, token = '' }) {
                                         <div style={{
                                             padding: '12px 16px',
                                             borderRadius: isUser ? '20px 20px 4px 20px' : '20px 20px 20px 4px',
-                                            background: isUser ? '#BBAB68' : '#FFFFFF',
+                                            background: isUser ? '#D2C589' : '#FFFFFF',
                                             color: isUser ? '#FFFFFF' : '#374151',
                                             boxShadow: isUser 
                                                 ? '0 4px 12px rgba(187, 171, 104, 0.28)' 
@@ -605,7 +605,7 @@ export default function PatientAIChat({ patient = {}, token = '' }) {
                                     width: '28px',
                                     height: '28px',
                                     borderRadius: '50%',
-                                    background: '#BBAB68',
+                                    background: '#D2C589',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
@@ -686,7 +686,7 @@ export default function PatientAIChat({ patient = {}, token = '' }) {
                                 outline: 'none',
                                 transition: 'border-color 0.2s'
                             }}
-                            onFocus={(e) => e.target.style.borderColor = '#BBAB68'}
+                            onFocus={(e) => e.target.style.borderColor = '#D2C589'}
                             onBlur={(e) => e.target.style.borderColor = '#E6DFC5'}
                         />
 
@@ -698,7 +698,7 @@ export default function PatientAIChat({ patient = {}, token = '' }) {
                                 height: '38px',
                                 borderRadius: '50%',
                                 border: 'none',
-                                background: inputValue.trim() && !isLoading ? '#BBAB68' : '#E5E7EB',
+                                background: inputValue.trim() && !isLoading ? '#D2C589' : '#E5E7EB',
                                 color: inputValue.trim() && !isLoading ? '#FFFFFF' : '#9CA3AF',
                                 display: 'flex',
                                 alignItems: 'center',
