@@ -1087,7 +1087,7 @@ export default function PatientReview() {
                                                 </div>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                                                     <User size={14} />
-                                                    Dr. {historyItem.surgeon_name || 'Non défini'}
+                                                    {historyItem.surgeon_name ? (historyItem.surgeon_name.startsWith('Dr') ? historyItem.surgeon_name : `Dr. ${historyItem.surgeon_name}`) : 'Non défini'}
                                                 </div>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                                                     <MapPin size={14} />

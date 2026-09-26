@@ -40,8 +40,18 @@ export default function PatientAIChat({ patient = {}, token = '' }) {
         ? "29 Rue Louis Astruc, 13005 Marseille" 
         : "La Tuilière II, Rue Bel air, 13127 Vitrolles";
     const clinicPhone = isPhenicia ? "04 91 92 12 92" : "04 91 15 90 19";
-    const cabinetPhone = patient.practitioner_phone || "04 91 15 90 19";
-    const practitionerName = patient.surgeon_name || "Dr Christophe DESOUCHES";
+    const formatDoctorName = (rawName) => {
+        if (!rawName) return "Dr DESOUCHES";
+        const name = rawName.trim();
+        if (name.toLowerCase().includes('desouches')) return "Dr DESOUCHES";
+        if (/^dr\.?/i.test(name)) return name;
+        if (name.toLowerCase().startsWith('christophe')) {
+            return name.replace(/^christophe\s+/i, 'Dr ');
+        }
+        return `Dr ${name}`;
+    };
+
+    const practitionerName = formatDoctorName(patient.surgeon_name);
     const surgeryDate = patient.date || '';
     const surgeryTime = patient.surgery_time || 'Non-communiquée';
 

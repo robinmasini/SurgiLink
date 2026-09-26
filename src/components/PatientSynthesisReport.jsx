@@ -236,7 +236,7 @@ export default function PatientSynthesisReport({
                                     {item.id === patient.id && <span style={{ color: '#2E7D32', marginLeft: '6px', fontSize: '8px', fontWeight: '800' }}>(ACTUELLE)</span>}
                                 </div>
                                 <div style={{ color: '#666' }}>
-                                    {item.date ? formatDateFR(item.date) : 'Date non définie'} • Dr. {item.surgeon_name || '-'}
+                                    {item.date ? formatDateFR(item.date) : 'Date non définie'} • {item.surgeon_name ? (item.surgeon_name.startsWith('Dr') ? item.surgeon_name : `Dr. ${item.surgeon_name}`) : '-'}
                                 </div>
                             </div>
                         ))}
