@@ -22,6 +22,7 @@ export default function MobileNavbar() {
 
     // Hide MobileNavbar on login and patient-facing routes (/patient-portal..., /patient/pathway..., /fiche...)
     const isPatientFacingRoute = 
+        location.pathname === '/' ||
         location.pathname === '/login' || 
         location.pathname.startsWith('/patient-portal') || 
         location.pathname.startsWith('/patient/pathway') || 

@@ -32,6 +32,7 @@ import { calculateGlobalProgress } from '../services/pathwayService';
 import { HelpCircle, Send, RefreshCw, Download, Info, Circle } from 'lucide-react';
 import { generateSynthesisPDF } from '../services/pdfService';
 import PatientSynthesisReport from '../components/PatientSynthesisReport';
+import PatientAIChat from '../components/PatientAIChat';
 import { useTranslation } from 'react-i18next';
 
 // Premium Assets
@@ -1263,6 +1264,9 @@ export default function PatientPortal({ patient: initialPatient }) {
                         );
                     })()}
                 </div>
+
+                {/* AI Chatbot for Patients */}
+                <PatientAIChat patient={patient} token={token} />
 
                 <div 
                     onClick={documents.length > 0 ? handleDownloadPrescription : undefined}
