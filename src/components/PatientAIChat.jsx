@@ -325,11 +325,11 @@ export default function PatientAIChat({ patient = {}, token = '' }) {
 
     // Quick suggestion pills - adapted by procedure type
     const suggestionPills = [
-        { label: "M'emmener / Transport", icon: <Car size={13} color="#6366F1" />, query: "Je ne peux pas me faire emmener, comment faire ?" },
-        { label: isBotox ? "Consignes Botox" : "Consignes de douche", icon: isBotox ? <Syringe size={13} color="#EC4899" /> : <Droplets size={13} color="#0EA5E9" />, query: isBotox ? "Quelles sont les consignes après mes injections de Botox ?" : "Quelles sont les consignes pour la douche la veille et le matin ?" },
-        { label: "Règles de jeûne", icon: <Utensils size={13} color="#F59E0B" />, query: "Dois-je être à jeun pour mon intervention ?" },
-        { label: "Accès & parking", icon: <MapPin size={13} color="#10B981" />, query: "Où se trouve la clinique et comment s'y rendre ?" },
-        { label: "Gérer la douleur", icon: <ShieldCheck size={13} color="#8B5CF6" />, query: "Que faire en cas de douleur après l'intervention ?" }
+        { label: "M'emmener / Transport", icon: <Car size={13} color="#D97706" />, query: "Je ne peux pas me faire emmener, comment faire ?" },
+        { label: isBotox ? "Consignes Botox" : "Consignes de douche", icon: isBotox ? <Syringe size={13} color="#D97706" /> : <Droplets size={13} color="#D97706" />, query: isBotox ? "Quelles sont les consignes après mes injections de Botox ?" : "Quelles sont les consignes pour la douche la veille et le matin ?" },
+        { label: "Règles de jeûne", icon: <Utensils size={13} color="#D97706" />, query: "Dois-je être à jeun pour mon intervention ?" },
+        { label: "Accès & parking", icon: <MapPin size={13} color="#D97706" />, query: "Où se trouve la clinique et comment s'y rendre ?" },
+        { label: "Gérer la douleur", icon: <ShieldCheck size={13} color="#D97706" />, query: "Que faire en cas de douleur après l'intervention ?" }
     ];
 
     return (
@@ -337,9 +337,9 @@ export default function PatientAIChat({ patient = {}, token = '' }) {
             width: '100%',
             marginBottom: '24px',
             borderRadius: '24px',
-            background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(245, 243, 255, 0.95))',
-            border: '1.5px solid rgba(139, 92, 246, 0.25)',
-            boxShadow: '0 12px 32px rgba(139, 92, 246, 0.08)',
+            background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(254, 243, 199, 0.5))',
+            border: '1.5px solid rgba(217, 119, 6, 0.3)',
+            boxShadow: '0 12px 32px rgba(217, 119, 6, 0.12)',
             overflow: 'hidden',
             transition: 'all 0.3s ease'
         }}>
@@ -348,7 +348,7 @@ export default function PatientAIChat({ patient = {}, token = '' }) {
                 onClick={() => setIsCollapsed(!isCollapsed)}
                 style={{
                     padding: '16px 20px',
-                    background: 'linear-gradient(90deg, #6366F1 0%, #8B5CF6 100%)',
+                    background: 'linear-gradient(135deg, #D4AF37 0%, #B8860B 60%, #9A6B00 100%)',
                     color: 'white',
                     display: 'flex',
                     alignItems: 'center',
@@ -362,12 +362,12 @@ export default function PatientAIChat({ patient = {}, token = '' }) {
                         width: '38px',
                         height: '38px',
                         borderRadius: '50%',
-                        background: 'rgba(255, 255, 255, 0.2)',
+                        background: 'rgba(255, 255, 255, 0.25)',
                         backdropFilter: 'blur(8px)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
+                        boxShadow: '0 4px 10px rgba(0,0,0,0.12)'
                     }}>
                         <Sparkles size={20} color="#ffffff" />
                     </div>
@@ -380,8 +380,8 @@ export default function PatientAIChat({ patient = {}, token = '' }) {
                                 display: 'inline-flex',
                                 alignItems: 'center',
                                 gap: '4px',
-                                background: 'rgba(16, 185, 129, 0.25)',
-                                color: '#A7F3D0',
+                                background: 'rgba(255, 255, 255, 0.25)',
+                                color: '#FFFFFF',
                                 padding: '2px 8px',
                                 borderRadius: '12px',
                                 fontSize: '10px',
@@ -392,7 +392,7 @@ export default function PatientAIChat({ patient = {}, token = '' }) {
                                 En ligne 24/7
                             </span>
                         </div>
-                        <p style={{ margin: '2px 0 0 0', fontSize: '11px', color: 'rgba(255, 255, 255, 0.85)', fontWeight: '400' }}>
+                        <p style={{ margin: '2px 0 0 0', fontSize: '11px', color: 'rgba(255, 255, 255, 0.9)', fontWeight: '400' }}>
                             Posez vos questions sur votre séjour, transport & soin
                         </p>
                     </div>
@@ -403,7 +403,7 @@ export default function PatientAIChat({ patient = {}, token = '' }) {
                         onClick={(e) => { e.stopPropagation(); handleResetChat(); }}
                         title="Réinitialiser la conversation"
                         style={{
-                            background: 'rgba(255, 255, 255, 0.15)',
+                            background: 'rgba(255, 255, 255, 0.2)',
                             border: 'none',
                             borderRadius: '50%',
                             width: '32px',
@@ -420,7 +420,7 @@ export default function PatientAIChat({ patient = {}, token = '' }) {
                     </button>
 
                     <div style={{
-                        background: 'rgba(255, 255, 255, 0.15)',
+                        background: 'rgba(255, 255, 255, 0.2)',
                         borderRadius: '50%',
                         width: '32px',
                         height: '32px',
@@ -442,7 +442,7 @@ export default function PatientAIChat({ patient = {}, token = '' }) {
                         display: 'flex',
                         gap: '8px',
                         overflowX: 'auto',
-                        borderBottom: '1px solid rgba(0,0,0,0.04)',
+                        borderBottom: '1px solid rgba(217, 119, 6, 0.1)',
                         WebkitOverflowScrolling: 'touch',
                         scrollbarWidth: 'none'
                     }}>
@@ -454,9 +454,9 @@ export default function PatientAIChat({ patient = {}, token = '' }) {
                                     whiteSpace: 'nowrap',
                                     padding: '6px 12px',
                                     borderRadius: '16px',
-                                    background: '#F3F4F6',
-                                    border: '1px solid #E5E7EB',
-                                    color: '#4B5563',
+                                    background: '#FEF3C7',
+                                    border: '1px solid #FDE68A',
+                                    color: '#92400E',
                                     fontSize: '12px',
                                     fontWeight: '600',
                                     cursor: 'pointer',
@@ -467,14 +467,14 @@ export default function PatientAIChat({ patient = {}, token = '' }) {
                                     flexShrink: 0
                                 }}
                                 onMouseOver={(e) => {
-                                    e.currentTarget.style.background = '#EDE9FE';
-                                    e.currentTarget.style.color = '#6366F1';
-                                    e.currentTarget.style.borderColor = '#C4B5FD';
+                                    e.currentTarget.style.background = '#FDE68A';
+                                    e.currentTarget.style.color = '#78350F';
+                                    e.currentTarget.style.borderColor = '#F59E0B';
                                 }}
                                 onMouseOut={(e) => {
-                                    e.currentTarget.style.background = '#F3F4F6';
-                                    e.currentTarget.style.color = '#4B5563';
-                                    e.currentTarget.style.borderColor = '#E5E7EB';
+                                    e.currentTarget.style.background = '#FEF3C7';
+                                    e.currentTarget.style.color = '#92400E';
+                                    e.currentTarget.style.borderColor = '#FDE68A';
                                 }}
                             >
                                 {pill.icon}
@@ -492,7 +492,7 @@ export default function PatientAIChat({ patient = {}, token = '' }) {
                         display: 'flex',
                         flexDirection: 'column',
                         gap: '14px',
-                        background: '#FAFAFA'
+                        background: '#FFFDF5'
                     }}>
                         {messages.map((msg) => {
                             const isUser = msg.sender === 'user';
@@ -518,14 +518,14 @@ export default function PatientAIChat({ patient = {}, token = '' }) {
                                                 width: '28px',
                                                 height: '28px',
                                                 borderRadius: '50%',
-                                                background: 'linear-gradient(135deg, #6366F1, #8B5CF6)',
+                                                background: 'linear-gradient(135deg, #D4AF37, #B8860B)',
                                                 display: 'flex',
                                                 alignItems: 'center',
                                                 justifyContent: 'center',
                                                 color: 'white',
                                                 flexShrink: 0,
                                                 marginTop: '2px',
-                                                boxShadow: '0 2px 6px rgba(99, 102, 241, 0.3)'
+                                                boxShadow: '0 2px 8px rgba(184, 134, 11, 0.4)'
                                             }}>
                                                 <Bot size={16} />
                                             </div>
@@ -535,13 +535,13 @@ export default function PatientAIChat({ patient = {}, token = '' }) {
                                             padding: '12px 16px',
                                             borderRadius: isUser ? '20px 20px 4px 20px' : '20px 20px 20px 4px',
                                             background: isUser 
-                                                ? 'linear-gradient(135deg, #6366F1 0%, #4F46E5 100%)' 
+                                                ? 'linear-gradient(135deg, #D4AF37 0%, #B8860B 100%)' 
                                                 : '#FFFFFF',
                                             color: isUser ? '#FFFFFF' : '#374151',
                                             boxShadow: isUser 
-                                                ? '0 4px 12px rgba(99, 102, 241, 0.25)' 
-                                                : '0 2px 8px rgba(0, 0, 0, 0.04)',
-                                            border: isUser ? 'none' : '1px solid #E5E7EB',
+                                                ? '0 4px 12px rgba(184, 134, 11, 0.3)' 
+                                                : '0 2px 8px rgba(217, 119, 6, 0.06)',
+                                            border: isUser ? 'none' : '1px solid #FEF3C7',
                                             fontSize: '13.5px',
                                             position: 'relative'
                                         }}>
@@ -561,7 +561,7 @@ export default function PatientAIChat({ patient = {}, token = '' }) {
                                                             marginTop: '6px',
                                                             background: 'transparent',
                                                             border: 'none',
-                                                            color: speakingMsgId === msg.id ? '#6366F1' : '#9CA3AF',
+                                                            color: speakingMsgId === msg.id ? '#B8860B' : '#9CA3AF',
                                                             cursor: 'pointer',
                                                             display: 'flex',
                                                             alignItems: 'center',
@@ -597,7 +597,7 @@ export default function PatientAIChat({ patient = {}, token = '' }) {
                                     width: '28px',
                                     height: '28px',
                                     borderRadius: '50%',
-                                    background: 'linear-gradient(135deg, #6366F1, #8B5CF6)',
+                                    background: 'linear-gradient(135deg, #D4AF37, #B8860B)',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
@@ -609,13 +609,13 @@ export default function PatientAIChat({ patient = {}, token = '' }) {
                                     padding: '12px 18px',
                                     borderRadius: '20px 20px 20px 4px',
                                     background: '#FFFFFF',
-                                    border: '1px solid #E5E7EB',
+                                    border: '1px solid #FEF3C7',
                                     display: 'flex',
                                     alignItems: 'center',
                                     gap: '6px',
-                                    color: '#6B7280',
+                                    color: '#B8860B',
                                     fontSize: '12px',
-                                    fontWeight: '500'
+                                    fontWeight: '600'
                                 }}>
                                     <span className="animate-pulse">L'Assistant rédige une réponse...</span>
                                 </div>
@@ -629,7 +629,7 @@ export default function PatientAIChat({ patient = {}, token = '' }) {
                     <div style={{
                         padding: '12px 16px',
                         background: '#FFFFFF',
-                        borderTop: '1px solid #E5E7EB',
+                        borderTop: '1px solid #FEF3C7',
                         display: 'flex',
                         alignItems: 'center',
                         gap: '8px'
@@ -642,9 +642,9 @@ export default function PatientAIChat({ patient = {}, token = '' }) {
                                 width: '38px',
                                 height: '38px',
                                 borderRadius: '50%',
-                                border: '1px solid #E5E7EB',
-                                background: isListening ? '#FEE2E2' : '#F9FAFB',
-                                color: isListening ? '#EF4444' : '#6B7280',
+                                border: '1px solid #FDE68A',
+                                background: isListening ? '#FEE2E2' : '#FEF3C7',
+                                color: isListening ? '#EF4444' : '#B8860B',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
@@ -671,15 +671,15 @@ export default function PatientAIChat({ patient = {}, token = '' }) {
                                 flex: 1,
                                 padding: '10px 16px',
                                 borderRadius: '20px',
-                                border: '1px solid #D1D5DB',
-                                background: '#F9FAFB',
+                                border: '1px solid #FDE68A',
+                                background: '#FFFDF5',
                                 fontSize: '13.5px',
                                 color: '#1F2937',
                                 outline: 'none',
                                 transition: 'border-color 0.2s'
                             }}
-                            onFocus={(e) => e.target.style.borderColor = '#6366F1'}
-                            onBlur={(e) => e.target.style.borderColor = '#D1D5DB'}
+                            onFocus={(e) => e.target.style.borderColor = '#D4AF37'}
+                            onBlur={(e) => e.target.style.borderColor = '#FDE68A'}
                         />
 
                         <button
@@ -691,14 +691,14 @@ export default function PatientAIChat({ patient = {}, token = '' }) {
                                 borderRadius: '50%',
                                 border: 'none',
                                 background: inputValue.trim() && !isLoading 
-                                    ? 'linear-gradient(135deg, #6366F1, #8B5CF6)' 
+                                    ? 'linear-gradient(135deg, #D4AF37, #B8860B)' 
                                     : '#E5E7EB',
                                 color: inputValue.trim() && !isLoading ? '#FFFFFF' : '#9CA3AF',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 cursor: inputValue.trim() && !isLoading ? 'pointer' : 'default',
-                                boxShadow: inputValue.trim() && !isLoading ? '0 4px 10px rgba(99, 102, 241, 0.3)' : 'none',
+                                boxShadow: inputValue.trim() && !isLoading ? '0 4px 10px rgba(184, 134, 11, 0.35)' : 'none',
                                 transition: 'all 0.2s',
                                 flexShrink: 0
                             }}
