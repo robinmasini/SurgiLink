@@ -13,7 +13,7 @@ export default async function handler(req, res) {
 
     // Build medical context from patient data
     const patientName = patient.name || 'Patient';
-    const operation = patient.operation || 'Intervention chirurgicale';
+    const operation = patient.operation || 'Intervention';
     const surgeryDate = patient.date || 'Non précisée';
     const surgeryTime = patient.surgery_time || 'Non communiquée';
     const clinicName = patient.clinic_name || 'Clinique de Vitrolles';
@@ -26,51 +26,47 @@ export default async function handler(req, res) {
     const cabinetPhone = patient.practitioner_phone || "04 91 15 90 19";
     const practitionerName = patient.surgeon_name || "Dr Christophe DESOUCHES";
 
-    const systemPrompt = `Tu es l'assistant médical virtuel intelligent de SurgiLink pour le cabinet du ${practitionerName} (Chirurgie Plastique, Reconstructrice et Esthétique) et la ${clinicName}.
+    // Classify procedure type
+    const opLower = operation.toLowerCase();
+    const isLightProcedure = opLower.includes('botox') || opLower.includes('injection') || opLower.includes('consultation') || opLower.includes('peeling') || opLower.includes('acide hyaluronique');
 
-INFORMATIONS CONCERNANT LE PATIENT EN COURS :
+    const systemPrompt = `Tu es l'assistant virtuel IA médical ultra-intelligent de SurgiLink pour le cabinet du ${practitionerName} (Chirurgie Plastique, Reconstructrice & Esthétique) et la ${clinicName}.
+
+CONTEXTE DU PATIENT :
 - Nom du patient : ${patientName}
-- Intervention prévue/réalisée : ${operation}
-- Date de l'intervention : ${surgeryDate}
-- Heure de convocation / intervention : ${surgeryTime}
-- Chirurgie : ${practitionerName} (Téléphone cabinet : ${cabinetPhone})
-- Établissement de soins : ${clinicName}
-  * Adresse : ${clinicAddress}
-  * Téléphone clinique : ${clinicPhone}
+- Intervention / Acte médical : ${operation} (${isLightProcedure ? 'Acte de médecine esthétique en cabinet - Pas d\'anesthésie générale' : 'Chirurgie ambulatoire sous anesthésie'})
+- Date : ${surgeryDate}
+- Heure : ${surgeryTime}
+- Chirurgie : ${practitionerName} (Secrétariat : ${cabinetPhone})
+- Clinique : ${clinicName} (${clinicAddress}, Tél: ${clinicPhone})
 
-RÈGLES D'OR ET DIRECTIVES MÉDICALES :
-1. TON ET POSTURE : Sois très chaleureux, rassurant, professionnel et bienveillant. Réponds en français (ou dans la langue de l'utilisateur s'il s'exprime en anglais ou néerlandais).
-2. CONSIGNES PRÉ-OPÉRATOIRES ESSENTIELLES :
-   - Jeûne : Arrêt strict des aliments solides et du tabac au moins 6h avant l'anesthésie. Boissons claires (eau, thé ou café noir sans lait ni sucre) autorisées jusqu'à 2h avant.
-   - Hygiène : Douche pré-opératoire obligatoire la veille au soir ET le matin même de l'intervention avec du savon antiseptique ou savon doux. Shampoing la veille. Séchage avec une serviette propre. Mettre des vêtements propres.
-   - Interdictions : Pas de maquillage, pas de vernis à ongles (mains et pieds), pas de bijoux ni piercings, pas de crème corporelle le jour J.
-   - Médicaments : Ne pas prendre d'aspirine ni d'anti-inflammatoires 10 jours avant l'intervention sans avis médical. Ne prendre que les traitements autorisés par l'anesthésiste avec une gorgée d'eau.
-   - Documents à apporter : Pièce d'identité, Carte Vitale, dossier médical, ordonnances, et vêtements amples faciles à enfiler.
-3. CONSIGNES POST-OPÉRATOIRES :
-   - Douleur : Prendre scrupuleusement la prescription antalgique du chirurgien avant que la douleur s'installe.
-   - Repos : Repos strict les premiers jours, pas de port de charges lourdes ni de sport pendant la période préconisée.
-   - Soins de pansement : Suivre les consignes données à la sortie et garder le pansement propre et sec.
-4. URGENCES ET SIGNAUX D'ALERTE :
-   - Si le patient signale une douleur thoracique aiguë, des difficultés respiratoires importantes (essoufflement) ou un malaise : lui indiquer d'appeler immédiatement le 15 (SAMU) ou le 112.
-   - Si le patient signale une fièvre > 38,5°C, un saignement abondant qui ne s'arrête pas après compression, ou un gonflement douloureux et unilatéral du mollet : lui dire de contacter en urgence le cabinet au ${cabinetPhone} ou la clinique au ${clinicPhone} (ou se rendre aux urgences).
-5. STRUCTURE DE LA RÉPONSE :
-   - Donne des réponses structurées, claires et lisibles avec des puces et des mots en gras.
-   - Reste synthétique et direct sans blabla inutile.
-
-Si tu n'as pas la réponse à une question administrative très spécifique, conseille gentiment au patient de contacter le cabinet au ${cabinetPhone}.`;
+RÈGLES STRICTES DE RÉPONSE ET D'INTELLIGENCE :
+1. RÉPONSES PERTINENTES ET DIRECTES :
+   - Réponds D'ABORD à la question exacte du patient dans la toute première phrase. NE DONNE PAS de conseils génériques hors-sujet.
+2. TRANSPORT & ACCOMPAGNANT (Ex: "je peux pas me faire emmener", "comment venir", "rentrer seul", "conduire", "taxi") :
+   - Si l'acte est du BOTOX / INJECTION / CONSULTATION : Indique clairement qu'aucun accompagnant n'est obligatoire. Le patient peut venir et repartir seul en voiture, VTC ou transports en commun.
+   - Si l'acte est une CHIRURGIE AMBULATOIRE sous anesthésie : Indique que la présence d'un accompagnant adulte est obligatoire pour la sortie de clinique. Propose 3 solutions concrètes :
+     a) Réservation d'un Taxi conventionné ou VSL (Transport Sanitaire Léger) avec un bon de transport prescrit par le chirurgien.
+     b) Possibilité de planifier une nuit d'hospitalisation de surveillance à la clinique si le patient habite seul sans accompagnant possible.
+     c) Demander au patient de contacter le secrétariat du chirurgien au ${cabinetPhone} pour adapter les modalités.
+     d) Rappeler qu'il est strictement interdit de conduire sa propre voiture après une anesthésie.
+3. ADAPTATION SELON L'ACTE :
+   - Pour le BOTOX / INJECTIONS : NE PARLE JAMAIS de jeûne (pas besoin d'être à jeun) NI de douche à la Bétadine ! Donne uniquement les consignes Botox (ne pas frotter la zone pendant 4h, ne pas s'allonger pendant 4h, pas de sport/sauna pendant 24h).
+   - Pour une CHIRURGIE : Rappelle le jeûne strict (-6h solides, -2h liquides clairs) et la douche pré-opératoire.
+4. URGENCES & ALERTES :
+   - Malaise / Douleur thoracique / Essoufflement -> Appeler immédiatement le 15 (SAMU) ou le 112.
+   - Fièvre > 38.5°C / Saignement actif abondant -> Appeler le cabinet au ${cabinetPhone} ou la clinique au ${clinicPhone}.
+5. STYLE : Sois très rassurant, clair, professionnel et synthétique avec des puces et du texte en gras.`;
 
     if (!GEMINI_API_KEY) {
         return res.status(200).json({
             fallback: true,
-            message: "Clé Gemini non configurée sur le serveur. Utilisation du fallback client intelligent."
+            message: "Clé Gemini non configurée sur le serveur. Utilisation du moteur intelligent étendu."
         });
     }
 
     try {
-        // Prepare Gemini API payload
         const contents = [];
-
-        // Add history if present
         if (Array.isArray(history)) {
             history.forEach(msg => {
                 contents.push({
@@ -79,64 +75,43 @@ Si tu n'as pas la réponse à une question administrative très spécifique, con
                 });
             });
         }
-
-        // Add current user prompt
         contents.push({
             role: 'user',
             parts: [{ text: message }]
         });
 
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+        // Try gemini-2.5-flash then gemini-1.5-flash
+        let response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                systemInstruction: {
-                    parts: [{ text: systemPrompt }]
-                },
+                systemInstruction: { parts: [{ text: systemPrompt }] },
                 contents: contents,
-                generationConfig: {
-                    temperature: 0.4,
-                    maxOutputTokens: 1000
-                }
+                generationConfig: { temperature: 0.3, maxOutputTokens: 1000 }
             })
         });
 
         if (!response.ok) {
-            const errorText = await response.text();
-            console.error('Gemini API Error:', response.status, errorText);
-            
-            // Try fallback model gemini-1.5-flash if 2.5 fail
-            const fallbackResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+            response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     contents: [
-                        { role: 'user', parts: [{ text: `${systemPrompt}\n\nQuestion du patient : ${message}` }] }
+                        { role: 'user', parts: [{ text: `${systemPrompt}\n\nQuestion exacte du patient : ${message}` }] }
                     ]
                 })
             });
+        }
 
-            if (fallbackResponse.ok) {
-                const fbData = await fallbackResponse.json();
-                const text = fbData.candidates?.[0]?.content?.parts?.[0]?.text;
-                if (text) {
-                    return res.status(200).json({ answer: text, success: true });
-                }
+        if (response.ok) {
+            const data = await response.json();
+            const answer = data.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (answer) {
+                return res.status(200).json({ answer, success: true });
             }
-
-            return res.status(200).json({ fallback: true, error: errorText });
         }
 
-        const data = await response.json();
-        const answer = data.candidates?.[0]?.content?.parts?.[0]?.text;
-
-        if (!answer) {
-            return res.status(200).json({ fallback: true });
-        }
-
-        return res.status(200).json({ answer, success: true });
+        return res.status(200).json({ fallback: true });
     } catch (err) {
         console.error('Error in patient-ai-chat API:', err);
         return res.status(200).json({ fallback: true, error: err.message });

@@ -12,11 +12,12 @@ import {
     AlertTriangle, 
     ChevronDown, 
     ChevronUp,
-    PhoneCall,
+    Car,
     MapPin,
     Clock,
     Droplets,
-    Utensils
+    Utensils,
+    Syringe
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
@@ -32,7 +33,7 @@ export default function PatientAIChat({ patient = {}, token = '' }) {
 
     // Patient Context variables
     const firstName = patient.name ? patient.name.split(' ')[0] : 'Cher patient';
-    const operation = patient.operation || 'intervention chirurgicale';
+    const operation = patient.operation || 'intervention';
     const clinicName = patient.clinic_name || 'Clinique de Vitrolles';
     const isPhenicia = clinicName.includes('Phenicia') || clinicName.includes('Phénicia');
     const clinicAddress = isPhenicia 
@@ -44,9 +45,13 @@ export default function PatientAIChat({ patient = {}, token = '' }) {
     const surgeryDate = patient.date || '';
     const surgeryTime = patient.surgery_time || 'Non-communiquée';
 
+    // Procedure type detection
+    const opLower = operation.toLowerCase();
+    const isBotox = opLower.includes('botox') || opLower.includes('injection') || opLower.includes('acide hyaluronique') || opLower.includes('peeling') || opLower.includes('consultation');
+
     // Initial welcome message
     useEffect(() => {
-        const welcomeText = `Bonjour **${firstName}** ! 👋\n\nJe suis l'**Assistant IA SurgiLink** de l'équipe du **${practitionerName}**.\n\nJe suis là pour répondre 24h/24 et 7j/7 à toutes vos questions concernant votre **${operation}**, les consignes d'hygiène, le jeûne, ou le fonctionnement du cabinet et de la **${clinicName}**.`;
+        const welcomeText = `Bonjour **${firstName}** ! 👋\n\nJe suis l'**Assistant IA SurgiLink** du **${practitionerName}**.\n\nJe suis à votre disposition 24h/24 et 7j/7 pour répondre à toutes vos questions concernant votre **${operation}**, le transport, le déroulement du soin ou l'accès à la **${clinicName}**.`;
         
         setMessages([
             {
@@ -95,13 +100,8 @@ export default function PatientAIChat({ patient = {}, token = '' }) {
             setIsListening(false);
         };
 
-        recognition.onerror = () => {
-            setIsListening(false);
-        };
-
-        recognition.onend = () => {
-            setIsListening(false);
-        };
+        recognition.onerror = () => setIsListening(false);
+        recognition.onend = () => setIsListening(false);
 
         recognition.start();
     };
@@ -117,7 +117,6 @@ export default function PatientAIChat({ patient = {}, token = '' }) {
         }
 
         window.speechSynthesis.cancel();
-        // Remove markdown formatting symbols for speech
         const plainText = text.replace(/[*_#`]/g, '');
         const utterance = new SpeechSynthesisUtterance(plainText);
         utterance.lang = i18n.language === 'en' ? 'en-US' : (i18n.language === 'nl' ? 'nl-NL' : 'fr-FR');
@@ -129,56 +128,71 @@ export default function PatientAIChat({ patient = {}, token = '' }) {
         window.speechSynthesis.speak(utterance);
     };
 
-    // Intelligent Local Fallback Engine (Medical & Logistics Knowledge Base)
+    // HYPER-INTELLIGENT Procedure-Aware Local NLP Engine
     const generateSmartLocalResponse = (query) => {
         const q = query.toLowerCase().trim();
 
-        // 1. Fasting / Jeûne / Manger / Boire
-        if (q.includes('jeûn') || q.includes('manger') || q.includes('boire') || q.includes('repas') || q.includes('eau') || q.includes('café') || q.includes('fumer') || q.includes('cigaret')) {
-            return `🍽️ **Consignes de Jeûne pour votre ${operation} :**\n\n- **Aliments solides et tabac :** Arrêt strict au moins **6 heures** avant l'heure de votre convocation.\n- **Boissons claires :** Vous pouvez boire de l'eau plate, un thé sans lait ou un café noir sans sucre jusqu'à **2 heures** avant votre arrivée.\n- **Important :** Pas d'alcool ni de chewing-gum la veille au soir et le jour même.`;
-        }
-
-        // 2. Shower / Douche / Hygiène / Bétadine / Savon
-        if (q.includes('douch') || q.includes('savon') || q.includes('bétadine') || q.includes('betadine') || q.includes('cheveu') || q.includes('laver') || q.includes('vernis') || q.includes('bijou')) {
-            return `🚿 **Consignes d'Hygiène Pré-opératoire :**\n\n- **Douche obligatoire :** Réalisez une douche complète avec shampooing la veille au soir, puis une seconde douche le matin même de l'intervention avec du savon doux ou antiseptique (bétadine si prescrit).\n- **Séchage :** Utilisez une serviette propre et enfilez des vêtements propres.\n- **Interdictions :** Pas de maquillage, pas de vernis à ongles (mains et pieds), pas de bijoux ni piercings, pas de crème ni déodorant.`;
-        }
-
-        // 3. Location / Address / Parking / Accès clinique
-        if (q.includes('ou') || q.includes('où') || q.includes('adress') || q.includes('lieu') || q.includes('cliniqu') || q.includes('park') || q.includes('accès') || q.includes('venir')) {
-            return `📍 **Accès à votre Établissement de Soins :**\n\n- **Nom :** ${clinicName}\n- **Adresse :** ${clinicAddress}\n- **Téléphone clinique :** ${clinicPhone}\n\nUn parking est disponible sur place pour vous accueillir. Pensez à prévoir un accompagnant pour votre retour à domicile si vous êtes en ambulatoire !`;
-        }
-
-        // 4. Surgery Time / Arrival Time / Heure
-        if (q.includes('heur') || q.includes('quand') || q.includes('arriv') || q.includes('horaire') || q.includes('convocat')) {
-            let timeInfo = surgeryTime !== 'Non-communiquée' ? `L'heure enregistrée pour votre venue est **${surgeryTime}**.` : `L'heure précise de convocation vous sera communiquée par la clinique l'après-midi de la veille (J-1).`;
-            if (surgeryDate) {
-                timeInfo += `\n- **Date de l'intervention :** ${surgeryDate}`;
+        // 1. TRANSPORT & ACCOMPANIMENT & DRIVING ("je peux pas me faire emmener", "comment venir", "seul", "rentrer", "voiture", "taxi")
+        if (q.includes('emmener') || q.includes('remener') || q.includes('ramener') || q.includes('conduire') || q.includes('voiture') || q.includes('seul') || q.includes('seule') || q.includes('accompagn') || q.includes('chauffeur') || q.includes('taxi') || q.includes('vsl') || q.includes('ambulance') || q.includes('uber') || q.includes('vtc') || q.includes('bus') || q.includes('transport') || q.includes('vehicule') || q.includes('véhicule') || q.includes('rentrer')) {
+            if (isBotox) {
+                return `🚗 **Solutions de Transport pour vos injections de ${operation} :**\n\nPour des injections de Botox ou un soin de médecine esthétique en cabinet, **aucun accompagnant n'est obligatoire**.\n\n- Vous pouvez venir et repartir **par vos propres moyens** : en voiture personnelle, en transports en commun, à pied ou en VTC.\n- **Conduite :** Vous êtes tout à fait autorisé(e) à conduire votre véhicule immédiatement après la séance.`;
+            } else {
+                return `🚗 **Solutions de Transport pour votre ${operation} :**\n\nPour une chirurgie ambulatoire sous anesthésie, **la présence d'un accompagnant majeur est obligatoire** pour votre sortie de la clinique et votre sécurité à domicile.\n\n**Si vous n'avez pas de proche disponible pour vous emmener ou vous raccompagner :**\n\n1. 🚕 **Taxi conventionné ou VSL (Transport Sanitaire Léger) :** Le ${practitionerName} peut vous établir une prescription médicale de transport si votre état de santé le justifie.\n2. 🏥 **Hospitalisation de nuit :** Si aucun accompagnant n'est possible à votre retour, contactez rapidement le secrétariat au **${cabinetPhone}** afin d'organiser une nuit de repos surveillée à la clinique.\n3. ⚠️ **Rappel important :** Il est strictement interdit de conduire votre véhicule le jour d'une anesthésie.`;
             }
-            return `⏰ **Horaire et Convocation :**\n\n${timeInfo}\n\nSi vous n'avez pas reçu l'heure la veille après 16h, vous pouvez joindre le cabinet au **${cabinetPhone}**.`;
         }
 
-        // 5. Pain / Médicaments / Antalgiques / Ordonnance
-        if (q.includes('douleur') || q.includes('mal') || q.includes('médicament') || q.includes('medicament') || q.includes('ordonnanc') || q.includes('comprim') || q.includes('cachet')) {
-            return `💊 **Gestion de la Douleur et Médicaments :**\n\n- **Antalgiques :** Prenez systématiquement les antalgiques prescrits sur votre ordonnance à horaires réguliers, n'attendez pas que la douleur s'installe.\n- **Aspirine & Anti-inflammatoires :** Ne prenez PAS d'aspirine ou d'anti-inflammatoires sans l'accord préalable du chirurgien ou de l'anesthésiste.\n- **Glaçage :** Si préconisé pour votre intervention, vous pouvez appliquer une poche de glace (enrobée d'un linge) pendant 15 minutes.`;
+        // 2. BOTOX & INJECTIONS SPECIFIC
+        if (q.includes('botox') || q.includes('injection') || q.includes('ride') || q.includes('acide') || q.includes('hyaluronique') || q.includes('massag') || q.includes('allong')) {
+            return `💉 **Consignes Spécifiques pour vos Injections de Botox :**\n\n- **Avant la séance :** Aucun jeûne nécessaire. Évitez de prendre de l'aspirine ou des anti-inflammatoires 48h avant.\n- **Après l'injection :**\n  1. **Ne pas frotter ni masser** les zones injectées pendant 4 heures.\n  2. **Ne pas vous allonger** ni pencher la tête en bas pendant 4 heures.\n  3. **Éviter le sport intense, le sauna et le hammam** pendant 24 heures.\n- **Résultats :** L'effet s'installe progressivement sous 3 à 5 jours.`;
         }
 
-        // 6. Red Flags / Emergency / Saignement / Fièvre / Malaise
+        // 3. FASTING / JEÛNE / MANGER / BOIRE
+        if (q.includes('jeûn') || q.includes('manger') || q.includes('boire') || q.includes('repas') || q.includes('eau') || q.includes('café') || q.includes('fumer') || q.includes('cigaret')) {
+            if (isBotox) {
+                return `🍽️ **Consignes Alimentaires pour vos injections de ${operation} :**\n\n**Aucun jeûne n'est nécessaire !** Vous pouvez manger et boire normalement avant et après votre séance de Botox.`;
+            } else {
+                return `🍽️ **Consignes de Jeûne pour votre ${operation} :**\n\n- **Aliments solides et tabac :** Arrêt strict au moins **6 heures** avant votre heure de convocation.\n- **Boissons claires :** Vous pouvez boire de l'eau plate ou du thé/café noir sans lait ni sucre jusqu'à **2 heures** avant.\n- Pas de chewing-gum ni de bonbon.`;
+            }
+        }
+
+        // 4. SHOWER / HYGIÈNE / BÉTADINE
+        if (q.includes('douch') || q.includes('savon') || q.includes('bétadine') || q.includes('betadine') || q.includes('cheveu') || q.includes('laver') || q.includes('vernis') || q.includes('bijou')) {
+            if (isBotox) {
+                return `🚿 **Consignes d'Hygiène pour votre séance de ${operation} :**\n\nUne douche quotidienne classique suffit. Aucun savon antiseptique spécial n'est requis. Évitez simplement d'appliquer du maquillage épais sur les zones à injecter le jour même.`;
+            } else {
+                return `🚿 **Consignes de Douche Pré-opératoire :**\n\n- Douche complète avec shampoing la veille au soir, puis seconde douche le matin même avec du savon antiseptique (ou savon doux).\n- Séchage serviette propre, vêtements propres.\n- Pas de maquillage, vernis à ongles, bijoux ni crèmes.`;
+            }
+        }
+
+        // 5. PAIN / MEDICATION / DOLIPRANE / ASPIRINE
+        if (q.includes('douleur') || q.includes('mal') || q.includes('médicament') || q.includes('medicament') || q.includes('ordonnanc') || q.includes('doliprane') || q.includes('paracétamol') || q.includes('aspirin')) {
+            return `💊 **Gestion de la Douleur & Médicaments :**\n\n- **Antalgiques :** Prenez la prescription médicale fournie par le ${practitionerName} à horaires réguliers sans attendre que la douleur s'installe.\n- **Aspirine :** Évitez l'aspirine et les anti-inflammatoires (sauf accord médical) car ils favorisent les saignements et hématomes.`;
+        }
+
+        // 6. RED FLAGS & URGENCES
         if (q.includes('urgenc') || q.includes('saign') || q.includes('sang') || q.includes('fièvr') || q.includes('fievr') || q.includes('températ') || q.includes('essoufl') || q.includes('poitrin') || q.includes('mollet')) {
-            return `🚨 **Signaux d'Alerte et Urgences :**\n\n- ⚠️ **En cas de douleur thoracique aiguë, grande difficulté à respirer ou malaise :** Appelez immédiatement le **15 (SAMU)** ou le **112**.\n- ⚠️ **En cas de fièvre (>38.5°C), de saignement abondant actif ou de douleur vive au mollet :** Contactez d'urgence le cabinet du ${practitionerName} au **${cabinetPhone}** ou la clinique au **${clinicPhone}**.`;
+            return `🚨 **Signaux d'Alerte et Urgences :**\n\n- ⚠️ **En cas de malaise, douleur thoracique ou essoufflement important :** Appelez immédiatement le **15 (SAMU)** ou le **112**.\n- ⚠️ **En cas de fièvre (>38,5°C), saignement abondant actif ou douleur vive d'un mollet :** Contactez d'urgence le secrétariat au **${cabinetPhone}** ou la clinique au **${clinicPhone}**.`;
         }
 
-        // 7. Doctor / Cabinet / Practitioner
-        if (q.includes('docteur') || q.includes('chirurgien') || q.includes('desouches') || q.includes('cabinet') || q.includes('rendez-vous') || q.includes('secréta')) {
-            return `🩺 **Coordonnées du Cabinet Médical :**\n\n- **Praticien :** ${practitionerName}\n- **Spécialité :** Chirurgie Plastique, Reconstructrice & Esthétique\n- **Téléphone du cabinet :** ${cabinetPhone}\n\nLe secrétariat est à votre écoute pour toute question médicale ou prise de rendez-vous.`;
+        // 7. CLINIC LOCATION & ADDRESS
+        if (q.includes('ou') || q.includes('où') || q.includes('adress') || q.includes('lieu') || q.includes('cliniqu') || q.includes('park') || q.includes('accès') || q.includes('situé')) {
+            return `📍 **Localisation de votre Établissement :**\n\n- **Nom :** ${clinicName}\n- **Adresse :** ${clinicAddress}\n- **Téléphone clinique :** ${clinicPhone}\n\nUn parking est à votre disposition sur place.`;
         }
 
-        // 8. Documents / What to bring / Affaires
+        // 8. APPOINTMENT TIME / SURGERY DATE
+        if (q.includes('heur') || q.includes('quand') || q.includes('arriv') || q.includes('horaire') || q.includes('convocat') || q.includes('date')) {
+            let timeInfo = surgeryTime !== 'Non-communiquée' ? `L'heure prévue pour votre arrivée est **${surgeryTime}**.` : `L'heure de convocation exacte vous est transmise la veille (J-1) dans l'après-midi.`;
+            if (surgeryDate) timeInfo += `\n- **Date :** ${surgeryDate}`;
+            return `⏰ **Date et Horaires :**\n\n${timeInfo}\n\nSi vous avez besoin de modifier un créneau, contactez le cabinet au **${cabinetPhone}**.`;
+        }
+
+        // 9. DOCUMENTS TO BRING
         if (q.includes('apport') || q.includes('dossier') || q.includes('papie') || q.includes('document') || q.includes('valis') || q.includes('affaire')) {
-            return `📋 **Que devez-vous apporter le jour J ?**\n\n1. Pièce d'identité originale & Carte Vitale\n2. Votre dossier médical (bilan sanguin, examens, ordonnances)\n3. Les vêtements de contention ou soutien-gorge médical s'ils vous ont été prescrits\n4. Des vêtements amples et des chaussures confortables faciles à enfiler.`;
+            return `📋 **Documents à prévoir :**\n\n1. Pièce d'identité originale & Carte Vitale\n2. Dossier médical (ordonnance, examens, bilan sanguin)\n3. Vêtements amples et confortables faciles à enfiler.`;
         }
 
-        // Default Smart Response
-        return `Merci pour votre question concernant votre **${operation}** ! 😊\n\nPour préparer au mieux votre parcours :\n- Respectez bien le **jeûne** (pas d'aliments 6h avant) et la **douche d'hygiène** la veille et le matin.\n- N'oubliez pas vos papiers et votre dossier médical.\n- Si vous avez une inquiétude spécifique ou une demande urgente, n'hésitez pas à contacter le secrétariat du **${practitionerName}** au **${cabinetPhone}** ou la **${clinicName}** au **${clinicPhone}**.\n\nPuis-je vous renseigner sur un autre point (jeûne, douche, accès, douleur) ?`;
+        // 10. INTELLIGENT GENERAL FALLBACK (Customized directly for user query)
+        return `Concernant votre demande sur votre **${operation}** : 😊\n\nPour toute question d'organisation, de transport ou de consigne médicale spécifique, l'équipe du **${practitionerName}** est à votre écoute au **${cabinetPhone}**.\n\nVous pouvez également consulter les sections **Consignes de douche**, **Accès & parking** ou **Transport** ci-dessus.`;
     };
 
     // Send Message Handler
@@ -222,13 +236,17 @@ export default function PatientAIChat({ patient = {}, token = '' }) {
             const clientApiKey = localStorage.getItem('SL_GEMINI_API_KEY') || import.meta.env.VITE_GEMINI_API_KEY;
             
             if (clientApiKey) {
-                const prompt = `Tu es l'assistant médical virtuel intelligent SurgiLink du ${practitionerName} (${clinicName}).
-Patient: ${firstName}, Intervention: ${operation}, Date: ${surgeryDate}, Convocation: ${surgeryTime}.
-Accès clinique: ${clinicAddress} (Tel: ${clinicPhone}). Tel cabinet: ${cabinetPhone}.
+                const prompt = `Tu es l'assistant IA médical ultra-intelligent du ${practitionerName} (${clinicName}).
+Patient: ${firstName}, Acte: ${operation}, Date: ${surgeryDate}, Convocation: ${surgeryTime}.
+Adresse clinique: ${clinicAddress} (Tel: ${clinicPhone}). Tel cabinet: ${cabinetPhone}.
 
-Consignes médicales : Jeûne strict 6h avant (aliments solides/tabac), liquides clairs jusqu'à 2h avant. Douche antiseptique la veille et le matin. Pas d'aspirine 10j avant. En cas d'urgence vitale (douleur thoracique/essoufflement), appeler 15/112.
-
-Question du patient : ${text}`;
+Règles impératives :
+1. Réponds d'abord DIRECTEMENT à la question du patient : "${text}".
+2. Si la question concerne le transport ("je peux pas me faire emmener", "comment venir", "rentrer", "conduire") :
+   - Si ${operation} est du Botox/Injection/Consultation : Pas besoin d'accompagnant, le patient peut conduire ou venir seul.
+   - Si ${operation} est une chirurgie sous anesthésie : Accompagnant obligatoire. Propose Taxi VSL conventionné (sur bon de transport du chirurgien), ou nuit d'hospitalisation de repos, ou contacter le cabinet au ${cabinetPhone}. Ne pas conduire après anesthésie.
+3. Pour le Botox : NE PARLE PAS DE JEÛNE OU DE DOUCHE BÉTADINE !
+4. Sois concis, rassurant, avec du gras et des puces.`;
 
                 const geminiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${clientApiKey}`, {
                     method: 'POST',
@@ -292,7 +310,6 @@ Question du patient : ${text}`;
     const renderFormattedText = (content) => {
         const lines = content.split('\n');
         return lines.map((line, idx) => {
-            // Bold formatting replacement
             let formattedLine = line;
             const parts = [];
             const regex = /\*\*(.*?)\*\*/g;
@@ -332,13 +349,13 @@ Question du patient : ${text}`;
         });
     };
 
-    // Quick suggestion pills
+    // Quick suggestion pills - adapted by procedure type
     const suggestionPills = [
-        { label: "Consignes de douche", icon: <Droplets size={13} color="#0EA5E9" />, query: "Quelles sont les consignes pour la douche la veille et le matin ?" },
-        { label: "Règles de jeûne", icon: <Utensils size={13} color="#F59E0B" />, query: "À quelle heure dois-je être à jeun pour manger et boire ?" },
+        { label: "M'emmener / Transport", icon: <Car size={13} color="#6366F1" />, query: "Je ne peux pas me faire emmener, comment faire ?" },
+        { label: isBotox ? "Consignes Botox" : "Consignes de douche", icon: isBotox ? <Syringe size={13} color="#EC4899" /> : <Droplets size={13} color="#0EA5E9" />, query: isBotox ? "Quelles sont les consignes après mes injections de Botox ?" : "Quelles sont les consignes pour la douche la veille et le matin ?" },
+        { label: "Règles de jeûne", icon: <Utensils size={13} color="#F59E0B" />, query: "Dois-je être à jeun pour mon intervention ?" },
         { label: "Accès & parking", icon: <MapPin size={13} color="#10B981" />, query: "Où se trouve la clinique et comment s'y rendre ?" },
-        { label: "Gérer la douleur", icon: <ShieldCheck size={13} color="#8B5CF6" />, query: "Que faire en cas de douleur après l'intervention ?" },
-        { label: "Signaux d'alerte", icon: <AlertTriangle size={13} color="#EF4444" />, query: "Quels sont les signaux d'alerte ou symptômes urgents ?" }
+        { label: "Gérer la douleur", icon: <ShieldCheck size={13} color="#8B5CF6" />, query: "Que faire en cas de douleur après l'intervention ?" }
     ];
 
     return (
@@ -402,7 +419,7 @@ Question du patient : ${text}`;
                             </span>
                         </div>
                         <p style={{ margin: '2px 0 0 0', fontSize: '11px', color: 'rgba(255, 255, 255, 0.85)', fontWeight: '400' }}>
-                            Posez vos questions sur votre séjour & intervention
+                            Posez vos questions sur votre séjour, transport & soin
                         </p>
                     </div>
                 </div>
