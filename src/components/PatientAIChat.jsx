@@ -179,19 +179,24 @@ export default function PatientAIChat({ patient = {}, token = '' }) {
             return `🚨 **Signaux d'Alerte et Urgences :**\n\n- ⚠️ **En cas de malaise, douleur thoracique ou essoufflement important :** Appelez immédiatement le **15 (SAMU)** ou le **112**.\n- ⚠️ **En cas de fièvre (>38,5°C), saignement abondant actif ou douleur vive d'un mollet :** Contactez d'urgence le secrétariat au **${cabinetPhone}** ou la clinique au **${clinicPhone}**.`;
         }
 
-        // 7. CLINIC LOCATION & ADDRESS
-        if (q.includes('ou') || q.includes('où') || q.includes('adress') || q.includes('lieu') || q.includes('cliniqu') || q.includes('park') || q.includes('accès') || q.includes('situé')) {
+        // 7. QUESTIONNAIRE / DÉROULEMENT DU SUIVI
+        if (q.includes('questionnaire') || q.includes('déroul') || q.includes('deroul') || q.includes('étape') || q.includes('etape') || q.includes('formulaire')) {
+            return `📋 **Déroulement des Questionnaires et de votre Suivi SurgiLink :**\n\n1. **Questionnaires pré et post-opératoires :** Vous recevez automatiquement des questionnaires courts par SMS / E-mail aux étapes clés de votre séjour (J-7, J-1, J+1, J+7, etc.).\n2. **Prise en charge :** Vos réponses permettent à l'équipe du ${practitionerName} de contrôler votre rétablissement et de réagir immédiatement en cas de besoin.\n3. **Assistance :** Vous pouvez remplir vos formulaires depuis le portail ou me poser directement vos questions ici.`;
+        }
+
+        // 8. CLINIC LOCATION & ADDRESS
+        if (/\b(où|ou se|adresse|lieu|accès|situé|parking)\b/i.test(q) || q.includes('cliniqu')) {
             return `📍 **Localisation de votre Établissement :**\n\n- **Nom :** ${clinicName}\n- **Adresse :** ${clinicAddress}\n- **Téléphone clinique :** ${clinicPhone}\n\nUn parking est à votre disposition sur place.`;
         }
 
-        // 8. APPOINTMENT TIME / SURGERY DATE
+        // 9. APPOINTMENT TIME / SURGERY DATE
         if (q.includes('heur') || q.includes('quand') || q.includes('arriv') || q.includes('horaire') || q.includes('convocat') || q.includes('date')) {
             let timeInfo = surgeryTime !== 'Non-communiquée' ? `L'heure prévue pour votre arrivée est **${surgeryTime}**.` : `L'heure de convocation exacte vous est transmise la veille (J-1) dans l'après-midi.`;
             if (surgeryDate) timeInfo += `\n- **Date :** ${surgeryDate}`;
             return `⏰ **Date et Horaires :**\n\n${timeInfo}\n\nSi vous avez besoin de modifier un créneau, contactez le cabinet au **${cabinetPhone}**.`;
         }
 
-        // 9. DOCUMENTS TO BRING
+        // 10. DOCUMENTS TO BRING
         if (q.includes('apport') || q.includes('dossier') || q.includes('papie') || q.includes('document') || q.includes('valis') || q.includes('affaire')) {
             return `📋 **Documents à prévoir :**\n\n1. Pièce d'identité originale & Carte Vitale\n2. Dossier médical (ordonnance, examens, bilan sanguin)\n3. Vêtements amples et confortables faciles à enfiler.`;
         }
