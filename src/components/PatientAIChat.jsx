@@ -212,7 +212,7 @@ export default function PatientAIChat({ patient = {}, token = '' }) {
         setIsLoading(true);
 
         try {
-            // Attempt 1: Serverless backend endpoint /api/patient-ai-chat
+            // Call secure server backend endpoint /api/patient-ai-chat
             const backendRes = await fetch('/api/patient-ai-chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -232,51 +232,15 @@ export default function PatientAIChat({ patient = {}, token = '' }) {
                 }
             }
 
-            // Attempt 2: Direct Client Gemini API call if key is available in environment
-            const clientApiKey = localStorage.getItem('SL_GEMINI_API_KEY') || import.meta.env.VITE_GEMINI_API_KEY;
-            
-            if (clientApiKey) {
-                const prompt = `Tu es l'assistant IA médical ultra-intelligent du ${practitionerName} (${clinicName}).
-Patient: ${firstName}, Acte: ${operation}, Date: ${surgeryDate}, Convocation: ${surgeryTime}.
-Adresse clinique: ${clinicAddress} (Tel: ${clinicPhone}). Tel cabinet: ${cabinetPhone}.
-
-Règles impératives :
-1. Réponds d'abord DIRECTEMENT à la question du patient : "${text}".
-2. Si la question concerne le transport ("je peux pas me faire emmener", "comment venir", "rentrer", "conduire") :
-   - Si ${operation} est du Botox/Injection/Consultation : Pas besoin d'accompagnant, le patient peut conduire ou venir seul.
-   - Si ${operation} est une chirurgie sous anesthésie : Accompagnant obligatoire. Propose Taxi VSL conventionné (sur bon de transport du chirurgien), ou nuit d'hospitalisation de repos, ou contacter le cabinet au ${cabinetPhone}. Ne pas conduire après anesthésie.
-3. Pour le Botox : NE PARLE PAS DE JEÛNE OU DE DOUCHE BÉTADINE !
-4. Sois concis, rassurant, avec du gras et des puces.`;
-
-                const geminiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${clientApiKey}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: prompt }] }],
-                        generationConfig: { maxOutputTokens: 800, temperature: 0.3 }
-                    })
-                });
-
-                if (geminiRes.ok) {
-                    const gData = await geminiRes.json();
-                    const aiAnswer = gData.candidates?.[0]?.content?.parts?.[0]?.text;
-                    if (aiAnswer) {
-                        addBotMessage(aiAnswer);
-                        setIsLoading(false);
-                        return;
-                    }
-                }
-            }
-
-            // Attempt 3: Intelligent Local Medical Engine Fallback
+            // Fallback: Intelligent Local Medical Engine (Offline mode)
             const localAnswer = generateSmartLocalResponse(text);
             setTimeout(() => {
                 addBotMessage(localAnswer);
                 setIsLoading(false);
-            }, 500);
+            }, 400);
 
         } catch (err) {
-            console.warn('AI Chat API warning, fallback used:', err);
+            console.warn('AI Chat API warning, local fallback used:', err);
             const fallbackAnswer = generateSmartLocalResponse(text);
             addBotMessage(fallbackAnswer);
             setIsLoading(false);
