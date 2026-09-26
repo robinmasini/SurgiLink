@@ -146,12 +146,17 @@ export default function PatientAIChat({ patient = {}, token = '' }) {
             return `💉 **Consignes Spécifiques pour vos Injections de Botox :**\n\n- **Avant la séance :** Aucun jeûne nécessaire. Évitez de prendre de l'aspirine ou des anti-inflammatoires 48h avant.\n- **Après l'injection :**\n  1. **Ne pas frotter ni masser** les zones injectées pendant 4 heures.\n  2. **Ne pas vous allonger** ni pencher la tête en bas pendant 4 heures.\n  3. **Éviter le sport intense, le sauna et le hammam** pendant 24 heures.\n- **Résultats :** L'effet s'installe progressivement sous 3 à 5 jours.`;
         }
 
-        // 3. FASTING / JEÛNE / MANGER / BOIRE
-        if (q.includes('jeûn') || q.includes('manger') || q.includes('boire') || q.includes('repas') || q.includes('eau') || q.includes('café') || q.includes('fumer') || q.includes('cigaret')) {
+        // 3. TABAC / CIGARETTE / VAPOTAGE
+        if (q.includes('fumer') || q.includes('tabac') || q.includes('cigaret') || q.includes('vapot') || q.includes('nicotin')) {
+            return `🚭 **Recommandations concernant le Tabac pour votre ${operation} :**\n\n- **Conseil médical :** Il est **vivement recommandé d'arrêter ou de réduire le tabac** avant votre intervention pour optimiser la qualité de la cicatrisation et réduire les risques anesthésiques et infectieux.\n- **Consignes de consultation :** Veuillez vous référer aux consignes exactes données lors de votre consultation d'anesthésie et avec le ${practitionerName}.\n- N'hésitez pas à contacter le secrétariat médical au **${cabinetPhone}** pour toute précision.`;
+        }
+
+        // 4. FASTING / JEÛNE / MANGER / BOIRE
+        if (q.includes('jeûn') || q.includes('manger') || q.includes('boire') || q.includes('repas') || q.includes('eau') || q.includes('café')) {
             if (isBotox) {
                 return `🍽️ **Consignes Alimentaires pour vos injections de ${operation} :**\n\n**Aucun jeûne n'est nécessaire !** Vous pouvez manger et boire normalement avant et après votre séance de Botox.`;
             } else {
-                return `🍽️ **Consignes de Jeûne pour votre ${operation} :**\n\n- **Aliments solides et tabac :** Arrêt strict au moins **6 heures** avant votre heure de convocation.\n- **Boissons claires :** Vous pouvez boire de l'eau plate ou du thé/café noir sans lait ni sucre jusqu'à **2 heures** avant.\n- Pas de chewing-gum ni de bonbon.`;
+                return `🍽️ **Consignes de Jeûne pour votre ${operation} :**\n\n- **Aliments solides :** Arrêt strict au moins **6 heures** avant votre heure de convocation.\n- **Boissons claires :** Vous pouvez boire de l'eau plate ou du thé/café noir sans lait ni sucre jusqu'à **2 heures** avant.\n- Pas de chewing-gum ni de bonbon.`;
             }
         }
 
