@@ -358,7 +358,7 @@ export default function PatientAIChat({ patient = {}, token = '' }) {
                 onClick={() => setIsCollapsed(!isCollapsed)}
                 style={{
                     padding: '16px 20px',
-                    background: 'linear-gradient(135deg, #BBAB68 0%, #A49453 60%, #8C7D3E 100%)',
+                    background: '#BBAB68',
                     color: 'white',
                     display: 'flex',
                     alignItems: 'center',
@@ -528,7 +528,7 @@ export default function PatientAIChat({ patient = {}, token = '' }) {
                                                 width: '28px',
                                                 height: '28px',
                                                 borderRadius: '50%',
-                                                background: 'linear-gradient(135deg, #BBAB68, #9B8C4B)',
+                                                background: '#BBAB68',
                                                 display: 'flex',
                                                 alignItems: 'center',
                                                 justifyContent: 'center',
@@ -544,9 +544,7 @@ export default function PatientAIChat({ patient = {}, token = '' }) {
                                         <div style={{
                                             padding: '12px 16px',
                                             borderRadius: isUser ? '20px 20px 4px 20px' : '20px 20px 20px 4px',
-                                            background: isUser 
-                                                ? 'linear-gradient(135deg, #BBAB68 0%, #9B8C4B 100%)' 
-                                                : '#FFFFFF',
+                                            background: isUser ? '#BBAB68' : '#FFFFFF',
                                             color: isUser ? '#FFFFFF' : '#374151',
                                             boxShadow: isUser 
                                                 ? '0 4px 12px rgba(187, 171, 104, 0.28)' 
@@ -607,7 +605,7 @@ export default function PatientAIChat({ patient = {}, token = '' }) {
                                     width: '28px',
                                     height: '28px',
                                     borderRadius: '50%',
-                                    background: 'linear-gradient(135deg, #BBAB68, #9B8C4B)',
+                                    background: '#BBAB68',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
@@ -700,9 +698,7 @@ export default function PatientAIChat({ patient = {}, token = '' }) {
                                 height: '38px',
                                 borderRadius: '50%',
                                 border: 'none',
-                                background: inputValue.trim() && !isLoading 
-                                    ? 'linear-gradient(135deg, #BBAB68, #9B8C4B)' 
-                                    : '#E5E7EB',
+                                background: inputValue.trim() && !isLoading ? '#BBAB68' : '#E5E7EB',
                                 color: inputValue.trim() && !isLoading ? '#FFFFFF' : '#9CA3AF',
                                 display: 'flex',
                                 alignItems: 'center',
